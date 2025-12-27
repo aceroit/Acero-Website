@@ -4,7 +4,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed:permissions": "node seeders/permissions.seeder.js"
   },
   "keywords": [],
   "author": "",
@@ -12,11 +14,17 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
+    "diff": "^8.0.2",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-fileupload": "^1.5.2",
+    "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.2",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.12",
     "nodemon": "^3.1.11"
   }
 }
