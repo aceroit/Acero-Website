@@ -1,0 +1,1411 @@
+{
+	"info": {
+		"_postman_id": "phase1-auth-rbac-collection",
+		"name": "Phase 1 - Authentication & RBAC",
+		"description": "Comprehensive testing for Phase 1: Authentication, User Management, and Permission System\n\n**Prerequisites:**\n- Backend server running on {{base_url}}\n- MongoDB connected\n- Environment file imported\n\n**Test Coverage:**\n- User Registration (6 roles)\n- User Login & Token Management\n- User CRUD Operations\n- Permission Management\n- RBAC Enforcement\n\n**Expected Runtime:** ~2 minutes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Register & Login",
+			"item": [
+				{
+					"name": "Register Super Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has user data\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data).to.have.property('user');",
+									"    pm.expect(response.data.user).to.have.property('email', 'superadmin@acero.com');",
+									"    pm.expect(response.data.user).to.have.property('role', 'super_admin');",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('token');",
+									"    pm.expect(response.data.token).to.be.a('string').and.not.empty;",
+									"});",
+									"",
+									"pm.test(\"Password not in response\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.user).to.not.have.property('password');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Super Admin User\",\n  \"email\": \"superadmin@acero.com\",\n  \"password\": \"SuperAdmin@123\",\n  \"role\": \"super_admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a Super Admin user. Super Admin has full system access."
+					},
+					"response": []
+				},
+				{
+					"name": "Register Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Admin user created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.user).to.have.property('role', 'admin');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@acero.com\",\n  \"password\": \"Admin@123\",\n  \"role\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register an Admin user. Admin can publish content and manage most modules."
+					},
+					"response": []
+				},
+				{
+					"name": "Register Approver",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Approver user created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.user).to.have.property('role', 'approver');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Approver User\",\n  \"email\": \"approver@acero.com\",\n  \"password\": \"Approver@123\",\n  \"role\": \"approver\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register an Approver user. Approver can approve content for publishing."
+					},
+					"response": []
+				},
+				{
+					"name": "Register Reviewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Reviewer user created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.user).to.have.property('role', 'reviewer');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Reviewer User\",\n  \"email\": \"reviewer@acero.com\",\n  \"password\": \"Reviewer@123\",\n  \"role\": \"reviewer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a Reviewer user. Reviewer can review and provide feedback on content."
+					},
+					"response": []
+				},
+				{
+					"name": "Register Editor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Editor user created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.user).to.have.property('role', 'editor');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Editor User\",\n  \"email\": \"editor@acero.com\",\n  \"password\": \"Editor@123\",\n  \"role\": \"editor\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register an Editor user. Editor can create and edit content."
+					},
+					"response": []
+				},
+				{
+					"name": "Register Viewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Viewer user created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.user).to.have.property('role', 'viewer');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Viewer User\",\n  \"email\": \"viewer@acero.com\",\n  \"password\": \"Viewer@123\",\n  \"role\": \"viewer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a Viewer user. Viewer has read-only access."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Super Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Login successful\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data).to.have.property('token');",
+									"    pm.expect(response.data).to.have.property('user');",
+									"});",
+									"",
+									"pm.test(\"Token saved to environment\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('super_admin_token', response.data.token);",
+									"    pm.environment.set('super_admin_id', response.data.user._id);",
+									"    pm.expect(pm.environment.get('super_admin_token')).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response time < 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"superadmin@acero.com\",\n  \"password\": \"SuperAdmin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Super Admin and capture JWT token for subsequent requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Token saved to environment\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('admin_token', response.data.token);",
+									"    pm.environment.set('admin_id', response.data.user._id);",
+									"    pm.expect(pm.environment.get('admin_token')).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@acero.com\",\n  \"password\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Admin and capture JWT token."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Approver",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Token saved to environment\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('approver_token', response.data.token);",
+									"    pm.environment.set('approver_id', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"approver@acero.com\",\n  \"password\": \"Approver@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Approver and capture JWT token."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Reviewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Token saved to environment\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('reviewer_token', response.data.token);",
+									"    pm.environment.set('reviewer_id', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"reviewer@acero.com\",\n  \"password\": \"Reviewer@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Reviewer and capture JWT token."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Editor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Token saved to environment\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('editor_token', response.data.token);",
+									"    pm.environment.set('editor_id', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"editor@acero.com\",\n  \"password\": \"Editor@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Editor and capture JWT token."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Viewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Token saved to environment\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('viewer_token', response.data.token);",
+									"    pm.environment.set('viewer_id', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"viewer@acero.com\",\n  \"password\": \"Viewer@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Viewer and capture JWT token."
+					},
+					"response": []
+				},
+				{
+					"name": "Login with Invalid Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Error message present\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"editor@acero.com\",\n  \"password\": \"WrongPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Test login with invalid credentials. Should return 401 error."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User (Me)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"User data returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('_id');",
+									"    pm.expect(response.data).to.have.property('email');",
+									"    pm.expect(response.data).to.have.property('role');",
+									"    pm.expect(response.data).to.not.have.property('password');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "me"]
+						},
+						"description": "Get current authenticated user's profile."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"New token provided\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('token');",
+									"    pm.expect(response.data.token).to.be.a('string').and.not.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/refresh-token",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "refresh-token"]
+						},
+						"description": "Refresh JWT token to extend session."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Logout successful\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						},
+						"description": "Logout current user session."
+					},
+					"response": []
+				}
+			],
+			"description": "Test user registration and login for all 6 roles. Captures JWT tokens for use in subsequent requests."
+		},
+		{
+			"name": "02 - User Management",
+			"item": [
+				{
+					"name": "Get All Users (Super Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Users array returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(6);",
+									"});",
+									"",
+									"pm.test(\"Response time < 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "Get all users as Super Admin. Should return all users in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users (Editor - should fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Permission denied message\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message).to.include('permission');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "Try to get all users as Editor. Should fail with 403 due to insufficient permissions."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"User details returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('_id');",
+									"    pm.expect(response.data).to.have.property('email');",
+									"    pm.expect(response.data).to.not.have.property('password');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{editor_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{editor_id}}"]
+						},
+						"description": "Get specific user by ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Super Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"New user created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('_id');",
+									"    pm.expect(response.data).to.have.property('email', 'neweditor@acero.com');",
+									"    pm.environment.set('new_user_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"New Editor\",\n  \"email\": \"neweditor@acero.com\",\n  \"password\": \"NewEditor@123\",\n  \"role\": \"editor\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "Create a new user as Super Admin."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"User updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('name', 'Updated Editor Name');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Editor Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/{{new_user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{new_user_id}}"]
+						},
+						"description": "Update user details."
+					},
+					"response": []
+				},
+				{
+					"name": "Change User Role (Super Admin only)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Role updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('role', 'reviewer');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"reviewer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/{{new_user_id}}/role",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{new_user_id}}", "role"]
+						},
+						"description": "Change user role. Only Super Admin can perform this action."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Stats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Stats returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('totalUsers');",
+									"    pm.expect(response.data).to.have.property('usersByRole');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "stats"]
+						},
+						"description": "Get user statistics (total users, breakdown by role)."
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate User (Soft Delete)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"User deactivated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{new_user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{new_user_id}}"]
+						},
+						"description": "Soft delete (deactivate) a user."
+					},
+					"response": []
+				}
+			],
+			"description": "Test user CRUD operations with different role permissions."
+		},
+		{
+			"name": "03 - Permission Management",
+			"item": [
+				{
+					"name": "Get All Permissions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Permissions array returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions"]
+						},
+						"description": "Get all permissions in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Permission Matrix",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Matrix structure returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('object');",
+									"    pm.expect(response.data).to.have.property('roles');",
+									"    pm.expect(response.data).to.have.property('resources');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/matrix",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "matrix"]
+						},
+						"description": "Get permission matrix showing all roles and their permissions."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Permissions for Role (Editor)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Editor permissions returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/editor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "editor"]
+						},
+						"description": "Get all permissions for the Editor role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Resources and Actions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resources and actions returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('resources');",
+									"    pm.expect(response.data).to.have.property('actions');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/resources-actions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "resources-actions"]
+						},
+						"description": "Get list of all available resources and actions in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Check Permission (POST)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Permission check result returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('hasPermission');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resource\": \"pages\",\n  \"action\": \"create\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/check",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "check"]
+						},
+						"description": "Check if current user has specific permission."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Role Permissions (Super Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Permissions updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"permissions\": [\n    {\n      \"resource\": \"pages\",\n      \"actions\": [\"create\", \"read\", \"update\"]\n    },\n    {\n      \"resource\": \"sections\",\n      \"actions\": [\"create\", \"read\", \"update\"]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/editor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "editor"]
+						},
+						"description": "Update permissions for a role. Only Super Admin can perform this."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Role Permissions (Admin - should fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Permission denied\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"permissions\": [\n    {\n      \"resource\": \"pages\",\n      \"actions\": [\"create\", \"read\", \"update\", \"delete\"]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/editor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "editor"]
+						},
+						"description": "Try to update permissions as Admin. Should fail - only Super Admin can update permissions."
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Single Permission",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 201\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"",
+									"pm.test(\"Permission created/updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.environment.set('permission_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"editor\",\n  \"resource\": \"media\",\n  \"actions\": [\"create\", \"read\", \"update\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions"]
+						},
+						"description": "Create or update a single permission entry."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Permission",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Permission deleted\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/{{permission_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "{{permission_id}}"]
+						},
+						"description": "Delete a permission entry. Only Super Admin can perform this."
+					},
+					"response": []
+				}
+			],
+			"description": "Test permission management and RBAC enforcement."
+		}
+	]
+}

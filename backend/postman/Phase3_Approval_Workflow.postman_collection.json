@@ -1,0 +1,1830 @@
+{
+	"info": {
+		"_postman_id": "phase3-approval-workflow",
+		"name": "Phase 3 - Approval Workflow",
+		"description": "Comprehensive testing for Phase 3: Workflow State Machine, Content Versioning, Dashboard Analytics, and Notifications\n\n**Prerequisites:**\n- Phase 1 completed (users and tokens)\n- Phase 2 completed (pages and sections created)\n- Backend server running\n\n**Test Coverage:**\n- Complete workflow lifecycle (draft → published)\n- State transition validation\n- Content versioning and comparison\n- Dashboard metrics and analytics\n- Notification system\n\n**Expected Runtime:** ~3 minutes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Content Workflow Lifecycle",
+			"item": [
+				{
+					"name": "Create Draft Page for Workflow Testing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Workflow page created in draft status\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'draft');",
+									"    pm.environment.set('workflow_page_id', response.data._id);",
+									"    console.log('Workflow page ID:', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Workflow Test Page\",\n  \"slug\": \"workflow-test\",\n  \"metaTitle\": \"Testing Complete Workflow\",\n  \"metaDescription\": \"Page to test full approval workflow\",\n  \"showInMenu\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create a draft page to test workflow transitions."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Page for Review (draft → in_review)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to in_review\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'in_review');",
+									"});",
+									"",
+									"pm.test(\"Version created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('currentVersion');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Submitting for review - initial version\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "submit"]
+						},
+						"description": "Editor submits page for review. Status changes from draft to in_review."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Invalid Status Transition (should fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error message about invalid transition\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message).to.include('transition');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "submit"]
+						},
+						"description": "Try to submit again when already in_review. Should fail."
+					},
+					"response": []
+				},
+				{
+					"name": "Request Changes (Reviewer → changes_requested)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to changes_requested\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'changes_requested');",
+									"});",
+									"",
+									"pm.test(\"Feedback captured\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('feedback');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"feedback\": \"Please add more detailed meta description and update the page title.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/request-changes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "request-changes"]
+						},
+						"description": "Reviewer requests changes. Status changes to changes_requested."
+					},
+					"response": []
+				},
+				{
+					"name": "Resubmit After Changes (changes_requested → in_review)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status back to in_review\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'in_review');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Updated per reviewer feedback\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "submit"]
+						},
+						"description": "Editor resubmits after making requested changes."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Reviewed (in_review → pending_approval)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to pending_approval\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'pending_approval');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comments\": \"Content looks good, ready for approval\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/review",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "review"]
+						},
+						"description": "Reviewer approves the changes, moving to pending_approval."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Content (Approver → changes_requested)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to changes_requested\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'changes_requested');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{approver_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"feedback\": \"Needs SEO keywords added before publishing\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/reject",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "reject"]
+						},
+						"description": "Approver rejects and sends back for changes."
+					},
+					"response": []
+				},
+				{
+					"name": "Resubmit Again (changes_requested → in_review)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status back to in_review\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'in_review');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Added SEO keywords as requested\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "submit"]
+						},
+						"description": "Editor resubmits after addressing approver feedback."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Reviewed Again (in_review → pending_approval)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to pending_approval\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'pending_approval');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/review",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "review"]
+						},
+						"description": "Reviewer approves again after editor fixed issues."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Content (pending_approval → pending_publish)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to pending_publish\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'pending_publish');",
+									"});",
+									"",
+									"pm.test(\"Ready for publishing\", function () {",
+									"    const response = pm.response.json();",
+									"    console.log('Page ready for publishing:', response.data.title);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{approver_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comments\": \"Approved for publishing\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "approve"]
+						},
+						"description": "Approver approves content, moving to pending_publish."
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Content (pending_publish → published)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to published\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'published');",
+									"});",
+									"",
+									"pm.test(\"Published version set\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('publishedVersion');",
+									"    console.log('Page published successfully!');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Publishing to production\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "publish"]
+						},
+						"description": "Admin publishes the content, making it live."
+					},
+					"response": []
+				},
+				{
+					"name": "Unpublish Content (published → draft)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to draft\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'draft');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Taking offline for updates\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/unpublish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "unpublish"]
+						},
+						"description": "Admin unpublishes the content, taking it offline."
+					},
+					"response": []
+				},
+				{
+					"name": "Republish Content (draft → in_review → ... → published)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to published\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'published');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Re-publishing after updates\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "publish"]
+						},
+						"description": "Admin can directly publish (skip workflow) if needed."
+					},
+					"response": []
+				},
+				{
+					"name": "Archive Content (published → archived)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to archived\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'archived');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Page no longer needed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/archive",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "archive"]
+						},
+						"description": "Admin archives old content."
+					},
+					"response": []
+				},
+				{
+					"name": "Restore Archived Content (archived → draft)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to draft\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'draft');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Restoring page for reuse\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/restore",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "restore"]
+						},
+						"description": "Admin restores archived content back to draft."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Available Workflow Actions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Available actions returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('availableActions');",
+									"    pm.expect(response.data.availableActions).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/available-actions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "available-actions"]
+						},
+						"description": "Get available workflow actions for current user and content status."
+					},
+					"response": []
+				}
+			],
+			"description": "Test complete workflow lifecycle from draft to published with all state transitions."
+		},
+		{
+			"name": "02 - Section Workflow",
+			"item": [
+				{
+					"name": "Create Draft Section for Workflow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Section created in draft\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'draft');",
+									"    pm.environment.set('workflow_section_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"text_block\",\n  \"order\": 10,\n  \"content\": {\n    \"heading\": \"Test Section for Workflow\",\n    \"content\": \"<p>This section will go through the complete workflow.</p>\",\n    \"alignment\": \"center\"\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{workflow_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{workflow_page_id}}", "sections"]
+						},
+						"description": "Create a draft section to test workflow."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Section for Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section submitted for review\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'in_review');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/section/{{workflow_section_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "section", "{{workflow_section_id}}", "submit"]
+						},
+						"description": "Submit section for review."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Workflow Cycle for Section",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This request will use reviewer token to review",
+									"console.log('Marking section as reviewed');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/section/{{workflow_section_id}}/review",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "section", "{{workflow_section_id}}", "review"]
+						},
+						"description": "Reviewer marks section as reviewed."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{approver_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/section/{{workflow_section_id}}/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "section", "{{workflow_section_id}}", "approve"]
+						},
+						"description": "Approver approves the section."
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section published\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'published');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/section/{{workflow_section_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "section", "{{workflow_section_id}}", "publish"]
+						},
+						"description": "Admin publishes the section."
+					},
+					"response": []
+				}
+			],
+			"description": "Test workflow lifecycle for sections."
+		},
+		{
+			"name": "03 - Version Management",
+			"item": [
+				{
+					"name": "Get Content Version History",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Version history returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(1);",
+									"});",
+									"",
+									"pm.test(\"Version metadata present\", function () {",
+									"    const response = pm.response.json();",
+									"    if (response.data.length > 0) {",
+									"        const version = response.data[0];",
+									"        pm.expect(version).to.have.property('version');",
+									"        pm.expect(version).to.have.property('status');",
+									"        pm.expect(version).to.have.property('createdBy');",
+									"        pm.environment.set('version_1', 1);",
+									"        pm.environment.set('version_2', Math.min(2, response.data.length));",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/versions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "versions"]
+						},
+						"description": "Get version history for a page showing all changes over time."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific Version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Version data returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('version');",
+									"    pm.expect(response.data).to.have.property('data');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/versions?version=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "versions"],
+							"query": [
+								{
+									"key": "version",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get specific version details."
+					},
+					"response": []
+				},
+				{
+					"name": "Compare Two Versions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Comparison data returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('version1');",
+									"    pm.expect(response.data).to.have.property('version2');",
+									"    pm.expect(response.data).to.have.property('diff');",
+									"});",
+									"",
+									"pm.test(\"Changes identified\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.diff).to.be.an('object');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/versions/compare?v1={{version_1}}&v2={{version_2}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "versions", "compare"],
+							"query": [
+								{
+									"key": "v1",
+									"value": "{{version_1}}"
+								},
+								{
+									"key": "v2",
+									"value": "{{version_2}}"
+								}
+							]
+						},
+						"description": "Compare two versions to see what changed."
+					},
+					"response": []
+				},
+				{
+					"name": "Restore Previous Version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Version restored as new draft\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'draft');",
+									"    pm.expect(response.data).to.have.property('currentVersion');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Restoring previous version\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/versions/1/restore",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "versions", "1", "restore"]
+						},
+						"description": "Restore a previous version, creating a new draft with that content."
+					},
+					"response": []
+				}
+			],
+			"description": "Test content versioning, comparison, and restoration features."
+		},
+		{
+			"name": "04 - Dashboard & Analytics",
+			"item": [
+				{
+					"name": "Get Workflow Metrics (Overview)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Metrics returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('totalPages');",
+									"    pm.expect(response.data).to.have.property('totalSections');",
+									"    pm.expect(response.data).to.have.property('byStatus');",
+									"});",
+									"",
+									"pm.test(\"Status breakdown provided\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.byStatus).to.be.an('object');",
+									"    console.log('Workflow metrics:', JSON.stringify(response.data, null, 2));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/metrics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "metrics"]
+						},
+						"description": "Get overview metrics showing content counts by status."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Workload Summary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Workload data returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('pendingReview');",
+									"    pm.expect(response.data).to.have.property('pendingApproval');",
+									"    pm.expect(response.data).to.have.property('myDrafts');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/workload",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "workload"]
+						},
+						"description": "Get workload summary for current user."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Team Activity (Recent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Team activities returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Activity details present\", function () {",
+									"    const response = pm.response.json();",
+									"    if (response.data.length > 0) {",
+									"        const activity = response.data[0];",
+									"        pm.expect(activity).to.have.property('user');",
+									"        pm.expect(activity).to.have.property('action');",
+									"        pm.expect(activity).to.have.property('resource');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/team-activity",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "team-activity"]
+						},
+						"description": "Get recent team activity for workflow tracking."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pending Items (Reviewer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Pending items returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/pending",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "pending"]
+						},
+						"description": "Get items pending action from current user (reviewer sees in_review items)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pending Items (Approver)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Pending approval items returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{approver_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/pending",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "pending"]
+						},
+						"description": "Get items pending approval (approver sees pending_approval items)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Drafts (Editor)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Draft items returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/my-drafts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "my-drafts"]
+						},
+						"description": "Get current user's draft content."
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Submissions (Editor)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Submissions returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/my-submissions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "my-submissions"]
+						},
+						"description": "Get content submitted by current user (in any workflow state)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recently Published",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Recently published items returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/recently-published?limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "recently-published"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get recently published content."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Workflow Timeline",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Timeline data returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/timeline?days=7",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "timeline"],
+							"query": [
+								{
+									"key": "days",
+									"value": "7"
+								}
+							]
+						},
+						"description": "Get workflow timeline for the past 7 days."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Productivity Stats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Productivity stats returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('totalSubmissions');",
+									"    pm.expect(response.data).to.have.property('totalPublished');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/productivity/{{editor_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "productivity", "{{editor_id}}"]
+						},
+						"description": "Get productivity statistics for a specific user (admin only)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Workflow Bottlenecks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Bottleneck analysis returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/bottlenecks",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "bottlenecks"]
+						},
+						"description": "Get workflow bottlenecks (content stuck in workflow states)."
+					},
+					"response": []
+				}
+			],
+			"description": "Test dashboard analytics and metrics endpoints."
+		},
+		{
+			"name": "05 - Notifications",
+			"item": [
+				{
+					"name": "Get All Notifications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Notifications returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Save first notification ID\", function () {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.length > 0) {",
+									"        pm.environment.set('notification_id', response.data[0]._id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications?page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all notifications for current user (paginated)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Notifications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Unread notifications returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/unread",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "unread"]
+						},
+						"description": "Get only unread notifications."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Count",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Unread count returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('count');",
+									"    pm.expect(response.data.count).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/unread/count",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "unread", "count"]
+						},
+						"description": "Get count of unread notifications (for badge)."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notification as Read",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Notification marked as read\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('isRead', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/{{notification_id}}/read",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "{{notification_id}}", "read"]
+						},
+						"description": "Mark a specific notification as read."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Notifications as Read",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"All notifications marked as read\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/read-all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "read-all"]
+						},
+						"description": "Mark all notifications as read for current user."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Notification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Notification deleted\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/{{notification_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "{{notification_id}}"]
+						},
+						"description": "Delete a specific notification."
+					},
+					"response": []
+				}
+			],
+			"description": "Test notification system for workflow events."
+		}
+	]
+}
+
