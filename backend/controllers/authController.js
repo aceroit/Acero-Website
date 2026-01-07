@@ -86,9 +86,11 @@ const login = async (req, res) => {
             });
         }
 
+        console.log('Attempting login for:', email);
+
         // Find user and include password field
         const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-        
+
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -106,7 +108,7 @@ const login = async (req, res) => {
 
         // Verify password
         const isPasswordCorrect = await user.comparePassword(password);
-        
+
         if (!isPasswordCorrect) {
             return res.status(401).json({
                 success: false,
@@ -389,11 +391,11 @@ const changePassword = async (req, res) => {
     }
 };
 
-module.exports = { 
-    register, 
-    login, 
-    logout, 
-    getMe, 
+module.exports = {
+    register,
+    login,
+    logout,
+    getMe,
     refreshToken,
     updateProfile,
     changePassword
