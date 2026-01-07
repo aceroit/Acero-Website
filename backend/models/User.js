@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Last name is required'],
         trim: true
-    },  
+    },
     role: {
         type: String,
         required: true,
@@ -56,23 +56,17 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function () {
     // Only hash the password if it has been modified (or is new)
-    if (!this.isModified('password')) {
-        return next();
-    }
-    
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
+    if (!this.isModified('password')) return;
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
+
 // Method to compare password for login
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
     try {
         return await bcrypt.compare(candidatePassword, this.password);
     } catch (error) {
@@ -81,11 +75,11 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 // Method to generate JWT token
-userSchema.methods.generateAuthToken = function() {
+userSchema.methods.generateAuthToken = function () {
     const token = jwt.sign(
-        { 
-            id: this._id, 
-            email: this.email, 
+        {
+            id: this._id,
+            email: this.email,
             role: this.role,
             firstName: this.firstName,
             lastName: this.lastName
@@ -97,19 +91,19 @@ userSchema.methods.generateAuthToken = function() {
 };
 
 // Method to get user full name
-userSchema.methods.getFullName = function() {
+userSchema.methods.getFullName = function () {
     return `${this.firstName} ${this.lastName}`;
 };
 
 // Virtual for full name
-userSchema.virtual('fullName').get(function() {
+userSchema.virtual('fullName').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 
 // Ensure virtuals are included in JSON output
 userSchema.set('toJSON', {
     virtuals: true,
-    transform: function(doc, ret) {
+    transform: function (doc, ret) {
         delete ret.password; // Remove password from JSON output
         return ret;
     }

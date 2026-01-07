@@ -8,15 +8,15 @@ const getAllPermissions = async (req, res) => {
 
         // Build query
         const query = {};
-        
+
         if (role) {
             query.role = role;
         }
-        
+
         if (resource) {
             query.resource = resource;
         }
-        
+
         if (isActive !== undefined) {
             query.isActive = isActive === 'true';
         }
@@ -138,13 +138,13 @@ const updateRolePermissions = async (req, res) => {
             action: 'update',
             resource: 'permission',
             changes: {
-                before: oldPermissions.map(p => ({ 
-                    resource: p.resource, 
-                    actions: p.actions 
+                before: oldPermissions.map(p => ({
+                    resource: p.resource,
+                    actions: p.actions
                 })),
-                after: newPermissions.map(p => ({ 
-                    resource: p.resource, 
-                    actions: p.actions 
+                after: newPermissions.map(p => ({
+                    resource: p.resource,
+                    actions: p.actions
                 }))
             },
             ipAddress: req.ip,
@@ -263,7 +263,7 @@ const getPermissionMatrix = async (req, res) => {
 
         // Build matrix
         const matrix = {};
-        
+
         roles.forEach(role => {
             matrix[role] = {};
             resources.forEach(resource => {
@@ -324,9 +324,9 @@ const upsertPermission = async (req, res) => {
         let permission = await Permission.findOne({ role, resource });
 
         const action = permission ? 'update' : 'create';
-        const oldData = permission ? { 
-            actions: permission.actions, 
-            conditions: permission.conditions 
+        const oldData = permission ? {
+            actions: permission.actions,
+            conditions: permission.conditions
         } : null;
 
         if (permission) {
@@ -407,9 +407,9 @@ const deletePermission = async (req, res) => {
             resourceId: id,
             ipAddress: req.ip,
             userAgent: req.get('user-agent'),
-            metadata: { 
-                role: permission.role, 
-                resource: permission.resource 
+            metadata: {
+                role: permission.role,
+                resource: permission.resource
             }
         });
 
