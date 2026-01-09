@@ -1,24 +1,22 @@
+const path = require('path');
+
+// Load environment variables FIRST, before requiring database config
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+// Fallback to .env.local if .env doesn't exist
+if (!process.env.MONGODB_URI) {
+    require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
+}
+
+// Now require modules that depend on environment variables
 const mongoose = require('mongoose');
 const SectionType = require('../models/SectionType');
-require('dotenv').config();
-
-// Connect to database
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('MongoDB connected successfully');
-    } catch (error) {
-        console.error('MongoDB connection error:', error);
-        process.exit(1);
-    }
-};
-
-// Default section types
+const connectDB = require('../configs/database');
+// Default section types - Real-world examples for Acero Steel
 const defaultSectionTypes = [
     {
         name: 'Hero Section',
         slug: 'hero',
-        description: 'Large header section with background image, title, subtitle and call-to-action button',
+        description: 'Large header section with background image, title, subtitle and call-to-action button. Perfect for homepage banners showcasing manufacturing facilities or steel products.',
         icon: '🎯',
         category: 'Headers',
         isSystem: true,
@@ -26,8 +24,8 @@ const defaultSectionTypes = [
             {
                 name: 'title',
                 type: 'text',
-                label: 'Title',
-                placeholder: 'Enter main heading',
+                label: 'Main Heading',
+                placeholder: 'e.g., Leading Steel Manufacturer Since 1950',
                 required: true,
                 validation: {
                     minLength: 3,
@@ -38,8 +36,8 @@ const defaultSectionTypes = [
             {
                 name: 'subtitle',
                 type: 'textarea',
-                label: 'Subtitle',
-                placeholder: 'Enter subtitle or description',
+                label: 'Subtitle / Description',
+                placeholder: 'e.g., Quality steel products for construction, automotive, and industrial applications worldwide',
                 required: false,
                 validation: {
                     maxLength: 300
@@ -50,7 +48,7 @@ const defaultSectionTypes = [
                 name: 'backgroundImage',
                 type: 'image',
                 label: 'Background Image',
-                helpText: 'Recommended size: 1920x1080px',
+                helpText: 'Recommended: 1920x1080px. Use high-quality images of manufacturing facilities, steel products, or industrial settings',
                 required: true,
                 order: 2
             },
@@ -58,7 +56,7 @@ const defaultSectionTypes = [
                 name: 'ctaButtonText',
                 type: 'text',
                 label: 'CTA Button Text',
-                placeholder: 'e.g., Learn More',
+                placeholder: 'e.g., Request Quote, View Products, Contact Us',
                 required: false,
                 validation: {
                     maxLength: 30
@@ -69,7 +67,7 @@ const defaultSectionTypes = [
                 name: 'ctaButtonLink',
                 type: 'url',
                 label: 'CTA Button Link',
-                placeholder: '/about or https://example.com',
+                placeholder: '/products, /contact, /request-quote',
                 required: false,
                 order: 4
             },
@@ -78,7 +76,7 @@ const defaultSectionTypes = [
                 type: 'select',
                 label: 'Section Height',
                 required: false,
-                defaultValue: 'medium',
+                defaultValue: 'large',
                 options: [
                     { label: 'Small (400px)', value: 'small' },
                     { label: 'Medium (600px)', value: 'medium' },
@@ -107,7 +105,7 @@ const defaultSectionTypes = [
     {
         name: 'Text Block',
         slug: 'text_block',
-        description: 'Rich text content section with optional heading',
+        description: 'Rich text content section with optional heading. Use for company information, product descriptions, service details, or any formatted text content.',
         icon: '📝',
         category: 'Content',
         isSystem: true,
@@ -115,8 +113,8 @@ const defaultSectionTypes = [
             {
                 name: 'heading',
                 type: 'text',
-                label: 'Heading',
-                placeholder: 'Section heading (optional)',
+                label: 'Section Heading',
+                placeholder: 'e.g., About Acero Steel, Our Manufacturing Process, Quality Standards',
                 required: false,
                 validation: {
                     maxLength: 100
@@ -127,8 +125,8 @@ const defaultSectionTypes = [
                 name: 'content',
                 type: 'richtext',
                 label: 'Content',
-                placeholder: 'Enter your content here...',
-                helpText: 'Supports rich text formatting',
+                placeholder: 'Enter your content here... Use rich text editor for formatting, lists, links, etc.',
+                helpText: 'Supports rich text formatting, bold, italic, lists, links, and more',
                 required: true,
                 validation: {
                     minLength: 10
@@ -153,7 +151,7 @@ const defaultSectionTypes = [
                 name: 'backgroundColor',
                 type: 'color',
                 label: 'Background Color',
-                helpText: 'Optional background color',
+                helpText: 'Optional background color for the section',
                 required: false,
                 defaultValue: '#ffffff',
                 order: 3
@@ -165,7 +163,7 @@ const defaultSectionTypes = [
     {
         name: 'Image Gallery',
         slug: 'image_gallery',
-        description: 'Display multiple images in various layouts (grid, masonry, slider)',
+        description: 'Display multiple images in various layouts. Perfect for showcasing manufacturing facilities, product photos, project portfolios, or facility tours.',
         icon: '🖼️',
         category: 'Media',
         isSystem: true,
@@ -174,7 +172,7 @@ const defaultSectionTypes = [
                 name: 'heading',
                 type: 'text',
                 label: 'Gallery Heading',
-                placeholder: 'Optional gallery title',
+                placeholder: 'e.g., Our Manufacturing Facilities, Product Showcase, Project Gallery',
                 required: false,
                 order: 0
             },
@@ -182,7 +180,7 @@ const defaultSectionTypes = [
                 name: 'images',
                 type: 'json',
                 label: 'Images',
-                helpText: 'Array of image objects with url, alt, caption',
+                helpText: 'Array of image objects: [{"url": "image.jpg", "alt": "Description", "caption": "Optional caption"}]',
                 required: true,
                 order: 1
             },
@@ -193,8 +191,8 @@ const defaultSectionTypes = [
                 required: false,
                 defaultValue: 'grid',
                 options: [
-                    { label: 'Grid', value: 'grid' },
-                    { label: 'Masonry', value: 'masonry' },
+                    { label: 'Grid (Uniform)', value: 'grid' },
+                    { label: 'Masonry (Pinterest-style)', value: 'masonry' },
                     { label: 'Slider/Carousel', value: 'slider' }
                 ],
                 order: 2
@@ -203,7 +201,7 @@ const defaultSectionTypes = [
                 name: 'columns',
                 type: 'number',
                 label: 'Number of Columns',
-                helpText: 'For grid and masonry layouts',
+                helpText: 'For grid and masonry layouts (1-6 columns)',
                 required: false,
                 defaultValue: 3,
                 validation: {
@@ -227,7 +225,7 @@ const defaultSectionTypes = [
     {
         name: 'Features Grid',
         slug: 'features_grid',
-        description: 'Display features or services in a grid layout with icons',
+        description: 'Display company capabilities, services, or key benefits in a grid layout with icons. Ideal for showcasing what makes Acero Steel unique.',
         icon: '⚡',
         category: 'Content',
         isSystem: true,
@@ -236,7 +234,7 @@ const defaultSectionTypes = [
                 name: 'heading',
                 type: 'text',
                 label: 'Section Heading',
-                placeholder: 'e.g., Our Features',
+                placeholder: 'e.g., Why Choose Acero Steel, Our Capabilities, Key Benefits',
                 required: false,
                 validation: {
                     maxLength: 100
@@ -246,8 +244,8 @@ const defaultSectionTypes = [
             {
                 name: 'subheading',
                 type: 'textarea',
-                label: 'Subheading',
-                placeholder: 'Brief description',
+                label: 'Subheading / Description',
+                placeholder: 'e.g., We deliver exceptional quality and service in every project',
                 required: false,
                 validation: {
                     maxLength: 200
@@ -257,8 +255,8 @@ const defaultSectionTypes = [
             {
                 name: 'features',
                 type: 'json',
-                label: 'Features',
-                helpText: 'Array of features with title, description, icon',
+                label: 'Features / Services',
+                helpText: 'Array: [{"title": "Quality Materials", "description": "Premium grade steel", "icon": "check-circle"}]',
                 required: true,
                 order: 2
             },
@@ -281,7 +279,7 @@ const defaultSectionTypes = [
     {
         name: 'Video Section',
         slug: 'video',
-        description: 'Embed video from URL (YouTube, Vimeo, or direct link)',
+        description: 'Embed video from YouTube, Vimeo, or direct link. Perfect for factory tours, product demonstrations, company overviews, or customer testimonials.',
         icon: '🎥',
         category: 'Media',
         isSystem: true,
@@ -290,7 +288,7 @@ const defaultSectionTypes = [
                 name: 'title',
                 type: 'text',
                 label: 'Video Title',
-                placeholder: 'Optional video title',
+                placeholder: 'e.g., Virtual Factory Tour, Product Manufacturing Process, Company Overview',
                 required: false,
                 validation: {
                     maxLength: 100
@@ -301,16 +299,16 @@ const defaultSectionTypes = [
                 name: 'videoUrl',
                 type: 'url',
                 label: 'Video URL',
-                placeholder: 'YouTube, Vimeo, or direct video URL',
-                helpText: 'Supports YouTube, Vimeo, and direct video files',
+                placeholder: 'https://www.youtube.com/watch?v=... or https://vimeo.com/...',
+                helpText: 'Supports YouTube, Vimeo, and direct video file URLs',
                 required: true,
                 order: 1
             },
             {
                 name: 'description',
                 type: 'textarea',
-                label: 'Description',
-                placeholder: 'Optional video description',
+                label: 'Video Description',
+                placeholder: 'Brief description of what the video shows or explains',
                 required: false,
                 validation: {
                     maxLength: 500
@@ -321,7 +319,7 @@ const defaultSectionTypes = [
                 name: 'autoplay',
                 type: 'checkbox',
                 label: 'Autoplay Video',
-                helpText: 'Video will play automatically (muted)',
+                helpText: 'Video will play automatically when page loads (muted for browser compatibility)',
                 required: false,
                 defaultValue: false,
                 order: 3
@@ -341,7 +339,7 @@ const defaultSectionTypes = [
     {
         name: 'Timeline',
         slug: 'timeline',
-        description: 'Display chronological events in a timeline format',
+        description: 'Display company milestones, history, or project timeline in a chronological format. Great for showcasing company evolution and achievements.',
         icon: '📅',
         category: 'Content',
         isSystem: true,
@@ -350,7 +348,7 @@ const defaultSectionTypes = [
                 name: 'heading',
                 type: 'text',
                 label: 'Timeline Heading',
-                placeholder: 'e.g., Our History',
+                placeholder: 'e.g., Our Journey, Company History, Project Timeline',
                 required: false,
                 validation: {
                     maxLength: 100
@@ -360,8 +358,8 @@ const defaultSectionTypes = [
             {
                 name: 'items',
                 type: 'json',
-                label: 'Timeline Items',
-                helpText: 'Array of events with year, title, description',
+                label: 'Timeline Events',
+                helpText: 'Array: [{"year": "1950", "title": "Company Founded", "description": "Acero Steel established in Pittsburgh"}]',
                 required: true,
                 order: 1
             },
@@ -372,7 +370,7 @@ const defaultSectionTypes = [
                 required: false,
                 defaultValue: 'vertical',
                 options: [
-                    { label: 'Vertical', value: 'vertical' },
+                    { label: 'Vertical (Recommended)', value: 'vertical' },
                     { label: 'Horizontal', value: 'horizontal' }
                 ],
                 order: 2
@@ -384,7 +382,7 @@ const defaultSectionTypes = [
     {
         name: 'Call to Action',
         slug: 'cta',
-        description: 'Prominent call-to-action section with button',
+        description: 'Prominent call-to-action section with button. Use for lead generation, quote requests, contact forms, or directing visitors to key pages.',
         icon: '📢',
         category: 'Content',
         isSystem: true,
@@ -393,7 +391,7 @@ const defaultSectionTypes = [
                 name: 'heading',
                 type: 'text',
                 label: 'Heading',
-                placeholder: 'Compelling headline',
+                placeholder: 'e.g., Ready to Start Your Project?, Get a Free Quote Today, Contact Our Experts',
                 required: true,
                 validation: {
                     minLength: 5,
@@ -405,7 +403,7 @@ const defaultSectionTypes = [
                 name: 'description',
                 type: 'textarea',
                 label: 'Description',
-                placeholder: 'Supporting text',
+                placeholder: 'e.g., Let our team help you find the perfect steel solution for your needs',
                 required: false,
                 validation: {
                     maxLength: 300
@@ -416,7 +414,7 @@ const defaultSectionTypes = [
                 name: 'buttonText',
                 type: 'text',
                 label: 'Button Text',
-                placeholder: 'e.g., Get Started',
+                placeholder: 'e.g., Request Quote, Contact Us, Get Started, View Products',
                 required: true,
                 validation: {
                     maxLength: 30
@@ -427,7 +425,7 @@ const defaultSectionTypes = [
                 name: 'buttonLink',
                 type: 'url',
                 label: 'Button Link',
-                placeholder: '/contact or https://example.com',
+                placeholder: '/contact, /request-quote, /products',
                 required: true,
                 order: 3
             },
@@ -436,7 +434,7 @@ const defaultSectionTypes = [
                 type: 'color',
                 label: 'Background Color',
                 required: false,
-                defaultValue: '#0066cc',
+                defaultValue: '#1e3a5f',
                 order: 4
             },
             {
@@ -454,7 +452,7 @@ const defaultSectionTypes = [
     {
         name: 'Statistics',
         slug: 'statistics',
-        description: 'Display key statistics or numbers in an eye-catching format',
+        description: 'Display key company statistics, achievements, or metrics in an eye-catching format. Perfect for showcasing production numbers, years in business, or company achievements.',
         icon: '📊',
         category: 'Content',
         isSystem: true,
@@ -463,7 +461,7 @@ const defaultSectionTypes = [
                 name: 'heading',
                 type: 'text',
                 label: 'Section Heading',
-                placeholder: 'Optional heading',
+                placeholder: 'e.g., By The Numbers, Our Achievements, Company Statistics',
                 required: false,
                 order: 0
             },
@@ -471,7 +469,7 @@ const defaultSectionTypes = [
                 name: 'stats',
                 type: 'json',
                 label: 'Statistics',
-                helpText: 'Array of stats with number, label, description',
+                helpText: 'Array: [{"number": "75+", "label": "Years Experience", "description": "Serving industry since 1950"}, {"number": "500+", "label": "Projects Completed", "description": "Successfully delivered worldwide"}]',
                 required: true,
                 order: 1
             },
@@ -504,6 +502,11 @@ const defaultSectionTypes = [
 // Seed function
 const seedSectionTypes = async () => {
     try {
+        // Verify MONGODB_URI is defined
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI is not defined in environment variables. Please create a .env file in the backend directory with MONGODB_URI=your_connection_string');
+        }
+
         await connectDB();
 
         console.log('Starting section types seeding...\n');

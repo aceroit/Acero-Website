@@ -22,7 +22,7 @@ router.get(
 // Team activity - reviewer+ only
 router.get(
     '/team-activity',
-    checkPermission('pages', 'approve'), // Requires reviewer role
+    checkPermission('pages', 'update'), // Requires reviewer role (reviewers have update permission)
     dashboardController.getTeamActivity
 );
 
@@ -53,7 +53,7 @@ router.get(
 // Workflow timeline - reviewer+ only
 router.get(
     '/timeline',
-    checkPermission('pages', 'approve'), // Requires reviewer role
+    checkPermission('pages', 'update'), // Requires reviewer role (reviewers have update permission)
     dashboardController.getWorkflowTimeline
 );
 

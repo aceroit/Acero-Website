@@ -1,55 +1,70 @@
 // src/components/layout/Sidebar.jsx
 import { NavLink, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { Input } from "antd";
+import { useState, useMemo } from "react";
 import {
     SearchOutlined, DashboardOutlined,
-    ProjectOutlined,
     UserOutlined,
     SettingOutlined,
-    RightOutlined,
 } from "@ant-design/icons";
+import { usePermissions } from "../contexts/PermissionContext";
 
 const Sidebar = () => {
     const [search, setSearch] = useState("");
     const location = useLocation();
-    const menu = [
+    const { hasPermission, hasAnyRole } = usePermissions();
+
+    // Menu configuration with permissions
+    const menuConfig = [
         {
             name: "Dashboard",
             path: "/dashboard",
             icon: <DashboardOutlined />,
-        },
-        {
-            name: "Projects",
-            icon: <ProjectOutlined />,
-            submenu: [
-                { name: "Add New Project", path: "/projects/create" },
-                { name: "All Projects", path: "/projects" },
-            ],
+            permission: null, // Always visible
         },
         {
             name: "Users",
             path: "/users",
             icon: <UserOutlined />,
+            permission: { resource: "users", action: "read" },
         },
         {
-            name: "Settings",
-            path: "/settings",
+            name: "Permissions",
+            path: "/permissions",
             icon: <SettingOutlined />,
+            permission: { resource: "permissions", action: "read" },
+            // roles: ["super_admin"], // Additional role check
         },
     ];
 
+    // Filter menu based on permissions and roles
+    const filteredMenu = useMemo(() => {
+        return menuConfig.filter((item) => {
+            // Always show if no permission requirement
+            if (!item.permission && !item.roles) {
+                return true;
+            }
 
-    // Filtered menu based on search
-    const filteredMenu = menu.filter(
-        (item) =>
-            item.name.toLowerCase().includes(search.toLowerCase()) ||
-            item.submenu?.some((sub) => sub.name.toLowerCase().includes(search.toLowerCase()))
-    );
+            // Check role-based access
+            if (item.roles && item.roles.length > 0) {
+                if (!hasAnyRole(item.roles)) {
+                    return false;
+                }
+            }
+
+            // Check permission-based access
+            if (item.permission) {
+                return hasPermission(item.permission.resource, item.permission.action);
+            }
+
+            return true;
+        }).filter(
+            (item) =>
+                item.name.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [hasPermission, hasAnyRole, search]);
 
     return (
         <div className="h-full w-70 bg-gray-800 text-white flex flex-col">
-
             {/* Logo */}
             <div className="p-4 pb-3 flex flex-col items-center  border-gray-700 hover:bg-gray-700 cursor-pointer">
                 <a href="/dashboard" className="py-1 pt-0">
@@ -57,7 +72,6 @@ const Sidebar = () => {
                         src="images/logo-small.png"
                         alt="Acero"
                         className="w-34 "
-                        
                     />
                 </a>
             </div>
@@ -76,95 +90,36 @@ const Sidebar = () => {
                 />
             </div>
 
-
-            {/* Menu */}
             {/* Menu */}
             <nav className="flex-1 overflow-y-auto px-2 py-1 space-y-1">
                 {filteredMenu.map((item) => {
-                    // Parent active if any submenu matches current path
-                    const isParentActive = item.submenu
-                        ? item.submenu.some((sub) => location.pathname.startsWith(sub.path))
-                        : location.pathname === item.path;
-                    console.log(location.pathname, item.path, isParentActive);
+                    const isActive = location.pathname === item.path;
                     return (
-                        <div key={item.name}>
-                            {item.submenu ? (
-                                <details className="group" open={isParentActive}>
-                                    <summary
-                                        className={`flex items-center justify-between px-4 py-2 rounded cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-700 ${isParentActive ? "bg-gray-700" : ""
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            {item.icon && (
-                                                <span
-                                                    className={` transition-colors duration-300 ease-out ${isParentActive ? "text-gray-200" : "text-gray-500"
-                                                        } group-hover:text-gray-200`}
-                                                >
-                                                    {item.icon}
-                                                </span>
-                                            )}
-                                            <span
-                                                className={` transition-colors duration-300 ease-out ${isParentActive ? "text-gray-200" : "text-gray-400"
-                                                    } group-hover:text-gray-200 font-semibold`}
-                                            >
-                                                {item.name}
-                                            </span>
-                                        </div>
-
-                                        <RightOutlined
-                                            className="text-xs transition-transform duration-200 group-open:rotate-90"
-                                        />
-
-
-                                    </summary>
-
-                                    <div className="pl-8 mt-1 flex flex-col gap-1">
-                                        {item.submenu.map((sub) => (
-                                            <NavLink
-                                                key={sub.path}
-                                                to={sub.path}
-                                                className={({ isActive }) =>
-                                                    `flex items-center px-4 py-2 rounded gap-2 hover:bg-gray-700 hover:text-gray-200 ${isActive ? "bg-gray-700 text-gray-200" : "text-gray-500"
-                                                    }`
-                                                }
-                                            >
-                                                {sub.icon && <span className="mr-2">{sub.icon}</span>}
-                                                <span className="text-sm font-semibold">{sub.name}</span>
-                                            </NavLink>
-                                        ))}
-                                    </div>
-                                </details>
-                            ) : (
-                                <NavLink
-                                    to={item.path}
-                                    className={`flex items-center px-4 py-2 rounded gap-2 group transition-colors duration-300 ease-out
- hover:bg-gray-700 ${isParentActive ? "bg-gray-700" : ""
-                                        }`}
+                        <NavLink
+                            key={item.name}
+                            to={item.path}
+                            className={`flex items-center px-4 py-2 rounded gap-2 group transition-colors duration-300 ease-out
+ hover:bg-gray-700 ${isActive ? "bg-gray-700" : ""
+                                }`}
+                        >
+                            {item.icon && (
+                                <span
+                                    className={`transition-colors duration-300 ease-out ${isActive ? "text-gray-200" : "text-gray-500"
+                                        } group-hover:text-gray-200`}
                                 >
-                                    {item.icon && (
-                                        <span
-                                            className={`transition-colors duration-300 ease-out ${isParentActive ? "text-gray-200" : "text-gray-500"
-                                                } group-hover:text-gray-200`}
-                                        >
-                                            {item.icon}
-                                        </span>
-                                    )}
-                                    <span
-                                        className={` transition-colors duration-300 ease-out ${isParentActive ? "text-gray-200" : "text-gray-400"
-                                            } group-hover:text-gray-200 font-semibold`}
-                                    >
-                                        {item.name}
-                                    </span>
-                                </NavLink>
+                                    {item.icon}
+                                </span>
                             )}
-                        </div>
+                            <span
+                                className={` transition-colors duration-300 ease-out ${isActive ? "text-gray-200" : "text-gray-400"
+                                    } group-hover:text-gray-200 font-semibold`}
+                            >
+                                {item.name}
+                            </span>
+                        </NavLink>
                     );
                 })}
             </nav>
-
-
-
-
         </div>
     );
 };

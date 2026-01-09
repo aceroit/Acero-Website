@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    MenuOutlined,
     BellOutlined,
     UserOutlined,
     LogoutOutlined,
@@ -10,21 +9,17 @@ import {
     GlobalOutlined,
 } from "@ant-design/icons";
 import { Tooltip } from "antd";
+import { useAuth } from "../contexts/AuthContext";
+import { formatRole, getUserFullName } from "../utils/roleHelpers";
 
 const Navbar = ({ sidebarOpen, toggleSidebar }) => {
     const [open, setOpen] = useState(false);
-    const [userData, setUserData] = useState({ fullName: "", role: "" });
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) setUserData(JSON.parse(storedUser));
-    }, []);
-
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate("/");
+    const handleLogout = async () => {
+        await logout();
     };
 
     // Close dropdown when clicking outside
@@ -78,15 +73,10 @@ const Navbar = ({ sidebarOpen, toggleSidebar }) => {
                     {/* Show Name & Role */}
                     <div className="hidden md:flex flex-col text-right">
                         <span className="text-[13px] font-semibold text-gray-700">
-                            {userData.fullName}
+                            {getUserFullName(user)}
                         </span>
                         <span className="text-[10px] text-gray-400 font-medium">
-                            {userData.role.includes("_")
-                                ? userData.role
-                                    .split("_")
-                                    .map((r) => r.charAt(0).toUpperCase() + r.slice(1).toLowerCase())
-                                    .join(" ")
-                                : userData.role.charAt(0).toUpperCase() + userData.role.slice(1).toLowerCase()}
+                            {formatRole(user?.role || "")}
                         </span>
                     </div>
 

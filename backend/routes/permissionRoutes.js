@@ -5,6 +5,7 @@ const {
     getAllPermissions,
     getRolePermissions,
     updateRolePermissions,
+    getMyPermissions,
     checkUserPermission,
     getResourcesAndActions,
     getPermissionMatrix,
@@ -20,6 +21,13 @@ router.use(authenticate);
 router.post(
     '/check',
     checkUserPermission
+);
+
+// Get current user's permissions
+// Any authenticated user can fetch their own permissions
+router.get(
+    '/me',
+    getMyPermissions
 );
 
 // Get all available resources and actions

@@ -35,7 +35,7 @@ router.post(
 router.post(
     '/:resource/:id/review',
     validateResource,
-    checkPermission('pages', 'approve'), // Requires reviewer role
+    checkPermission('pages', 'update'), // Requires reviewer role (reviewers have update permission)
     workflowController.markReviewed
 );
 
@@ -43,7 +43,7 @@ router.post(
 router.post(
     '/:resource/:id/request-changes',
     validateResource,
-    checkPermission('pages', 'approve'), // Requires reviewer role
+    checkPermission('pages', 'update'), // Requires reviewer role (reviewers have update permission)
     workflowController.requestChanges
 );
 

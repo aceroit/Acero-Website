@@ -9,7 +9,7 @@ const fieldSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['text', 'richtext', 'textarea', 'number', 'email', 'url', 'tel', 'date', 'datetime', 'time', 'image', 'video', 'file', 'select', 'multiselect', 'checkbox', 'radio', 'color', 'json'],
+        enum: ['text', 'richtext', 'textarea', 'number', 'email', 'url', 'tel', 'date', 'datetime', 'time', 'image', 'video', 'file', 'select', 'multiselect', 'checkbox', 'radio', 'color', 'json', 'array', 'boolean'],
         default: 'text'
     },
     label: {
@@ -178,6 +178,39 @@ sectionTypeSchema.methods.validateContent = function(content) {
                         new URL(value);
                     } catch {
                         errors.push(`Field '${field.label}' must be a valid URL`);
+                    }
+                    break;
+                    
+                case 'array':
+                    if (!Array.isArray(value)) {
+                        errors.push(`Field '${field.label}' must be an array`);
+                    } else {
+                        if (field.validation?.minItems && value.length < field.validation.minItems) {
+                            errors.push(`Field '${field.label}' must have at least ${field.validation.minItems} items`);
+                        }
+                        if (field.validation?.maxItems && value.length > field.validation.maxItems) {
+                            errors.push(`Field '${field.label}' must have at most ${field.validation.maxItems} items`);
+                        }
+                    }
+                    break;
+                    
+                case 'boolean':
+                    if (typeof value !== 'boolean') {
+                        errors.push(`Field '${field.label}' must be a boolean`);
+                    }
+                    break;
+                    
+                case 'json':
+                    // JSON type accepts any valid JSON structure
+                    try {
+                        if (typeof value === 'string') {
+                            JSON.parse(value);
+                        }
+                    } catch {
+                        // If it's not a string, it might already be parsed, which is fine
+                        if (typeof value === 'string') {
+                            errors.push(`Field '${field.label}' must be valid JSON`);
+                        }
                     }
                     break;
             }

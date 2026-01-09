@@ -1,5 +1,6 @@
 const Permission = require('../models/Permission');
 const ActivityLog = require('../models/ActivityLog');
+const { getUserPermissions } = require('../middleware/rbac');
 
 // Get all permissions
 const getAllPermissions = async (req, res) => {
@@ -166,6 +167,48 @@ const updateRolePermissions = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error updating role permissions',
+            error: error.message
+        });
+    }
+};
+
+// Get current user's permissions
+const getMyPermissions = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const userRole = req.user.role;
+
+        // Use the getUserPermissions helper from rbac.js
+        const permissionData = await getUserPermissions(userId);
+
+        // Format response to match other permission endpoints
+        // For super_admin, return a special flag indicating all permissions
+        if (permissionData.hasAllPermissions) {
+            return res.status(200).json({
+                success: true,
+                data: {
+                    role: 'super_admin',
+                    hasAllPermissions: true,
+                    permissions: [] // Empty array indicates all permissions
+                }
+            });
+        }
+
+        // For other roles, return their actual permissions
+        res.status(200).json({
+            success: true,
+            data: {
+                role: permissionData.role,
+                hasAllPermissions: false,
+                permissions: permissionData.permissions
+            }
+        });
+
+    } catch (error) {
+        console.error('Get my permissions error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching user permissions',
             error: error.message
         });
     }
@@ -432,6 +475,7 @@ module.exports = {
     getAllPermissions,
     getRolePermissions,
     updateRolePermissions,
+    getMyPermissions,
     checkUserPermission,
     getResourcesAndActions,
     getPermissionMatrix,

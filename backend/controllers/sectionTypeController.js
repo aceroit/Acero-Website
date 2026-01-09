@@ -11,10 +11,10 @@ exports.getAllSectionTypes = async (req, res) => {
 
         const sectionTypes = await SectionType.getByCategory(includeInactive === 'true');
 
-        return successResponse(res, { sectionTypes }, 'Section types retrieved successfully');
+        return successResponse(res, 200, 'Section types retrieved successfully', { sectionTypes });
     } catch (error) {
         console.error('Error in getAllSectionTypes:', error);
-        return errorResponse(res, 'Failed to retrieve section types', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve section types', error.message);
     }
 };
 
@@ -34,10 +34,10 @@ exports.getActiveSectionTypes = async (req, res) => {
             grouped[sectionType.category].push(sectionType);
         }
 
-        return successResponse(res, { sectionTypes: grouped }, 'Active section types retrieved successfully');
+        return successResponse(res, 200, 'Active section types retrieved successfully', { sectionTypes: grouped });
     } catch (error) {
         console.error('Error in getActiveSectionTypes:', error);
-        return errorResponse(res, 'Failed to retrieve active section types', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve active section types', error.message);
     }
 };
 
@@ -52,13 +52,13 @@ exports.getSectionTypeBySlug = async (req, res) => {
             .populate('createdBy', 'firstName lastName email');
 
         if (!sectionType) {
-            return errorResponse(res, 'Section type not found', 404);
+            return errorResponse(res, 404, 'Section type not found');
         }
 
-        return successResponse(res, { sectionType }, 'Section type retrieved successfully');
+        return successResponse(res, 200, 'Section type retrieved successfully', { sectionType });
     } catch (error) {
         console.error('Error in getSectionTypeBySlug:', error);
-        return errorResponse(res, 'Failed to retrieve section type', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve section type', error.message);
     }
 };
 
@@ -80,18 +80,18 @@ exports.createSectionType = async (req, res) => {
 
         // Validate required fields
         if (!name || !slug || !category) {
-            return errorResponse(res, 'Name, slug, and category are required', 400);
+            return errorResponse(res, 400, 'Name, slug, and category are required');
         }
 
         // Check slug uniqueness
         const existing = await SectionType.findOne({ slug });
         if (existing) {
-            return errorResponse(res, 'Section type with this slug already exists', 400);
+            return errorResponse(res, 400, 'Section type with this slug already exists');
         }
 
         // Validate fields array
         if (fields && !Array.isArray(fields)) {
-            return errorResponse(res, 'Fields must be an array', 400);
+            return errorResponse(res, 400, 'Fields must be an array');
         }
 
         // Create section type
@@ -112,13 +112,13 @@ exports.createSectionType = async (req, res) => {
 
         return successResponse(
             res, 
-            { sectionType }, 
-            'Section type created successfully', 
-            201
+            201,
+            'Section type created successfully',
+            { sectionType }
         );
     } catch (error) {
         console.error('Error in createSectionType:', error);
-        return errorResponse(res, 'Failed to create section type', 500, error.message);
+        return errorResponse(res, 500, 'Failed to create section type', error.message);
     }
 };
 
@@ -141,7 +141,7 @@ exports.updateSectionType = async (req, res) => {
 
         const sectionType = await SectionType.findOne({ slug });
         if (!sectionType) {
-            return errorResponse(res, 'Section type not found', 404);
+            return errorResponse(res, 404, 'Section type not found');
         }
 
         // Prevent updating system section types' core properties
@@ -150,8 +150,8 @@ exports.updateSectionType = async (req, res) => {
             if (name || slug || fields) {
                 return errorResponse(
                     res, 
-                    'Cannot modify core properties of system section types', 
-                    403
+                    403,
+                    'Cannot modify core properties of system section types'
                 );
             }
         }
@@ -163,7 +163,7 @@ exports.updateSectionType = async (req, res) => {
         if (category) sectionType.category = category;
         if (fields) {
             if (!Array.isArray(fields)) {
-                return errorResponse(res, 'Fields must be an array', 400);
+                return errorResponse(res, 400, 'Fields must be an array');
             }
             sectionType.fields = fields;
         }
@@ -173,10 +173,10 @@ exports.updateSectionType = async (req, res) => {
 
         await sectionType.save();
 
-        return successResponse(res, { sectionType }, 'Section type updated successfully');
+        return successResponse(res, 200, 'Section type updated successfully', { sectionType });
     } catch (error) {
         console.error('Error in updateSectionType:', error);
-        return errorResponse(res, 'Failed to update section type', 500, error.message);
+        return errorResponse(res, 500, 'Failed to update section type', error.message);
     }
 };
 
@@ -191,12 +191,12 @@ exports.deleteSectionType = async (req, res) => {
 
         const sectionType = await SectionType.findOne({ slug });
         if (!sectionType) {
-            return errorResponse(res, 'Section type not found', 404);
+            return errorResponse(res, 404, 'Section type not found');
         }
 
         // Prevent deleting system section types
         if (sectionType.isSystem) {
-            return errorResponse(res, 'Cannot delete system section types', 403);
+            return errorResponse(res, 403, 'Cannot delete system section types');
         }
 
         // Check if section type is in use
@@ -207,8 +207,8 @@ exports.deleteSectionType = async (req, res) => {
         if (usageCount > 0 && !force) {
             return errorResponse(
                 res, 
-                `Section type is used in ${usageCount} section(s). Set force=true to deactivate anyway`, 
-                400
+                400,
+                `Section type is used in ${usageCount} section(s). Set force=true to deactivate anyway`
             );
         }
 
@@ -218,12 +218,13 @@ exports.deleteSectionType = async (req, res) => {
 
         return successResponse(
             res, 
-            { usageCount }, 
-            'Section type deactivated successfully'
+            200,
+            'Section type deactivated successfully',
+            { usageCount }
         );
     } catch (error) {
         console.error('Error in deleteSectionType:', error);
-        return errorResponse(res, 'Failed to delete section type', 500, error.message);
+        return errorResponse(res, 500, 'Failed to delete section type', error.message);
     }
 };
 
@@ -236,7 +237,7 @@ exports.getSectionTypeUsage = async (req, res) => {
 
         const sectionType = await SectionType.findOne({ slug });
         if (!sectionType) {
-            return errorResponse(res, 'Section type not found', 404);
+            return errorResponse(res, 404, 'Section type not found');
         }
 
         // Get usage statistics
@@ -253,7 +254,7 @@ exports.getSectionTypeUsage = async (req, res) => {
             .populate('pageId', 'title slug path')
             .select('pageId content createdAt status');
 
-        return successResponse(res, {
+        return successResponse(res, 200, 'Section type usage retrieved successfully', {
             sectionType: {
                 name: sectionType.name,
                 slug: sectionType.slug,
@@ -265,10 +266,10 @@ exports.getSectionTypeUsage = async (req, res) => {
                 published: publishedCount
             },
             sampleSections
-        }, 'Section type usage retrieved successfully');
+        });
     } catch (error) {
         console.error('Error in getSectionTypeUsage:', error);
-        return errorResponse(res, 'Failed to retrieve section type usage', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve section type usage', error.message);
     }
 };
 

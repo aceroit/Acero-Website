@@ -15,10 +15,10 @@ router.get('/pages/tree', async (req, res) => {
         // Set cache headers (cache for 5 minutes)
         res.set('Cache-Control', 'public, max-age=300');
 
-        return successResponse(res, { tree }, 'Published page tree retrieved successfully');
+        return successResponse(res, 200, 'Published page tree retrieved successfully', { tree });
     } catch (error) {
         console.error('Error in public getPageTree:', error);
-        return errorResponse(res, 'Failed to retrieve page tree', 500);
+        return errorResponse(res, 500, 'Failed to retrieve page tree');
     }
 });
 
@@ -38,7 +38,7 @@ router.get('/pages/slug/:slug', async (req, res) => {
         }).select('title slug path metaTitle metaDescription metaKeywords');
 
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         // Get published sections for this page
@@ -47,13 +47,13 @@ router.get('/pages/slug/:slug', async (req, res) => {
         // Set cache headers (cache for 5 minutes)
         res.set('Cache-Control', 'public, max-age=300');
 
-        return successResponse(res, {
+        return successResponse(res, 200, 'Page retrieved successfully', {
             page,
             sections
-        }, 'Page retrieved successfully');
+        });
     } catch (error) {
         console.error('Error in public getPageBySlug:', error);
-        return errorResponse(res, 'Failed to retrieve page', 500);
+        return errorResponse(res, 500, 'Failed to retrieve page');
     }
 });
 
@@ -75,7 +75,7 @@ router.get('/pages/by-path', async (req, res) => {
         }).select('title slug path metaTitle metaDescription metaKeywords');
 
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         // Get published sections for this page
@@ -87,14 +87,14 @@ router.get('/pages/by-path', async (req, res) => {
         // Set cache headers (cache for 5 minutes)
         res.set('Cache-Control', 'public, max-age=300');
 
-        return successResponse(res, {
+        return successResponse(res, 200, 'Page retrieved successfully', {
             page,
             sections,
             breadcrumb
-        }, 'Page retrieved successfully');
+        });
     } catch (error) {
         console.error('Error in public getPageByPath:', error);
-        return errorResponse(res, 'Failed to retrieve page', 500);
+        return errorResponse(res, 500, 'Failed to retrieve page');
     }
 });
 
@@ -114,7 +114,7 @@ router.get('/pages/:id/sections', async (req, res) => {
         });
 
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         const sections = await Section.getPublishedSections(id);
@@ -122,10 +122,10 @@ router.get('/pages/:id/sections', async (req, res) => {
         // Set cache headers (cache for 5 minutes)
         res.set('Cache-Control', 'public, max-age=300');
 
-        return successResponse(res, { sections }, 'Sections retrieved successfully');
+        return successResponse(res, 200, 'Sections retrieved successfully', { sections });
     } catch (error) {
         console.error('Error in public getPageSections:', error);
-        return errorResponse(res, 'Failed to retrieve sections', 500);
+        return errorResponse(res, 500, 'Failed to retrieve sections');
     }
 });
 
@@ -138,7 +138,7 @@ router.get('/search', async (req, res) => {
         const { q, limit = 10 } = req.query;
 
         if (!q || q.trim().length < 2) {
-            return errorResponse(res, 'Search query must be at least 2 characters', 400);
+            return errorResponse(res, 400, 'Search query must be at least 2 characters');
         }
 
         const searchRegex = new RegExp(q, 'i');
@@ -159,13 +159,13 @@ router.get('/search', async (req, res) => {
         // Set cache headers (cache for 2 minutes for search results)
         res.set('Cache-Control', 'public, max-age=120');
 
-        return successResponse(res, {
+        return successResponse(res, 200, 'Search completed successfully', {
             results: pages,
             count: pages.length
-        }, 'Search completed successfully');
+        });
     } catch (error) {
         console.error('Error in public search:', error);
-        return errorResponse(res, 'Search failed', 500);
+        return errorResponse(res, 500, 'Search failed');
     }
 });
 

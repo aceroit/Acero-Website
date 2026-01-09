@@ -16,15 +16,15 @@ exports.getPageSections = async (req, res) => {
         // Verify page exists
         const page = await Page.findOne({ _id: pageId, isActive: true });
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         const sections = await Section.getPageSections(pageId, includeHidden === 'true');
 
-        return successResponse(res, { sections }, 'Sections retrieved successfully');
+        return successResponse(res, 200, 'Sections retrieved successfully', { sections });
     } catch (error) {
         console.error('Error in getPageSections:', error);
-        return errorResponse(res, 'Failed to retrieve sections', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve sections', error.message);
     }
 };
 
@@ -41,19 +41,19 @@ exports.getSectionById = async (req, res) => {
             .populate('updatedBy', 'firstName lastName email');
 
         if (!section) {
-            return errorResponse(res, 'Section not found', 404);
+            return errorResponse(res, 404, 'Section not found');
         }
 
         // Get section type details
         const sectionType = await sectionValidator.getFieldSchema(section.sectionTypeSlug);
 
-        return successResponse(res, { 
+        return successResponse(res, 200, 'Section retrieved successfully', { 
             section,
             fieldSchema: sectionType
-        }, 'Section retrieved successfully');
+        });
     } catch (error) {
         console.error('Error in getSectionById:', error);
-        return errorResponse(res, 'Failed to retrieve section', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve section', error.message);
     }
 };
 
@@ -74,13 +74,13 @@ exports.createSection = async (req, res) => {
 
         // Validate required fields
         if (!sectionTypeSlug || !content) {
-            return errorResponse(res, 'Section type and content are required', 400);
+            return errorResponse(res, 400, 'Section type and content are required');
         }
 
         // Verify page exists
         const page = await Page.findOne({ _id: pageId, isActive: true });
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         // Validate section content against section type
@@ -92,8 +92,8 @@ exports.createSection = async (req, res) => {
         if (!validation.isValid) {
             return errorResponse(
                 res, 
-                'Section content validation failed', 
-                400, 
+                400,
+                'Section content validation failed',
                 validation.errors
             );
         }
@@ -128,13 +128,13 @@ exports.createSection = async (req, res) => {
 
         return successResponse(
             res, 
-            { section: populatedSection }, 
-            'Section created successfully', 
-            201
+            201,
+            'Section created successfully',
+            { section: populatedSection }
         );
     } catch (error) {
         console.error('Error in createSection:', error);
-        return errorResponse(res, 'Failed to create section', 500, error.message);
+        return errorResponse(res, 500, 'Failed to create section', error.message);
     }
 };
 
@@ -149,17 +149,22 @@ exports.updateSection = async (req, res) => {
             isVisible,
             cssClasses,
             customStyles,
+            status,
             changeLog
         } = req.body;
 
         const section = await Section.findById(id);
         if (!section) {
-            return errorResponse(res, 'Section not found', 404);
+            return errorResponse(res, 404, 'Section not found');
         }
 
+        // Check if we're only updating status (allow this even for published sections)
+        const isOnlyStatusUpdate = Object.keys(req.body).length === 1 && req.body.hasOwnProperty('status');
+        
         // Prevent editing published content directly - must unpublish first
-        if (section.status === 'published') {
-            return errorResponse(res, 'Cannot edit published content. Please unpublish first or use workflow actions.', 400);
+        // Exception: allow status-only updates
+        if (section.status === 'published' && !isOnlyStatusUpdate) {
+            return errorResponse(res, 400, 'Cannot edit published content. Please unpublish first or use workflow actions.');
         }
 
         // Store old data for version comparison
@@ -175,8 +180,8 @@ exports.updateSection = async (req, res) => {
             if (!validation.isValid) {
                 return errorResponse(
                     res, 
-                    'Section content validation failed', 
-                    400, 
+                    400,
+                    'Section content validation failed',
                     validation.errors
                 );
             }
@@ -189,6 +194,27 @@ exports.updateSection = async (req, res) => {
         if (isVisible !== undefined) section.isVisible = isVisible;
         if (cssClasses !== undefined) section.cssClasses = cssClasses;
         if (customStyles !== undefined) section.customStyles = customStyles;
+        
+        // Handle status update
+        if (status !== undefined) {
+            // Validate status value
+            const validStatuses = ['draft', 'in_review', 'pending_approval', 'pending_publish', 'published', 'changes_requested'];
+            if (!validStatuses.includes(status)) {
+                return errorResponse(res, 400, `Invalid status. Must be one of: ${validStatuses.join(', ')}`);
+            }
+            
+            section.status = status;
+            
+            // Set publishedAt timestamp when publishing
+            if (status === 'published' && !section.publishedAt) {
+                section.publishedAt = new Date();
+            }
+            
+            // Clear publishedAt when unpublishing
+            if (status !== 'published' && section.publishedAt) {
+                section.publishedAt = null;
+            }
+        }
 
         section.updatedBy = req.user._id;
 
@@ -221,10 +247,10 @@ exports.updateSection = async (req, res) => {
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
-        return successResponse(res, { section: updatedSection }, 'Section updated successfully');
+        return successResponse(res, 200, 'Section updated successfully', { section: updatedSection });
     } catch (error) {
         console.error('Error in updateSection:', error);
-        return errorResponse(res, 'Failed to update section', 500, error.message);
+        return errorResponse(res, 500, 'Failed to update section', error.message);
     }
 };
 
@@ -237,7 +263,7 @@ exports.deleteSection = async (req, res) => {
 
         const section = await Section.findById(id);
         if (!section) {
-            return errorResponse(res, 'Section not found', 404);
+            return errorResponse(res, 404, 'Section not found');
         }
 
         const pageId = section.pageId;
@@ -252,10 +278,10 @@ exports.deleteSection = async (req, res) => {
             { $inc: { order: -1 } }
         );
 
-        return successResponse(res, null, 'Section deleted successfully');
+        return successResponse(res, 200, 'Section deleted successfully', null);
     } catch (error) {
         console.error('Error in deleteSection:', error);
-        return errorResponse(res, 'Failed to delete section', 500, error.message);
+        return errorResponse(res, 500, 'Failed to delete section', error.message);
     }
 };
 
@@ -267,15 +293,15 @@ exports.reorderSections = async (req, res) => {
         const { sectionOrders } = req.body;
 
         if (!Array.isArray(sectionOrders) || sectionOrders.length === 0) {
-            return errorResponse(res, 'sectionOrders array is required', 400);
+            return errorResponse(res, 400, 'sectionOrders array is required');
         }
 
         await Section.reorderSections(null, sectionOrders);
 
-        return successResponse(res, null, 'Sections reordered successfully');
+        return successResponse(res, 200, 'Sections reordered successfully', null);
     } catch (error) {
         console.error('Error in reorderSections:', error);
-        return errorResponse(res, 'Failed to reorder sections', 500, error.message);
+        return errorResponse(res, 500, 'Failed to reorder sections', error.message);
     }
 };
 
@@ -285,18 +311,18 @@ exports.reorderSections = async (req, res) => {
 exports.duplicateSection = async (req, res) => {
     try {
         const { id } = req.params;
-        const { targetPageId } = req.body;
+        const { targetPageId } = req.body || {};
 
         const section = await Section.findById(id);
         if (!section) {
-            return errorResponse(res, 'Section not found', 404);
+            return errorResponse(res, 404, 'Section not found');
         }
 
         // If moving to different page, verify it exists
         if (targetPageId && targetPageId !== section.pageId.toString()) {
             const targetPage = await Page.findOne({ _id: targetPageId, isActive: true });
             if (!targetPage) {
-                return errorResponse(res, 'Target page not found', 404);
+                return errorResponse(res, 404, 'Target page not found');
             }
         }
 
@@ -310,13 +336,13 @@ exports.duplicateSection = async (req, res) => {
 
         return successResponse(
             res, 
-            { section: populatedSection }, 
-            'Section duplicated successfully', 
-            201
+            201,
+            'Section duplicated successfully',
+            { section: populatedSection }
         );
     } catch (error) {
         console.error('Error in duplicateSection:', error);
-        return errorResponse(res, 'Failed to duplicate section', 500, error.message);
+        return errorResponse(res, 500, 'Failed to duplicate section', error.message);
     }
 };
 
@@ -329,7 +355,7 @@ exports.toggleVisibility = async (req, res) => {
 
         const section = await Section.findById(id);
         if (!section) {
-            return errorResponse(res, 'Section not found', 404);
+            return errorResponse(res, 404, 'Section not found');
         }
 
         section.isVisible = !section.isVisible;
@@ -342,12 +368,13 @@ exports.toggleVisibility = async (req, res) => {
 
         return successResponse(
             res, 
-            { section: updatedSection }, 
-            `Section ${section.isVisible ? 'shown' : 'hidden'} successfully`
+            200,
+            `Section ${section.isVisible ? 'shown' : 'hidden'} successfully`,
+            { section: updatedSection }
         );
     } catch (error) {
         console.error('Error in toggleVisibility:', error);
-        return errorResponse(res, 'Failed to toggle section visibility', 500, error.message);
+        return errorResponse(res, 500, 'Failed to toggle section visibility', error.message);
     }
 };
 
@@ -376,7 +403,7 @@ exports.getSectionsByType = async (req, res) => {
             Section.countDocuments(query)
         ]);
 
-        return successResponse(res, {
+        return successResponse(res, 200, 'Sections retrieved successfully', {
             sections,
             pagination: {
                 total,
@@ -384,10 +411,10 @@ exports.getSectionsByType = async (req, res) => {
                 limit: parseInt(limit),
                 totalPages: Math.ceil(total / parseInt(limit))
             }
-        }, 'Sections retrieved successfully');
+        });
     } catch (error) {
         console.error('Error in getSectionsByType:', error);
-        return errorResponse(res, 'Failed to retrieve sections', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve sections', error.message);
     }
 };
 

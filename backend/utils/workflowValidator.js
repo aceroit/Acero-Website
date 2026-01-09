@@ -23,7 +23,8 @@ const ROLE_HIERARCHY = {
 const STATE_TRANSITIONS = {
     [WORKFLOW_STATES.DRAFT]: {
         [WORKFLOW_STATES.IN_REVIEW]: 'editor',
-        [WORKFLOW_STATES.ARCHIVED]: 'admin'
+        [WORKFLOW_STATES.ARCHIVED]: 'admin',
+        [WORKFLOW_STATES.PUBLISHED]: 'admin' // Admins can publish directly from draft
     },
     [WORKFLOW_STATES.IN_REVIEW]: {
         [WORKFLOW_STATES.PENDING_APPROVAL]: 'reviewer',

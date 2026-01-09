@@ -109,8 +109,14 @@ exports.validateCreatePage = [
         .trim()
         .matches(/^[a-z0-9-]+$/).withMessage('Slug must contain only lowercase letters, numbers, and hyphens'),
     body('parentId')
-        .optional()
-        .isMongoId().withMessage('Invalid parent page ID'),
+        .optional({ nullable: true, checkFalsy: true })
+        .custom((value) => {
+            if (value === '' || value === null || value === undefined) {
+                return true; // Allow empty, null, or undefined
+            }
+            return /^[0-9a-fA-F]{24}$/.test(value); // Validate MongoDB ObjectId format
+        })
+        .withMessage('Invalid parent page ID'),
     body('metaTitle')
         .optional()
         .trim()
@@ -217,7 +223,7 @@ exports.validateCreateSectionType = [
         .trim()
         .notEmpty().withMessage('Field name is required'),
     body('fields.*.type')
-        .isIn(['text', 'textarea', 'richtext', 'number', 'boolean', 'date', 'email', 'url', 'image', 'video', 'select', 'multiselect', 'json'])
+        .isIn(['text', 'textarea', 'richtext', 'number', 'boolean', 'date', 'datetime', 'time', 'email', 'url', 'tel', 'image', 'video', 'file', 'select', 'multiselect', 'checkbox', 'radio', 'color', 'json', 'array'])
         .withMessage('Invalid field type'),
     exports.validate
 ];

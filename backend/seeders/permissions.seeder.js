@@ -1,10 +1,32 @@
 const mongoose = require('mongoose');
 const Permission = require('../models/Permission');
-require('dotenv').config();
+const path = require('path');
+
+// Load environment variables from backend root directory
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+// Fallback to .env.local if .env doesn't exist
+if (!process.env.MONGODB_URI) {
+    require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
+}
+
+/**
+ * Real-World Permission Seeder
+ * 
+ * This seeder creates comprehensive, realistic permissions for all roles.
+ * 
+ * Permission Hierarchy:
+ * - super_admin: Full access to everything (handled specially in code, but we seed for consistency)
+ * - admin: Full access except managing permissions (can only read permissions)
+ * - approver: Can approve and publish content, manage users (except super_admin)
+ * - reviewer: Can review content, provide feedback, update content
+ * - editor: Can create and edit own content, submit for review
+ * - viewer: Read-only access to published content
+ */
 
 const defaultPermissions = [
-    // ==================== SUPER ADMIN ====================
-    // Super admin has all permissions on all resources
+    // ============================================================================
+    // SUPER ADMIN - Full access to everything
+    // ============================================================================
     {
         role: 'super_admin',
         resource: 'users',
@@ -36,6 +58,27 @@ const defaultPermissions = [
     {
         role: 'super_admin',
         resource: 'section_types',
+        actions: ['create', 'read', 'update', 'delete'],
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'super_admin',
+        resource: 'products',
+        actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'super_admin',
+        resource: 'projects',
+        actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'super_admin',
+        resource: 'media',
         actions: ['create', 'read', 'update', 'delete'],
         conditions: {},
         isActive: true
@@ -48,8 +91,9 @@ const defaultPermissions = [
         isActive: true
     },
 
-    // ==================== ADMIN ====================
-    // Admin has most permissions but cannot manage super admins or system permissions
+    // ============================================================================
+    // ADMIN - Full access except managing permissions (can only read)
+    // ============================================================================
     {
         role: 'admin',
         resource: 'users',
@@ -60,28 +104,49 @@ const defaultPermissions = [
     {
         role: 'admin',
         resource: 'permissions',
-        actions: ['read'],
+        actions: ['read'], // Can view but not modify permissions
         conditions: {},
         isActive: true
     },
     {
         role: 'admin',
         resource: 'pages',
-        actions: ['create', 'read', 'update', 'delete', 'publish'],
+        actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
         conditions: {},
         isActive: true
     },
     {
         role: 'admin',
         resource: 'sections',
-        actions: ['create', 'read', 'update', 'delete', 'publish'],
+        actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
         conditions: {},
         isActive: true
     },
     {
         role: 'admin',
         resource: 'section_types',
-        actions: ['read'],
+        actions: ['create', 'read', 'update', 'delete'],
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'admin',
+        resource: 'products',
+        actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'admin',
+        resource: 'projects',
+        actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'admin',
+        resource: 'media',
+        actions: ['create', 'read', 'update', 'delete'],
         conditions: {},
         isActive: true
     },
@@ -93,215 +158,340 @@ const defaultPermissions = [
         isActive: true
     },
 
-    // ==================== APPROVER ====================
-    // Approver can approve content but not publish
+    // ============================================================================
+    // APPROVER - Can approve and publish content, manage users (except super_admin)
+    // ============================================================================
     {
         role: 'approver',
         resource: 'users',
-        actions: ['read'],
+        actions: ['read'], // Can view users but not modify
         conditions: {},
         isActive: true
     },
     {
         role: 'approver',
         resource: 'permissions',
-        actions: ['read'],
+        actions: ['read'], // Can view permissions
         conditions: {},
         isActive: true
     },
     {
         role: 'approver',
         resource: 'pages',
-        actions: ['read', 'update', 'approve'],
+        actions: ['read', 'update', 'approve', 'publish'], // Can approve and publish
         conditions: {},
         isActive: true
     },
     {
         role: 'approver',
         resource: 'sections',
-        actions: ['read', 'update', 'approve'],
+        actions: ['read', 'update', 'approve', 'publish'], // Can approve and publish
         conditions: {},
         isActive: true
     },
     {
         role: 'approver',
         resource: 'section_types',
-        actions: ['read'],
+        actions: ['read'], // Can view section types
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'approver',
+        resource: 'products',
+        actions: ['read', 'update', 'approve', 'publish'],
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'approver',
+        resource: 'projects',
+        actions: ['read', 'update', 'approve', 'publish'],
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'approver',
+        resource: 'media',
+        actions: ['read', 'update'], // Can view and update media
         conditions: {},
         isActive: true
     },
     {
         role: 'approver',
         resource: 'activity_logs',
-        actions: ['read'],
+        actions: ['read'], // Can view activity logs
+        conditions: {},
+        isActive: true
+    },
+
+    // ============================================================================
+    // REVIEWER - Can review content, provide feedback, update content
+    // ============================================================================
+    {
+        role: 'reviewer',
+        resource: 'users',
+        actions: ['read'], // Can view users
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'reviewer',
+        resource: 'permissions',
+        actions: ['read'], // Can view permissions
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'reviewer',
+        resource: 'pages',
+        actions: ['read', 'update'], // Can review and update content
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'reviewer',
+        resource: 'sections',
+        actions: ['read', 'update'], // Can review and update sections
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'reviewer',
+        resource: 'section_types',
+        actions: ['read'], // Can view section types
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'reviewer',
+        resource: 'products',
+        actions: ['read', 'update'], // Can review products
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'reviewer',
+        resource: 'projects',
+        actions: ['read', 'update'], // Can review projects
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'reviewer',
+        resource: 'media',
+        actions: ['read'], // Can view media
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'reviewer',
+        resource: 'activity_logs',
+        actions: ['read'], // Can view own activity logs
         conditions: { ownOnly: true },
         isActive: true
     },
 
-    // ==================== REVIEWER ====================
-    // Reviewer can review content and provide feedback
+    // ============================================================================
+    // EDITOR - Can create and edit own content, submit for review
+    // ============================================================================
     {
-        role: 'reviewer',
+        role: 'editor',
         resource: 'users',
-        actions: ['read'],
-        conditions: {},
+        actions: ['read'], // Can view own profile
+        conditions: { ownOnly: true },
         isActive: true
     },
     {
-        role: 'reviewer',
+        role: 'editor',
         resource: 'permissions',
-        actions: ['read'],
+        actions: ['read'], // Can view permissions (to know what they can do)
         conditions: {},
         isActive: true
     },
     {
-        role: 'reviewer',
+        role: 'editor',
         resource: 'pages',
-        actions: ['read', 'update'],
-        conditions: {},
+        actions: ['create', 'read', 'update'], // Can create and edit own pages
+        conditions: { ownOnly: true },
         isActive: true
     },
     {
-        role: 'reviewer',
+        role: 'editor',
         resource: 'sections',
-        actions: ['read', 'update'],
-        conditions: {},
+        actions: ['create', 'read', 'update'], // Can create and edit own sections
+        conditions: { ownOnly: true },
         isActive: true
     },
     {
-        role: 'reviewer',
+        role: 'editor',
         resource: 'section_types',
-        actions: ['read'],
+        actions: ['read'], // Can view section types to create content
         conditions: {},
         isActive: true
     },
     {
-        role: 'reviewer',
+        role: 'editor',
+        resource: 'products',
+        actions: ['create', 'read', 'update'], // Can create and edit own products
+        conditions: { ownOnly: true },
+        isActive: true
+    },
+    {
+        role: 'editor',
+        resource: 'projects',
+        actions: ['create', 'read', 'update'], // Can create and edit own projects
+        conditions: { ownOnly: true },
+        isActive: true
+    },
+    {
+        role: 'editor',
+        resource: 'media',
+        actions: ['create', 'read', 'update', 'delete'], // Can manage own media
+        conditions: { ownOnly: true },
+        isActive: true
+    },
+    {
+        role: 'editor',
         resource: 'activity_logs',
-        actions: ['read'],
+        actions: ['read'], // Can view own activity logs
         conditions: { ownOnly: true },
         isActive: true
     },
 
-    // ==================== EDITOR ====================
-    // Editor can create and edit own content
-    {
-        role: 'editor',
-        resource: 'users',
-        actions: ['read'],
-        conditions: { ownOnly: true },
-        isActive: true
-    },
-    {
-        role: 'editor',
-        resource: 'permissions',
-        actions: [],
-        conditions: {},
-        isActive: true
-    },
-    {
-        role: 'editor',
-        resource: 'pages',
-        actions: ['create', 'read', 'update'],
-        conditions: { ownOnly: true },
-        isActive: true
-    },
-    {
-        role: 'editor',
-        resource: 'sections',
-        actions: ['create', 'read', 'update'],
-        conditions: { ownOnly: true },
-        isActive: true
-    },
-    {
-        role: 'editor',
-        resource: 'section_types',
-        actions: ['read'],
-        conditions: {},
-        isActive: true
-    },
-    {
-        role: 'editor',
-        resource: 'activity_logs',
-        actions: ['read'],
-        conditions: { ownOnly: true },
-        isActive: true
-    },
-
-    // ==================== VIEWER ====================
-    // Viewer has read-only access
+    // ============================================================================
+    // VIEWER - Read-only access to published content
+    // ============================================================================
     {
         role: 'viewer',
         resource: 'users',
-        actions: ['read'],
+        actions: ['read'], // Can view own profile
         conditions: { ownOnly: true },
         isActive: true
     },
     {
         role: 'viewer',
         resource: 'permissions',
-        actions: [],
+        actions: ['read'], // Can view permissions (to know what they can do)
         conditions: {},
         isActive: true
     },
     {
         role: 'viewer',
         resource: 'pages',
-        actions: ['read'],
+        actions: ['read'], // Can view published pages
         conditions: {},
         isActive: true
     },
     {
         role: 'viewer',
         resource: 'sections',
-        actions: ['read'],
+        actions: ['read'], // Can view published sections
         conditions: {},
         isActive: true
     },
     {
         role: 'viewer',
         resource: 'section_types',
-        actions: ['read'],
+        actions: ['read'], // Can view section types
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'viewer',
+        resource: 'products',
+        actions: ['read'], // Can view published products
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'viewer',
+        resource: 'projects',
+        actions: ['read'], // Can view published projects
+        conditions: {},
+        isActive: true
+    },
+    {
+        role: 'viewer',
+        resource: 'media',
+        actions: ['read'], // Can view media
         conditions: {},
         isActive: true
     },
     {
         role: 'viewer',
         resource: 'activity_logs',
-        actions: [],
-        conditions: {},
+        actions: ['read'], // Can view own activity logs
+        conditions: { ownOnly: true },
         isActive: true
     }
 ];
 
+/**
+ * Seed permissions into the database
+ * This will:
+ * 1. Clear all existing permissions
+ * 2. Insert new permissions
+ * 3. Display a summary
+ */
 const seedPermissions = async () => {
     try {
-        // Connect to MongoDB
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('Connected to MongoDB');
-
-        // Clear existing permissions
-        await Permission.deleteMany({});
-        console.log('Cleared existing permissions');
-
-        // Insert default permissions
-        await Permission.insertMany(defaultPermissions);
-        console.log(`Successfully seeded ${defaultPermissions.length} permissions`);
-
-        // Display summary
-        const roles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
-        console.log('\nPermissions Summary:');
-        console.log('===================');
-        
-        for (const role of roles) {
-            const count = await Permission.countDocuments({ role });
-            console.log(`${role}: ${count} permissions`);
+        // Check if MONGODB_URI is defined
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI is not defined in environment variables. Please create a .env file in the backend directory with MONGODB_URI=your_connection_string');
         }
 
+        console.log('🌱 Starting Permission Seeder...\n');
+
+        // Connect to MongoDB
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log('✅ Connected to MongoDB');
+
+        // Clear existing permissions
+        const deletedCount = await Permission.deleteMany({});
+        console.log(`🗑️  Cleared ${deletedCount.deletedCount} existing permissions`);
+
+        // Insert default permissions
+        const result = await Permission.insertMany(defaultPermissions);
+        console.log(`✅ Successfully seeded ${result.length} permissions\n`);
+
+        // Display detailed summary
+        const roles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
+        const resources = ['users', 'permissions', 'pages', 'sections', 'section_types', 'products', 'projects', 'media', 'activity_logs'];
+        
+        console.log('📊 Permissions Summary by Role:');
+        console.log('='.repeat(60));
+        
+        for (const role of roles) {
+            const rolePermissions = await Permission.find({ role });
+            const resourceCount = new Set(rolePermissions.map(p => p.resource)).size;
+            const totalActions = rolePermissions.reduce((sum, p) => sum + p.actions.length, 0);
+            
+            console.log(`\n${role.toUpperCase()}:`);
+            console.log(`  - Resources: ${resourceCount}/${resources.length}`);
+            console.log(`  - Total Permissions: ${rolePermissions.length}`);
+            console.log(`  - Total Actions: ${totalActions}`);
+            
+            // Show permissions by resource
+            resources.forEach(resource => {
+                const perm = rolePermissions.find(p => p.resource === resource);
+                if (perm && perm.actions.length > 0) {
+                    console.log(`    ✓ ${resource}: [${perm.actions.join(', ')}]`);
+                }
+            });
+        }
+
+        console.log('\n' + '='.repeat(60));
+        console.log('✅ Permission seeding completed successfully!\n');
+
+        // Close connection
+        await mongoose.connection.close();
+        console.log('🔌 Database connection closed');
         process.exit(0);
 
     } catch (error) {
-        console.error('Error seeding permissions:', error);
+        console.error('\n❌ Error seeding permissions:', error);
+        console.error(error.stack);
         process.exit(1);
     }
 };
@@ -312,4 +502,3 @@ if (require.main === module) {
 }
 
 module.exports = { seedPermissions, defaultPermissions };
-

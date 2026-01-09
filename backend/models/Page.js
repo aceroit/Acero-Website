@@ -114,7 +114,7 @@ pageSchema.index({ parentId: 1, order: 1 });
 pageSchema.index({ status: 1, isActive: 1 });
 
 // Pre-save middleware to generate path and calculate level
-pageSchema.pre('save', async function(next) {
+pageSchema.pre('save', async function() {
     if (this.isModified('parentId') || this.isNew) {
         if (this.parentId) {
             try {
@@ -135,7 +135,6 @@ pageSchema.pre('save', async function(next) {
             this.path = `/${this.slug}`;
         }
     }
-    next();
 });
 
 // Method to get all children (direct descendants)

@@ -17,6 +17,8 @@ exports.getUserNotifications = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'Notifications retrieved successfully',
             {
                 notifications: result.notifications,
                 pagination: {
@@ -26,12 +28,11 @@ exports.getUserNotifications = async (req, res) => {
                     totalPages: Math.ceil(result.total / parseInt(limit))
                 },
                 unreadCount: result.unreadCount
-            },
-            'Notifications retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get notifications error:', error);
-        return errorResponse(res, 'Failed to retrieve notifications', 500);
+        return errorResponse(res, 500, 'Failed to retrieve notifications', error.message);
     }
 };
 
@@ -49,15 +50,16 @@ exports.getUnreadNotifications = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'Unread notifications retrieved successfully',
             {
                 notifications: result.notifications,
                 unreadCount: result.unreadCount
-            },
-            'Unread notifications retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get unread notifications error:', error);
-        return errorResponse(res, 'Failed to retrieve unread notifications', 500);
+        return errorResponse(res, 500, 'Failed to retrieve unread notifications', error.message);
     }
 };
 
@@ -70,17 +72,18 @@ exports.markAsRead = async (req, res) => {
         const notification = await Notification.markAsRead(id, userId);
 
         if (!notification) {
-            return errorResponse(res, 'Notification not found', 404);
+            return errorResponse(res, 404, 'Notification not found');
         }
 
         return successResponse(
             res,
-            { notification },
-            'Notification marked as read'
+            200,
+            'Notification marked as read',
+            { notification }
         );
     } catch (error) {
         console.error('Mark as read error:', error);
-        return errorResponse(res, 'Failed to mark notification as read', 500);
+        return errorResponse(res, 500, 'Failed to mark notification as read', error.message);
     }
 };
 
@@ -93,12 +96,13 @@ exports.markAllAsRead = async (req, res) => {
 
         return successResponse(
             res,
-            { markedCount: count },
-            `${count} notification(s) marked as read`
+            200,
+            `${count} notification(s) marked as read`,
+            { markedCount: count }
         );
     } catch (error) {
         console.error('Mark all as read error:', error);
-        return errorResponse(res, 'Failed to mark all notifications as read', 500);
+        return errorResponse(res, 500, 'Failed to mark all notifications as read', error.message);
     }
 };
 
@@ -114,17 +118,18 @@ exports.deleteNotification = async (req, res) => {
         });
 
         if (!notification) {
-            return errorResponse(res, 'Notification not found', 404);
+            return errorResponse(res, 404, 'Notification not found');
         }
 
         return successResponse(
             res,
-            { message: 'Notification deleted' },
-            'Notification deleted successfully'
+            200,
+            'Notification deleted successfully',
+            { message: 'Notification deleted' }
         );
     } catch (error) {
         console.error('Delete notification error:', error);
-        return errorResponse(res, 'Failed to delete notification', 500);
+        return errorResponse(res, 500, 'Failed to delete notification', error.message);
     }
 };
 
@@ -136,12 +141,13 @@ exports.getUnreadCount = async (req, res) => {
 
         return successResponse(
             res,
-            { unreadCount: count },
-            'Unread count retrieved successfully'
+            200,
+            'Unread count retrieved successfully',
+            { unreadCount: count }
         );
     } catch (error) {
         console.error('Get unread count error:', error);
-        return errorResponse(res, 'Failed to get unread count', 500);
+        return errorResponse(res, 500, 'Failed to get unread count', error.message);
     }
 };
 

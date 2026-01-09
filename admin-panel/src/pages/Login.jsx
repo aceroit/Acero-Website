@@ -1,14 +1,21 @@
-import { useState } from "react";
-import { Button, Input, message } from "antd";
+import { useState, useEffect } from "react";
+import { Button, Input } from "antd";
 import { useNavigate } from "react-router-dom";
-import API from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
+    const { login, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/dashboard");
+        }
+    }, [isAuthenticated, navigate]);
 
     // Login function
     const handleLogin = async () => {
@@ -17,23 +24,9 @@ const Login = () => {
             return;
         }
 
-        setLoading(true);
-        try {
-            const res = await API.post("/auth/login", { email, password });
-            console.log(res);
-            // Save token and user info
-            localStorage.setItem("token", res.data.data.token);
-            localStorage.setItem("user", JSON.stringify(res.data.data.user));
-
-            toast.success(res.data.message);
-
-            // Navigate to dashboard
+        const result = await login(email, password);
+        if (result.success) {
             navigate("/dashboard");
-        } catch (err) {
-
-            toast.error(err.response?.data?.message || "Login failed");
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -120,7 +113,6 @@ const Login = () => {
                         <Button
                             block
                             size="large"
-                            loading={loading}
                             onClick={handleLogin}
                             style={{
                                 backgroundColor: "#b41c24",

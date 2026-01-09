@@ -49,7 +49,7 @@ exports.getAllPages = async (req, res) => {
             Page.countDocuments(query)
         ]);
 
-        return successResponse(res, {
+        return successResponse(res, 200, 'Pages retrieved successfully', {
             pages,
             pagination: {
                 total,
@@ -57,10 +57,10 @@ exports.getAllPages = async (req, res) => {
                 limit: parseInt(limit),
                 totalPages: Math.ceil(total / parseInt(limit))
             }
-        }, 'Pages retrieved successfully');
+        });
     } catch (error) {
         console.error('Error in getAllPages:', error);
-        return errorResponse(res, 'Failed to retrieve pages', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve pages', error.message);
     }
 };
 
@@ -72,10 +72,10 @@ exports.getPageTree = async (req, res) => {
         const { includeInactive = false } = req.query;
         const tree = await pageTreeService.getTree(null, includeInactive === 'true');
         
-        return successResponse(res, { tree }, 'Page tree retrieved successfully');
+        return successResponse(res, 200, 'Page tree retrieved successfully', { tree });
     } catch (error) {
         console.error('Error in getPageTree:', error);
-        return errorResponse(res, 'Failed to retrieve page tree', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve page tree', error.message);
     }
 };
 
@@ -91,7 +91,7 @@ exports.getPageById = async (req, res) => {
             .populate('updatedBy', 'firstName lastName email');
         
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         // Get breadcrumb trail
@@ -106,15 +106,15 @@ exports.getPageById = async (req, res) => {
         // Get sections count
         const sectionsCount = await Section.countDocuments({ pageId: page._id });
 
-        return successResponse(res, {
+        return successResponse(res, 200, 'Page retrieved successfully', {
             page,
             breadcrumb,
             childrenCount,
             sectionsCount
-        }, 'Page retrieved successfully');
+        });
     } catch (error) {
         console.error('Error in getPageById:', error);
-        return errorResponse(res, 'Failed to retrieve page', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve page', error.message);
     }
 };
 
@@ -137,13 +137,13 @@ exports.createPage = async (req, res) => {
 
         // Validate required fields
         if (!title || !slug) {
-            return errorResponse(res, 'Title and slug are required', 400);
+            return errorResponse(res, 400, 'Title and slug are required');
         }
 
         // Check slug uniqueness
         const isUnique = await pageTreeService.isSlugUnique(slug);
         if (!isUnique) {
-            return errorResponse(res, 'Slug already exists', 400);
+            return errorResponse(res, 400, 'Slug already exists');
         }
 
         // Calculate path, level, and order
@@ -176,10 +176,10 @@ exports.createPage = async (req, res) => {
         const populatedPage = await Page.findById(page._id)
             .populate('createdBy', 'firstName lastName email');
 
-        return successResponse(res, { page: populatedPage }, 'Page created successfully', 201);
+        return successResponse(res, 201, 'Page created successfully', { page: populatedPage });
     } catch (error) {
         console.error('Error in createPage:', error);
-        return errorResponse(res, 'Failed to create page', 500, error.message);
+        return errorResponse(res, 500, 'Failed to create page',error.message);
     }
 };
 
@@ -199,17 +199,22 @@ exports.updatePage = async (req, res) => {
             showInMenu,
             menuIcon,
             permissions,
+            status,
             changeLog
         } = req.body;
 
         const page = await Page.findOne({ _id: id, isActive: true });
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
+        // Check if we're only updating status (allow this even for published pages)
+        const isOnlyStatusUpdate = Object.keys(req.body).length === 1 && req.body.hasOwnProperty('status');
+        
         // Prevent editing published content directly - must unpublish first
-        if (page.status === 'published') {
-            return errorResponse(res, 'Cannot edit published content. Please unpublish first or use workflow actions.', 400);
+        // Exception: allow status-only updates
+        if (page.status === 'published' && !isOnlyStatusUpdate) {
+            return errorResponse(res, 400, 'Cannot edit published content. Please unpublish first or use workflow actions.');
         }
 
         // Store old data for version comparison
@@ -219,7 +224,7 @@ exports.updatePage = async (req, res) => {
         if (slug && slug !== page.slug) {
             const isUnique = await pageTreeService.isSlugUnique(slug, id);
             if (!isUnique) {
-                return errorResponse(res, 'Slug already exists', 400);
+                return errorResponse(res, 400, 'Slug already exists');
             }
             page.slug = slug;
         }
@@ -229,7 +234,7 @@ exports.updatePage = async (req, res) => {
             // Prevent circular references
             const isCircular = await pageTreeService.wouldCreateCircularReference(id, parentId);
             if (isCircular) {
-                return errorResponse(res, 'Cannot set parent: would create circular reference', 400);
+                return errorResponse(res, 400, 'Cannot set parent: would create circular reference');
             }
 
             const oldPath = page.path;
@@ -254,6 +259,27 @@ exports.updatePage = async (req, res) => {
         if (showInMenu !== undefined) page.showInMenu = showInMenu;
         if (menuIcon !== undefined) page.menuIcon = menuIcon;
         if (permissions) page.permissions = permissions;
+        
+        // Handle status update
+        if (status !== undefined) {
+            // Validate status value
+            const validStatuses = ['draft', 'in_review', 'pending_approval', 'pending_publish', 'published', 'changes_requested', 'archived'];
+            if (!validStatuses.includes(status)) {
+                return errorResponse(res, 400, `Invalid status. Must be one of: ${validStatuses.join(', ')}`);
+            }
+            
+            page.status = status;
+            
+            // Set publishedAt timestamp when publishing
+            if (status === 'published' && !page.publishedAt) {
+                page.publishedAt = new Date();
+            }
+            
+            // Clear publishedAt when unpublishing
+            if (status !== 'published' && page.publishedAt) {
+                page.publishedAt = null;
+            }
+        }
         
         page.updatedBy = req.user._id;
 
@@ -285,10 +311,10 @@ exports.updatePage = async (req, res) => {
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
-        return successResponse(res, { page: updatedPage }, 'Page updated successfully');
+        return successResponse(res, 200, 'Page updated successfully', { page: updatedPage });
     } catch (error) {
         console.error('Error in updatePage:', error);
-        return errorResponse(res, 'Failed to update page', 500, error.message);
+        return errorResponse(res, 500, 'Failed to update page', error.message);
     }
 };
 
@@ -302,7 +328,7 @@ exports.deletePage = async (req, res) => {
 
         const page = await Page.findOne({ _id: id, isActive: true });
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         // Check if page has children
@@ -314,8 +340,8 @@ exports.deletePage = async (req, res) => {
         if (childrenCount > 0 && !cascade) {
             return errorResponse(
                 res, 
-                'Page has children. Set cascade=true to delete all descendants', 
-                400
+                400,
+                'Page has children. Set cascade=true to delete all descendants'
             );
         }
 
@@ -323,12 +349,13 @@ exports.deletePage = async (req, res) => {
 
         return successResponse(
             res, 
-            { deletedCount }, 
-            `Successfully deleted ${deletedCount} page(s)`
+            200,
+            `Successfully deleted ${deletedCount} page(s)`,
+            { deletedCount }
         );
     } catch (error) {
         console.error('Error in deletePage:', error);
-        return errorResponse(res, 'Failed to delete page', 500, error.message);
+        return errorResponse(res, 500, 'Failed to delete page', error.message);
     }
 };
 
@@ -350,10 +377,10 @@ exports.movePage = async (req, res) => {
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
-        return successResponse(res, { page: populatedPage }, 'Page moved successfully');
+        return successResponse(res, 200, 'Page moved successfully', { page: populatedPage });
     } catch (error) {
         console.error('Error in movePage:', error);
-        return errorResponse(res, error.message || 'Failed to move page', 500);
+        return errorResponse(res, 500, error.message || 'Failed to move page');
     }
 };
 
@@ -362,18 +389,27 @@ exports.movePage = async (req, res) => {
  */
 exports.reorderPages = async (req, res) => {
     try {
-        const { pageOrders } = req.body;
+        // Accept both "pageOrders" and "pages" for backward compatibility
+        const { pageOrders, pages } = req.body;
+        const ordersArray = pageOrders || pages;
 
-        if (!Array.isArray(pageOrders) || pageOrders.length === 0) {
-            return errorResponse(res, 'pageOrders array is required', 400);
+        if (!Array.isArray(ordersArray) || ordersArray.length === 0) {
+            return errorResponse(res, 400, 'pageOrders or pages array is required');
         }
 
-        await pageTreeService.reorderPages(pageOrders);
+        // Map the array to the format expected by the service
+        // Handle both { _id, order } and { pageId, order } formats
+        const mappedOrders = ordersArray.map(item => ({
+            pageId: item.pageId || item._id,
+            order: item.order
+        }));
 
-        return successResponse(res, null, 'Pages reordered successfully');
+        await pageTreeService.reorderPages(mappedOrders);
+
+        return successResponse(res, 200, 'Pages reordered successfully', null);
     } catch (error) {
         console.error('Error in reorderPages:', error);
-        return errorResponse(res, 'Failed to reorder pages', 500, error.message);
+        return errorResponse(res, 500, 'Failed to reorder pages', error.message);
     }
 };
 
@@ -396,13 +432,13 @@ exports.duplicatePage = async (req, res) => {
 
         return successResponse(
             res, 
-            { page: populatedPage }, 
-            'Page duplicated successfully', 
-            201
+            201,
+            'Page duplicated successfully',
+            { page: populatedPage }
         );
     } catch (error) {
         console.error('Error in duplicatePage:', error);
-        return errorResponse(res, error.message || 'Failed to duplicate page', 500);
+        return errorResponse(res, 500, error.message || 'Failed to duplicate page');
     }
 };
 
@@ -415,15 +451,15 @@ exports.getPageChildren = async (req, res) => {
 
         const page = await Page.findOne({ _id: id, isActive: true });
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         const children = await page.getChildren();
 
-        return successResponse(res, { children }, 'Page children retrieved successfully');
+        return successResponse(res, 200, 'Page children retrieved successfully', { children });
     } catch (error) {
         console.error('Error in getPageChildren:', error);
-        return errorResponse(res, 'Failed to retrieve page children', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve page children', error.message);
     }
 };
 
@@ -436,15 +472,15 @@ exports.getPageBreadcrumb = async (req, res) => {
 
         const page = await Page.findOne({ _id: id, isActive: true });
         if (!page) {
-            return errorResponse(res, 'Page not found', 404);
+            return errorResponse(res, 404, 'Page not found');
         }
 
         const breadcrumb = await page.getBreadcrumb();
 
-        return successResponse(res, { breadcrumb }, 'Breadcrumb retrieved successfully');
+        return successResponse(res, 200, 'Breadcrumb retrieved successfully', { breadcrumb });
     } catch (error) {
         console.error('Error in getPageBreadcrumb:', error);
-        return errorResponse(res, 'Failed to retrieve breadcrumb', 500, error.message);
+        return errorResponse(res, 500, 'Failed to retrieve breadcrumb', error.message);
     }
 };
 

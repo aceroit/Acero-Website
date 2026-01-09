@@ -49,6 +49,8 @@ exports.getWorkflowMetrics = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'Workflow metrics retrieved successfully',
             {
                 pages,
                 sections,
@@ -57,12 +59,11 @@ exports.getWorkflowMetrics = async (req, res) => {
                     sections: totalSections,
                     recentActivity: recentActivityCount
                 }
-            },
-            'Workflow metrics retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get workflow metrics error:', error);
-        return errorResponse(res, 'Failed to retrieve workflow metrics', 500);
+        return errorResponse(res, 500, 'Failed to retrieve workflow metrics');
     }
 };
 
@@ -133,12 +134,13 @@ exports.getUserWorkloadSummary = async (req, res) => {
 
         return successResponse(
             res,
-            { workload: summary },
-            'User workload summary retrieved successfully'
+            200,
+            'User workload summary retrieved successfully',
+            { workload: summary }
         );
     } catch (error) {
         console.error('Get user workload error:', error);
-        return errorResponse(res, 'Failed to retrieve user workload', 500);
+        return errorResponse(res, 500, 'Failed to retrieve user workload');
     }
 };
 
@@ -157,12 +159,13 @@ exports.getTeamActivity = async (req, res) => {
 
         return successResponse(
             res,
-            { activities, count: activities.length },
-            'Team activity retrieved successfully'
+            200,
+            'Team activity retrieved successfully',
+            { activities, count: activities.length }
         );
     } catch (error) {
         console.error('Get team activity error:', error);
-        return errorResponse(res, 'Failed to retrieve team activity', 500);
+        return errorResponse(res, 500, 'Failed to retrieve team activity');
     }
 };
 
@@ -211,18 +214,19 @@ exports.getPendingItems = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'Pending items retrieved successfully',
             {
                 pending: pendingItems,
                 count: {
                     pages: pendingItems.pages.length,
                     sections: pendingItems.sections.length
                 }
-            },
-            'Pending items retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get pending items error:', error);
-        return errorResponse(res, 'Failed to retrieve pending items', 500);
+        return errorResponse(res, 500, 'Failed to retrieve pending items');
     }
 };
 
@@ -250,18 +254,19 @@ exports.getMyDrafts = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'Draft content retrieved successfully',
             {
                 drafts: { pages, sections },
                 count: {
                     pages: pages.length,
                     sections: sections.length
                 }
-            },
-            'Draft content retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get my drafts error:', error);
-        return errorResponse(res, 'Failed to retrieve drafts', 500);
+        return errorResponse(res, 500, 'Failed to retrieve drafts');
     }
 };
 
@@ -289,18 +294,19 @@ exports.getMySubmissions = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'Submissions retrieved successfully',
             {
                 submissions: { pages, sections },
                 count: {
                     pages: pages.length,
                     sections: sections.length
                 }
-            },
-            'Submissions retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get my submissions error:', error);
-        return errorResponse(res, 'Failed to retrieve submissions', 500);
+        return errorResponse(res, 500, 'Failed to retrieve submissions');
     }
 };
 
@@ -330,18 +336,19 @@ exports.getRecentlyPublished = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'Recently published content retrieved successfully',
             {
                 recentlyPublished: { pages, sections },
                 count: {
                     pages: pages.length,
                     sections: sections.length
                 }
-            },
-            'Recently published content retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get recently published error:', error);
-        return errorResponse(res, 'Failed to retrieve recently published content', 500);
+        return errorResponse(res, 500, 'Failed to retrieve recently published content');
     }
 };
 
@@ -369,12 +376,13 @@ exports.getWorkflowTimeline = async (req, res) => {
 
         return successResponse(
             res,
-            { timeline, count: timeline.length },
-            'Workflow timeline retrieved successfully'
+            200,
+            'Workflow timeline retrieved successfully',
+            { timeline, count: timeline.length }
         );
     } catch (error) {
         console.error('Get workflow timeline error:', error);
-        return errorResponse(res, 'Failed to retrieve workflow timeline', 500);
+        return errorResponse(res, 500, 'Failed to retrieve workflow timeline');
     }
 };
 
@@ -389,7 +397,7 @@ exports.getUserProductivityStats = async (req, res) => {
         // Get user info
         const user = await User.findById(userId).select('firstName lastName email role');
         if (!user) {
-            return errorResponse(res, 'User not found', 404);
+            return errorResponse(res, 404, 'User not found');
         }
 
         // Count activities
@@ -440,6 +448,8 @@ exports.getUserProductivityStats = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'User productivity statistics retrieved successfully',
             {
                 user,
                 period: {
@@ -460,12 +470,11 @@ exports.getUserProductivityStats = async (req, res) => {
                     },
                     activities: activityCounts
                 }
-            },
-            'User productivity statistics retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get user productivity stats error:', error);
-        return errorResponse(res, 'Failed to retrieve user productivity statistics', 500);
+        return errorResponse(res, 500, 'Failed to retrieve user productivity statistics');
     }
 };
 
@@ -520,6 +529,8 @@ exports.getBottlenecks = async (req, res) => {
 
         return successResponse(
             res,
+            200,
+            'Workflow bottlenecks retrieved successfully',
             {
                 bottlenecks,
                 threshold: {
@@ -531,12 +542,11 @@ exports.getBottlenecks = async (req, res) => {
                     sections: bottlenecks.sections.length,
                     total: bottlenecks.pages.length + bottlenecks.sections.length
                 }
-            },
-            'Workflow bottlenecks retrieved successfully'
+            }
         );
     } catch (error) {
         console.error('Get bottlenecks error:', error);
-        return errorResponse(res, 'Failed to retrieve workflow bottlenecks', 500);
+        return errorResponse(res, 500, 'Failed to retrieve workflow bottlenecks');
     }
 };
 
