@@ -1,10 +1,10 @@
-import { Form, Checkbox, Button, Space, Divider } from 'antd';
+import { Form, Switch, Button, Space } from 'antd';
 import { useEffect } from 'react';
 import { ACTIONS } from '../../utils/constants';
 
 /**
  * Permission Form Component
- * Form for updating role permissions
+ * Form for updating role permissions using toggle switches
  * 
  * @param {Object} props
  * @param {string} props.role - Role name
@@ -95,16 +95,16 @@ const PermissionForm = ({
         </div>
       ) : (
         <div className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {resources.map((resource) => (
               <div 
                 key={resource} 
-                className="border border-gray-200 rounded-lg p-3 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+                className="border border-gray-200 rounded-lg p-4 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
               >
-                <h4 className="font-semibold text-gray-900 mb-2 text-sm border-b border-gray-200 pb-1.5">
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm border-b border-gray-200 pb-2">
                   {formatResourceName(resource)}
                 </h4>
-                <Space direction="vertical" size="small" className="w-full">
+                <Space direction="vertical" size="middle" className="w-full">
                   {Object.values(ACTIONS).map((action) => {
                     const fieldName = `${resource}_${action}`;
                     return (
@@ -114,9 +114,16 @@ const PermissionForm = ({
                         valuePropName="checked"
                         className="mb-0"
                       >
-                        <Checkbox className="text-gray-700 text-sm hover:text-gray-900">
-                          {formatActionName(action)}
-                        </Checkbox>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-700 text-sm font-medium">
+                            {formatActionName(action)}
+                          </span>
+                          <Switch
+                            checkedChildren="ON"
+                            unCheckedChildren="OFF"
+                            className="ml-2"
+                          />
+                        </div>
                       </Form.Item>
                     );
                   })}
@@ -157,4 +164,3 @@ const PermissionForm = ({
 };
 
 export default PermissionForm;
-

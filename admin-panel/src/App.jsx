@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Permissions from "./pages/Permissions";
+import RolePermissions from "./pages/RolePermissions";
 import Profile from "./pages/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -52,6 +53,14 @@ function App() {
             element={
               <ProtectedRoute resource="permissions" action="read">
                 <Permissions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/permissions/role/:roleName"
+            element={
+              <ProtectedRoute resource="permissions" action="update">
+                <RolePermissions />
               </ProtectedRoute>
             }
           />
