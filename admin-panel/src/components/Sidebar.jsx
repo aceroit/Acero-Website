@@ -5,13 +5,18 @@ import {
     SearchOutlined, DashboardOutlined,
     UserOutlined,
     SettingOutlined,
+    FileTextOutlined,
+    BranchesOutlined,
 } from "@ant-design/icons";
 import { usePermissions } from "../contexts/PermissionContext";
+import { useAuth } from "../contexts/AuthContext";
+import { ROLES } from "../utils/constants";
 
 const Sidebar = () => {
     const [search, setSearch] = useState("");
     const location = useLocation();
-    const { hasPermission, hasAnyRole } = usePermissions();
+    const { hasPermission, hasAnyRole, hasRole } = usePermissions();
+    const { user } = useAuth();
 
     // Menu configuration with permissions
     const menuConfig = [
@@ -33,6 +38,25 @@ const Sidebar = () => {
             icon: <SettingOutlined />,
             permission: { resource: "permissions", action: "read" },
             // roles: ["super_admin"], // Additional role check
+        },
+        {
+            name: "Pages",
+            path: "/pages",
+            icon: <FileTextOutlined />,
+            permission: { resource: "pages", action: "read" },
+        },
+        {
+            name: "Page Tree",
+            path: "/pages/tree",
+            icon: <BranchesOutlined />,
+            permission: { resource: "pages", action: "read" },
+        },
+        {
+            name: "Section Types",
+            path: "/section-types",
+            icon: <SettingOutlined />,
+            permission: null, // Checked separately for super_admin
+            roles: [ROLES.SUPER_ADMIN],
         },
     ];
 

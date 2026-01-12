@@ -1,4 +1,4 @@
-import { Card, Statistic, Row, Col, Tag, Divider, Empty } from "antd";
+import { Card, Statistic, Row, Col, Tag, Divider, Empty, List, Progress, Alert, Tooltip, Button, Spin, Typography } from "antd";
 import { 
     UserOutlined, 
     FileTextOutlined, 
@@ -10,7 +10,12 @@ import {
     InfoCircleOutlined,
     FileOutlined,
     EditOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    WarningOutlined,
+    RocketOutlined,
+    EyeOutlined,
+    HistoryOutlined,
+    ExclamationCircleOutlined
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
@@ -20,7 +25,14 @@ import { formatRole, getUserFullName } from "../utils/roleHelpers";
 import { useEffect, useState } from "react";
 import * as userService from "../services/userService";
 import * as dashboardService from "../services/dashboardService";
+import WorkflowStatusBadge from "../components/workflow/WorkflowStatusBadge";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
+
+const { Text } = Typography;
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -30,6 +42,10 @@ const Dashboard = () => {
     const [workload, setWorkload] = useState(null);
     const [drafts, setDrafts] = useState(null);
     const [submissions, setSubmissions] = useState(null);
+    const [workflowMetrics, setWorkflowMetrics] = useState(null);
+    const [pendingItems, setPendingItems] = useState(null);
+    const [teamActivity, setTeamActivity] = useState(null);
+    const [bottlenecks, setBottlenecks] = useState(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -82,6 +98,48 @@ const Dashboard = () => {
                     }
                 } catch (error) {
                     console.error('Failed to fetch submissions:', error);
+                }
+            }
+
+            // Fetch workflow metrics
+            try {
+                const metricsResponse = await dashboardService.getWorkflowMetrics();
+                if (metricsResponse.success) {
+                    setWorkflowMetrics(metricsResponse.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch workflow metrics:', error);
+            }
+
+            // Fetch pending items
+            try {
+                const pendingResponse = await dashboardService.getPendingItems();
+                if (pendingResponse.success) {
+                    setPendingItems(pendingResponse.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch pending items:', error);
+            }
+
+            // Fetch team activity
+            try {
+                const activityResponse = await dashboardService.getTeamActivity(10);
+                if (activityResponse.success) {
+                    setTeamActivity(activityResponse.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch team activity:', error);
+            }
+
+            // Fetch bottlenecks (admin only)
+            if (hasPermission('pages', 'delete')) {
+                try {
+                    const bottlenecksResponse = await dashboardService.getBottlenecks();
+                    if (bottlenecksResponse.success) {
+                        setBottlenecks(bottlenecksResponse.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch bottlenecks:', error);
                 }
             }
         } catch (error) {
@@ -241,8 +299,304 @@ const Dashboard = () => {
                     </div>
                 )}
 
+                {/* Workflow Metrics Widget */}
+                {workflowMetrics && (
+                    <div>
+                        <h2 className="text-xl font-semibold mb-4 text-gray-800">Workflow Metrics</h2>
+                        <Row gutter={[16, 16]}>
+                            <Col xs={24} lg={12}>
+                                <Card 
+                                    className="h-full border border-gray-200 shadow-md bg-white"
+                                    title={
+                                        <div className="flex items-center gap-2">
+                                            <FileTextOutlined />
+                                            <span>Pages</span>
+                                        </div>
+                                    }
+                                >
+                                    <Row gutter={[8, 8]}>
+                                        {Object.entries(workflowMetrics.pages || {}).map(([status, count]) => (
+                                            <Col span={12} key={status}>
+                                                <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                                    <WorkflowStatusBadge status={status} />
+                                                    <span className="font-semibold text-lg">{count}</span>
+                                                </div>
+                                            </Col>
+                                        ))}
+                                    </Row>
+                                    <Divider style={{ margin: '12px 0' }} />
+                                    <div className="text-center">
+                                        <Text type="secondary">Total: </Text>
+                                        <Text strong>{workflowMetrics.totals?.pages || 0}</Text>
+                                    </div>
+                                </Card>
+                            </Col>
+                            <Col xs={24} lg={12}>
+                                <Card 
+                                    className="h-full border border-gray-200 shadow-md bg-white"
+                                    title={
+                                        <div className="flex items-center gap-2">
+                                            <FileOutlined />
+                                            <span>Sections</span>
+                                        </div>
+                                    }
+                                >
+                                    <Row gutter={[8, 8]}>
+                                        {Object.entries(workflowMetrics.sections || {}).map(([status, count]) => (
+                                            <Col span={12} key={status}>
+                                                <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                                    <WorkflowStatusBadge status={status} />
+                                                    <span className="font-semibold text-lg">{count}</span>
+                                                </div>
+                                            </Col>
+                                        ))}
+                                    </Row>
+                                    <Divider style={{ margin: '12px 0' }} />
+                                    <div className="text-center">
+                                        <Text type="secondary">Total: </Text>
+                                        <Text strong>{workflowMetrics.totals?.sections || 0}</Text>
+                                    </div>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </div>
+                )}
+
+                {/* Pending Items Widget */}
+                {pendingItems && (pendingItems.count?.pages > 0 || pendingItems.count?.sections > 0) && (
+                    <div>
+                        <h2 className="text-xl font-semibold mb-4 text-gray-800">Pending Items Awaiting Your Action</h2>
+                        <Card className="border border-orange-200 shadow-md bg-white">
+                            <Alert
+                                message={`You have ${(pendingItems.count?.pages || 0) + (pendingItems.count?.sections || 0)} item(s) pending your action`}
+                                type="warning"
+                                icon={<ExclamationCircleOutlined />}
+                                style={{ marginBottom: '16px' }}
+                            />
+                            <Row gutter={[16, 16]}>
+                                {pendingItems.pending?.pages && pendingItems.pending.pages.length > 0 && (
+                                    <Col xs={24} lg={12}>
+                                        <div>
+                                            <Text strong className="text-orange-600">Pages ({pendingItems.pending.pages.length})</Text>
+                                            <List
+                                                size="small"
+                                                dataSource={pendingItems.pending.pages.slice(0, 5)}
+                                                renderItem={(page) => (
+                                                    <List.Item
+                                                        className="cursor-pointer hover:bg-gray-50"
+                                                        onClick={() => navigate(`/pages/${page._id}`)}
+                                                    >
+                                                        <List.Item.Meta
+                                                            title={
+                                                                <div className="flex items-center gap-2">
+                                                                    <span>{page.title}</span>
+                                                                    <WorkflowStatusBadge status={page.status} />
+                                                                </div>
+                                                            }
+                                                            description={
+                                                                <div className="text-xs text-gray-500">
+                                                                    Updated {dayjs(page.updatedAt).fromNow()}
+                                                                </div>
+                                                            }
+                                                        />
+                                                        <Button type="link" size="small" icon={<EyeOutlined />}>
+                                                            View
+                                                        </Button>
+                                                    </List.Item>
+                                                )}
+                                            />
+                                            {pendingItems.pending.pages.length > 5 && (
+                                                <div className="text-center mt-2">
+                                                    <Button type="link" onClick={() => navigate('/dashboard/pending')}>
+                                                        View all {pendingItems.pending.pages.length} pages
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Col>
+                                )}
+                                {pendingItems.pending?.sections && pendingItems.pending.sections.length > 0 && (
+                                    <Col xs={24} lg={12}>
+                                        <div>
+                                            <Text strong className="text-orange-600">Sections ({pendingItems.pending.sections.length})</Text>
+                                            <List
+                                                size="small"
+                                                dataSource={pendingItems.pending.sections.slice(0, 5)}
+                                                renderItem={(section) => (
+                                                    <List.Item
+                                                        className="cursor-pointer hover:bg-gray-50"
+                                                        onClick={() => {
+                                                            if (section.pageId?._id) {
+                                                                navigate(`/pages/${section.pageId._id}/sections/${section._id}`);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <List.Item.Meta
+                                                            title={
+                                                                <div className="flex items-center gap-2">
+                                                                    <span>{section.pageId?.title || 'Section'}</span>
+                                                                    <WorkflowStatusBadge status={section.status} />
+                                                                </div>
+                                                            }
+                                                            description={
+                                                                <div className="text-xs text-gray-500">
+                                                                    Updated {dayjs(section.updatedAt).fromNow()}
+                                                                </div>
+                                                            }
+                                                        />
+                                                        <Button type="link" size="small" icon={<EyeOutlined />}>
+                                                            View
+                                                        </Button>
+                                                    </List.Item>
+                                                )}
+                                            />
+                                            {pendingItems.pending.sections.length > 5 && (
+                                                <div className="text-center mt-2">
+                                                    <Button type="link" onClick={() => navigate('/dashboard/pending')}>
+                                                        View all {pendingItems.pending.sections.length} sections
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Col>
+                                )}
+                            </Row>
+                        </Card>
+                    </div>
+                )}
+
+                {/* Team Activity Feed */}
+                {teamActivity && teamActivity.activities && teamActivity.activities.length > 0 && (
+                    <div>
+                        <h2 className="text-xl font-semibold mb-4 text-gray-800">Recent Team Activity</h2>
+                        <Card className="border border-gray-200 shadow-md bg-white">
+                            <List
+                                dataSource={teamActivity.activities}
+                                renderItem={(activity) => (
+                                    <List.Item>
+                                        <List.Item.Meta
+                                            avatar={
+                                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                    <UserOutlined className="text-blue-600" />
+                                                </div>
+                                            }
+                                            title={
+                                                <div className="flex items-center gap-2">
+                                                    <Text strong>
+                                                        {activity.userId?.firstName && activity.userId?.lastName
+                                                            ? `${activity.userId.firstName} ${activity.userId.lastName}`
+                                                            : activity.userId?.email || 'System'}
+                                                    </Text>
+                                                    <Tag>{activity.action}</Tag>
+                                                    <Tag color="blue">{activity.resource}</Tag>
+                                                </div>
+                                            }
+                                            description={
+                                                <div className="text-xs text-gray-500">
+                                                    {dayjs(activity.timestamp).fromNow()}
+                                                </div>
+                                            }
+                                        />
+                                    </List.Item>
+                                )}
+                            />
+                        </Card>
+                    </div>
+                )}
+
+                {/* Workflow Bottlenecks (Admin Only) */}
+                {bottlenecks && bottlenecks.count?.total > 0 && (
+                    <div>
+                        <h2 className="text-xl font-semibold mb-4 text-gray-800">Workflow Bottlenecks</h2>
+                        <Card className="border border-red-200 shadow-md bg-white">
+                            <Alert
+                                message={`${bottlenecks.count.total} item(s) stuck in workflow for ${bottlenecks.threshold?.days || 7}+ days`}
+                                type="error"
+                                icon={<WarningOutlined />}
+                                style={{ marginBottom: '16px' }}
+                            />
+                            <Row gutter={[16, 16]}>
+                                {bottlenecks.bottlenecks?.pages && bottlenecks.bottlenecks.pages.length > 0 && (
+                                    <Col xs={24} lg={12}>
+                                        <div>
+                                            <Text strong className="text-red-600">Pages ({bottlenecks.bottlenecks.pages.length})</Text>
+                                            <List
+                                                size="small"
+                                                dataSource={bottlenecks.bottlenecks.pages.slice(0, 5)}
+                                                renderItem={(page) => (
+                                                    <List.Item
+                                                        className="cursor-pointer hover:bg-gray-50"
+                                                        onClick={() => navigate(`/pages/${page._id}`)}
+                                                    >
+                                                        <List.Item.Meta
+                                                            title={
+                                                                <div className="flex items-center gap-2">
+                                                                    <span>{page.title}</span>
+                                                                    <WorkflowStatusBadge status={page.status} />
+                                                                    <Tag color="red">{page.daysStuck} days</Tag>
+                                                                </div>
+                                                            }
+                                                            description={
+                                                                <div className="text-xs text-gray-500">
+                                                                    Stuck since {dayjs(page.updatedAt).format('MMM DD, YYYY')}
+                                                                </div>
+                                                            }
+                                                        />
+                                                        <Button type="link" size="small" icon={<EyeOutlined />}>
+                                                            View
+                                                        </Button>
+                                                    </List.Item>
+                                                )}
+                                            />
+                                        </div>
+                                    </Col>
+                                )}
+                                {bottlenecks.bottlenecks?.sections && bottlenecks.bottlenecks.sections.length > 0 && (
+                                    <Col xs={24} lg={12}>
+                                        <div>
+                                            <Text strong className="text-red-600">Sections ({bottlenecks.bottlenecks.sections.length})</Text>
+                                            <List
+                                                size="small"
+                                                dataSource={bottlenecks.bottlenecks.sections.slice(0, 5)}
+                                                renderItem={(section) => (
+                                                    <List.Item
+                                                        className="cursor-pointer hover:bg-gray-50"
+                                                        onClick={() => {
+                                                            if (section.pageId?._id) {
+                                                                navigate(`/pages/${section.pageId._id}/sections/${section._id}`);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <List.Item.Meta
+                                                            title={
+                                                                <div className="flex items-center gap-2">
+                                                                    <span>{section.pageId?.title || 'Section'}</span>
+                                                                    <WorkflowStatusBadge status={section.status} />
+                                                                    <Tag color="red">{section.daysStuck} days</Tag>
+                                                                </div>
+                                                            }
+                                                            description={
+                                                                <div className="text-xs text-gray-500">
+                                                                    Stuck since {dayjs(section.updatedAt).format('MMM DD, YYYY')}
+                                                                </div>
+                                                            }
+                                                        />
+                                                        <Button type="link" size="small" icon={<EyeOutlined />}>
+                                                            View
+                                                        </Button>
+                                                    </List.Item>
+                                                )}
+                                            />
+                                        </div>
+                                    </Col>
+                                )}
+                            </Row>
+                        </Card>
+                    </div>
+                )}
+
                 {/* Empty State - Show if user has no permissions or no data */}
-                {!loading && userStatCards.length === 0 && workloadCards.length === 0 && (
+                {!loading && userStatCards.length === 0 && workloadCards.length === 0 && !workflowMetrics && !pendingItems && (
                     <Card className="border border-gray-200 shadow-md bg-white">
                         <Empty 
                             description={
