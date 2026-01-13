@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Permission = require('../models/Permission');
+const Resource = require('../models/Resource');
 const path = require('path');
 
 // Load environment variables from backend root directory
@@ -451,8 +452,48 @@ const seedPermissions = async () => {
         const deletedCount = await Permission.deleteMany({});
         console.log(`🗑️  Cleared ${deletedCount.deletedCount} existing permissions`);
 
+        // Fetch all resources and create slug-to-ObjectId mapping
+        const allResources = await Resource.find({});
+        const resourceMap = new Map();
+        allResources.forEach(resource => {
+            resourceMap.set(resource.slug, resource._id);
+        });
+
+        console.log(`📦 Found ${allResources.length} resources in database`);
+
+        // Convert resource strings to ObjectIds
+        const permissionsWithObjectIds = defaultPermissions.map(perm => {
+            const resourceSlug = perm.resource;
+            const resourceId = resourceMap.get(resourceSlug);
+            
+            if (!resourceId) {
+                console.warn(`⚠️  Warning: Resource "${resourceSlug}" not found in database. Skipping permission.`);
+                return null;
+            }
+
+            // For role-based permissions, explicitly exclude userId (don't set it to null)
+            // This ensures clean data: role-based permissions have no userId field
+            const permissionData = {
+                role: perm.role,
+                resource: resourceId,
+                actions: perm.actions,
+                conditions: perm.conditions,
+                isActive: perm.isActive
+            };
+            
+            // Only include userId if it's explicitly provided (for user-specific permissions)
+            if (perm.userId !== undefined) {
+                permissionData.userId = perm.userId;
+            }
+            // Otherwise, userId will be undefined (not stored in DB) for role-based permissions
+
+            return permissionData;
+        }).filter(perm => perm !== null); // Remove null entries
+
+        console.log(`📝 Converting ${defaultPermissions.length} permissions, ${permissionsWithObjectIds.length} valid after resource lookup\n`);
+
         // Insert default permissions
-        const result = await Permission.insertMany(defaultPermissions);
+        const result = await Permission.insertMany(permissionsWithObjectIds);
         console.log(`✅ Successfully seeded ${result.length} permissions\n`);
 
         // Display detailed summary
@@ -463,8 +504,8 @@ const seedPermissions = async () => {
         console.log('='.repeat(60));
         
         for (const role of roles) {
-            const rolePermissions = await Permission.find({ role });
-            const resourceCount = new Set(rolePermissions.map(p => p.resource)).size;
+            const rolePermissions = await Permission.find({ role }).populate('resource', 'slug name');
+            const resourceCount = new Set(rolePermissions.map(p => p.resource?._id?.toString() || p.resource?.toString())).size;
             const totalActions = rolePermissions.reduce((sum, p) => sum + p.actions.length, 0);
             
             console.log(`\n${role.toUpperCase()}:`);

@@ -16,6 +16,7 @@ import Sections from "./pages/Sections";
 import SectionEditor from "./pages/SectionEditor";
 import SectionTypes from "./pages/SectionTypes";
 import SectionTypeEditor from "./pages/SectionTypeEditor";
+import Resources from "./pages/Resources";
 import VersionHistory from "./pages/VersionHistory";
 import VersionCompare from "./pages/VersionCompare";
 import PendingItems from "./pages/PendingItems";
@@ -163,6 +164,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SectionTypeEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resources"
+            element={
+              <ProtectedRoute>
+                <Resources />
               </ProtectedRoute>
             }
           />

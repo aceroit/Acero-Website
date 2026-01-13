@@ -35,6 +35,7 @@ app.use(activityLogger);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/permissions', require('./routes/permissionRoutes'));
+app.use('/api/resources', require('./routes/resourceRoutes'));
 app.use('/api/pages', require('./routes/pageRoutes'));
 app.use('/api/sections', require('./routes/sectionRoutes'));
 app.use('/api/section-types', require('./routes/sectionTypeRoutes'));
@@ -55,6 +56,7 @@ app.get("/", (req, res) => {
 			auth: "/api/auth",
 			users: "/api/users",
 			permissions: "/api/permissions",
+			resources: "/api/resources",
 			pages: "/api/pages",
 			sections: "/api/sections",
 			sectionTypes: "/api/section-types",

@@ -213,10 +213,10 @@ const Dashboard = () => {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
                             <h1 className="text-2xl md:text-4xl font-bold mb-2 text-white">
-                                Welcome back, {getUserFullName(user)}! 👋
+                                Aur bhai sab bhadiya? - {getUserFullName(user)}! 👋?
                             </h1>
                             <p className="text-gray-200 text-sm md:text-base">
-                                You are logged in as <Tag color="default" className="ml-2 bg-white text-gray-800 border-0">{formatRole(user?.role)}</Tag>
+                               Aap ho sharva shakti shali - <Tag color="default" className="ml-2 bg-white text-gray-800 border-0">{formatRole(user?.role)}</Tag>
                             </p>
                         </div>
                         <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white/20 rounded-full backdrop-blur-sm">

@@ -88,3 +88,34 @@ export const deletePermission = async (id) => {
   return response.data;
 };
 
+/**
+ * Get users by role
+ * @param {string} role - Role name
+ * @returns {Promise} - Response with users array
+ */
+export const getUsersByRole = async (role) => {
+  const response = await API.get(`/permissions/role/${role}/users`);
+  return response.data;
+};
+
+/**
+ * Get user-specific permissions by user ID
+ * @param {string} userId - User ID
+ * @returns {Promise} - Response with user permissions
+ */
+export const getUserPermissionsById = async (userId) => {
+  const response = await API.get(`/permissions/user/${userId}`);
+  return response.data;
+};
+
+/**
+ * Update user-specific permissions
+ * @param {string} userId - User ID
+ * @param {Array} permissions - Array of permission objects
+ * @returns {Promise} - Response
+ */
+export const updateUserPermissions = async (userId, permissions) => {
+  const response = await API.put(`/permissions/user/${userId}`, { permissions });
+  return response.data;
+};
+

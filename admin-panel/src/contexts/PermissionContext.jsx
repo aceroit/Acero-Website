@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import * as permissionService from '../services/permissionService';
+import * as resourceService from '../services/resourceService';
 import { STORAGE_KEYS } from '../utils/constants';
 import { checkPermission as checkPermissionHelper } from '../utils/permissionHelpers';
 
@@ -8,15 +9,21 @@ const PermissionContext = createContext(null);
 
 export const PermissionProvider = ({ children }) => {
   const [permissions, setPermissions] = useState([]);
+  const [resources, setResources] = useState([]);
+  const [menuResources, setMenuResources] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [resourcesLoading, setResourcesLoading] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
-  // Fetch permissions when user is authenticated
+  // Fetch permissions and resources when user is authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       fetchPermissions();
+      fetchResources();
     } else {
       setPermissions([]);
+      setResources([]);
+      setMenuResources([]);
     }
   }, [isAuthenticated, user]);
 
@@ -170,20 +177,97 @@ export const PermissionProvider = ({ children }) => {
     [permissions, user, isAuthenticated]
   );
 
+  // Fetch resources for sidebar menu
+  const fetchResources = useCallback(async () => {
+    try {
+      setResourcesLoading(true);
+      
+      // Try to get resources from localStorage first
+      const storedResources = localStorage.getItem(STORAGE_KEYS.RESOURCES);
+      if (storedResources) {
+        try {
+          const parsed = JSON.parse(storedResources);
+          setResources(parsed);
+        } catch (e) {
+          // Invalid stored data, ignore
+        }
+      }
+
+      // Fetch menu resources (showInMenu: true, isActive: true)
+      try {
+        const menuResponse = await resourceService.getActiveResources();
+        console.log('PermissionContext: Menu response', menuResponse);
+        
+        if (menuResponse && menuResponse.success) {
+          // Handle different response structures
+          let menuData = [];
+          if (Array.isArray(menuResponse.data)) {
+            menuData = menuResponse.data;
+          } else if (menuResponse.data && Array.isArray(menuResponse.data.resources)) {
+            menuData = menuResponse.data.resources;
+          } else if (menuResponse.data && menuResponse.data.resources) {
+            menuData = Array.isArray(menuResponse.data.resources) ? menuResponse.data.resources : [];
+          }
+          
+          setMenuResources(menuData);
+          console.log('PermissionContext: Set menu resources', menuData.length, 'resources');
+        } else {
+          console.warn('PermissionContext: Menu response not successful', menuResponse);
+          setMenuResources([]);
+        }
+      } catch (error) {
+        console.error('PermissionContext: Error fetching menu resources', error);
+        setMenuResources([]);
+      }
+
+      // Fetch all resources for permission checks
+      const allResponse = await resourceService.getAllResources(true);
+      if (allResponse.success) {
+        const allData = allResponse.data.resources || allResponse.data || [];
+        const resourcesArray = Array.isArray(allData) ? allData : [];
+        setResources(resourcesArray);
+        localStorage.setItem(STORAGE_KEYS.RESOURCES, JSON.stringify(resourcesArray));
+      }
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+      // If API call fails, try to use stored resources
+      const storedResources = localStorage.getItem(STORAGE_KEYS.RESOURCES);
+      if (storedResources) {
+        try {
+          const parsed = JSON.parse(storedResources);
+          setResources(parsed);
+        } catch (e) {
+          // Invalid stored data, ignore
+        }
+      }
+    } finally {
+      setResourcesLoading(false);
+    }
+  }, []);
+
   // Refresh permissions
   const refreshPermissions = useCallback(() => {
     fetchPermissions();
   }, [fetchPermissions]);
 
+  // Refresh resources
+  const refreshResources = useCallback(() => {
+    fetchResources();
+  }, [fetchResources]);
+
   const value = {
     permissions,
+    resources,
+    menuResources,
     loading,
+    resourcesLoading,
     hasPermission, // Synchronous - uses cached permissions
     checkPermissionServer, // Async - calls server API
     hasRole,
     hasAnyRole,
     canAccess,
     refreshPermissions,
+    refreshResources,
   };
 
   return (

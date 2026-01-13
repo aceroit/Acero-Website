@@ -10,7 +10,10 @@ const {
     getResourcesAndActions,
     getPermissionMatrix,
     upsertPermission,
-    deletePermission
+    deletePermission,
+    getUserPermissions,
+    updateUserPermissions,
+    getUsersByRole
 } = require('../controllers/permissionController');
 
 // All routes require authentication
@@ -53,6 +56,14 @@ router.get(
     getAllPermissions
 );
 
+// Get users in a specific role
+// Only super_admin and admin can view users by role
+router.get(
+    '/role/:role/users',
+    authorize('super_admin', 'admin'),
+    getUsersByRole
+);
+
 // Get permissions for a specific role
 // Only super_admin and admin can view role permissions
 router.get(
@@ -67,6 +78,22 @@ router.put(
     '/role/:role',
     authorize('super_admin'),
     updateRolePermissions
+);
+
+// Get permissions for a specific user (effective permissions - merged)
+// Only super_admin and admin can view user permissions
+router.get(
+    '/user/:userId',
+    authorize('super_admin', 'admin'),
+    getUserPermissions
+);
+
+// Update user-specific permission overrides
+// Only super_admin can update user permissions
+router.put(
+    '/user/:userId',
+    authorize('super_admin'),
+    updateUserPermissions
 );
 
 // Create or update a single permission

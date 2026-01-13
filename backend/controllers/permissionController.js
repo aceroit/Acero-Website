@@ -1,11 +1,15 @@
 const Permission = require('../models/Permission');
+const User = require('../models/User');
+const Resource = require('../models/Resource');
 const ActivityLog = require('../models/ActivityLog');
-const { getUserPermissions } = require('../middleware/rbac');
+const { getUserPermissions: getUserPermissionsHelper } = require('../middleware/rbac');
+const { successResponse, errorResponse } = require('../utils/responseFormatter');
+const mongoose = require('mongoose');
 
 // Get all permissions
 const getAllPermissions = async (req, res) => {
     try {
-        const { role, resource, isActive } = req.query;
+        const { role, resource, isActive, userId } = req.query;
 
         // Build query
         const query = {};
@@ -14,30 +18,47 @@ const getAllPermissions = async (req, res) => {
             query.role = role;
         }
 
+        if (userId) {
+            query.userId = new mongoose.Types.ObjectId(userId);
+        }
+
+        // If resource is provided, resolve it to ObjectId
         if (resource) {
-            query.resource = resource;
+            let resourceId = resource;
+            if (!mongoose.Types.ObjectId.isValid(resource) || resource.toString().length !== 24) {
+                const resourceDoc = await Resource.findOne({ 
+                    $or: [
+                        { slug: resource },
+                        { path: resource }
+                    ]
+                }).select('_id');
+                if (resourceDoc) {
+                    resourceId = resourceDoc._id;
+                } else {
+                    return errorResponse(res, 404, `Resource not found: ${resource}`);
+                }
+            } else {
+                resourceId = new mongoose.Types.ObjectId(resource);
+            }
+            query.resource = resourceId;
         }
 
         if (isActive !== undefined) {
             query.isActive = isActive === 'true';
         }
 
-        const permissions = await Permission.find(query).sort({ role: 1, resource: 1 });
+        const permissions = await Permission.find(query)
+            .populate('resource', 'name slug path icon')
+            .populate('userId', 'firstName lastName email role')
+            .sort({ role: 1, createdAt: -1 });
 
-        res.status(200).json({
-            success: true,
-            data: {
-                permissions
-            }
+        return successResponse(res, 200, 'Permissions retrieved successfully', {
+            permissions
         });
 
     } catch (error) {
         console.error('Get all permissions error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching permissions',
-            error: error.message
-        });
+        return errorResponse(res, 500, 'Error fetching permissions', error.message);
     }
 };
 
@@ -48,41 +69,33 @@ const getRolePermissions = async (req, res) => {
 
         const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
         if (!validRoles.includes(role)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid role',
-                validRoles
-            });
+            return errorResponse(res, 400, 'Invalid role', { validRoles });
         }
 
-        const permissions = await Permission.find({ role, isActive: true }).sort({ resource: 1 });
+        // Get permissions with populated resources
+        const permissions = await Permission.getRolePermissions(role);
 
         // Group by resource for easier consumption
         const groupedPermissions = {};
         permissions.forEach(permission => {
-            groupedPermissions[permission.resource] = {
+            const resourceKey = permission.resource?._id?.toString() || permission.resource?.slug || permission.resource;
+            groupedPermissions[resourceKey] = {
+                resource: permission.resource,
                 actions: permission.actions,
                 conditions: permission.conditions,
                 _id: permission._id
             };
         });
 
-        res.status(200).json({
-            success: true,
-            data: {
-                role,
-                permissions: groupedPermissions,
-                raw: permissions
-            }
+        return successResponse(res, 200, 'Role permissions retrieved successfully', {
+            role,
+            permissions: groupedPermissions,
+            raw: permissions
         });
 
     } catch (error) {
         console.error('Get role permissions error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching role permissions',
-            error: error.message
-        });
+        return errorResponse(res, 500, 'Error fetching role permissions', error.message);
     }
 };
 
@@ -93,23 +106,16 @@ const updateRolePermissions = async (req, res) => {
         const { permissions } = req.body; // Array of {resource, actions, conditions}
 
         if (!permissions || !Array.isArray(permissions)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Permissions must be an array'
-            });
+            return errorResponse(res, 400, 'Permissions must be an array');
         }
 
         const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
         if (!validRoles.includes(role)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid role',
-                validRoles
-            });
+            return errorResponse(res, 400, 'Invalid role', { validRoles });
         }
 
         // Get current permissions for logging
-        const oldPermissions = await Permission.find({ role });
+        const oldPermissions = await Permission.find({ role }).populate('resource', 'name slug');
 
         // Delete existing permissions for this role
         await Permission.deleteMany({ role });
@@ -117,13 +123,30 @@ const updateRolePermissions = async (req, res) => {
         // Create new permissions
         const newPermissions = [];
         for (const perm of permissions) {
-            if (!perm.resource || !perm.actions) {
+            if (!perm.resource || !perm.actions || !Array.isArray(perm.actions)) {
                 continue;
+            }
+
+            // Get resource ID (supports slug, path, or ObjectId)
+            let resourceId = perm.resource;
+            if (!mongoose.Types.ObjectId.isValid(perm.resource) || perm.resource.toString().length !== 24) {
+                const resourceDoc = await Resource.findOne({ 
+                    $or: [
+                        { slug: perm.resource },
+                        { path: perm.resource }
+                    ]
+                }).select('_id');
+                if (!resourceDoc) {
+                    continue; // Skip invalid resources
+                }
+                resourceId = resourceDoc._id;
+            } else {
+                resourceId = new mongoose.Types.ObjectId(perm.resource);
             }
 
             const permission = new Permission({
                 role,
-                resource: perm.resource,
+                resource: resourceId,
                 actions: perm.actions,
                 conditions: perm.conditions || {},
                 isActive: true
@@ -140,7 +163,7 @@ const updateRolePermissions = async (req, res) => {
             resource: 'permission',
             changes: {
                 before: oldPermissions.map(p => ({
-                    resource: p.resource,
+                    resource: p.resource?._id || p.resource,
                     actions: p.actions
                 })),
                 after: newPermissions.map(p => ({
@@ -153,192 +176,195 @@ const updateRolePermissions = async (req, res) => {
             metadata: { role }
         });
 
-        res.status(200).json({
-            success: true,
-            message: 'Role permissions updated successfully',
-            data: {
-                role,
-                permissions: newPermissions
-            }
+        // Populate resources in response
+        const populatedPermissions = await Permission.find({
+            _id: { $in: newPermissions.map(p => p._id) }
+        }).populate('resource', 'name slug path icon');
+
+        return successResponse(res, 200, 'Role permissions updated successfully', {
+            role,
+            permissions: populatedPermissions
         });
 
     } catch (error) {
         console.error('Update role permissions error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error updating role permissions',
-            error: error.message
-        });
+        return errorResponse(res, 500, 'Error updating role permissions', error.message);
     }
 };
 
-// Get current user's permissions
+// Get current user's permissions (effective permissions - merged)
 const getMyPermissions = async (req, res) => {
     try {
         const userId = req.user._id;
         const userRole = req.user.role;
 
-        // Use the getUserPermissions helper from rbac.js
-        const permissionData = await getUserPermissions(userId);
+        // Use the getUserPermissions helper from rbac.js (returns effective permissions)
+        const permissionData = await getUserPermissionsHelper(userId);
 
         // Format response to match other permission endpoints
         // For super_admin, return a special flag indicating all permissions
         if (permissionData.hasAllPermissions) {
-            return res.status(200).json({
-                success: true,
-                data: {
-                    role: 'super_admin',
-                    hasAllPermissions: true,
-                    permissions: [] // Empty array indicates all permissions
-                }
+            return successResponse(res, 200, 'Permissions retrieved successfully', {
+                role: 'super_admin',
+                hasAllPermissions: true,
+                permissions: [] // Empty array indicates all permissions
             });
         }
 
-        // For other roles, return their actual permissions
-        res.status(200).json({
-            success: true,
-            data: {
-                role: permissionData.role,
-                hasAllPermissions: false,
-                permissions: permissionData.permissions
-            }
+        // For other roles, return their actual effective permissions (merged)
+        return successResponse(res, 200, 'Permissions retrieved successfully', {
+            role: permissionData.role,
+            hasAllPermissions: false,
+            permissions: permissionData.permissions
         });
 
     } catch (error) {
         console.error('Get my permissions error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching user permissions',
-            error: error.message
-        });
+        return errorResponse(res, 500, 'Error fetching user permissions', error.message);
     }
 };
 
-// Check if current user has a specific permission
+// Check if current user has a specific permission (checks merged permissions)
 const checkUserPermission = async (req, res) => {
     try {
         const { resource, action } = req.body;
 
         if (!resource || !action) {
-            return res.status(400).json({
-                success: false,
-                message: 'Resource and action are required'
-            });
+            return errorResponse(res, 400, 'Resource and action are required');
         }
 
+        const userId = req.user._id;
         const userRole = req.user.role;
 
         // Super admin always has permission
         if (userRole === 'super_admin') {
-            return res.status(200).json({
-                success: true,
-                data: {
-                    hasPermission: true,
-                    reason: 'Super admin has all permissions'
-                }
+            return successResponse(res, 200, 'Permission check successful', {
+                hasPermission: true,
+                reason: 'Super admin has all permissions'
             });
         }
 
-        const hasPermission = await Permission.hasPermission(userRole, resource, action);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                hasPermission,
-                role: userRole,
-                resource,
-                action
+        // Get resource ID (supports slug, path, or ObjectId)
+        let resourceId = resource;
+        if (!mongoose.Types.ObjectId.isValid(resource) || resource.toString().length !== 24) {
+            const resourceDoc = await Resource.findOne({ 
+                $or: [
+                    { slug: resource },
+                    { path: resource }
+                ]
+            }).select('_id');
+            if (!resourceDoc) {
+                return errorResponse(res, 404, `Resource not found: ${resource}`);
             }
+            resourceId = resourceDoc._id;
+        } else {
+            resourceId = new mongoose.Types.ObjectId(resource);
+        }
+
+        // Check user permissions (merged: user-specific + role)
+        const hasPermission = await Permission.hasUserPermission(userId, resourceId, action);
+
+        return successResponse(res, 200, 'Permission check successful', {
+            hasPermission,
+            userId: userId.toString(),
+            role: userRole,
+            resource: resourceId,
+            action
         });
 
     } catch (error) {
         console.error('Check user permission error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error checking permission',
-            error: error.message
-        });
+        return errorResponse(res, 500, 'Error checking permission', error.message);
     }
 };
 
-// Get all available resources and actions
+// Get all available resources and actions (dynamically from Resource model)
 const getResourcesAndActions = async (req, res) => {
     try {
-        const resources = [
-            'users',
-            'permissions',
-            'pages',
-            'sections',
-            'section_types',
-            'products',
-            'projects',
-            'media',
-            'activity_logs'
-        ];
+        // Get all active resources from Resource model
+        const resources = await Resource.find({ isActive: true })
+            .select('name slug path icon category')
+            .sort({ order: 1, name: 1 });
+
+        // Format resources for response
+        const resourcesList = resources.map(resource => ({
+            _id: resource._id,
+            name: resource.name,
+            slug: resource.slug,
+            path: resource.path,
+            icon: resource.icon,
+            category: resource.category
+        }));
 
         const actions = ['create', 'read', 'update', 'delete', 'approve', 'publish'];
 
-        res.status(200).json({
-            success: true,
-            data: {
-                resources,
-                actions
-            }
+        return successResponse(res, 200, 'Resources and actions retrieved successfully', {
+            resources: resourcesList,
+            actions
         });
 
     } catch (error) {
         console.error('Get resources and actions error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching resources and actions',
-            error: error.message
-        });
+        return errorResponse(res, 500, 'Error fetching resources and actions', error.message);
     }
 };
 
 // Get permission matrix (all roles x all resources)
 const getPermissionMatrix = async (req, res) => {
     try {
-        const allPermissions = await Permission.find({ isActive: true });
+        // Get all role-based permissions (exclude user-specific)
+        const allPermissions = await Permission.find({ 
+            isActive: true,
+            role: { $exists: true },
+            userId: { $exists: false }
+        }).populate('resource', 'name slug path icon');
 
         const roles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
-        const resources = [...new Set(allPermissions.map(p => p.resource))];
+        
+        // Get all active resources
+        const allResources = await Resource.find({ isActive: true })
+            .select('name slug path icon category')
+            .sort({ order: 1, name: 1 });
 
         // Build matrix
         const matrix = {};
 
         roles.forEach(role => {
             matrix[role] = {};
-            resources.forEach(resource => {
+            allResources.forEach(resource => {
                 const permission = allPermissions.find(
-                    p => p.role === role && p.resource === resource
+                    p => p.role === role && 
+                    p.resource && 
+                    (p.resource._id?.toString() === resource._id.toString() || 
+                     p.resource.toString() === resource._id.toString())
                 );
-                matrix[role][resource] = permission ? {
+                matrix[role][resource._id.toString()] = permission ? {
+                    resource: permission.resource,
                     actions: permission.actions,
                     conditions: permission.conditions
                 } : {
+                    resource: {
+                        _id: resource._id,
+                        name: resource.name,
+                        slug: resource.slug,
+                        path: resource.path,
+                        icon: resource.icon
+                    },
                     actions: [],
                     conditions: {}
                 };
             });
         });
 
-        res.status(200).json({
-            success: true,
-            data: {
-                matrix,
-                roles,
-                resources
-            }
+        return successResponse(res, 200, 'Permission matrix retrieved successfully', {
+            matrix,
+            roles,
+            resources: allResources
         });
 
     } catch (error) {
         console.error('Get permission matrix error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching permission matrix',
-            error: error.message
-        });
+        return errorResponse(res, 500, 'Error fetching permission matrix', error.message);
     }
 };
 
@@ -348,23 +374,33 @@ const upsertPermission = async (req, res) => {
         const { role, resource, actions, conditions } = req.body;
 
         if (!role || !resource || !actions) {
-            return res.status(400).json({
-                success: false,
-                message: 'Role, resource, and actions are required'
-            });
+            return errorResponse(res, 400, 'Role, resource, and actions are required');
         }
 
         const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
         if (!validRoles.includes(role)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid role',
-                validRoles
-            });
+            return errorResponse(res, 400, 'Invalid role', { validRoles });
+        }
+
+        // Get resource ID (supports slug, path, or ObjectId)
+        let resourceId = resource;
+        if (!mongoose.Types.ObjectId.isValid(resource) || resource.toString().length !== 24) {
+            const resourceDoc = await Resource.findOne({ 
+                $or: [
+                    { slug: resource },
+                    { path: resource }
+                ]
+            }).select('_id');
+            if (!resourceDoc) {
+                return errorResponse(res, 404, `Resource not found: ${resource}`);
+            }
+            resourceId = resourceDoc._id;
+        } else {
+            resourceId = new mongoose.Types.ObjectId(resource);
         }
 
         // Check if permission exists
-        let permission = await Permission.findOne({ role, resource });
+        let permission = await Permission.findOne({ role, resource: resourceId });
 
         const action = permission ? 'update' : 'create';
         const oldData = permission ? {
@@ -382,7 +418,7 @@ const upsertPermission = async (req, res) => {
             // Create new
             permission = new Permission({
                 role,
-                resource,
+                resource: resourceId,
                 actions,
                 conditions: conditions || {},
                 isActive: true
@@ -405,24 +441,19 @@ const upsertPermission = async (req, res) => {
             },
             ipAddress: req.ip,
             userAgent: req.get('user-agent'),
-            metadata: { role, resource }
+            metadata: { role, resource: resourceId }
         });
 
-        res.status(200).json({
-            success: true,
-            message: `Permission ${action}d successfully`,
-            data: {
-                permission
-            }
+        // Populate resource in response
+        await permission.populate('resource', 'name slug path icon');
+
+        return successResponse(res, 200, `Permission ${action}d successfully`, {
+            permission
         });
 
     } catch (error) {
         console.error('Upsert permission error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error upserting permission',
-            error: error.message
-        });
+        return errorResponse(res, 500, 'Error upserting permission', error.message);
     }
 };
 
@@ -471,6 +502,184 @@ const deletePermission = async (req, res) => {
     }
 };
 
+// Get permissions for a specific user (effective permissions - merged)
+const getUserPermissions = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Validate user exists
+        const user = await User.findById(userId).select('role firstName lastName email');
+        if (!user) {
+            return errorResponse(res, 404, 'User not found');
+        }
+
+        // Get user-specific permissions only (not merged with role)
+        // This is what we want to show/edit in the UI
+        const userPermissions = await Permission.getUserPermissions(userId);
+
+        // Format permissions as object keyed by resource slug (for frontend compatibility)
+        const groupedPermissions = {};
+        userPermissions.forEach(permission => {
+            // Skip if resource is null/deleted
+            if (!permission.resource || !permission.resource.slug) {
+                return;
+            }
+            const resourceKey = permission.resource.slug;
+            groupedPermissions[resourceKey] = {
+                resource: permission.resource,
+                actions: permission.actions,
+                conditions: permission.conditions,
+                _id: permission._id
+            };
+        });
+
+        return successResponse(res, 200, 'User permissions retrieved successfully', {
+            user: {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role
+            },
+            permissions: groupedPermissions
+        });
+
+    } catch (error) {
+        console.error('Get user permissions error:', error);
+        return errorResponse(res, 500, 'Error fetching user permissions', error.message);
+    }
+};
+
+// Update user-specific permission overrides
+const updateUserPermissions = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { permissions } = req.body; // Array of {resource, actions, conditions}
+
+        if (!permissions || !Array.isArray(permissions)) {
+            return errorResponse(res, 400, 'Permissions must be an array');
+        }
+
+        // Validate user exists
+        const user = await User.findById(userId).select('role');
+        if (!user) {
+            return errorResponse(res, 404, 'User not found');
+        }
+
+        // Prevent modifying super_admin permissions
+        if (user.role === 'super_admin') {
+            return errorResponse(res, 403, 'Cannot modify super admin permissions');
+        }
+
+        // Get current user-specific permissions for logging
+        const oldPermissions = await Permission.getUserPermissions(userId);
+
+        // Delete existing user-specific permissions
+        await Permission.deleteMany({ userId: new mongoose.Types.ObjectId(userId) });
+
+        // Create new user-specific permissions
+        const newPermissions = [];
+        for (const perm of permissions) {
+            if (!perm.resource || !perm.actions || !Array.isArray(perm.actions)) {
+                continue;
+            }
+
+            // Get resource ID (supports slug, path, or ObjectId)
+            let resourceId = perm.resource;
+            if (!mongoose.Types.ObjectId.isValid(perm.resource) || perm.resource.toString().length !== 24) {
+                const resourceDoc = await Resource.findOne({ 
+                    $or: [
+                        { slug: perm.resource },
+                        { path: perm.resource }
+                    ]
+                }).select('_id');
+                if (!resourceDoc) {
+                    continue; // Skip invalid resources
+                }
+                resourceId = resourceDoc._id;
+            } else {
+                resourceId = new mongoose.Types.ObjectId(perm.resource);
+            }
+
+            const permission = new Permission({
+                userId: new mongoose.Types.ObjectId(userId),
+                resource: resourceId,
+                actions: perm.actions,
+                conditions: perm.conditions || {},
+                isActive: true
+            });
+
+            await permission.save();
+            newPermissions.push(permission);
+        }
+
+        // Log activity
+        await ActivityLog.logActivity({
+            userId: req.user._id,
+            action: 'update',
+            resource: 'user_permission',
+            resourceId: userId,
+            changes: {
+                before: oldPermissions.map(p => ({
+                    resource: p.resource?._id || p.resource,
+                    actions: p.actions
+                })),
+                after: newPermissions.map(p => ({
+                    resource: p.resource,
+                    actions: p.actions
+                }))
+            },
+            ipAddress: req.ip,
+            userAgent: req.get('user-agent'),
+            metadata: { targetUserId: userId }
+        });
+
+        // Populate resources in response
+        const populatedPermissions = await Permission.find({
+            _id: { $in: newPermissions.map(p => p._id) }
+        }).populate('resource', 'name slug path icon');
+
+        return successResponse(res, 200, 'User permissions updated successfully', {
+            user: {
+                _id: user._id,
+                role: user.role
+            },
+            permissions: populatedPermissions
+        });
+
+    } catch (error) {
+        console.error('Update user permissions error:', error);
+        return errorResponse(res, 500, 'Error updating user permissions', error.message);
+    }
+};
+
+// Get all users in a specific role
+const getUsersByRole = async (req, res) => {
+    try {
+        const { role } = req.params;
+
+        const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
+        if (!validRoles.includes(role)) {
+            return errorResponse(res, 400, 'Invalid role', { validRoles });
+        }
+
+        const users = await User.find({ role, isActive: true })
+            .select('-password')
+            .sort({ firstName: 1, lastName: 1 })
+            .populate('createdBy', 'firstName lastName email');
+
+        return successResponse(res, 200, 'Users retrieved successfully', {
+            role,
+            users,
+            count: users.length
+        });
+
+    } catch (error) {
+        console.error('Get users by role error:', error);
+        return errorResponse(res, 500, 'Error fetching users by role', error.message);
+    }
+};
+
 module.exports = {
     getAllPermissions,
     getRolePermissions,
@@ -480,6 +689,9 @@ module.exports = {
     getResourcesAndActions,
     getPermissionMatrix,
     upsertPermission,
-    deletePermission
+    deletePermission,
+    getUserPermissions,
+    updateUserPermissions,
+    getUsersByRole
 };
 

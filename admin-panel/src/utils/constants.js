@@ -45,6 +45,7 @@ export const ROLE_DISPLAY_NAMES = {
 export const STORAGE_KEYS = {
   TOKEN: 'token',
   USER: 'user',
-  PERMISSIONS: 'permissions'
+  PERMISSIONS: 'permissions',
+  RESOURCES: 'resources'
 };
 

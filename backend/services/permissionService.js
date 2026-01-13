@@ -1,15 +1,41 @@
 const Permission = require('../models/Permission');
 const User = require('../models/User');
+const Resource = require('../models/Resource');
+const mongoose = require('mongoose');
 
 /**
  * Permission Service
  * Centralized permission management and checking
+ * Supports both role-based and user-specific permissions
  */
 
 /**
+ * Helper: Convert resource to ObjectId if it's a string (slug or path)
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
+ * @returns {ObjectId|null} - Resource ObjectId or null if not found
+ */
+const getResourceId = async (resource) => {
+    // If already an ObjectId, return it
+    if (mongoose.Types.ObjectId.isValid(resource) && resource.toString().length === 24) {
+        return new mongoose.Types.ObjectId(resource);
+    }
+    
+    // Try to find by slug
+    const resourceDoc = await Resource.findOne({ 
+        $or: [
+            { slug: resource },
+            { path: resource }
+        ]
+    }).select('_id');
+    
+    return resourceDoc ? resourceDoc._id : null;
+};
+
+/**
  * Check if user has permission to perform action on resource
+ * Checks user-specific permissions first, then role permissions (merged)
  * @param {String} userId - User ID
- * @param {String} resource - Resource/module name (e.g., 'pages', 'sections')
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
  * @param {String} action - Action to perform (e.g., 'create', 'read', 'update', 'delete')
  * @returns {Boolean} - True if user has permission, throws error if not
  */
@@ -26,20 +52,17 @@ exports.checkPermission = async (userId, resource, action) => {
             return true;
         }
 
-        // Find permission for user's role
-        const permission = await Permission.findOne({
-            role: user.role,
-            module: resource,
-            isActive: true
-        });
-
-        if (!permission) {
-            throw new Error(`No permission found for ${user.role} on ${resource}`);
+        // Get resource ID (supports slug, path, or ObjectId)
+        const resourceId = await getResourceId(resource);
+        if (!resourceId) {
+            throw new Error(`Resource not found: ${resource}`);
         }
 
-        // Check if action is allowed
-        if (!permission.actions.includes(action)) {
-            throw new Error(`Permission denied: ${user.role} cannot ${action} ${resource}`);
+        // Use Permission model's hasUserPermission method (checks user + role)
+        const hasPermission = await Permission.hasUserPermission(userId, resourceId, action);
+
+        if (!hasPermission) {
+            throw new Error(`Permission denied: User cannot ${action} resource ${resource}`);
         }
 
         return true;
@@ -49,9 +72,9 @@ exports.checkPermission = async (userId, resource, action) => {
 };
 
 /**
- * Get all permissions for a user
+ * Get user-specific permission overrides only
  * @param {String} userId - User ID
- * @returns {Array} - Array of permissions
+ * @returns {Array} - Array of user-specific permissions
  */
 exports.getUserPermissions = async (userId) => {
     try {
@@ -60,17 +83,8 @@ exports.getUserPermissions = async (userId) => {
             throw new Error('User not found');
         }
 
-        // Super admin has all permissions
-        if (user.role === 'super_admin') {
-            return await Permission.find({ isActive: true });
-        }
-
-        // Get permissions for user's role
-        const permissions = await Permission.find({
-            role: user.role,
-            isActive: true
-        });
-
+        // Get only user-specific permission overrides
+        const permissions = await Permission.getUserPermissions(userId);
         return permissions;
     } catch (error) {
         throw error;
@@ -78,10 +92,49 @@ exports.getUserPermissions = async (userId) => {
 };
 
 /**
- * Get user's permissions for a specific resource
+ * Get effective permissions for a user (merged: role + user overrides)
+ * User-specific permissions override role permissions for the same resource
  * @param {String} userId - User ID
- * @param {String} resource - Resource/module name
- * @returns {Object} - Permission object
+ * @returns {Array} - Array of effective permissions (merged)
+ */
+exports.getEffectivePermissions = async (userId) => {
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Super admin has all permissions
+        if (user.role === 'super_admin') {
+            // Return all active permissions as if super_admin has them all
+            const allResources = await Resource.find({ isActive: true });
+            return allResources.map(resource => ({
+                resource: {
+                    _id: resource._id,
+                    name: resource.name,
+                    slug: resource.slug,
+                    path: resource.path,
+                    icon: resource.icon
+                },
+                actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
+                conditions: {},
+                source: 'super_admin'
+            }));
+        }
+
+        // Get merged permissions (role + user overrides)
+        const effectivePermissions = await Permission.getEffectivePermissions(userId);
+        return effectivePermissions;
+    } catch (error) {
+        throw error;
+    }
+};
+
+/**
+ * Get user's effective permissions for a specific resource
+ * @param {String} userId - User ID
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
+ * @returns {Object|null} - Permission object with merged permissions
  */
 exports.getResourcePermissions = async (userId, resource) => {
     try {
@@ -90,24 +143,30 @@ exports.getResourcePermissions = async (userId, resource) => {
             throw new Error('User not found');
         }
 
+        // Get resource ID
+        const resourceId = await getResourceId(resource);
+        if (!resourceId) {
+            return null;
+        }
+
         // Super admin has all permissions
         if (user.role === 'super_admin') {
+            const resourceDoc = await Resource.findById(resourceId);
             return {
-                role: 'super_admin',
-                module: resource,
+                resource: resourceDoc,
                 actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
-                isActive: true
+                conditions: {},
+                source: 'super_admin'
             };
         }
 
-        // Get permission for user's role and resource
-        const permission = await Permission.findOne({
-            role: user.role,
-            module: resource,
-            isActive: true
-        });
+        // Get effective permissions and find the one for this resource
+        const effectivePermissions = await Permission.getEffectivePermissions(userId);
+        const resourcePermission = effectivePermissions.find(
+            perm => perm.resource._id.toString() === resourceId.toString()
+        );
 
-        return permission;
+        return resourcePermission || null;
     } catch (error) {
         throw error;
     }
@@ -116,32 +175,14 @@ exports.getResourcePermissions = async (userId, resource) => {
 /**
  * Check if user can approve content
  * @param {String} userId - User ID
- * @param {String} resource - Resource/module name
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
  * @returns {Boolean} - True if user can approve
  */
 exports.canApprove = async (userId, resource) => {
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        // Only approver, admin, and super_admin can approve
-        if (!['approver', 'admin', 'super_admin'].includes(user.role)) {
-            return false;
-        }
-
-        // Check if user has approve permission for this resource
-        const permission = await Permission.findOne({
-            role: user.role,
-            module: resource,
-            actions: 'approve',
-            isActive: true
-        });
-
-        return !!permission;
+        return await exports.checkPermission(userId, resource, 'approve');
     } catch (error) {
-        throw error;
+        return false;
     }
 };
 
@@ -168,15 +209,11 @@ exports.hasRole = async (userId, roles) => {
 /**
  * Get all permissions for a specific role
  * @param {String} role - Role name
- * @returns {Array} - Array of permissions
+ * @returns {Array} - Array of permissions with populated resources
  */
 exports.getAllRolePermissions = async (role) => {
     try {
-        const permissions = await Permission.find({
-            role,
-            isActive: true
-        });
-
+        const permissions = await Permission.getRolePermissions(role);
         return permissions;
     } catch (error) {
         throw error;
@@ -186,16 +223,22 @@ exports.getAllRolePermissions = async (role) => {
 /**
  * Grant permission to a role
  * @param {String} role - Role name
- * @param {String} resource - Resource/module name
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
  * @param {Array} actions - Array of actions to grant
  * @returns {Object} - Updated permission
  */
 exports.grantPermission = async (role, resource, actions) => {
     try {
+        // Get resource ID
+        const resourceId = await getResourceId(resource);
+        if (!resourceId) {
+            throw new Error(`Resource not found: ${resource}`);
+        }
+
         // Find existing permission
         let permission = await Permission.findOne({
             role,
-            module: resource
+            resource: resourceId
         });
 
         if (permission) {
@@ -208,7 +251,7 @@ exports.grantPermission = async (role, resource, actions) => {
             // Create new permission
             permission = await Permission.create({
                 role,
-                module: resource,
+                resource: resourceId,
                 actions,
                 isActive: true
             });
@@ -223,16 +266,22 @@ exports.grantPermission = async (role, resource, actions) => {
 /**
  * Revoke permission from a role
  * @param {String} role - Role name
- * @param {String} resource - Resource/module name
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
  * @param {Array} actions - Array of actions to revoke
  * @returns {Object} - Updated permission
  */
 exports.revokePermission = async (role, resource, actions) => {
     try {
+        // Get resource ID
+        const resourceId = await getResourceId(resource);
+        if (!resourceId) {
+            throw new Error(`Resource not found: ${resource}`);
+        }
+
         // Find existing permission
         const permission = await Permission.findOne({
             role,
-            module: resource
+            resource: resourceId
         });
 
         if (!permission) {
@@ -259,7 +308,7 @@ exports.revokePermission = async (role, resource, actions) => {
 /**
  * Check if user can perform action (boolean return, no error)
  * @param {String} userId - User ID
- * @param {String} resource - Resource/module name
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
  * @param {String} action - Action to perform
  * @returns {Boolean} - True if user has permission, false otherwise
  */
@@ -292,32 +341,14 @@ exports.getUserRole = async (userId) => {
 /**
  * Check if user can publish content
  * @param {String} userId - User ID
- * @param {String} resource - Resource/module name
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
  * @returns {Boolean} - True if user can publish
  */
 exports.canPublish = async (userId, resource) => {
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        // Only admin and super_admin can publish
-        if (!['admin', 'super_admin'].includes(user.role)) {
-            return false;
-        }
-
-        // Check if user has publish permission for this resource
-        const permission = await Permission.findOne({
-            role: user.role,
-            module: resource,
-            actions: 'publish',
-            isActive: true
-        });
-
-        return !!permission;
+        return await exports.checkPermission(userId, resource, 'publish');
     } catch (error) {
-        throw error;
+        return false;
     }
 };
 
