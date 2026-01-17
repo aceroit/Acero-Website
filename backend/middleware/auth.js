@@ -41,6 +41,9 @@ const authenticate = async (req, res, next) => {
                 });
             }
 
+            // Populate role before attaching to request
+            await user.populate('role', 'name slug description level color');
+            
             // Attach user to request
             req.user = user;
             next();
@@ -72,7 +75,7 @@ const authenticate = async (req, res, next) => {
 
 // Middleware to authorize based on user roles
 const authorize = (...allowedRoles) => {
-    return (req, res, next) => {
+    return async (req, res, next) => {
         try {
             // Check if user exists in request (set by authenticate middleware)
             if (!req.user) {
@@ -82,11 +85,25 @@ const authorize = (...allowedRoles) => {
                 });
             }
 
-            // Check if user's role is in allowed roles
-            if (!allowedRoles.includes(req.user.role)) {
+            // Get user's role slug (handles both ObjectId and populated Role object)
+            let userRoleSlug = null;
+            if (req.user.role) {
+                if (typeof req.user.role === 'object' && req.user.role.slug) {
+                    userRoleSlug = req.user.role.slug;
+                } else if (typeof req.user.role === 'string') {
+                    userRoleSlug = req.user.role;
+                } else {
+                    // Role is ObjectId, populate it
+                    await req.user.populate('role', 'slug');
+                    userRoleSlug = req.user.role?.slug || null;
+                }
+            }
+
+            // Check if user's role slug is in allowed roles
+            if (!userRoleSlug || !allowedRoles.includes(userRoleSlug)) {
                 return res.status(403).json({
                     success: false,
-                    message: `Access denied. Required role: ${allowedRoles.join(' or ')}. Your role: ${req.user.role}`
+                    message: `Access denied. Required role: ${allowedRoles.join(' or ')}. Your role: ${userRoleSlug || 'unknown'}`
                 });
             }
 
@@ -118,6 +135,8 @@ const optionalAuth = async (req, res, next) => {
                 const user = await User.findById(decoded.id).select('-password');
                 
                 if (user && user.isActive) {
+                    // Populate role before attaching to request
+                    await user.populate('role', 'name slug description level color');
                     req.user = user;
                 }
             } catch (error) {
@@ -136,7 +155,7 @@ const optionalAuth = async (req, res, next) => {
 
 // Middleware to check if user owns the resource or is admin/super_admin
 const authorizeOwnerOrAdmin = (resourceUserIdField = 'createdBy') => {
-    return (req, res, next) => {
+    return async (req, res, next) => {
         try {
             if (!req.user) {
                 return res.status(401).json({
@@ -145,8 +164,22 @@ const authorizeOwnerOrAdmin = (resourceUserIdField = 'createdBy') => {
                 });
             }
 
-            // Super admins and admins can access anything
-            if (req.user.role === 'super_admin' || req.user.role === 'admin') {
+            // Get user's role slug (handles both ObjectId and populated Role object)
+            let userRoleSlug = null;
+            if (req.user.role) {
+                if (typeof req.user.role === 'object' && req.user.role.slug) {
+                    userRoleSlug = req.user.role.slug;
+                } else if (typeof req.user.role === 'string') {
+                    userRoleSlug = req.user.role;
+                } else {
+                    // Role is ObjectId, populate it
+                    await req.user.populate('role', 'slug');
+                    userRoleSlug = req.user.role?.slug || null;
+                }
+            }
+
+            // Super admins and admins can access anything (check by slug)
+            if (userRoleSlug === 'super_admin' || userRoleSlug === 'admin') {
                 return next();
             }
 

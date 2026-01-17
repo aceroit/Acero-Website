@@ -36,6 +36,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/permissions', require('./routes/permissionRoutes'));
 app.use('/api/resources', require('./routes/resourceRoutes'));
+app.use('/api/roles', require('./routes/roleRoutes'));
 app.use('/api/pages', require('./routes/pageRoutes'));
 app.use('/api/sections', require('./routes/sectionRoutes'));
 app.use('/api/section-types', require('./routes/sectionTypeRoutes'));
@@ -57,6 +58,7 @@ app.get("/", (req, res) => {
 			users: "/api/users",
 			permissions: "/api/permissions",
 			resources: "/api/resources",
+			roles: "/api/roles",
 			pages: "/api/pages",
 			sections: "/api/sections",
 			sectionTypes: "/api/section-types",

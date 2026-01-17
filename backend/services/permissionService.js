@@ -1,6 +1,7 @@
 const Permission = require('../models/Permission');
 const User = require('../models/User');
 const Resource = require('../models/Resource');
+const Role = require('../models/Role');
 const mongoose = require('mongoose');
 
 /**
@@ -32,6 +33,28 @@ const getResourceId = async (resource) => {
 };
 
 /**
+ * Helper: Convert role to ObjectId if it's a string (slug or name)
+ * @param {String|ObjectId} role - Role ObjectId, slug, or name
+ * @returns {Promise<ObjectId|null>} - Role ObjectId or null if not found
+ */
+const getRoleId = async (role) => {
+    // If already a valid ObjectId, return it
+    if (mongoose.Types.ObjectId.isValid(role) && role.toString().length === 24) {
+        return new mongoose.Types.ObjectId(role);
+    }
+    
+    // Try to find by slug or name
+    const roleDoc = await Role.findOne({
+        $or: [
+            { slug: role },
+            { name: role }
+        ]
+    }).select('_id');
+    
+    return roleDoc ? roleDoc._id : null;
+};
+
+/**
  * Check if user has permission to perform action on resource
  * Checks user-specific permissions first, then role permissions (merged)
  * @param {String} userId - User ID
@@ -41,14 +64,17 @@ const getResourceId = async (resource) => {
  */
 exports.checkPermission = async (userId, resource, action) => {
     try {
-        // Get user with role
-        const user = await User.findById(userId);
+        // Get user with populated role
+        const user = await User.findById(userId).populate('role', 'slug name');
         if (!user) {
             throw new Error('User not found');
         }
 
-        // Super admin has all permissions
-        if (user.role === 'super_admin') {
+        // Get user's role slug
+        const userRoleSlug = user?.role?.slug || (typeof user.role === 'string' ? user.role : null);
+
+        // Super admin has all permissions (check by slug)
+        if (userRoleSlug === 'super_admin') {
             return true;
         }
 
@@ -99,13 +125,16 @@ exports.getUserPermissions = async (userId) => {
  */
 exports.getEffectivePermissions = async (userId) => {
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('role', 'slug name');
         if (!user) {
             throw new Error('User not found');
         }
 
-        // Super admin has all permissions
-        if (user.role === 'super_admin') {
+        // Get user's role slug
+        const userRoleSlug = user?.role?.slug || (typeof user.role === 'string' ? user.role : null);
+
+        // Super admin has all permissions (check by slug)
+        if (userRoleSlug === 'super_admin') {
             // Return all active permissions as if super_admin has them all
             const allResources = await Resource.find({ isActive: true });
             return allResources.map(resource => ({
@@ -116,7 +145,7 @@ exports.getEffectivePermissions = async (userId) => {
                     path: resource.path,
                     icon: resource.icon
                 },
-                actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
+                actions: ['create', 'read', 'update', 'delete', 'review', 'approve', 'publish'],
                 conditions: {},
                 source: 'super_admin'
             }));
@@ -138,7 +167,7 @@ exports.getEffectivePermissions = async (userId) => {
  */
 exports.getResourcePermissions = async (userId, resource) => {
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('role', 'slug name');
         if (!user) {
             throw new Error('User not found');
         }
@@ -149,12 +178,15 @@ exports.getResourcePermissions = async (userId, resource) => {
             return null;
         }
 
-        // Super admin has all permissions
-        if (user.role === 'super_admin') {
+        // Get user's role slug
+        const userRoleSlug = user?.role?.slug || (typeof user.role === 'string' ? user.role : null);
+
+        // Super admin has all permissions (check by slug)
+        if (userRoleSlug === 'super_admin') {
             const resourceDoc = await Resource.findById(resourceId);
             return {
                 resource: resourceDoc,
-                actions: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
+                actions: ['create', 'read', 'update', 'delete', 'review', 'approve', 'publish'],
                 conditions: {},
                 source: 'super_admin'
             };
@@ -189,18 +221,54 @@ exports.canApprove = async (userId, resource) => {
 /**
  * Check if user has specific role(s)
  * @param {String} userId - User ID
- * @param {Array|String} roles - Single role or array of roles
+ * @param {Array|String} roles - Single role or array of roles (can be ObjectId, slug, or name)
  * @returns {Boolean} - True if user has one of the roles
  */
 exports.hasRole = async (userId, roles) => {
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('role', 'slug name _id');
         if (!user) {
             throw new Error('User not found');
         }
 
         const allowedRoles = Array.isArray(roles) ? roles : [roles];
-        return allowedRoles.includes(user.role);
+        
+        // Get user's role ID and slug
+        let userRoleId = null;
+        let userRoleSlug = null;
+        
+        if (user.role) {
+            if (typeof user.role === 'object' && user.role._id) {
+                userRoleId = user.role._id.toString();
+                userRoleSlug = user.role.slug;
+            } else if (typeof user.role === 'object' && user.role.toString) {
+                userRoleId = user.role.toString();
+            } else if (typeof user.role === 'string') {
+                userRoleSlug = user.role;
+            }
+        }
+
+        // Check each allowed role
+        for (const role of allowedRoles) {
+            // If role is ObjectId, compare with userRoleId
+            if (mongoose.Types.ObjectId.isValid(role) && role.toString().length === 24) {
+                if (userRoleId === role.toString()) {
+                    return true;
+                }
+            } else {
+                // Role is slug or name, compare with userRoleSlug
+                if (userRoleSlug === role) {
+                    return true;
+                }
+                // Also try to resolve role and compare
+                const roleId = await getRoleId(role);
+                if (roleId && userRoleId === roleId.toString()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     } catch (error) {
         throw error;
     }
@@ -208,11 +276,12 @@ exports.hasRole = async (userId, roles) => {
 
 /**
  * Get all permissions for a specific role
- * @param {String} role - Role name
+ * @param {String|ObjectId} role - Role ObjectId, slug, or name
  * @returns {Array} - Array of permissions with populated resources
  */
 exports.getAllRolePermissions = async (role) => {
     try {
+        // Permission.getRolePermissions already handles ObjectId, slug, or name
         const permissions = await Permission.getRolePermissions(role);
         return permissions;
     } catch (error) {
@@ -222,13 +291,19 @@ exports.getAllRolePermissions = async (role) => {
 
 /**
  * Grant permission to a role
- * @param {String} role - Role name
+ * @param {String|ObjectId} role - Role ObjectId, slug, or name
  * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
  * @param {Array} actions - Array of actions to grant
  * @returns {Object} - Updated permission
  */
 exports.grantPermission = async (role, resource, actions) => {
     try {
+        // Resolve role to ObjectId
+        const roleId = await getRoleId(role);
+        if (!roleId) {
+            throw new Error(`Role not found: ${role}`);
+        }
+
         // Get resource ID
         const resourceId = await getResourceId(resource);
         if (!resourceId) {
@@ -237,7 +312,7 @@ exports.grantPermission = async (role, resource, actions) => {
 
         // Find existing permission
         let permission = await Permission.findOne({
-            role,
+            role: roleId,
             resource: resourceId
         });
 
@@ -250,7 +325,7 @@ exports.grantPermission = async (role, resource, actions) => {
         } else {
             // Create new permission
             permission = await Permission.create({
-                role,
+                role: roleId,
                 resource: resourceId,
                 actions,
                 isActive: true
@@ -265,13 +340,19 @@ exports.grantPermission = async (role, resource, actions) => {
 
 /**
  * Revoke permission from a role
- * @param {String} role - Role name
+ * @param {String|ObjectId} role - Role ObjectId, slug, or name
  * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
  * @param {Array} actions - Array of actions to revoke
  * @returns {Object} - Updated permission
  */
 exports.revokePermission = async (role, resource, actions) => {
     try {
+        // Resolve role to ObjectId
+        const roleId = await getRoleId(role);
+        if (!roleId) {
+            throw new Error(`Role not found: ${role}`);
+        }
+
         // Get resource ID
         const resourceId = await getResourceId(resource);
         if (!resourceId) {
@@ -280,7 +361,7 @@ exports.revokePermission = async (role, resource, actions) => {
 
         // Find existing permission
         const permission = await Permission.findOne({
-            role,
+            role: roleId,
             resource: resourceId
         });
 
@@ -324,11 +405,11 @@ exports.hasPermission = async (userId, resource, action) => {
 /**
  * Get user role
  * @param {String} userId - User ID
- * @returns {String} - User role
+ * @returns {Object|String} - User role (Role object if populated, or ObjectId/string)
  */
 exports.getUserRole = async (userId) => {
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('role', 'name slug description level color');
         if (!user) {
             throw new Error('User not found');
         }

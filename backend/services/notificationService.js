@@ -111,7 +111,7 @@ class NotificationService {
         return iconMap[type] || 'bell';
     }
 
-    async notifyWorkflowSubmit(resource, resourceId, resourceTitle, submitter, reviewerIds) {
+    async notifyWorkflowSubmit(resource, resourceId, resourceTitle, submitter, reviewerIds, changeSummary = null) {
         try {
             // Get reviewer users
             const reviewers = await User.find({
@@ -121,18 +121,25 @@ class NotificationService {
             const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
+            // Build message with change summary if provided
+            const baseMessage = `${submitter.firstName} ${submitter.lastName} submitted "${resourceTitle}" for review`;
+            const messageWithSummary = changeSummary 
+                ? `${baseMessage}\n\nChange Summary: ${changeSummary}`
+                : baseMessage;
+
             // Create notifications for each reviewer
             for (const reviewer of reviewers) {
                 // In-app notification
                 await this.createInAppNotification(reviewer._id, 'workflow_submitted', {
                     title: 'Content Submitted for Review',
-                    message: `${submitter.firstName} ${submitter.lastName} submitted "${resourceTitle}" for review`,
+                    message: messageWithSummary,
                     resource,
                     resourceId,
                     metadata: {
                         submitterId: submitter._id,
                         submitterName: `${submitter.firstName} ${submitter.lastName}`,
-                        resourceTitle
+                        resourceTitle,
+                        changeSummary: changeSummary || null
                     }
                 });
 
@@ -147,7 +154,8 @@ class NotificationService {
                         resourceType: resource,
                         resourceTitle,
                         resourceUrl,
-                        adminPanelUrl
+                        adminPanelUrl,
+                        changeSummary: changeSummary || 'No change summary provided'
                     }
                 );
             }
@@ -159,7 +167,7 @@ class NotificationService {
         }
     }
 
-    async notifyWorkflowReviewed(resource, resourceId, resourceTitle, reviewer, editorId) {
+    async notifyWorkflowReviewed(resource, resourceId, resourceTitle, reviewer, editorId, changeSummary = null) {
         try {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
@@ -167,16 +175,23 @@ class NotificationService {
             const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
+            // Build message with change summary if provided
+            const baseMessage = `${reviewer.firstName} ${reviewer.lastName} reviewed "${resourceTitle}" and marked it ready for approval`;
+            const messageWithSummary = changeSummary 
+                ? `${baseMessage}\n\nChange Summary: ${changeSummary}`
+                : baseMessage;
+
             // In-app notification
             await this.createInAppNotification(editor._id, 'workflow_reviewed', {
                 title: 'Content Reviewed',
-                message: `${reviewer.firstName} ${reviewer.lastName} reviewed "${resourceTitle}" and marked it ready for approval`,
+                message: messageWithSummary,
                 resource,
                 resourceId,
                 metadata: {
                     reviewerId: reviewer._id,
                     reviewerName: `${reviewer.firstName} ${reviewer.lastName}`,
-                    resourceTitle
+                    resourceTitle,
+                    changeSummary: changeSummary || null
                 }
             });
 
@@ -191,7 +206,8 @@ class NotificationService {
                     resourceType: resource,
                     resourceTitle,
                     resourceUrl,
-                    adminPanelUrl
+                    adminPanelUrl,
+                    changeSummary: changeSummary || 'No change summary provided'
                 }
             );
 
@@ -202,7 +218,7 @@ class NotificationService {
         }
     }
 
-    async notifyWorkflowApproved(resource, resourceId, resourceTitle, approver, editorId) {
+    async notifyWorkflowApproved(resource, resourceId, resourceTitle, approver, editorId, changeSummary = null) {
         try {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
@@ -210,16 +226,23 @@ class NotificationService {
             const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
+            // Build message with change summary if provided
+            const baseMessage = `${approver.firstName} ${approver.lastName} approved "${resourceTitle}" - ready for publishing`;
+            const messageWithSummary = changeSummary 
+                ? `${baseMessage}\n\nChange Summary: ${changeSummary}`
+                : baseMessage;
+
             // In-app notification for editor
             await this.createInAppNotification(editor._id, 'workflow_approved', {
                 title: 'Content Approved',
-                message: `${approver.firstName} ${approver.lastName} approved "${resourceTitle}" - ready for publishing`,
+                message: messageWithSummary,
                 resource,
                 resourceId,
                 metadata: {
                     approverId: approver._id,
                     approverName: `${approver.firstName} ${approver.lastName}`,
-                    resourceTitle
+                    resourceTitle,
+                    changeSummary: changeSummary || null
                 }
             });
 
@@ -234,24 +257,64 @@ class NotificationService {
                     resourceType: resource,
                     resourceTitle,
                     resourceUrl,
-                    adminPanelUrl
+                    adminPanelUrl,
+                    changeSummary: changeSummary || 'No change summary provided'
                 }
             );
 
-            // Notify admins as well
-            const admins = await User.find({ role: 'admin' }).select('email firstName lastName');
-            for (const admin of admins) {
-                await this.createInAppNotification(admin._id, 'workflow_approved', {
-                    title: 'Content Ready to Publish',
-                    message: `"${resourceTitle}" has been approved and is ready for publishing`,
-                    resource,
-                    resourceId,
-                    metadata: {
-                        approverId: approver._id,
-                        approverName: `${approver.firstName} ${approver.lastName}`,
-                        resourceTitle
+            // Notify reviewers, admins, and super admins as well
+            const Role = require('../models/Role');
+            const adminRoles = await Role.find({
+                slug: { $in: ['reviewer', 'admin', 'super_admin'] }
+            }).select('_id');
+            
+            if (adminRoles.length > 0) {
+                const adminRoleIds = adminRoles.map(r => r._id);
+                const admins = await User.find({
+                    role: { $in: adminRoleIds },
+                    isActive: true
+                }).select('_id email firstName lastName');
+                
+                const adminMessage = changeSummary 
+                    ? `"${resourceTitle}" has been approved and is ready for publishing\n\nChange Summary: ${changeSummary}`
+                    : `"${resourceTitle}" has been approved and is ready for publishing`;
+                
+                for (const admin of admins) {
+                    // Skip if this is the approver themselves
+                    if (admin._id.toString() === approver._id.toString()) {
+                        continue;
                     }
-                });
+                    
+                    // In-app notification
+                    await this.createInAppNotification(admin._id, 'workflow_approved', {
+                        title: 'Content Ready to Publish',
+                        message: adminMessage,
+                        resource,
+                        resourceId,
+                        metadata: {
+                            approverId: approver._id,
+                            approverName: `${approver.firstName} ${approver.lastName}`,
+                            resourceTitle,
+                            changeSummary: changeSummary || null
+                        }
+                    });
+                    
+                    // Email notification
+                    await this.sendEmail(
+                        admin.email,
+                        `Content Ready to Publish: ${resourceTitle}`,
+                        'workflow-approved',
+                        {
+                            adminName: admin.firstName,
+                            approverName: `${approver.firstName} ${approver.lastName}`,
+                            resourceType: resource,
+                            resourceTitle,
+                            resourceUrl,
+                            adminPanelUrl,
+                            changeSummary: changeSummary || 'No change summary provided'
+                        }
+                    );
+                }
             }
 
             return true;
@@ -261,7 +324,7 @@ class NotificationService {
         }
     }
 
-    async notifyWorkflowRejected(resource, resourceId, resourceTitle, approver, editorId, feedback) {
+    async notifyWorkflowRejected(resource, resourceId, resourceTitle, approver, editorId, feedback, changeSummary = null) {
         try {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
@@ -269,17 +332,28 @@ class NotificationService {
             const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
+            // Build message with change summary if provided
+            const baseMessage = `${approver.firstName} ${approver.lastName} requested changes to "${resourceTitle}"`;
+            let messageWithSummary = baseMessage;
+            if (changeSummary) {
+                messageWithSummary += `\n\nChange Summary: ${changeSummary}`;
+            }
+            if (feedback) {
+                messageWithSummary += `\n\nFeedback: ${feedback}`;
+            }
+
             // In-app notification
             await this.createInAppNotification(editor._id, 'workflow_rejected', {
                 title: 'Changes Requested',
-                message: `${approver.firstName} ${approver.lastName} requested changes to "${resourceTitle}"`,
+                message: messageWithSummary,
                 resource,
                 resourceId,
                 metadata: {
                     approverId: approver._id,
                     approverName: `${approver.firstName} ${approver.lastName}`,
                     resourceTitle,
-                    feedback
+                    feedback,
+                    changeSummary: changeSummary || null
                 }
             });
 
@@ -294,10 +368,72 @@ class NotificationService {
                     resourceType: resource,
                     resourceTitle,
                     feedback: feedback || 'No specific feedback provided',
+                    changeSummary: changeSummary || 'No change summary provided',
                     resourceUrl,
                     adminPanelUrl
                 }
             );
+
+            // Notify reviewers, admins, and super admins as well
+            const Role = require('../models/Role');
+            const adminRoles = await Role.find({
+                slug: { $in: ['reviewer', 'admin', 'super_admin'] }
+            }).select('_id');
+            
+            if (adminRoles.length > 0) {
+                const adminRoleIds = adminRoles.map(r => r._id);
+                const admins = await User.find({
+                    role: { $in: adminRoleIds },
+                    isActive: true
+                }).select('_id email firstName lastName');
+                
+                let adminMessage = feedback
+                    ? `"${resourceTitle}" has been rejected and changes were requested\n\nFeedback: ${feedback}`
+                    : `"${resourceTitle}" has been rejected and changes were requested`;
+                
+                if (changeSummary) {
+                    adminMessage += `\n\nChange Summary: ${changeSummary}`;
+                }
+                
+                for (const admin of admins) {
+                    // Skip if this is the approver themselves
+                    if (admin._id.toString() === approver._id.toString()) {
+                        continue;
+                    }
+                    
+                    // In-app notification
+                    await this.createInAppNotification(admin._id, 'workflow_rejected', {
+                        title: 'Content Rejected',
+                        message: adminMessage,
+                        resource,
+                        resourceId,
+                        metadata: {
+                            approverId: approver._id,
+                            approverName: `${approver.firstName} ${approver.lastName}`,
+                            resourceTitle,
+                            feedback,
+                            changeSummary: changeSummary || null
+                        }
+                    });
+                    
+                    // Email notification
+                    await this.sendEmail(
+                        admin.email,
+                        `Content Rejected: ${resourceTitle}`,
+                        'workflow-rejected',
+                        {
+                            adminName: admin.firstName,
+                            approverName: `${approver.firstName} ${approver.lastName}`,
+                            resourceType: resource,
+                            resourceTitle,
+                            feedback: feedback || 'No specific feedback provided',
+                            changeSummary: changeSummary || 'No change summary provided',
+                            resourceUrl,
+                            adminPanelUrl
+                        }
+                    );
+                }
+            }
 
             return true;
         } catch (error) {
@@ -306,7 +442,7 @@ class NotificationService {
         }
     }
 
-    async notifyWorkflowChangesRequested(resource, resourceId, resourceTitle, reviewer, editorId, feedback) {
+    async notifyWorkflowChangesRequested(resource, resourceId, resourceTitle, reviewer, editorId, feedback, changeSummary = null) {
         try {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
@@ -314,17 +450,28 @@ class NotificationService {
             const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
+            // Build message with change summary if provided
+            const baseMessage = `${reviewer.firstName} ${reviewer.lastName} requested changes to "${resourceTitle}"`;
+            let messageWithSummary = baseMessage;
+            if (changeSummary) {
+                messageWithSummary += `\n\nChange Summary: ${changeSummary}`;
+            }
+            if (feedback) {
+                messageWithSummary += `\n\nFeedback: ${feedback}`;
+            }
+
             // In-app notification
             await this.createInAppNotification(editor._id, 'workflow_changes_requested', {
                 title: 'Changes Requested',
-                message: `${reviewer.firstName} ${reviewer.lastName} requested changes to "${resourceTitle}"`,
+                message: messageWithSummary,
                 resource,
                 resourceId,
                 metadata: {
                     reviewerId: reviewer._id,
                     reviewerName: `${reviewer.firstName} ${reviewer.lastName}`,
                     resourceTitle,
-                    feedback
+                    feedback,
+                    changeSummary: changeSummary || null
                 }
             });
 
@@ -339,6 +486,7 @@ class NotificationService {
                     resourceType: resource,
                     resourceTitle,
                     feedback: feedback || 'No specific feedback provided',
+                    changeSummary: changeSummary || 'No change summary provided',
                     resourceUrl,
                     adminPanelUrl
                 }
@@ -351,7 +499,63 @@ class NotificationService {
         }
     }
 
-    async notifyWorkflowPublished(resource, resourceId, resourceTitle, publisher, contributorIds) {
+    async notifyWorkflowPendingApproval(resource, resourceId, resourceTitle, reviewer, approverIds, changeSummary = null) {
+        try {
+            // Get approver users
+            const approvers = await User.find({
+                _id: { $in: approverIds }
+            }).select('email firstName lastName');
+
+            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+
+            // Build message with change summary if provided
+            const baseMessage = `${reviewer.firstName} ${reviewer.lastName} reviewed "${resourceTitle}" - ready for approval`;
+            const messageWithSummary = changeSummary 
+                ? `${baseMessage}\n\nChange Summary: ${changeSummary}`
+                : baseMessage;
+
+            // Create notifications for each approver
+            for (const approver of approvers) {
+                // In-app notification
+                await this.createInAppNotification(approver._id, 'workflow_reviewed', {
+                    title: 'Content Ready for Approval',
+                    message: messageWithSummary,
+                    resource,
+                    resourceId,
+                    metadata: {
+                        reviewerId: reviewer._id,
+                        reviewerName: `${reviewer.firstName} ${reviewer.lastName}`,
+                        resourceTitle,
+                        changeSummary: changeSummary || null
+                    }
+                });
+
+                // Email notification
+                await this.sendEmail(
+                    approver.email,
+                    `Content Ready for Approval: ${resourceTitle}`,
+                    'workflow-reviewed',
+                    {
+                        approverName: approver.firstName,
+                        reviewerName: `${reviewer.firstName} ${reviewer.lastName}`,
+                        resourceType: resource,
+                        resourceTitle,
+                        resourceUrl,
+                        adminPanelUrl,
+                        changeSummary: changeSummary || 'No change summary provided'
+                    }
+                );
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Failed to send workflow pending approval notifications:', error);
+            return false;
+        }
+    }
+
+    async notifyWorkflowPublished(resource, resourceId, resourceTitle, publisher, contributorIds, changeSummary = null) {
         try {
             const contributors = await User.find({
                 _id: { $in: contributorIds }
@@ -359,17 +563,24 @@ class NotificationService {
 
             const publicSiteUrl = process.env.PUBLIC_SITE_URL || 'http://localhost:5174';
 
+            // Build message with change summary if provided
+            const baseMessage = `"${resourceTitle}" has been published by ${publisher.firstName} ${publisher.lastName}`;
+            const messageWithSummary = changeSummary 
+                ? `${baseMessage}\n\nChange Summary: ${changeSummary}`
+                : baseMessage;
+
             for (const contributor of contributors) {
                 // In-app notification
                 await this.createInAppNotification(contributor._id, 'workflow_published', {
                     title: 'Content Published',
-                    message: `"${resourceTitle}" has been published by ${publisher.firstName} ${publisher.lastName}`,
+                    message: messageWithSummary,
                     resource,
                     resourceId,
                     metadata: {
                         publisherId: publisher._id,
                         publisherName: `${publisher.firstName} ${publisher.lastName}`,
-                        resourceTitle
+                        resourceTitle,
+                        changeSummary: changeSummary || null
                     }
                 });
 
@@ -383,6 +594,7 @@ class NotificationService {
                         publisherName: `${publisher.firstName} ${publisher.lastName}`,
                         resourceType: resource,
                         resourceTitle,
+                        changeSummary: changeSummary || 'No change summary provided',
                         publicSiteUrl
                     }
                 );
@@ -391,6 +603,68 @@ class NotificationService {
             return true;
         } catch (error) {
             console.error('Failed to send workflow published notifications:', error);
+            return false;
+        }
+    }
+
+    async notifyWorkflowPublishedToAdmins(resource, resourceId, resourceTitle, publisher, adminIds, changeSummary = null) {
+        try {
+            // Get admin users (reviewers, admins, super admins)
+            const admins = await User.find({
+                _id: { $in: adminIds }
+            }).select('email firstName lastName');
+
+            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+            const publicSiteUrl = process.env.PUBLIC_SITE_URL || 'http://localhost:5174';
+
+            // Build message with change summary if provided
+            const baseMessage = `"${resourceTitle}" has been published by ${publisher.firstName} ${publisher.lastName}`;
+            const messageWithSummary = changeSummary 
+                ? `${baseMessage}\n\nChange Summary: ${changeSummary}`
+                : baseMessage;
+
+            for (const admin of admins) {
+                // Skip if this is the publisher themselves
+                if (admin._id.toString() === publisher._id.toString()) {
+                    continue;
+                }
+
+                // In-app notification
+                await this.createInAppNotification(admin._id, 'workflow_published', {
+                    title: 'Content Published',
+                    message: messageWithSummary,
+                    resource,
+                    resourceId,
+                    metadata: {
+                        publisherId: publisher._id,
+                        publisherName: `${publisher.firstName} ${publisher.lastName}`,
+                        resourceTitle,
+                        changeSummary: changeSummary || null
+                    }
+                });
+
+                // Email notification
+                await this.sendEmail(
+                    admin.email,
+                    `Content Published: ${resourceTitle}`,
+                    'workflow-published',
+                    {
+                        adminName: admin.firstName,
+                        publisherName: `${publisher.firstName} ${publisher.lastName}`,
+                        resourceType: resource,
+                        resourceTitle,
+                        resourceUrl,
+                        adminPanelUrl,
+                        changeSummary: changeSummary || 'No change summary provided',
+                        publicSiteUrl
+                    }
+                );
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Failed to send workflow published notifications to admins:', error);
             return false;
         }
     }

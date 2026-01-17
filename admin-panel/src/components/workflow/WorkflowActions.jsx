@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button, Space, Popconfirm, Tooltip } from 'antd';
 import {
   SendOutlined,
@@ -13,6 +13,7 @@ import {
   EditOutlined,
 } from '@ant-design/icons';
 import { usePermissions } from '../../contexts/PermissionContext';
+import useWorkflowStatus from '../../hooks/useWorkflowStatus';
 import * as workflowService from '../../services/workflowService';
 import { toast } from 'react-toastify';
 import FeedbackModal from './FeedbackModal';
@@ -25,6 +26,7 @@ import FeedbackModal from './FeedbackModal';
  * @param {string} props.resource - Resource type ('page' or 'section')
  * @param {string} props.resourceId - Resource ID
  * @param {string} props.currentStatus - Current workflow status
+ * @param {string} props.createdBy - User ID who created the resource (optional)
  * @param {Array} props.availableActions - Available actions from backend (optional, will fetch if not provided)
  * @param {Function} props.onActionComplete - Callback after action completes
  * @param {boolean} props.showLabels - Whether to show button labels (default: true)
@@ -34,12 +36,20 @@ const WorkflowActions = ({
   resource,
   resourceId,
   currentStatus,
+  createdBy = null,
   availableActions = null,
   onActionComplete,
   showLabels = true,
   size = 'middle',
 }) => {
-  const { hasPermission } = usePermissions();
+  const { hasPermission, userRole } = usePermissions();
+  
+  // Check workflow status permissions
+  const workflowStatus = useWorkflowStatus({
+    status: currentStatus || 'draft',
+    resourceType: resource,
+    createdBy,
+  });
   const [actions, setActions] = useState(availableActions || []);
   const [loading, setLoading] = useState(false);
   const [fetchingActions, setFetchingActions] = useState(!availableActions);
@@ -65,12 +75,12 @@ const WorkflowActions = ({
       'draft_published': 'publish',
       'in_review_pending_approval': 'review',
       'in_review_changes_requested': 'request-changes',
-      'in_review_draft': 'submit', // Resubmit after review
+      'in_review_draft': 'revert', // Revert to draft (not submit)
       'changes_requested_in_review': 'submit',
-      'changes_requested_draft': 'submit', // Resubmit after changes
+      'changes_requested_draft': 'revert', // Revert to draft
       'pending_approval_pending_publish': 'approve',
       'pending_approval_changes_requested': 'reject',
-      'pending_approval_in_review': 'review',
+      'pending_approval_in_review': 'revert', // Send back to review
       'pending_publish_published': 'publish',
       'pending_publish_changes_requested': 'request-changes',
       'published_draft': 'unpublish',
@@ -81,7 +91,7 @@ const WorkflowActions = ({
   };
 
   const fetchAvailableActions = async () => {
-    if (!currentStatus) {
+    if (!resourceId) {
       setFetchingActions(false);
       setActions([]);
       return;
@@ -91,11 +101,14 @@ const WorkflowActions = ({
     try {
       const response = await workflowService.getAvailableActions(resource, resourceId);
       if (response.success) {
-        // Backend returns array of { status, requiredRole } objects
-        // We need to map them to action names
+        // Backend returns currentStatus and availableActions array
+        // Use the status from backend response to ensure we have the latest status
+        const backendStatus = response.data.currentStatus || currentStatus;
         const statusTransitions = response.data.availableActions || [];
+        
+        // Map transitions to action names using the backend status
         const mappedActions = statusTransitions
-          .map(transition => mapStatusToAction(currentStatus, transition.status))
+          .map(transition => mapStatusToAction(backendStatus, transition.status))
           .filter(action => action !== null); // Remove null mappings
         
         // Remove duplicates
@@ -184,7 +197,7 @@ const WorkflowActions = ({
       icon: <SendOutlined />,
       type: 'primary',
       color: '#1890ff',
-      requiresFeedback: false,
+      requiresFeedback: true, // Change summary is required for submit
     },
     review: {
       label: 'Mark as Reviewed',
@@ -244,49 +257,70 @@ const WorkflowActions = ({
     },
   };
 
+  // Filter actions based on permissions and role hierarchy
+  // IMPORTANT: Backend already checks permissions correctly via getNextPossibleStates
+  // Frontend should trust backend response, but we can do basic role checks for UI consistency
+  const filteredActions = useMemo(() => {
+    if (!actions || actions.length === 0) return [];
+    
+    // Admin/Super Admin can perform all actions returned by backend
+    if (workflowStatus.isAdmin) {
+      return actions;
+    }
+
+    // For non-admin users, trust the backend response
+    // Backend getNextPossibleStates already checks:
+    // 1. Workflow resource permissions
+    // 2. Actual resource permissions (pages/sections)
+    // 3. Creator status
+    // 4. Role hierarchy
+    // So we can trust what backend returns
+    return actions;
+  }, [actions, workflowStatus]);
+
+  // Early returns AFTER all hooks have been called
   if (fetchingActions) {
     return <Button size={size} loading>Loading actions...</Button>;
   }
 
-  if (!actions || actions.length === 0) {
+  if (!filteredActions || filteredActions.length === 0) {
     return null;
   }
 
   return (
     <>
       <Space wrap size="small">
-        {actions.map((action) => {
+        {filteredActions.map((action) => {
           const config = actionConfigs[action];
           if (!config) return null;
 
-          const buttonProps = {
-            size,
-            icon: config.icon,
-            loading: loading,
-            disabled: loading, // Disable all buttons while any action is loading
-            onClick: config.requiresFeedback
-              ? () => openFeedbackModal(action)
-              : () => handleAction(action),
-          };
-
-          if (config.type === 'primary') {
-            buttonProps.type = 'primary';
-            if (config.color) {
-              buttonProps.style = { backgroundColor: config.color, borderColor: config.color };
-            }
-          } else if (config.danger) {
-            buttonProps.danger = true;
-          }
-
-          // For destructive actions, add confirmation
+          // For destructive actions (reject/archive), show confirmation first
           if (action === 'reject' || action === 'archive') {
+            const buttonProps = {
+              size,
+              icon: config.icon,
+              loading: loading,
+              disabled: loading,
+            };
+
+            if (config.type === 'primary') {
+              buttonProps.type = 'primary';
+              if (config.color) {
+                buttonProps.style = { backgroundColor: config.color, borderColor: config.color };
+              }
+            } else if (config.danger) {
+              buttonProps.danger = true;
+            }
+
             return (
               <Popconfirm
                 key={action}
                 title={`${config.label}?`}
                 description={`Are you sure you want to ${config.label.toLowerCase()} this content?`}
                 onConfirm={() => {
-                  if (config.requiresFeedback) {
+                  // For reject: show feedback modal after confirmation
+                  // For archive: perform action directly after confirmation
+                  if (action === 'reject') {
                     openFeedbackModal(action);
                   } else {
                     handleAction(action);
@@ -300,6 +334,26 @@ const WorkflowActions = ({
                 </Button>
               </Popconfirm>
             );
+          }
+
+          // For non-destructive actions, use normal onClick handler
+          const buttonProps = {
+            size,
+            icon: config.icon,
+            loading: loading,
+            disabled: loading,
+            onClick: config.requiresFeedback
+              ? () => openFeedbackModal(action)
+              : () => handleAction(action),
+          };
+
+          if (config.type === 'primary') {
+            buttonProps.type = 'primary';
+            if (config.color) {
+              buttonProps.style = { backgroundColor: config.color, borderColor: config.color };
+            }
+          } else if (config.danger) {
+            buttonProps.danger = true;
           }
 
           return (
@@ -317,6 +371,8 @@ const WorkflowActions = ({
         title={
           feedbackModal.action === 'reject'
             ? 'Reject Content'
+            : feedbackModal.action === 'submit'
+            ? 'Submit for Review'
             : 'Request Changes'
         }
         action={feedbackModal.action}

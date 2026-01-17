@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const permissionSchema = new mongoose.Schema({
     role: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Role',
         required: function() {
             // Role is required if userId is not provided
             return !this.userId;
         },
-        enum: ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'],
         index: true
         // Role-based permission (either role or userId must be provided)
     },
@@ -27,7 +27,7 @@ const permissionSchema = new mongoose.Schema({
     },
     actions: [{
         type: String,
-        enum: ['create', 'read', 'update', 'delete', 'approve', 'publish'],
+        enum: ['create', 'read', 'update', 'delete', 'review', 'approve', 'publish'],
         required: true
     }],
     conditions: {
@@ -66,14 +66,35 @@ permissionSchema.pre('validate', function() {
 });
 
 // Static method to check if a role has permission for an action on a resource
+// role can be Role ObjectId, slug, or name
 permissionSchema.statics.hasPermission = async function(role, resource, action) {
+    const Role = mongoose.model('Role');
+    
+    // Resolve role to ObjectId (supports ObjectId, slug, or name)
+    let roleId = role;
+    if (!mongoose.Types.ObjectId.isValid(role) || role.toString().length !== 24) {
+        // Not a valid ObjectId, try to find by slug or name
+        const roleDoc = await Role.findOne({
+            $or: [
+                { slug: role },
+                { name: role }
+            ]
+        }).select('_id');
+        if (!roleDoc) {
+            return false;
+        }
+        roleId = roleDoc._id;
+    } else {
+        roleId = new mongoose.Types.ObjectId(role);
+    }
+    
     // Support both ObjectId and string resource (for backward compatibility during migration)
     const resourceQuery = mongoose.Types.ObjectId.isValid(resource) 
         ? { resource: new mongoose.Types.ObjectId(resource) }
         : { resource };
     
     const permission = await this.findOne({
-        role,
+        role: roleId,
         ...resourceQuery,
         isActive: true,
         actions: action
@@ -103,17 +124,41 @@ permissionSchema.statics.hasUserPermission = async function(userId, resource, ac
     // If no user-specific permission, check role permission
     // Get user's role first
     const User = mongoose.model('User');
-    const user = await User.findById(userId).select('role');
+    const user = await User.findById(userId).select('role').populate('role', '_id');
     if (!user || !user.role) {
         return false;
     }
     
-    return await this.hasPermission(user.role, resource, action);
+    // user.role is now ObjectId, pass it to hasPermission
+    return await this.hasPermission(user.role._id || user.role, resource, action);
 };
 
 // Static method to get all permissions for a role
+// role can be Role ObjectId, slug, or name
 permissionSchema.statics.getRolePermissions = async function(role) {
-    return await this.find({ role, isActive: true }).populate('resource', 'name slug path icon');
+    const Role = mongoose.model('Role');
+    
+    // Resolve role to ObjectId (supports ObjectId, slug, or name)
+    let roleId = role;
+    if (!mongoose.Types.ObjectId.isValid(role) || role.toString().length !== 24) {
+        // Not a valid ObjectId, try to find by slug or name
+        const roleDoc = await Role.findOne({
+            $or: [
+                { slug: role },
+                { name: role }
+            ]
+        }).select('_id');
+        if (!roleDoc) {
+            return [];
+        }
+        roleId = roleDoc._id;
+    } else {
+        roleId = new mongoose.Types.ObjectId(role);
+    }
+    
+    return await this.find({ role: roleId, isActive: true })
+        .populate('resource', 'name slug path icon')
+        .populate('role', 'name slug description level color');
 };
 
 // Static method to get all permissions for a user (user-specific overrides only)
@@ -127,17 +172,18 @@ permissionSchema.statics.getUserPermissions = async function(userId) {
 // Static method to get effective permissions for a user (merged: role + user overrides)
 permissionSchema.statics.getEffectivePermissions = async function(userId) {
     const User = mongoose.model('User');
-    const user = await User.findById(userId).select('role');
+    const user = await User.findById(userId).select('role').populate('role', '_id');
     
     if (!user || !user.role) {
         return [];
     }
     
-    // Get role permissions
+    // Get role permissions (user.role is now ObjectId)
     const rolePermissions = await this.find({ 
-        role: user.role, 
+        role: user.role._id || user.role, 
         isActive: true 
-    }).populate('resource', 'name slug path icon');
+    }).populate('resource', 'name slug path icon')
+      .populate('role', 'name slug description level color');
     
     // Get user-specific permissions
     const userPermissions = await this.find({ 
@@ -191,8 +237,29 @@ permissionSchema.statics.getEffectivePermissions = async function(userId) {
 };
 
 // Static method to get all resources a role can access
+// role can be Role ObjectId, slug, or name
 permissionSchema.statics.getRoleResources = async function(role) {
-    const permissions = await this.find({ role, isActive: true })
+    const Role = mongoose.model('Role');
+    
+    // Resolve role to ObjectId (supports ObjectId, slug, or name)
+    let roleId = role;
+    if (!mongoose.Types.ObjectId.isValid(role) || role.toString().length !== 24) {
+        // Not a valid ObjectId, try to find by slug or name
+        const roleDoc = await Role.findOne({
+            $or: [
+                { slug: role },
+                { name: role }
+            ]
+        }).select('_id');
+        if (!roleDoc) {
+            return [];
+        }
+        roleId = roleDoc._id;
+    } else {
+        roleId = new mongoose.Types.ObjectId(role);
+    }
+    
+    const permissions = await this.find({ role: roleId, isActive: true })
         .populate('resource', 'name slug path')
         .select('resource');
     return [...new Set(permissions.map(p => p.resource).filter(Boolean))];

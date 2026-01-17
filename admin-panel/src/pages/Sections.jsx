@@ -27,10 +27,40 @@ import {
 import MainLayout from '../components/MainLayout';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as sectionService from '../services/sectionService';
 import * as pageService from '../services/pageService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+
+// Visibility Switch Component (can use hooks)
+const VisibilitySwitch = ({ record, onToggle }) => {
+  const workflowStatus = useWorkflowStatus({
+    status: record.status,
+    resourceType: 'section',
+    createdBy: record.createdBy
+  });
+
+  // Disable toggle if section is in restricted status and user can't edit
+  const restrictedStatuses = ['in_review', 'pending_approval', 'pending_publish'];
+  const isRestricted = restrictedStatuses.includes(record.status);
+  const isDisabled = isRestricted && !workflowStatus.canEdit.canEdit;
+
+  return (
+    <Tooltip 
+      title={isDisabled ? (workflowStatus.canEdit.reason || 'Cannot toggle visibility in this status') : ''}
+    >
+      <Switch
+        checked={record.isVisible}
+        checkedChildren={<EyeOutlined />}
+        unCheckedChildren={<EyeInvisibleOutlined />}
+        disabled={isDisabled}
+        onChange={() => onToggle(record._id, record.isVisible, record.status, record.createdBy)}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Tooltip>
+  );
+};
 
 // Status color mapping
 const getStatusColor = (status) => {
@@ -129,8 +159,20 @@ const Sections = () => {
   };
 
   // Handle toggle visibility
-  const handleToggleVisibility = async (sectionId, currentVisibility) => {
+  const handleToggleVisibility = async (sectionId, currentVisibility, sectionStatus, sectionCreatedBy) => {
     try {
+      // Check if user can edit this section based on workflow status
+      const workflowStatus = useWorkflowStatus({
+        status: sectionStatus,
+        resourceType: 'section',
+        createdBy: sectionCreatedBy
+      });
+
+      if (!workflowStatus.canEdit.canEdit) {
+        toast.error(workflowStatus.canEdit.reason || 'You do not have permission to toggle section visibility');
+        return;
+      }
+
       const response = await sectionService.toggleVisibility(sectionId);
       if (response.success) {
         toast.success(
@@ -141,7 +183,8 @@ const Sections = () => {
         fetchSections();
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to toggle visibility');
+      const errorMessage = error.response?.data?.message || 'Failed to toggle visibility';
+      toast.error(errorMessage);
     }
   };
 
@@ -283,13 +326,7 @@ const Sections = () => {
       key: 'isVisible',
       width: 100,
       render: (_, record) => (
-        <Switch
-          checked={record.isVisible}
-          checkedChildren={<EyeOutlined />}
-          unCheckedChildren={<EyeInvisibleOutlined />}
-          onChange={() => handleToggleVisibility(record._id, record.isVisible)}
-          onClick={(e) => e.stopPropagation()}
-        />
+        <VisibilitySwitch record={record} onToggle={handleToggleVisibility} />
       ),
     },
     {

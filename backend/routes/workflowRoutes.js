@@ -3,6 +3,7 @@ const router = express.Router();
 const workflowController = require('../controllers/workflowController');
 const { authenticate } = require('../middleware/auth');
 const { checkPermission } = require('../middleware/rbac');
+const { validateChangeSummary } = require('../utils/validators');
 
 // Middleware to validate resource parameter
 const validateResource = (req, res, next) => {
@@ -27,6 +28,7 @@ router.use(authenticate);
 router.post(
     '/:resource/:id/submit',
     validateResource,
+    validateChangeSummary(true), // Require change summary for submit
     checkPermission('pages', 'update'), // Generic permission check
     workflowController.submitForReview
 );

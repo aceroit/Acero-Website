@@ -17,8 +17,8 @@ import PermissionWrapper from '../components/common/PermissionWrapper';
 import { useAuth } from '../contexts/AuthContext';
 import { usePermissions } from '../contexts/PermissionContext';
 import * as userService from '../services/userService';
-import { formatRole, getUserFullName, getRoleColor } from '../utils/roleHelpers';
-import { ROLES } from '../utils/constants';
+import { formatRole, getUserFullName, getRoleColor, getRoleDisplayName, getRoleSlug } from '../utils/roleHelpers';
+import * as roleService from '../services/roleService';
 import { toast } from 'react-toastify';
 
 const { Search } = Input;
@@ -37,6 +37,8 @@ const Users = () => {
   const [stats, setStats] = useState(null);
   const [roleFilter, setRoleFilter] = useState(null);
   const [statusFilter, setStatusFilter] = useState(null);
+  const [roles, setRoles] = useState([]);
+  const [loadingRoles, setLoadingRoles] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -80,6 +82,23 @@ const Users = () => {
     }
   };
 
+  // Fetch roles
+  const fetchRoles = async () => {
+    setLoadingRoles(true);
+    try {
+      const response = await roleService.getActiveRoles(true); // Include system roles
+      if (response.success) {
+        const rolesData = response.data.roles || response.data || [];
+        setRoles(Array.isArray(rolesData) ? rolesData : []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch roles:', error);
+      toast.error('Failed to fetch roles');
+    } finally {
+      setLoadingRoles(false);
+    }
+  };
+
   // Fetch user stats
   const fetchStats = async () => {
     if (hasPermission('users', 'read')) {
@@ -97,9 +116,13 @@ const Users = () => {
   };
 
   useEffect(() => {
+    fetchRoles();
+  }, []);
+
+  useEffect(() => {
     fetchUsers();
     fetchStats();
-  }, [pagination.current, pagination.pageSize, roleFilter, statusFilter]);
+  }, [pagination.current, pagination.pageSize, searchText, roleFilter, statusFilter]);
 
   // Handle create user
   const handleCreate = async (values) => {
@@ -200,14 +223,19 @@ const Users = () => {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
-      render: (role) => (
-        <Tag 
-          color={getRoleColor(role)}
-          className="px-3 py-1 font-semibold rounded-full"
-        >
-          {formatRole(role)}
-        </Tag>
-      ),
+      render: (role) => {
+        // Handle both Role object and string
+        const roleDisplay = typeof role === 'object' ? getRoleDisplayName(role) : formatRole(role);
+        const roleColor = getRoleColor(role);
+        return (
+          <Tag 
+            color={roleColor}
+            className="px-3 py-1 font-semibold rounded-full"
+          >
+            {roleDisplay}
+          </Tag>
+        );
+      },
       sorter: true,
     },
     {
@@ -243,7 +271,9 @@ const Users = () => {
           });
         }
 
-        if (currentUser?.role === 'super_admin' && record.role !== 'super_admin') {
+        const currentUserRoleSlug = currentUser?.role?.slug || currentUser?.role;
+        const userRoleSlug = record.role?.slug || record.role;
+        if ((currentUserRoleSlug === 'super_admin') && (userRoleSlug !== 'super_admin')) {
           menuItems.push({
             key: 'role',
             label: 'Change Role',
@@ -351,9 +381,9 @@ const Users = () => {
                 }}
                 suffixIcon={<FilterOutlined />}
               >
-                {Object.values(ROLES).map((role) => (
-                  <Option key={role} value={role}>
-                    {formatRole(role)}
+                {roles.map((role) => (
+                  <Option key={role._id} value={getRoleSlug(role)}>
+                    {getRoleDisplayName(role)}
                   </Option>
                 ))}
               </Select>
@@ -489,26 +519,34 @@ const Users = () => {
               <p className="text-lg font-semibold text-gray-900">{getUserFullName(selectedUser)}</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {['admin', 'approver', 'reviewer', 'editor', 'viewer'].map((role) => (
-                <Button
-                  key={role}
-                  type={selectedUser?.role === role ? 'primary' : 'default'}
-                  size="large"
-                  onClick={() => handleRoleChange(role)}
-                  className={`transition-all ${
-                    selectedUser?.role === role
-                      ? 'shadow-lg'
-                      : 'hover:border-[#b41c24] hover:text-[#b41c24]'
-                  }`}
-                  style={
-                    selectedUser?.role === role
-                      ? { backgroundColor: '#b41c24', borderColor: '#b41c24' }
-                      : {}
-                  }
-                >
-                  {formatRole(role)}
-                </Button>
-              ))}
+              {roles
+                .filter(role => role.slug !== 'super_admin') // Don't allow changing to super_admin
+                .map((role) => {
+                  const roleSlug = getRoleSlug(role);
+                  const userRoleSlug = selectedUser?.role?.slug || selectedUser?.role;
+                  const isSelected = userRoleSlug === roleSlug || userRoleSlug === role._id;
+                  
+                  return (
+                    <Button
+                      key={role._id}
+                      type={isSelected ? 'primary' : 'default'}
+                      size="large"
+                      onClick={() => handleRoleChange(role._id)}
+                      className={`transition-all ${
+                        isSelected
+                          ? 'shadow-lg'
+                          : 'hover:border-[#b41c24] hover:text-[#b41c24]'
+                      }`}
+                      style={
+                        isSelected
+                          ? { backgroundColor: '#b41c24', borderColor: '#b41c24' }
+                          : {}
+                      }
+                    >
+                      {getRoleDisplayName(role)}
+                    </Button>
+                  );
+                })}
             </div>
           </div>
         </Modal>

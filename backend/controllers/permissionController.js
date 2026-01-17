@@ -1,10 +1,33 @@
 const Permission = require('../models/Permission');
 const User = require('../models/User');
 const Resource = require('../models/Resource');
+const Role = require('../models/Role');
 const ActivityLog = require('../models/ActivityLog');
 const { getUserPermissions: getUserPermissionsHelper } = require('../middleware/rbac');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const mongoose = require('mongoose');
+
+/**
+ * Helper function to resolve role (ObjectId, slug, or name) to ObjectId
+ * @param {String|ObjectId} role - Role ObjectId, slug, or name
+ * @returns {Promise<ObjectId|null>} - Role ObjectId or null if not found
+ */
+const getRoleId = async (role) => {
+    // If already a valid ObjectId, return it
+    if (mongoose.Types.ObjectId.isValid(role) && role.toString().length === 24) {
+        return new mongoose.Types.ObjectId(role);
+    }
+    
+    // Try to find by slug or name
+    const roleDoc = await Role.findOne({
+        $or: [
+            { slug: role },
+            { name: role }
+        ]
+    }).select('_id');
+    
+    return roleDoc ? roleDoc._id : null;
+};
 
 // Get all permissions
 const getAllPermissions = async (req, res) => {
@@ -15,7 +38,13 @@ const getAllPermissions = async (req, res) => {
         const query = {};
 
         if (role) {
-            query.role = role;
+            // Resolve role to ObjectId (supports ObjectId, slug, or name)
+            const roleId = await getRoleId(role);
+            if (roleId) {
+                query.role = roleId;
+            } else {
+                return errorResponse(res, 404, `Role not found: ${role}`);
+            }
         }
 
         if (userId) {
@@ -49,8 +78,9 @@ const getAllPermissions = async (req, res) => {
 
         const permissions = await Permission.find(query)
             .populate('resource', 'name slug path icon')
+            .populate('role', 'name slug description level color')
             .populate('userId', 'firstName lastName email role')
-            .sort({ role: 1, createdAt: -1 });
+            .sort({ createdAt: -1 });
 
         return successResponse(res, 200, 'Permissions retrieved successfully', {
             permissions
@@ -67,13 +97,20 @@ const getRolePermissions = async (req, res) => {
     try {
         const { role } = req.params;
 
-        const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
-        if (!validRoles.includes(role)) {
-            return errorResponse(res, 400, 'Invalid role', { validRoles });
+        // Resolve role to ObjectId (supports ObjectId, slug, or name)
+        const roleId = await getRoleId(role);
+        if (!roleId) {
+            return errorResponse(res, 404, `Role not found: ${role}`);
         }
 
-        // Get permissions with populated resources
-        const permissions = await Permission.getRolePermissions(role);
+        // Get role details for response
+        const roleDoc = await Role.findById(roleId).select('name slug description level color isSystem isActive');
+        if (!roleDoc) {
+            return errorResponse(res, 404, `Role not found: ${role}`);
+        }
+
+        // Get permissions with populated resources and role
+        const permissions = await Permission.getRolePermissions(roleId);
 
         // Group by resource for easier consumption
         const groupedPermissions = {};
@@ -88,7 +125,7 @@ const getRolePermissions = async (req, res) => {
         });
 
         return successResponse(res, 200, 'Role permissions retrieved successfully', {
-            role,
+            role: roleDoc,
             permissions: groupedPermissions,
             raw: permissions
         });
@@ -109,16 +146,23 @@ const updateRolePermissions = async (req, res) => {
             return errorResponse(res, 400, 'Permissions must be an array');
         }
 
-        const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
-        if (!validRoles.includes(role)) {
-            return errorResponse(res, 400, 'Invalid role', { validRoles });
+        // Resolve role to ObjectId (supports ObjectId, slug, or name)
+        const roleId = await getRoleId(role);
+        if (!roleId) {
+            return errorResponse(res, 404, `Role not found: ${role}`);
+        }
+
+        // Get role details for response
+        const roleDoc = await Role.findById(roleId).select('name slug description level color');
+        if (!roleDoc) {
+            return errorResponse(res, 404, `Role not found: ${role}`);
         }
 
         // Get current permissions for logging
-        const oldPermissions = await Permission.find({ role }).populate('resource', 'name slug');
+        const oldPermissions = await Permission.find({ role: roleId }).populate('resource', 'name slug');
 
         // Delete existing permissions for this role
-        await Permission.deleteMany({ role });
+        await Permission.deleteMany({ role: roleId });
 
         // Create new permissions
         const newPermissions = [];
@@ -145,7 +189,7 @@ const updateRolePermissions = async (req, res) => {
             }
 
             const permission = new Permission({
-                role,
+                role: roleId,
                 resource: resourceId,
                 actions: perm.actions,
                 conditions: perm.conditions || {},
@@ -173,16 +217,18 @@ const updateRolePermissions = async (req, res) => {
             },
             ipAddress: req.ip,
             userAgent: req.get('user-agent'),
-            metadata: { role }
+            metadata: { role: roleId, roleName: roleDoc.name, roleSlug: roleDoc.slug }
         });
 
-        // Populate resources in response
+        // Populate resources and role in response
         const populatedPermissions = await Permission.find({
             _id: { $in: newPermissions.map(p => p._id) }
-        }).populate('resource', 'name slug path icon');
+        })
+        .populate('resource', 'name slug path icon')
+        .populate('role', 'name slug description level color');
 
         return successResponse(res, 200, 'Role permissions updated successfully', {
-            role,
+            role: roleDoc,
             permissions: populatedPermissions
         });
 
@@ -196,16 +242,19 @@ const updateRolePermissions = async (req, res) => {
 const getMyPermissions = async (req, res) => {
     try {
         const userId = req.user._id;
-        const userRole = req.user.role;
+        
+        // Get user with populated role
+        const user = await User.findById(userId).populate('role', 'name slug description level color');
+        const userRoleSlug = user?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
 
         // Use the getUserPermissions helper from rbac.js (returns effective permissions)
         const permissionData = await getUserPermissionsHelper(userId);
 
         // Format response to match other permission endpoints
         // For super_admin, return a special flag indicating all permissions
-        if (permissionData.hasAllPermissions) {
+        if (permissionData.hasAllPermissions || userRoleSlug === 'super_admin') {
             return successResponse(res, 200, 'Permissions retrieved successfully', {
-                role: 'super_admin',
+                role: user?.role || { slug: 'super_admin', name: 'Super Admin' },
                 hasAllPermissions: true,
                 permissions: [] // Empty array indicates all permissions
             });
@@ -213,7 +262,7 @@ const getMyPermissions = async (req, res) => {
 
         // For other roles, return their actual effective permissions (merged)
         return successResponse(res, 200, 'Permissions retrieved successfully', {
-            role: permissionData.role,
+            role: user?.role || permissionData.role,
             hasAllPermissions: false,
             permissions: permissionData.permissions
         });
@@ -234,10 +283,12 @@ const checkUserPermission = async (req, res) => {
         }
 
         const userId = req.user._id;
-        const userRole = req.user.role;
+        // Get user with populated role
+        const user = await User.findById(userId).populate('role', 'slug name');
+        const userRoleSlug = user?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
 
         // Super admin always has permission
-        if (userRole === 'super_admin') {
+        if (userRoleSlug === 'super_admin') {
             return successResponse(res, 200, 'Permission check successful', {
                 hasPermission: true,
                 reason: 'Super admin has all permissions'
@@ -267,7 +318,7 @@ const checkUserPermission = async (req, res) => {
         return successResponse(res, 200, 'Permission check successful', {
             hasPermission,
             userId: userId.toString(),
-            role: userRole,
+            role: userRoleSlug || user?.role?._id?.toString(),
             resource: resourceId,
             action
         });
@@ -296,7 +347,7 @@ const getResourcesAndActions = async (req, res) => {
             category: resource.category
         }));
 
-        const actions = ['create', 'read', 'update', 'delete', 'approve', 'publish'];
+        const actions = ['create', 'read', 'update', 'delete', 'review', 'approve', 'publish'];
 
         return successResponse(res, 200, 'Resources and actions retrieved successfully', {
             resources: resourcesList,
@@ -312,33 +363,41 @@ const getResourcesAndActions = async (req, res) => {
 // Get permission matrix (all roles x all resources)
 const getPermissionMatrix = async (req, res) => {
     try {
+        // Get all active roles dynamically from Role model
+        const roles = await Role.find({ isActive: true })
+            .select('name slug description level color isSystem')
+            .sort({ level: -1, name: 1 });
+        
         // Get all role-based permissions (exclude user-specific)
         const allPermissions = await Permission.find({ 
             isActive: true,
             role: { $exists: true },
             userId: { $exists: false }
-        }).populate('resource', 'name slug path icon');
-
-        const roles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
+        })
+        .populate('resource', 'name slug path icon')
+        .populate('role', 'name slug _id');
         
         // Get all active resources
         const allResources = await Resource.find({ isActive: true })
             .select('name slug path icon category')
             .sort({ order: 1, name: 1 });
 
-        // Build matrix
+        // Build matrix keyed by role slug
         const matrix = {};
 
         roles.forEach(role => {
-            matrix[role] = {};
+            const roleKey = role.slug || role._id.toString();
+            matrix[roleKey] = {};
             allResources.forEach(resource => {
                 const permission = allPermissions.find(
-                    p => p.role === role && 
+                    p => p.role && 
+                    (p.role._id?.toString() === role._id.toString() || 
+                     p.role.toString() === role._id.toString()) &&
                     p.resource && 
                     (p.resource._id?.toString() === resource._id.toString() || 
                      p.resource.toString() === resource._id.toString())
                 );
-                matrix[role][resource._id.toString()] = permission ? {
+                matrix[roleKey][resource._id.toString()] = permission ? {
                     resource: permission.resource,
                     actions: permission.actions,
                     conditions: permission.conditions
@@ -358,7 +417,7 @@ const getPermissionMatrix = async (req, res) => {
 
         return successResponse(res, 200, 'Permission matrix retrieved successfully', {
             matrix,
-            roles,
+            roles: roles.map(r => ({ _id: r._id, name: r.name, slug: r.slug, description: r.description, level: r.level, color: r.color, isSystem: r.isSystem })),
             resources: allResources
         });
 
@@ -377,9 +436,10 @@ const upsertPermission = async (req, res) => {
             return errorResponse(res, 400, 'Role, resource, and actions are required');
         }
 
-        const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
-        if (!validRoles.includes(role)) {
-            return errorResponse(res, 400, 'Invalid role', { validRoles });
+        // Resolve role to ObjectId (supports ObjectId, slug, or name)
+        const roleId = await getRoleId(role);
+        if (!roleId) {
+            return errorResponse(res, 404, `Role not found: ${role}`);
         }
 
         // Get resource ID (supports slug, path, or ObjectId)
@@ -400,7 +460,7 @@ const upsertPermission = async (req, res) => {
         }
 
         // Check if permission exists
-        let permission = await Permission.findOne({ role, resource: resourceId });
+        let permission = await Permission.findOne({ role: roleId, resource: resourceId });
 
         const action = permission ? 'update' : 'create';
         const oldData = permission ? {
@@ -417,7 +477,7 @@ const upsertPermission = async (req, res) => {
         } else {
             // Create new
             permission = new Permission({
-                role,
+                role: roleId,
                 resource: resourceId,
                 actions,
                 conditions: conditions || {},
@@ -441,11 +501,12 @@ const upsertPermission = async (req, res) => {
             },
             ipAddress: req.ip,
             userAgent: req.get('user-agent'),
-            metadata: { role, resource: resourceId }
+            metadata: { role: roleId, resource: resourceId }
         });
 
-        // Populate resource in response
+        // Populate resource and role in response
         await permission.populate('resource', 'name slug path icon');
+        await permission.populate('role', 'name slug description level color');
 
         return successResponse(res, 200, `Permission ${action}d successfully`, {
             permission
@@ -507,8 +568,10 @@ const getUserPermissions = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        // Validate user exists
-        const user = await User.findById(userId).select('role firstName lastName email');
+        // Validate user exists and populate role
+        const user = await User.findById(userId)
+            .select('role firstName lastName email')
+            .populate('role', 'name slug description level color');
         if (!user) {
             return errorResponse(res, 404, 'User not found');
         }
@@ -560,14 +623,17 @@ const updateUserPermissions = async (req, res) => {
             return errorResponse(res, 400, 'Permissions must be an array');
         }
 
-        // Validate user exists
-        const user = await User.findById(userId).select('role');
+        // Validate user exists and populate role
+        const user = await User.findById(userId)
+            .select('role')
+            .populate('role', 'slug name');
         if (!user) {
             return errorResponse(res, 404, 'User not found');
         }
 
-        // Prevent modifying super_admin permissions
-        if (user.role === 'super_admin') {
+        // Prevent modifying super_admin permissions (check by slug)
+        const userRoleSlug = user.role?.slug || (typeof user.role === 'string' ? user.role : null);
+        if (userRoleSlug === 'super_admin') {
             return errorResponse(res, 403, 'Cannot modify super admin permissions');
         }
 
@@ -658,18 +724,26 @@ const getUsersByRole = async (req, res) => {
     try {
         const { role } = req.params;
 
-        const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
-        if (!validRoles.includes(role)) {
-            return errorResponse(res, 400, 'Invalid role', { validRoles });
+        // Resolve role to ObjectId (supports ObjectId, slug, or name)
+        const roleId = await getRoleId(role);
+        if (!roleId) {
+            return errorResponse(res, 404, `Role not found: ${role}`);
         }
 
-        const users = await User.find({ role, isActive: true })
+        // Get role details for response
+        const roleDoc = await Role.findById(roleId).select('name slug description level color isSystem isActive');
+        if (!roleDoc) {
+            return errorResponse(res, 404, `Role not found: ${role}`);
+        }
+
+        const users = await User.find({ role: roleId, isActive: true })
             .select('-password')
             .sort({ firstName: 1, lastName: 1 })
+            .populate('role', 'name slug description level color')
             .populate('createdBy', 'firstName lastName email');
 
         return successResponse(res, 200, 'Users retrieved successfully', {
-            role,
+            role: roleDoc,
             users,
             count: users.length
         });

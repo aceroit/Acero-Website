@@ -322,6 +322,7 @@ const SectionEditor = () => {
                 resource="section"
                 resourceId={sectionId}
                 currentStatus={section.status}
+                createdBy={section.createdBy?._id || section.createdBy}
                 onActionComplete={handleWorkflowActionComplete}
                 showLabels={false}
                 size="middle"
@@ -443,6 +444,7 @@ const SectionEditor = () => {
                   style={{ 
                     backgroundColor: '#1f2937', 
                     borderColor: '#1f2937',
+                    color: '#ffffff',
                     fontWeight: '600'
                   }}
                 >

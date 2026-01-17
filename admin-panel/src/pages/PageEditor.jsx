@@ -6,7 +6,8 @@ import MainLayout from '../components/MainLayout';
 import PageForm from '../components/forms/PageForm';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
-import { WorkflowStatusBadge, WorkflowActions, WorkflowTimeline } from '../components/workflow';
+import { WorkflowStatusBadge, WorkflowActions, WorkflowTimeline, WorkflowStatusGuard } from '../components/workflow';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as pageService from '../services/pageService';
 import * as versionService from '../services/versionService';
 import { toast } from 'react-toastify';
@@ -23,6 +24,13 @@ const PageEditor = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [breadcrumb, setBreadcrumb] = useState([]);
+
+  // Check workflow status permissions
+  const workflowStatus = useWorkflowStatus({
+    status: page?.status || 'draft',
+    resourceType: 'page',
+    createdBy: page?.createdBy?._id || page?.createdBy,
+  });
 
   // Fetch page data if editing
   useEffect(() => {
@@ -58,9 +66,9 @@ const PageEditor = () => {
     try {
       let response;
       if (isEdit) {
-        // Check if page is published - prevent direct edits
-        if (page?.status === 'published') {
-          toast.error('Cannot edit published content. Please unpublish first or use workflow actions.');
+        // Check workflow status permissions before submitting
+        if (!workflowStatus.canEdit.canEdit) {
+          toast.error(workflowStatus.canEdit.reason || 'You do not have permission to edit this page');
           setLoading(false);
           return;
         }
@@ -72,7 +80,20 @@ const PageEditor = () => {
 
       if (response.success) {
         toast.success(isEdit ? 'Page updated successfully' : 'Page created successfully');
-        navigate('/pages');
+        
+        if (isEdit) {
+          // After updating, stay on the edit page
+          navigate(`/pages/${id}`);
+        } else {
+          // After creating, redirect to section creation page for the new page
+          const newPageId = response.data?.page?._id || response.data?.page?.id;
+          if (newPageId) {
+            navigate(`/pages/${newPageId}/sections/new`);
+          } else {
+            // Fallback to pages list if page ID is not available
+            navigate('/pages');
+          }
+        }
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || 
@@ -92,11 +113,12 @@ const PageEditor = () => {
   const handleWorkflowActionComplete = async (action, response) => {
     // Refresh page data to get updated status
     if (isEdit) {
+      // Immediate refresh
       await fetchPage();
-      // Small delay to ensure backend has processed the status change
+      // Additional refresh after short delay to ensure backend has processed
       setTimeout(() => {
         fetchPage();
-      }, 300);
+      }, 500);
     }
   };
 
@@ -181,28 +203,59 @@ const PageEditor = () => {
           {isEdit && page && (
             <div className="flex flex-col items-start md:items-end gap-2">
               <WorkflowStatusBadge status={page.status} size="large" />
-              <WorkflowActions
-                resource="page"
-                resourceId={id}
-                currentStatus={page.status}
-                onActionComplete={handleWorkflowActionComplete}
-                showLabels={false}
-                size="middle"
-              />
+              <Space>
+                <Button
+                  icon={<FileTextOutlined />}
+                  size="large"
+                  onClick={() => navigate(`/pages/${id}/sections`)}
+                >
+                  View Sections
+                </Button>
+                <WorkflowActions
+                  resource="page"
+                  resourceId={id}
+                  currentStatus={page.status}
+                  createdBy={page.createdBy?._id || page.createdBy}
+                  onActionComplete={handleWorkflowActionComplete}
+                  showLabels={true}
+                  size="middle"
+                />
+              </Space>
             </div>
           )}
         </div>
 
         {/* Form Card */}
         <Card className="border border-gray-200 shadow-md bg-white">
-          <PageForm
-            initialValues={page || {}}
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-            loading={loading}
-            isEdit={isEdit}
-            excludePageId={isEdit ? id : null}
-          />
+          {isEdit && page ? (
+            <WorkflowStatusGuard
+              status={page.status}
+              resourceType="page"
+              resourceId={id}
+              createdBy={page.createdBy?._id || page.createdBy}
+              action="edit"
+              showMessage={true}
+              messageType="warning"
+            >
+              <PageForm
+                initialValues={page || {}}
+                onSubmit={handleSubmit}
+                onCancel={handleCancel}
+                loading={loading}
+                isEdit={isEdit}
+                excludePageId={isEdit ? id : null}
+              />
+            </WorkflowStatusGuard>
+          ) : (
+            <PageForm
+              initialValues={page || {}}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+              loading={loading}
+              isEdit={isEdit}
+              excludePageId={isEdit ? id : null}
+            />
+          )}
         </Card>
 
         {/* Workflow Timeline - Only show when editing */}

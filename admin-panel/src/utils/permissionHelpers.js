@@ -31,7 +31,7 @@ export const checkPermission = (permissions, resource, action) => {
       Array.isArray(perm.actions) &&
       perm.actions.includes(action) &&
       perm.isActive !== false
-    );
+  );
   });
 };
 

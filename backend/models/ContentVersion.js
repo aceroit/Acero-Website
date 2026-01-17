@@ -38,7 +38,8 @@ const contentVersionSchema = new mongoose.Schema({
     changeSummary: {
         type: String,
         trim: true,
-        default: ''
+        default: '',
+        maxlength: [2000, 'Change summary must not exceed 2000 characters']
         // Brief description of what changed
     },
     createdBy: {
@@ -90,13 +91,16 @@ contentVersionSchema.statics.createVersion = async function(resourceType, resour
     
     const versionNumber = latestVersion ? latestVersion.version + 1 : 1;
     
+    // Trim and validate change summary
+    const trimmedChangeSummary = changeSummary ? changeSummary.trim() : '';
+    
     const version = new this({
         resource: resourceType,
         resourceId,
         version: versionNumber,
         data,
         status,
-        changeSummary,
+        changeSummary: trimmedChangeSummary,
         changeType: versionNumber === 1 ? 'created' : 'updated',
         createdBy: userId
     });

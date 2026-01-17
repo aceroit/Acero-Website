@@ -2,8 +2,10 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { useAuth } from './AuthContext';
 import * as permissionService from '../services/permissionService';
 import * as resourceService from '../services/resourceService';
+import * as roleService from '../services/roleService';
 import { STORAGE_KEYS } from '../utils/constants';
 import { checkPermission as checkPermissionHelper } from '../utils/permissionHelpers';
+import { getRoleSlug, getRoleDisplayName, formatRole } from '../utils/roleHelpers';
 
 const PermissionContext = createContext(null);
 
@@ -11,19 +13,23 @@ export const PermissionProvider = ({ children }) => {
   const [permissions, setPermissions] = useState([]);
   const [resources, setResources] = useState([]);
   const [menuResources, setMenuResources] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [resourcesLoading, setResourcesLoading] = useState(false);
+  const [rolesLoading, setRolesLoading] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
-  // Fetch permissions and resources when user is authenticated
+  // Fetch permissions, resources, and roles when user is authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       fetchPermissions();
       fetchResources();
+      fetchRoles();
     } else {
       setPermissions([]);
       setResources([]);
       setMenuResources([]);
+      setRoles([]);
     }
   }, [isAuthenticated, user]);
 
@@ -92,6 +98,18 @@ export const PermissionProvider = ({ children }) => {
     }
   }, [user]);
 
+  // Helper to get user role slug
+  const getUserRoleSlug = useCallback(() => {
+    if (!user?.role) return null;
+    if (typeof user.role === 'object' && user.role.slug) {
+      return user.role.slug;
+    }
+    if (typeof user.role === 'string') {
+      return user.role;
+    }
+    return null;
+  }, [user]);
+
   // Check if user has a specific permission (synchronous - uses cached permissions)
   const hasPermission = useCallback(
     (resource, action) => {
@@ -101,14 +119,15 @@ export const PermissionProvider = ({ children }) => {
 
       // Super admin has all permissions
       // Note: For super_admin, permissions array is empty but hasAllPermissions flag indicates all access
-      if (user.role === 'super_admin') {
+      const userRoleSlug = getUserRoleSlug();
+      if (userRoleSlug === 'super_admin') {
         return true;
       }
 
       // For other roles, check against loaded permissions
       return checkPermissionHelper(permissions, resource, action);
     },
-    [permissions, user, isAuthenticated]
+    [permissions, user, isAuthenticated, getUserRoleSlug]
   );
 
   // Server-side permission check (async - calls API)
@@ -119,7 +138,8 @@ export const PermissionProvider = ({ children }) => {
       }
 
       // Super admin has all permissions
-      if (user.role === 'super_admin') {
+      const userRoleSlug = getUserRoleSlug();
+      if (userRoleSlug === 'super_admin') {
         return true;
       }
 
@@ -133,7 +153,7 @@ export const PermissionProvider = ({ children }) => {
         return checkPermissionHelper(permissions, resource, action);
       }
     },
-    [permissions, user, isAuthenticated]
+    [permissions, user, isAuthenticated, getUserRoleSlug]
   );
 
   // Check if user has a specific role
@@ -142,20 +162,49 @@ export const PermissionProvider = ({ children }) => {
       if (!isAuthenticated || !user) {
         return false;
       }
-      return user.role === role;
+      
+      const userRoleSlug = getUserRoleSlug();
+      if (!userRoleSlug) return false;
+      
+      // Handle role as string (slug), ObjectId, or Role object
+      if (typeof role === 'string') {
+        return userRoleSlug === role;
+      }
+      
+      if (typeof role === 'object') {
+        const roleSlug = role.slug || getRoleSlug(role);
+        return userRoleSlug === roleSlug;
+      }
+      
+      return false;
     },
-    [user, isAuthenticated]
+    [user, isAuthenticated, getUserRoleSlug]
   );
 
   // Check if user has any of the specified roles
   const hasAnyRole = useCallback(
-    (roles) => {
+    (rolesArray) => {
       if (!isAuthenticated || !user) {
         return false;
       }
-      return Array.isArray(roles) && roles.includes(user.role);
+      
+      const userRoleSlug = getUserRoleSlug();
+      if (!userRoleSlug || !Array.isArray(rolesArray)) {
+        return false;
+      }
+      
+      return rolesArray.some(role => {
+        if (typeof role === 'string') {
+          return userRoleSlug === role;
+        }
+        if (typeof role === 'object') {
+          const roleSlug = role.slug || getRoleSlug(role);
+          return userRoleSlug === roleSlug;
+        }
+        return false;
+      });
     },
-    [user, isAuthenticated]
+    [user, isAuthenticated, getUserRoleSlug]
   );
 
   // Check if user can access a resource with any action
@@ -166,7 +215,8 @@ export const PermissionProvider = ({ children }) => {
       }
 
       // Super admin can access everything
-      if (user.role === 'super_admin') {
+      const userRoleSlug = getUserRoleSlug();
+      if (userRoleSlug === 'super_admin') {
         return true;
       }
 
@@ -174,7 +224,7 @@ export const PermissionProvider = ({ children }) => {
         (perm) => perm.resource === resource && perm.isActive !== false
       );
     },
-    [permissions, user, isAuthenticated]
+    [permissions, user, isAuthenticated, getUserRoleSlug]
   );
 
   // Fetch resources for sidebar menu
@@ -250,17 +300,91 @@ export const PermissionProvider = ({ children }) => {
     fetchPermissions();
   }, [fetchPermissions]);
 
+  // Fetch roles from API
+  const fetchRoles = useCallback(async () => {
+    try {
+      setRolesLoading(true);
+      
+      // Try to get roles from localStorage first
+      const storedRoles = localStorage.getItem(STORAGE_KEYS.ROLES);
+      if (storedRoles) {
+        try {
+          const parsed = JSON.parse(storedRoles);
+          setRoles(parsed);
+        } catch (e) {
+          // Invalid stored data, ignore
+        }
+      }
+
+      // Fetch active roles from API
+      const response = await roleService.getActiveRoles(true); // Include system roles
+      if (response.success) {
+        const rolesData = response.data.roles || response.data || [];
+        const rolesArray = Array.isArray(rolesData) ? rolesData : [];
+        setRoles(rolesArray);
+        localStorage.setItem(STORAGE_KEYS.ROLES, JSON.stringify(rolesArray));
+      }
+    } catch (error) {
+      console.error('Error fetching roles:', error);
+      // If API call fails, try to use stored roles
+      const storedRoles = localStorage.getItem(STORAGE_KEYS.ROLES);
+      if (storedRoles) {
+        try {
+          const parsed = JSON.parse(storedRoles);
+          setRoles(parsed);
+        } catch (e) {
+          // Invalid stored data, ignore
+        }
+      }
+    } finally {
+      setRolesLoading(false);
+    }
+  }, []);
+
   // Refresh resources
   const refreshResources = useCallback(() => {
     fetchResources();
   }, [fetchResources]);
 
+  // Refresh roles
+  const refreshRoles = useCallback(() => {
+    fetchRoles();
+  }, [fetchRoles]);
+
+  // Get role by slug or ObjectId
+  const getRole = useCallback((roleIdentifier) => {
+    if (!roleIdentifier) return null;
+    
+    // If it's already a role object, return it
+    if (typeof roleIdentifier === 'object' && roleIdentifier._id) {
+      return roleIdentifier;
+    }
+    
+    // Find by slug or _id
+    return roles.find(role => 
+      role.slug === roleIdentifier || 
+      role._id === roleIdentifier ||
+      role._id?.toString() === roleIdentifier?.toString()
+    ) || null;
+  }, [roles]);
+
+  // Get role display name
+  const getRoleName = useCallback((roleIdentifier) => {
+    const role = getRole(roleIdentifier);
+    if (role) {
+      return getRoleDisplayName(role);
+    }
+    return formatRole(roleIdentifier);
+  }, [getRole, roles]);
+
   const value = {
     permissions,
     resources,
     menuResources,
+    roles,
     loading,
     resourcesLoading,
+    rolesLoading,
     hasPermission, // Synchronous - uses cached permissions
     checkPermissionServer, // Async - calls server API
     hasRole,
@@ -268,6 +392,9 @@ export const PermissionProvider = ({ children }) => {
     canAccess,
     refreshPermissions,
     refreshResources,
+    refreshRoles,
+    getRole, // Get role by slug or ObjectId
+    getRoleName, // Get role display name
   };
 
   return (

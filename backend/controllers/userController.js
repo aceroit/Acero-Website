@@ -1,5 +1,29 @@
 const User = require('../models/User');
+const Role = require('../models/Role');
 const ActivityLog = require('../models/ActivityLog');
+const mongoose = require('mongoose');
+
+/**
+ * Helper function to resolve role (ObjectId, slug, or name) to ObjectId
+ * @param {String|ObjectId} role - Role ObjectId, slug, or name
+ * @returns {Promise<ObjectId|null>} - Role ObjectId or null if not found
+ */
+const getRoleId = async (role) => {
+    // If already a valid ObjectId, return it
+    if (mongoose.Types.ObjectId.isValid(role) && role.toString().length === 24) {
+        return new mongoose.Types.ObjectId(role);
+    }
+    
+    // Try to find by slug or name
+    const roleDoc = await Role.findOne({
+        $or: [
+            { slug: role },
+            { name: role }
+        ]
+    }).select('_id');
+    
+    return roleDoc ? roleDoc._id : null;
+};
 
 // Get all users (with filtering, pagination, sorting)
 const getAllUsers = async (req, res) => {
@@ -18,7 +42,25 @@ const getAllUsers = async (req, res) => {
         const query = {};
         
         if (role) {
-            query.role = role;
+            // Resolve role to ObjectId (supports ObjectId, slug, or name)
+            const roleId = await getRoleId(role);
+            if (roleId) {
+                query.role = roleId;
+            } else {
+                // If role not found, return empty result
+                return res.status(200).json({
+                    success: true,
+                    data: {
+                        users: [],
+                        pagination: {
+                            total: 0,
+                            page: parseInt(page),
+                            limit: parseInt(limit),
+                            pages: 0
+                        }
+                    }
+                });
+            }
         }
         
         if (isActive !== undefined) {
@@ -44,6 +86,7 @@ const getAllUsers = async (req, res) => {
             .sort(sort)
             .skip(skip)
             .limit(parseInt(limit))
+            .populate('role', 'name slug description level color isSystem isActive')
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
@@ -80,6 +123,7 @@ const getUserById = async (req, res) => {
 
         const user = await User.findById(id)
             .select('-password')
+            .populate('role', 'name slug description level color isSystem isActive')
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
@@ -129,12 +173,42 @@ const createUser = async (req, res) => {
             });
         }
 
-        // Admin can't create super_admin users
-        if (role === 'super_admin' && req.user.role !== 'super_admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Only super admin can create super admin users'
-            });
+        // Resolve role to ObjectId if provided (supports ObjectId, slug, or name)
+        let roleId = null;
+        if (role) {
+            roleId = await getRoleId(role);
+            if (!roleId) {
+                return res.status(404).json({
+                    success: false,
+                    message: `Role not found: ${role}`
+                });
+            }
+            
+            // Check if trying to assign super_admin role
+            const roleDoc = await Role.findById(roleId).select('slug');
+            if (roleDoc && roleDoc.slug === 'super_admin') {
+                // Get current user's role
+                const currentUser = await User.findById(req.user._id).populate('role', 'slug');
+                const currentUserRoleSlug = currentUser?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
+                
+                if (currentUserRoleSlug !== 'super_admin') {
+                    return res.status(403).json({
+                        success: false,
+                        message: 'Only super admin can create super admin users'
+                    });
+                }
+            }
+        } else {
+            // Default to viewer role if not provided
+            const viewerRole = await Role.findOne({ slug: 'viewer' }).select('_id');
+            if (viewerRole) {
+                roleId = viewerRole._id;
+            } else {
+                return res.status(500).json({
+                    success: false,
+                    message: 'Default viewer role not found. Please create roles first.'
+                });
+            }
         }
 
         // Create new user
@@ -143,13 +217,17 @@ const createUser = async (req, res) => {
             password,
             firstName,
             lastName,
-            role: role || 'viewer',
+            role: roleId,
             createdBy: req.user._id
         });
 
         await user.save();
+        
+        // Populate role for response and logging
+        await user.populate('role', 'name slug description level color');
 
         // Log activity
+        const userRoleSlug = user.role?.slug || user.role?._id?.toString();
         await ActivityLog.logActivity({
             userId: req.user._id,
             action: 'create',
@@ -159,7 +237,7 @@ const createUser = async (req, res) => {
             userAgent: req.get('user-agent'),
             metadata: { 
                 createdUserEmail: user.email,
-                createdUserRole: user.role 
+                createdUserRole: userRoleSlug
             }
         });
 
@@ -190,8 +268,8 @@ const updateUser = async (req, res) => {
         const { id } = req.params;
         const { firstName, lastName, email, role, isActive } = req.body;
 
-        // Get current user data
-        const oldUser = await User.findById(id);
+        // Get current user data with populated role
+        const oldUser = await User.findById(id).populate('role', 'slug name _id');
 
         if (!oldUser) {
             return res.status(404).json({
@@ -200,20 +278,38 @@ const updateUser = async (req, res) => {
             });
         }
 
+        // Get current user's role
+        const currentUser = await User.findById(req.user._id).populate('role', 'slug');
+        const currentUserRoleSlug = currentUser?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
+        const oldUserRoleSlug = oldUser?.role?.slug || (typeof oldUser.role === 'string' ? oldUser.role : null);
+
         // Prevent non-super-admin from updating super-admin users
-        if (oldUser.role === 'super_admin' && req.user.role !== 'super_admin') {
+        if (oldUserRoleSlug === 'super_admin' && currentUserRoleSlug !== 'super_admin') {
             return res.status(403).json({
                 success: false,
                 message: 'Only super admin can update super admin users'
             });
         }
 
-        // Prevent non-super-admin from making users super-admin
-        if (role === 'super_admin' && req.user.role !== 'super_admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Only super admin can assign super admin role'
-            });
+        // Resolve new role to ObjectId if provided
+        let newRoleId = null;
+        if (role) {
+            newRoleId = await getRoleId(role);
+            if (!newRoleId) {
+                return res.status(404).json({
+                    success: false,
+                    message: `Role not found: ${role}`
+                });
+            }
+            
+            // Check if trying to assign super_admin role
+            const newRoleDoc = await Role.findById(newRoleId).select('slug');
+            if (newRoleDoc && newRoleDoc.slug === 'super_admin' && currentUserRoleSlug !== 'super_admin') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Only super admin can assign super admin role'
+                });
+            }
         }
 
         // Check if email is being changed and if it's already taken
@@ -235,7 +331,7 @@ const updateUser = async (req, res) => {
         if (firstName) updateData.firstName = firstName;
         if (lastName) updateData.lastName = lastName;
         if (email) updateData.email = email;
-        if (role) updateData.role = role;
+        if (newRoleId) updateData.role = newRoleId;
         if (isActive !== undefined) updateData.isActive = isActive;
 
         // Update user
@@ -243,7 +339,9 @@ const updateUser = async (req, res) => {
             id,
             updateData,
             { new: true, runValidators: true }
-        ).select('-password');
+        )
+        .select('-password')
+        .populate('role', 'name slug description level color');
 
         // Log activity
         await ActivityLog.logActivity({
@@ -303,8 +401,13 @@ const deleteUser = async (req, res) => {
             });
         }
 
+        // Get current user's role
+        const currentUser = await User.findById(req.user._id).populate('role', 'slug');
+        const currentUserRoleSlug = currentUser?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
+        const userRoleSlug = user?.role?.slug || (typeof user.role === 'string' ? user.role : null);
+
         // Prevent non-super-admin from deleting super-admin users
-        if (user.role === 'super_admin' && req.user.role !== 'super_admin') {
+        if (userRoleSlug === 'super_admin' && currentUserRoleSlug !== 'super_admin') {
             return res.status(403).json({
                 success: false,
                 message: 'Only super admin can delete super admin users'
@@ -334,7 +437,7 @@ const deleteUser = async (req, res) => {
             userAgent: req.get('user-agent'),
             metadata: { 
                 deletedUserEmail: user.email,
-                deletedUserRole: user.role 
+                deletedUserRole: userRoleSlug || user.role?._id?.toString()
             }
         });
 
@@ -366,16 +469,28 @@ const changeUserRole = async (req, res) => {
             });
         }
 
-        const validRoles = ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'];
-        if (!validRoles.includes(role)) {
-            return res.status(400).json({
+        // Get current user's role
+        const currentUser = await User.findById(req.user._id).populate('role', 'slug');
+        const currentUserRoleSlug = currentUser?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
+
+        // Only super admin can change roles
+        if (currentUserRoleSlug !== 'super_admin') {
+            return res.status(403).json({
                 success: false,
-                message: 'Invalid role',
-                validRoles
+                message: 'Only super admin can change user roles'
             });
         }
 
-        const user = await User.findById(id);
+        // Resolve role to ObjectId (supports ObjectId, slug, or name)
+        const roleId = await getRoleId(role);
+        if (!roleId) {
+            return res.status(404).json({
+                success: false,
+                message: `Role not found: ${role}`
+            });
+        }
+
+        const user = await User.findById(id).populate('role', 'name slug');
 
         if (!user) {
             return res.status(404).json({
@@ -384,18 +499,13 @@ const changeUserRole = async (req, res) => {
             });
         }
 
-        // Only super admin can change roles
-        if (req.user.role !== 'super_admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Only super admin can change user roles'
-            });
-        }
-
         const oldRole = user.role;
-        user.role = role;
+        user.role = roleId;
         user.updatedBy = req.user._id;
         await user.save();
+        
+        // Populate new role for response
+        await user.populate('role', 'name slug description level color');
 
         // Log activity
         await ActivityLog.logActivity({
@@ -404,8 +514,12 @@ const changeUserRole = async (req, res) => {
             resource: 'user',
             resourceId: user._id,
             changes: {
-                before: { role: oldRole },
-                after: { role: user.role }
+                before: { 
+                    role: oldRole?.slug || oldRole?.name || oldRole?._id?.toString() || oldRole 
+                },
+                after: { 
+                    role: user.role?.slug || user.role?.name || user.role?._id?.toString() || user.role 
+                }
             },
             ipAddress: req.ip,
             userAgent: req.get('user-agent'),
@@ -445,11 +559,33 @@ const getUserStats = async (req, res) => {
                         $sum: { $cond: ['$isActive', 0, 1] }
                     }
                 }
-            },
-            {
-                $sort: { _id: 1 }
             }
         ]);
+
+        // Populate role details for stats
+        const statsWithRoles = await Promise.all(
+            stats.map(async (stat) => {
+                if (stat._id) {
+                    const role = await Role.findById(stat._id).select('name slug description level color');
+                    return {
+                        ...stat,
+                        role: role || { _id: stat._id }
+                    };
+                }
+                return stat;
+            })
+        );
+
+        // Sort by role level (desc) then name
+        statsWithRoles.sort((a, b) => {
+            if (a.role && b.role) {
+                if (a.role.level !== b.role.level) {
+                    return (b.role.level || 0) - (a.role.level || 0);
+                }
+                return (a.role.name || '').localeCompare(b.role.name || '');
+            }
+            return 0;
+        });
 
         const total = await User.countDocuments();
         const active = await User.countDocuments({ isActive: true });
@@ -461,7 +597,7 @@ const getUserStats = async (req, res) => {
                 total,
                 active,
                 inactive,
-                byRole: stats
+                byRole: statsWithRoles
             }
         });
 

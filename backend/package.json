@@ -7,7 +7,9 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "seed:permissions": "node seeders/permissions.seeder.js",
-    "migrate:resources": "node scripts/migrateResources.js"
+    "migrate:resources": "node scripts/migrateResources.js",
+    "migrate:roles": "node scripts/migrateRoles.js",
+    "setup:superadmin": "node scripts/setupSuperAdmin.js"
   },
   "keywords": [],
   "author": "",

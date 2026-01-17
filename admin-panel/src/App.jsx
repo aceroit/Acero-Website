@@ -17,11 +17,13 @@ import SectionEditor from "./pages/SectionEditor";
 import SectionTypes from "./pages/SectionTypes";
 import SectionTypeEditor from "./pages/SectionTypeEditor";
 import Resources from "./pages/Resources";
+import Roles from "./pages/Roles";
 import VersionHistory from "./pages/VersionHistory";
 import VersionCompare from "./pages/VersionCompare";
 import PendingItems from "./pages/PendingItems";
 import MyDrafts from "./pages/MyDrafts";
 import MySubmissions from "./pages/MySubmissions";
+import Workflow from "./pages/Workflow";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -79,6 +81,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* Note: roleName can be ObjectId or slug - handled in RolePermissions component */}
           <Route
             path="/profile"
             element={
@@ -176,6 +179,14 @@ function App() {
             }
           />
           <Route
+            path="/roles"
+            element={
+              <ProtectedRoute>
+                <Roles />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/versions/:resource/:id"
             element={
               <ProtectedRoute resource="pages" action="read">
@@ -212,6 +223,14 @@ function App() {
             element={
               <ProtectedRoute resource="pages" action="read">
                 <MySubmissions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workflow"
+            element={
+              <ProtectedRoute resource="workflow" action="read">
+                <Workflow />
               </ProtectedRoute>
             }
           />

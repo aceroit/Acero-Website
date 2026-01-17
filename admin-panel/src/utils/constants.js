@@ -1,4 +1,7 @@
 // Role constants
+// NOTE: Roles are now dynamic and managed through the Role model.
+// This constant is kept for backward compatibility during migration.
+// New code should fetch roles from the API using roleService.
 export const ROLES = {
   SUPER_ADMIN: 'super_admin',
   ADMIN: 'admin',
@@ -22,11 +25,13 @@ export const RESOURCES = {
 };
 
 // Action constants
+// Actions available for permissions: create, read, update, delete, review, approve, publish
 export const ACTIONS = {
   CREATE: 'create',
   READ: 'read',
   UPDATE: 'update',
   DELETE: 'delete',
+  REVIEW: 'review',
   APPROVE: 'approve',
   PUBLISH: 'publish'
 };
@@ -46,6 +51,7 @@ export const STORAGE_KEYS = {
   TOKEN: 'token',
   USER: 'user',
   PERMISSIONS: 'permissions',
-  RESOURCES: 'resources'
+  RESOURCES: 'resources',
+  ROLES: 'roles'
 };
 

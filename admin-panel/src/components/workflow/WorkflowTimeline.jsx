@@ -158,9 +158,15 @@ const WorkflowTimeline = ({
                     </div>
 
                     {version.changeSummary && (
-                      <p className="text-sm text-gray-700 mb-2">
-                        {version.changeSummary}
-                      </p>
+                      <div className="mt-2 mb-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                        <p className="text-xs font-semibold text-blue-800 mb-1 flex items-center gap-1">
+                          <FileTextOutlined />
+                          Change Summary:
+                        </p>
+                        <p className="text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
+                          {version.changeSummary}
+                        </p>
+                      </div>
                     )}
 
                     {version.feedback && (

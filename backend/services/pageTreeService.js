@@ -1,4 +1,6 @@
 const Page = require('../models/Page');
+const User = require('../models/User');
+const { canModifyTree, canModifyTreeBatch } = require('../utils/workflowStatusValidator');
 
 /**
  * Page Tree Service
@@ -118,6 +120,18 @@ class PageTreeService {
             throw new Error('Page not found');
         }
 
+        // Validate workflow status and permissions using workflowStatusValidator
+        // Fetch user object for validation
+        const user = await User.findById(updatedBy).populate('role');
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const treeValidation = await canModifyTree(user, page, 'page');
+        if (!treeValidation.canModify) {
+            throw new Error(treeValidation.reason || 'You do not have permission to move this page');
+        }
+
         // Calculate new path and level
         const { path: newPath, level: newLevel } = await this.calculatePathAndLevel(
             newParentId, 
@@ -143,9 +157,34 @@ class PageTreeService {
     /**
      * Reorder pages within the same parent
      * @param {Array} pageOrders - Array of { pageId, order }
+     * @param {String} userId - User ID performing the reorder (for validation)
      * @returns {Promise<void>}
      */
-    async reorderPages(pageOrders) {
+    async reorderPages(pageOrders, userId) {
+        // Fetch all pages being reordered to validate workflow status
+        const pageIds = pageOrders.map(item => item.pageId);
+        const pagesToReorder = await Page.find({ 
+            _id: { $in: pageIds }, 
+            isActive: true 
+        });
+
+        if (pagesToReorder.length !== pageIds.length) {
+            throw new Error('One or more pages not found');
+        }
+
+        // Validate workflow status and permissions for all pages
+        if (userId) {
+            const user = await User.findById(userId).populate('role');
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            const batchValidation = await canModifyTreeBatch(user, pagesToReorder, 'page');
+            if (!batchValidation.canModify) {
+                throw new Error(batchValidation.reason || 'You do not have permission to reorder one or more pages');
+            }
+        }
+
         const updatePromises = pageOrders.map(({ pageId, order }) => 
             Page.findByIdAndUpdate(pageId, { order })
         );
@@ -172,10 +211,10 @@ class PageTreeService {
         delete pageData.createdAt;
         delete pageData.updatedAt;
 
-        // Generate unique slug
+        // Generate unique slug (only check against active pages)
         let newSlug = `${pageData.slug}-copy`;
         let counter = 1;
-        while (await Page.findOne({ slug: newSlug })) {
+        while (await Page.findOne({ slug: newSlug, isActive: true })) {
             newSlug = `${pageData.slug}-copy-${counter}`;
             counter++;
         }
@@ -262,12 +301,16 @@ class PageTreeService {
 
     /**
      * Validate page slug is unique (excluding specific page ID)
+     * Only checks against active pages - inactive pages don't block slug reuse
      * @param {String} slug - Slug to check
      * @param {String|null} excludePageId - Page ID to exclude from check
      * @returns {Promise<Boolean>}
      */
     async isSlugUnique(slug, excludePageId = null) {
-        const query = { slug };
+        const query = { 
+            slug,
+            isActive: true  // Only check against active pages
+        };
         if (excludePageId) {
             query._id = { $ne: excludePageId };
         }

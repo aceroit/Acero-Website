@@ -11,7 +11,9 @@ import {
   Dropdown, 
   Modal,
   Switch,
-  Empty
+  Empty,
+  Badge,
+  Descriptions
 } from 'antd';
 import { 
   ArrowLeftOutlined, 
@@ -19,21 +21,24 @@ import {
   MoreOutlined,
   UserOutlined,
   SettingOutlined,
-  SaveOutlined
+  SaveOutlined,
+  InfoCircleOutlined
 } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import { usePermissions } from '../contexts/PermissionContext';
 import * as permissionService from '../services/permissionService';
-import * as userService from '../services/userService';
+import * as roleService from '../services/roleService';
 import { formatRole, getRoleColor, getUserFullName } from '../utils/roleHelpers';
 import { ACTIONS } from '../utils/constants';
 import { toast } from 'react-toastify';
 
 const RolePermissions = () => {
-  const { roleName } = useParams();
+  const { roleName } = useParams(); // Can be ObjectId or slug
   const navigate = useNavigate();
   const { hasRole } = usePermissions();
   
+  const [role, setRole] = useState(null);
+  const [loadingRole, setLoadingRole] = useState(true);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -45,8 +50,39 @@ const RolePermissions = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [initialUserPermissions, setInitialUserPermissions] = useState({});
 
+  // Fetch role details
+  const fetchRole = async () => {
+    if (!roleName) return;
+    
+    setLoadingRole(true);
+    try {
+      // Try to fetch by ID first, then by slug
+      let response;
+      try {
+        response = await roleService.getRoleById(roleName);
+      } catch (error) {
+        // If ID fails, try slug
+        response = await roleService.getRoleBySlug(roleName);
+      }
+      
+      if (response.success) {
+        setRole(response.data.role || response.data);
+      } else {
+        toast.error('Role not found');
+        navigate('/permissions');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to fetch role');
+      navigate('/permissions');
+    } finally {
+      setLoadingRole(false);
+    }
+  };
+
   // Fetch users in this role
   const fetchUsers = async () => {
+    if (!roleName) return;
+    
     setLoading(true);
     try {
       const response = await permissionService.getUsersByRole(roleName);
@@ -103,6 +139,7 @@ const RolePermissions = () => {
 
   useEffect(() => {
     if (roleName) {
+      fetchRole();
       fetchUsers();
       fetchResources();
     }
@@ -256,11 +293,37 @@ const RolePermissions = () => {
     },
   ];
 
-  if (loading) {
+  // Get role display name
+  const getRoleDisplayName = () => {
+    if (role) {
+      return role.name || formatRole(role.slug || roleName);
+    }
+    return formatRole(roleName);
+  };
+
+  // Get role display color
+  const getRoleDisplayColor = () => {
+    if (role && role.color && role.color !== 'default') {
+      return role.color;
+    }
+    return getRoleColor(role?.slug || roleName);
+  };
+
+  if (loadingRole || loading) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <Spin size="large" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!role) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Empty description="Role not found" />
         </div>
       </MainLayout>
     );
@@ -276,7 +339,7 @@ const RolePermissions = () => {
               Permissions
             </a>
           </Breadcrumb.Item>
-          <Breadcrumb.Item>{formatRole(roleName)}</Breadcrumb.Item>
+          <Breadcrumb.Item>{getRoleDisplayName()}</Breadcrumb.Item>
         </Breadcrumb>
 
         {/* Header */}
@@ -292,7 +355,7 @@ const RolePermissions = () => {
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 flex items-center gap-2">
                 <SafetyOutlined className="text-gray-800" />
-                {formatRole(roleName)} - Users
+                {getRoleDisplayName()} - Users
               </h1>
               <p className="text-gray-500 text-sm">
                 Manage users in this role and their individual permissions
@@ -300,6 +363,46 @@ const RolePermissions = () => {
             </div>
           </div>
         </div>
+
+        {/* Role Information Card */}
+        <Card 
+          className="border border-gray-200 shadow-md bg-white mb-6"
+          title={
+            <div className="flex items-center gap-2">
+              <InfoCircleOutlined className="text-gray-800" />
+              <span className="text-lg font-semibold text-gray-900">Role Information</span>
+            </div>
+          }
+        >
+          <Descriptions column={{ xs: 1, sm: 2, md: 3 }} bordered>
+            <Descriptions.Item label="Name">
+              <span className="font-semibold">{role.name}</span>
+            </Descriptions.Item>
+            <Descriptions.Item label="Slug">
+              <Tag color={getRoleDisplayColor()}>{role.slug}</Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Level">
+              <Tag color="blue">{role.level || 0}</Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Status">
+              <Tag color={role.isActive ? 'green' : 'default'}>
+                {role.isActive ? 'Active' : 'Inactive'}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Type">
+              {role.isSystem ? (
+                <Badge count="System" style={{ backgroundColor: '#fa8c16' }} />
+              ) : (
+                <Tag color="default">Custom</Tag>
+              )}
+            </Descriptions.Item>
+            {role.description && (
+              <Descriptions.Item label="Description" span={3}>
+                {role.description}
+              </Descriptions.Item>
+            )}
+          </Descriptions>
+        </Card>
 
         {/* Users Table */}
         <Card 
