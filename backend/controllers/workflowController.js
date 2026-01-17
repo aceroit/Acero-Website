@@ -1,5 +1,12 @@
 const Page = require('../models/Page');
 const Section = require('../models/Section');
+const Project = require('../models/Project');
+const Branch = require('../models/Branch');
+const Customer = require('../models/Customer');
+const Certification = require('../models/Certification');
+const CompanyUpdate = require('../models/CompanyUpdate');
+const CompanyUpdateCategory = require('../models/CompanyUpdateCategory');
+const Brochure = require('../models/Brochure');
 const ContentVersion = require('../models/ContentVersion');
 const ActivityLog = require('../models/ActivityLog');
 const User = require('../models/User');
@@ -20,17 +27,45 @@ const { successResponse, errorResponse } = require('../utils/responseFormatter')
 function getModel(resource) {
     const models = {
         page: Page,
-        section: Section
+        section: Section,
+        project: Project,
+        branch: Branch,
+        customer: Customer,
+        certification: Certification,
+        'company-update': CompanyUpdate,
+        'company-update-category': CompanyUpdateCategory,
+        brochure: Brochure,
+        'building-type': require('../models/BuildingType'),
+        industry: require('../models/Industry'),
+        country: require('../models/Country'),
+        region: require('../models/Region'),
+        area: require('../models/Area')
     };
     return models[resource];
 }
 
 // Get resource title
 function getResourceTitle(resource) {
-    // For pages, use title
+    // For pages, company updates, and brochures, use title
     if (resource.title) {
         return resource.title;
     }
+    
+    // For projects, use jobNumber
+    if (resource.jobNumber) {
+        return resource.jobNumber;
+    }
+    
+    // For branches, use branchName
+    if (resource.branchName) {
+        return resource.branchName;
+    }
+    
+    // For customers, certifications, company update categories, building types, industries, countries, regions, and areas, use name
+    if (resource.name) {
+        return resource.name;
+    }
+    
     // For sections, try to get title from content or use section type
     if (resource.content) {
         if (resource.content.title) {

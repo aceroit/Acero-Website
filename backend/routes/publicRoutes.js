@@ -2,6 +2,13 @@ const express = require('express');
 const router = express.Router();
 const Page = require('../models/Page');
 const Section = require('../models/Section');
+const Project = require('../models/Project');
+const Branch = require('../models/Branch');
+const Customer = require('../models/Customer');
+const Certification = require('../models/Certification');
+const CompanyUpdate = require('../models/CompanyUpdate');
+const CompanyUpdateCategory = require('../models/CompanyUpdateCategory');
+const Brochure = require('../models/Brochure');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 
 /**
@@ -166,6 +173,231 @@ router.get('/search', async (req, res) => {
     } catch (error) {
         console.error('Error in public search:', error);
         return errorResponse(res, 500, 'Search failed');
+    }
+});
+
+/**
+ * GET /api/public/projects - Get published and featured projects
+ * No authentication required
+ */
+router.get('/projects', async (req, res) => {
+    try {
+        const { page = 1, limit = 20, buildingType, country, region, area, industry } = req.query;
+        
+        const filters = {};
+        if (buildingType) filters.buildingType = buildingType;
+        if (country) filters.country = country;
+        if (region) filters.region = region;
+        if (area) filters.area = area;
+        if (industry) filters.industry = industry;
+
+        const projects = await Project.getPublished(filters);
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published projects retrieved successfully', {
+            projects,
+            count: projects.length
+        });
+    } catch (error) {
+        console.error('Error in public getProjects:', error);
+        return errorResponse(res, 500, 'Failed to retrieve projects');
+    }
+});
+
+/**
+ * GET /api/public/projects/slug/:slug - Get published and featured project by slug
+ * No authentication required
+ */
+router.get('/projects/slug/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+
+        const project = await Project.findOne({
+            jobNumberSlug: slug,
+            status: 'published',
+            featured: true,
+            isActive: true
+        })
+            .populate('buildingType', 'name')
+            .populate('country', 'name code')
+            .populate('region', 'name code')
+            .populate('area', 'name code')
+            .populate('industry', 'name slug logo');
+
+        if (!project) {
+            return errorResponse(res, 404, 'Project not found');
+        }
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Project retrieved successfully', { project });
+    } catch (error) {
+        console.error('Error in public getProjectBySlug:', error);
+        return errorResponse(res, 500, 'Failed to retrieve project');
+    }
+});
+
+/**
+ * GET /api/public/branches - Get published and featured branches
+ * No authentication required
+ */
+router.get('/branches', async (req, res) => {
+    try {
+        const branches = await Branch.getPublished();
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published branches retrieved successfully', {
+            branches,
+            count: branches.length
+        });
+    } catch (error) {
+        console.error('Error in public getBranches:', error);
+        return errorResponse(res, 500, 'Failed to retrieve branches');
+    }
+});
+
+/**
+ * GET /api/public/customers - Get published and featured customers
+ * No authentication required
+ */
+router.get('/customers', async (req, res) => {
+    try {
+        const customers = await Customer.getPublished();
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published customers retrieved successfully', {
+            customers,
+            count: customers.length
+        });
+    } catch (error) {
+        console.error('Error in public getCustomers:', error);
+        return errorResponse(res, 500, 'Failed to retrieve customers');
+    }
+});
+
+/**
+ * GET /api/public/certifications - Get published and featured certifications
+ * No authentication required
+ */
+router.get('/certifications', async (req, res) => {
+    try {
+        const certifications = await Certification.getPublished();
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published certifications retrieved successfully', {
+            certifications,
+            count: certifications.length
+        });
+    } catch (error) {
+        console.error('Error in public getCertifications:', error);
+        return errorResponse(res, 500, 'Failed to retrieve certifications');
+    }
+});
+
+/**
+ * GET /api/public/company-updates - Get published and featured company updates
+ * No authentication required
+ */
+router.get('/company-updates', async (req, res) => {
+    try {
+        const { page = 1, limit = 20, category } = req.query;
+        
+        const filters = {};
+        if (category) filters.category = category;
+
+        const companyUpdates = await CompanyUpdate.getPublished(filters);
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published company updates retrieved successfully', {
+            companyUpdates,
+            count: companyUpdates.length
+        });
+    } catch (error) {
+        console.error('Error in public getCompanyUpdates:', error);
+        return errorResponse(res, 500, 'Failed to retrieve company updates');
+    }
+});
+
+/**
+ * GET /api/public/company-updates/slug/:slug - Get published and featured company update by slug
+ * No authentication required
+ */
+router.get('/company-updates/slug/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+
+        const companyUpdate = await CompanyUpdate.findOne({
+            slug: slug,
+            status: 'published',
+            featured: true,
+            isActive: true
+        })
+            .populate('category', 'name slug');
+
+        if (!companyUpdate) {
+            return errorResponse(res, 404, 'Company update not found');
+        }
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Company update retrieved successfully', { companyUpdate });
+    } catch (error) {
+        console.error('Error in public getCompanyUpdateBySlug:', error);
+        return errorResponse(res, 500, 'Failed to retrieve company update');
+    }
+});
+
+/**
+ * GET /api/public/company-update-categories - Get published and featured company update categories
+ * No authentication required
+ */
+router.get('/company-update-categories', async (req, res) => {
+    try {
+        const categories = await CompanyUpdateCategory.getPublished();
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published company update categories retrieved successfully', {
+            categories,
+            count: categories.length
+        });
+    } catch (error) {
+        console.error('Error in public getCompanyUpdateCategories:', error);
+        return errorResponse(res, 500, 'Failed to retrieve company update categories');
+    }
+});
+
+/**
+ * GET /api/public/brochures - Get published and featured brochures
+ * No authentication required
+ */
+router.get('/brochures', async (req, res) => {
+    try {
+        const brochures = await Brochure.getPublished();
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published brochures retrieved successfully', {
+            brochures,
+            count: brochures.length
+        });
+    } catch (error) {
+        console.error('Error in public getBrochures:', error);
+        return errorResponse(res, 500, 'Failed to retrieve brochures');
     }
 });
 

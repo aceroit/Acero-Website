@@ -8,7 +8,22 @@ const { validateChangeSummary } = require('../utils/validators');
 // Middleware to validate resource parameter
 const validateResource = (req, res, next) => {
     const { resource } = req.params;
-    const validResources = ['page', 'section'];
+    const validResources = [
+        'page', 
+        'section', 
+        'project', 
+        'branch', 
+        'customer', 
+        'certification', 
+        'company-update', 
+        'company-update-category', 
+        'brochure',
+        'building-type',
+        'industry',
+        'country',
+        'region',
+        'area'
+    ];
     
     if (!validResources.includes(resource)) {
         return res.status(400).json({

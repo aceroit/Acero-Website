@@ -46,6 +46,19 @@ app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/activity', require('./routes/activityRoutes'));
 app.use('/api/media', require('./routes/mediaRoutes'));
+app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/branches', require('./routes/branchRoutes'));
+app.use('/api/customers', require('./routes/customerRoutes'));
+app.use('/api/certifications', require('./routes/certificationRoutes'));
+app.use('/api/company-updates', require('./routes/companyUpdateRoutes'));
+app.use('/api/company-update-categories', require('./routes/companyUpdateCategoryRoutes'));
+app.use('/api/brochures', require('./routes/brochureRoutes'));
+app.use('/api/reference', require('./routes/referenceRoutes'));
+app.use('/api/building-types', require('./routes/buildingTypeRoutes'));
+app.use('/api/industries', require('./routes/industryRoutes'));
+app.use('/api/countries', require('./routes/countryRoutes'));
+app.use('/api/regions', require('./routes/regionRoutes'));
+app.use('/api/areas', require('./routes/areaRoutes'));
 
 // Testing the server
 app.get("/", (req, res) => {
@@ -67,7 +80,20 @@ app.get("/", (req, res) => {
 			dashboard: "/api/dashboard",
 			notifications: "/api/notifications",
 			activity: "/api/activity",
-			media: "/api/media"
+			media: "/api/media",
+			projects: "/api/projects",
+			branches: "/api/branches",
+			customers: "/api/customers",
+			certifications: "/api/certifications",
+			companyUpdates: "/api/company-updates",
+			companyUpdateCategories: "/api/company-update-categories",
+			brochures: "/api/brochures",
+			reference: "/api/reference",
+			buildingTypes: "/api/building-types",
+			industries: "/api/industries",
+			countries: "/api/countries",
+			regions: "/api/regions",
+			areas: "/api/areas"
 		}
 	});
 });

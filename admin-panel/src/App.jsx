@@ -12,6 +12,30 @@ import Profile from "./pages/Profile";
 import Pages from "./pages/Pages";
 import PageEditor from "./pages/PageEditor";
 import PageTree from "./pages/PageTree";
+import Projects from "./pages/Projects";
+import ProjectEditor from "./pages/ProjectEditor";
+import Branches from "./pages/Branches";
+import BranchEditor from "./pages/BranchEditor";
+import Customers from "./pages/Customers";
+import CustomerEditor from "./pages/CustomerEditor";
+import Certifications from "./pages/Certifications";
+import CertificationEditor from "./pages/CertificationEditor";
+import CompanyUpdates from "./pages/CompanyUpdates";
+import CompanyUpdateEditor from "./pages/CompanyUpdateEditor";
+import CompanyUpdateCategories from "./pages/CompanyUpdateCategories";
+import CompanyUpdateCategoryEditor from "./pages/CompanyUpdateCategoryEditor";
+import Brochures from "./pages/Brochures";
+import BrochureEditor from "./pages/BrochureEditor";
+import BuildingTypes from "./pages/BuildingTypes";
+import BuildingTypeEditor from "./pages/BuildingTypeEditor";
+import Industries from "./pages/Industries";
+import IndustryEditor from "./pages/IndustryEditor";
+import Countries from "./pages/Countries";
+import CountryEditor from "./pages/CountryEditor";
+import Regions from "./pages/Regions";
+import RegionEditor from "./pages/RegionEditor";
+import Areas from "./pages/Areas";
+import AreaEditor from "./pages/AreaEditor";
 import Sections from "./pages/Sections";
 import SectionEditor from "./pages/SectionEditor";
 import SectionTypes from "./pages/SectionTypes";
@@ -143,6 +167,294 @@ function App() {
             element={
               <ProtectedRoute resource="sections" action="update">
                 <SectionEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <ProtectedRoute resource="projects" action="read">
+                <Projects />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/new"
+            element={
+              <ProtectedRoute resource="projects" action="create">
+                <ProjectEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/:id"
+            element={
+              <ProtectedRoute resource="projects" action="update">
+                <ProjectEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/branches"
+            element={
+              <ProtectedRoute resource="branches" action="read">
+                <Branches />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/branches/new"
+            element={
+              <ProtectedRoute resource="branches" action="create">
+                <BranchEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/branches/:id"
+            element={
+              <ProtectedRoute resource="branches" action="update">
+                <BranchEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customers"
+            element={
+              <ProtectedRoute resource="customers" action="read">
+                <Customers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customers/new"
+            element={
+              <ProtectedRoute resource="customers" action="create">
+                <CustomerEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customers/:id"
+            element={
+              <ProtectedRoute resource="customers" action="update">
+                <CustomerEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/certifications"
+            element={
+              <ProtectedRoute resource="certifications" action="read">
+                <Certifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/certifications/new"
+            element={
+              <ProtectedRoute resource="certifications" action="create">
+                <CertificationEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/certifications/:id"
+            element={
+              <ProtectedRoute resource="certifications" action="update">
+                <CertificationEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company-updates"
+            element={
+              <ProtectedRoute resource="company-updates" action="read">
+                <CompanyUpdates />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company-updates/new"
+            element={
+              <ProtectedRoute resource="company-updates" action="create">
+                <CompanyUpdateEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company-updates/:id"
+            element={
+              <ProtectedRoute resource="company-updates" action="update">
+                <CompanyUpdateEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company-update-categories"
+            element={
+              <ProtectedRoute resource="company-update-categories" action="read">
+                <CompanyUpdateCategories />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company-update-categories/new"
+            element={
+              <ProtectedRoute resource="company-update-categories" action="create">
+                <CompanyUpdateCategoryEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company-update-categories/:id"
+            element={
+              <ProtectedRoute resource="company-update-categories" action="update">
+                <CompanyUpdateCategoryEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/brochures"
+            element={
+              <ProtectedRoute resource="brochures" action="read">
+                <Brochures />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/brochures/new"
+            element={
+              <ProtectedRoute resource="brochures" action="create">
+                <BrochureEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/brochures/:id"
+            element={
+              <ProtectedRoute resource="brochures" action="update">
+                <BrochureEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/building-types"
+            element={
+              <ProtectedRoute resource="building-types" action="read">
+                <BuildingTypes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/building-types/new"
+            element={
+              <ProtectedRoute resource="building-types" action="create">
+                <BuildingTypeEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/building-types/:id"
+            element={
+              <ProtectedRoute resource="building-types" action="update">
+                <BuildingTypeEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/industries"
+            element={
+              <ProtectedRoute resource="industries" action="read">
+                <Industries />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/industries/new"
+            element={
+              <ProtectedRoute resource="industries" action="create">
+                <IndustryEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/industries/:id"
+            element={
+              <ProtectedRoute resource="industries" action="update">
+                <IndustryEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/countries"
+            element={
+              <ProtectedRoute resource="countries" action="read">
+                <Countries />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/countries/new"
+            element={
+              <ProtectedRoute resource="countries" action="create">
+                <CountryEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/countries/:id"
+            element={
+              <ProtectedRoute resource="countries" action="update">
+                <CountryEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/regions"
+            element={
+              <ProtectedRoute resource="regions" action="read">
+                <Regions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/regions/new"
+            element={
+              <ProtectedRoute resource="regions" action="create">
+                <RegionEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/regions/:id"
+            element={
+              <ProtectedRoute resource="regions" action="update">
+                <RegionEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/areas"
+            element={
+              <ProtectedRoute resource="areas" action="read">
+                <Areas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/areas/new"
+            element={
+              <ProtectedRoute resource="areas" action="create">
+                <AreaEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/areas/:id"
+            element={
+              <ProtectedRoute resource="areas" action="update">
+                <AreaEditor />
               </ProtectedRoute>
             }
           />

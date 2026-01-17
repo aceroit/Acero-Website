@@ -1,156 +1,193 @@
-# V2 - Dynamic Resources & User Permissions Postman Collection
+# Phase 3 - Approval Workflow v2 (Permission-Based) Postman Collection
 
 ## Overview
 
-This collection provides comprehensive testing for the Dynamic Resources and User Permissions System. It covers the complete flow from user creation to permission assignment and verification.
+This is the updated version of the Phase 3 Approval Workflow Postman collection that includes comprehensive permission-based test cases. This collection tests the complete approval workflow system with role hierarchy and permission-based restrictions.
 
-## Prerequisites
+## What's New in v2
 
-1. **Empty Database**: Start with a fresh, empty MongoDB database
-2. **Backend Running**: Ensure the backend server is running on `http://localhost:5000` (or update `base_url` in environment)
-3. **Environment Imported**: Import the `ACERO_CMS_Environment.postman_environment.json` file
+### Enhanced Features
+1. **changeSummary Support**: All workflow transitions now include `changeSummary` validation and testing
+2. **Permission-Based CRUD Restrictions**: Tests for page CRUD operations based on workflow status and user permissions
+3. **Tree Management Restrictions**: Tests for page move/reorder operations with different roles and permissions
+4. **Section CRUD Restrictions**: Tests for section operations based on parent page status and user permissions
+5. **Comprehensive Error Messages**: Tests verify that error messages include permission, role, and status information
 
 ## Collection Structure
 
-### 01 - Setup: User Creation
-- Register Super Admin (first user)
-- Login Super Admin
-- Register Admin User
-- Register Editor User
+### 01 - Content Workflow Lifecycle (Updated with changeSummary)
+- Complete workflow lifecycle from draft → published
+- All transitions include `changeSummary` requirement
+- Tests for invalid transitions
+- Tests for missing `changeSummary` validation
 
-**Purpose**: Create the initial users needed for testing. Super Admin is required to create resources and manage permissions.
+### 02 - Permission-Based Page CRUD Restrictions
+- **Editor (No Permission)**: 
+  - ✅ Can update draft pages (creator privilege)
+  - ❌ Cannot update pages in review/pending approval
+- **Editor (With Permission)**:
+  - ✅ Can update draft pages
+  - ❌ Cannot update pages in review (role not appropriate)
+- **Reviewer (With Permission)**:
+  - ✅ Can update pages in review (has permission + appropriate role)
+- **Admin**:
+  - ✅ Can update any page status (bypasses all restrictions)
 
-### 02 - Create Resources
-- Create Dashboard Resource
-- Create Users Resource
-- Create Permissions Resource
-- Create Pages Resource
-- Create Page Tree Resource (child of Pages)
-- Create Section Types Resource
-- Create Resources Resource
-- Get All Resources
-- Get Menu Resources
+### 03 - Tree Management Restrictions
+- **Editor (No Permission)**:
+  - ✅ Can move/reorder draft pages (creator privilege)
+  - ❌ Cannot move pages in review/pending approval
+- **Reviewer (With Permission)**:
+  - ✅ Can move pages in review (has permission + appropriate role)
+- **Admin**:
+  - ✅ Can move any page status (bypasses all restrictions)
 
-**Purpose**: Create all default resources that will appear in the sidebar and be used for permission management.
+### 04 - Section CRUD Restrictions
+- **Editor (No Permission)**:
+  - ✅ Can create/update sections on draft pages (creator privilege)
+  - ❌ Cannot create sections on pages in review
+- **Reviewer (With Permission)**:
+  - ✅ Can create sections on pages in review (has permission + appropriate role)
+- **Admin**:
+  - ✅ Can create sections on any page status (bypasses all restrictions)
 
-### 03 - Assign Role Permissions
-- Get Resources and Actions
-- Assign Admin Role Permissions
-- Assign Editor Role Permissions
-- Get Admin Role Permissions
+### 05 - Version Management (with changeSummary)
+- Get version history with `changeSummary`
+- Compare versions
+- Restore previous versions
 
-**Purpose**: Set up role-based permissions. This defines what each role can do by default.
+### 06 - Notifications (with changeSummary)
+- Get notifications with `changeSummary` metadata
+- Verify notifications include change summaries
 
-### 04 - User-Specific Permissions
-- Get Users by Role (Admin)
-- Get User Permissions (Admin User)
-- Update User-Specific Permissions (Give Admin Delete Permission)
-- Verify User Permissions After Update
+## Prerequisites
 
-**Purpose**: Test user-specific permission overrides. This allows individual users to have different permissions than their role.
+1. **Phase 1 Completed**: Users and tokens created
+2. **Phase 2 Completed**: Pages and sections created
+3. **Backend Server Running**: On `{{base_url}}`
+4. **Environment Variables Set**:
+   - `base_url`: Backend server URL
+   - `editor_token`: Editor user token
+   - `reviewer_token`: Reviewer user token
+   - `approver_token`: Approver user token
+   - `admin_token`: Admin user token
+   - `editor_with_permission_token`: Editor with update permission token
+   - `reviewer_with_permission_token`: Reviewer with update permission token
 
-### 05 - Verify Dynamic Sidebar
-- Login as Admin
-- Get My Permissions (Admin)
-- Get Menu Resources (Admin)
-- Check Permission (Admin - Users Delete)
+## Test Users Setup
 
-**Purpose**: Verify that the dynamic sidebar correctly filters resources based on user permissions (role + user overrides).
+You need to create test users with different permission configurations:
 
-### 06 - Resource CRUD Operations
-- Create New Resource
-- Get Resource by ID
-- Update Resource
-- Get Resource Tree
-- Delete Resource
+### Basic Users (Default Role Permissions Only)
+- **Editor**: `editor@test.com` - No additional permissions
+- **Reviewer**: `reviewer@test.com` - No additional permissions
+- **Approver**: `approver@test.com` - No additional permissions
 
-**Purpose**: Test all CRUD operations for resources to ensure the system works correctly.
+### Users with Additional Permissions
+- **Editor with Permission**: `editor-perms@test.com` - Has `pages:update` permission
+- **Reviewer with Permission**: `reviewer-perms@test.com` - Has `pages:update` permission
+
+### Admin Users
+- **Admin**: `admin@test.com` - Admin role (bypasses all restrictions)
+- **Super Admin**: `superadmin@test.com` - Super Admin role (bypasses all restrictions)
 
 ## Usage Instructions
 
 ### Step 1: Import Collection and Environment
 1. Open Postman
-2. Import `Dynamic_Resources_User_Permissions.postman_collection.json`
-3. Import `ACERO_CMS_Environment.postman_environment.json`
+2. Import `Phase3_Approval_Workflow_v2.postman_collection.json`
+3. Import `ACERO_CMS_Environment.postman_environment.json` (from parent folder)
 4. Select the environment in Postman
 
-### Step 2: Run Collection in Order
-**Important**: Run the folders in order (01 → 02 → 03 → 04 → 05 → 06)
+### Step 2: Set Environment Variables
+Make sure these variables are set:
+- `base_url`: Your backend server URL (e.g., `http://localhost:5000`)
+- `editor_token`: Token from editor user login
+- `reviewer_token`: Token from reviewer user login
+- `approver_token`: Token from approver user login
+- `admin_token`: Token from admin user login
+- `editor_with_permission_token`: Token from editor with permission user login
+- `reviewer_with_permission_token`: Token from reviewer with permission user login
 
+### Step 3: Run Tests
 You can:
 - Run individual requests manually
 - Run entire folders using "Run folder"
 - Run the entire collection using "Run collection"
 
-### Step 3: Verify Results
-After running the collection:
-1. Check that all tests pass (green checkmarks)
-2. Verify environment variables are set (tokens, IDs)
-3. Test the frontend to see the dynamic sidebar
+**Note**: Some tests depend on previous tests creating test data. Run folders in order (01 → 02 → 03 → 04 → 05 → 06).
 
-## Environment Variables
+## Test Coverage
 
-The collection automatically sets these variables:
-- `super_admin_token` - Authentication token for super admin
-- `super_admin_id` - User ID of super admin
-- `admin_id` - User ID of admin user
-- `editor_id` - User ID of editor user
-- `admin_token` - Authentication token for admin
-- `resource_*_id` - IDs of created resources
-- `new_resource_id` - ID of test resource created in CRUD section
+### Workflow Lifecycle
+- ✅ Draft → in_review (with changeSummary)
+- ✅ in_review → changes_requested
+- ✅ changes_requested → in_review (resubmit with changeSummary)
+- ✅ in_review → pending_approval
+- ✅ pending_approval → pending_publish
+- ✅ pending_publish → published
+- ✅ Invalid transitions (should fail)
+- ✅ Missing changeSummary (should fail)
+
+### Permission-Based Restrictions
+- ✅ Editor without permission: Can edit draft, cannot edit in review
+- ✅ Editor with permission: Can edit draft, cannot edit in review (role not appropriate)
+- ✅ Reviewer with permission: Can edit in review (has permission + appropriate role)
+- ✅ Admin: Can edit any status (bypass)
+
+### Tree Management
+- ✅ Move draft pages (Editor without permission - creator privilege)
+- ✅ Cannot move pages in review (Editor without permission)
+- ✅ Can move pages in review (Reviewer with permission)
+- ✅ Admin can move any status (bypass)
+
+### Section CRUD
+- ✅ Create section on draft page (Editor without permission - creator privilege)
+- ✅ Cannot create section on page in review (Editor without permission)
+- ✅ Can create section on page in review (Reviewer with permission)
+- ✅ Admin can create section on any status (bypass)
 
 ## Expected Results
 
-### After Step 01 (User Creation)
-- 3 users created: Super Admin, Admin, Editor
-- All users can log in successfully
+### Success Criteria
+- ✅ All workflow transitions work correctly
+- ✅ changeSummary is required and validated
+- ✅ Permission-based restrictions work correctly
+- ✅ Role hierarchy is enforced
+- ✅ Admin/Super Admin bypass works
+- ✅ Creator privilege works in appropriate states
+- ✅ Error messages are clear and informative
 
-### After Step 02 (Resources)
-- 7 resources created
-- Resources include Dashboard, Users, Permissions, Pages, Page Tree, Section Types, Resources
-- Page Tree is a child of Pages (hierarchical structure)
+### Error Message Verification
+All blocked operations should return error messages that include:
+1. **Permission status**: Whether user has permission or not
+2. **Role information**: User's current role
+3. **Status information**: Current workflow status
+4. **Requirement**: What's needed (role + permission)
 
-### After Step 03 (Role Permissions)
-- Admin role has permissions for: Dashboard (read), Users (read/create/update), Pages (all), Section Types (read)
-- Editor role has permissions for: Dashboard (read), Pages (read/create/update)
-
-### After Step 04 (User Permissions)
-- Admin user has additional delete permission for Users (user-specific override)
-- User permissions override role permissions
-
-### After Step 05 (Sidebar Verification)
-- Admin user sees only resources they have 'read' permission for
-- Menu resources are filtered correctly
-- Permission checks work with merged permissions (role + user)
-
-### After Step 06 (CRUD)
-- All CRUD operations work correctly
-- Resource tree shows hierarchical structure
-- Resources can be created, read, updated, and deleted
+Example error messages:
+- "User has 'update' permission but role 'editor' is not appropriate for page status 'in_review'. Requires reviewer+"
+- "Cannot update page. Page is in 'pending_approval' status. Requires approver+ role and 'update' permission."
 
 ## Troubleshooting
 
-### Issue: "User already exists"
-- **Solution**: Empty your database and start fresh
-
-### Issue: "Resource already exists"
-- **Solution**: Delete existing resources or use different slugs
+### Issue: "changeSummary is required"
+- **Solution**: Make sure you're including `changeSummary` in the request body for submit operations
 
 ### Issue: "Permission denied"
-- **Solution**: Ensure you're using the correct token (super_admin_token for resource creation)
+- **Solution**: Check that the user has the required permission and appropriate role for the current workflow status
 
 ### Issue: "Token expired"
 - **Solution**: Re-run the login request to get a fresh token
 
-## Testing the Frontend
+### Issue: "Test page not found"
+- **Solution**: Run the setup requests first to create test pages in different statuses
 
-After running the collection:
+## Related Documentation
 
-1. **Login to Frontend** as `admin@acero.com` / `Admin@123`
-2. **Check Sidebar**: Should show Dashboard, Users, Pages, Section Types (based on permissions)
-3. **Check Permissions Page**: Navigate to Permissions → Click Admin role → See users
-4. **Test User Permissions**: Click three dots on admin user → Manage Permissions → Should see toggles for all resources
-5. **Verify Override**: Admin user should have delete permission for Users (user-specific override)
+- `backend/TESTING_WORKFLOW_PERMISSIONS.md`: Detailed testing guide for workflow permissions
+- `backend/TESTING_TREE_MANAGEMENT.md`: Detailed testing guide for tree management
+- `backend/TESTING_SECTION_CRUD_RESTRICTIONS.md`: Detailed testing guide for section CRUD restrictions
 
 ## Notes
 
@@ -158,12 +195,5 @@ After running the collection:
 - Tests automatically verify responses
 - Environment variables are set automatically
 - The collection follows the exact flow needed for the system to work
-
-## Next Steps
-
-After completing this collection:
-1. Test the frontend thoroughly
-2. Create additional resources as needed
-3. Assign permissions to other roles (approver, reviewer, viewer)
-4. Test user-specific permission overrides for different users
-
+- Admin/Super Admin always bypass all restrictions
+- Creator privilege only works when content is in `draft` or `changes_requested` status

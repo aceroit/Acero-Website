@@ -103,6 +103,137 @@ const defaultResources = [
         order: 8
     },
     {
+        name: 'Building Types',
+        slug: 'building-types',
+        path: '/building-types',
+        icon: 'BuildOutlined',
+        description: 'Building type classifications',
+        category: 'Content',
+        showInMenu: true,
+        order: 1,
+        parentSlug: 'projects'
+    },
+    {
+        name: 'Industries',
+        slug: 'industries',
+        path: '/industries',
+        icon: 'ShopOutlined',
+        description: 'Industry classifications',
+        category: 'Content',
+        showInMenu: true,
+        order: 2,
+        parentSlug: 'projects'
+    },
+    {
+        name: 'Countries',
+        slug: 'countries',
+        path: '/countries',
+        icon: 'GlobalOutlined',
+        description: 'Country reference data',
+        category: 'Content',
+        showInMenu: true,
+        order: 3,
+        parentSlug: 'projects'
+    },
+    {
+        name: 'Regions',
+        slug: 'regions',
+        path: '/regions',
+        icon: 'EnvironmentOutlined',
+        description: 'Region reference data',
+        category: 'Content',
+        showInMenu: true,
+        order: 4,
+        parentSlug: 'projects'
+    },
+    {
+        name: 'Areas',
+        slug: 'areas',
+        path: '/areas',
+        icon: 'EnvironmentOutlined',
+        description: 'Area reference data',
+        category: 'Content',
+        showInMenu: true,
+        order: 5,
+        parentSlug: 'projects'
+    },
+    {
+        name: 'Company Related Information',
+        slug: 'company-related-information',
+        path: '/company-related-information',
+        icon: 'BankOutlined',
+        description: 'Company information and resources',
+        category: 'Content',
+        showInMenu: true,
+        order: 9
+    },
+    {
+        name: 'Branches',
+        slug: 'branches',
+        path: '/branches',
+        icon: 'BankOutlined',
+        description: 'Company branch locations',
+        category: 'Content',
+        showInMenu: true,
+        order: 1,
+        parentSlug: 'company-related-information'
+    },
+    {
+        name: 'Customers',
+        slug: 'customers',
+        path: '/customers',
+        icon: 'TeamOutlined',
+        description: 'Company customers',
+        category: 'Content',
+        showInMenu: true,
+        order: 2,
+        parentSlug: 'company-related-information'
+    },
+    {
+        name: 'Certifications',
+        slug: 'certifications',
+        path: '/certifications',
+        icon: 'TrophyOutlined',
+        description: 'Company certifications',
+        category: 'Content',
+        showInMenu: true,
+        order: 3,
+        parentSlug: 'company-related-information'
+    },
+    {
+        name: 'Company Updates',
+        slug: 'company-updates',
+        path: '/company-updates',
+        icon: 'NotificationOutlined',
+        description: 'Company news and updates',
+        category: 'Content',
+        showInMenu: true,
+        order: 4,
+        parentSlug: 'company-related-information'
+    },
+    {
+        name: 'Company Update Categories',
+        slug: 'company-update-categories',
+        path: '/company-update-categories',
+        icon: 'FolderOutlined',
+        description: 'Categories for company updates',
+        category: 'Content',
+        showInMenu: true,
+        order: 5,
+        parentSlug: 'company-related-information'
+    },
+    {
+        name: 'Brochures',
+        slug: 'brochures',
+        path: '/brochures',
+        icon: 'FilePdfOutlined',
+        description: 'Company brochures and documents',
+        category: 'Content',
+        showInMenu: true,
+        order: 6,
+        parentSlug: 'company-related-information'
+    },
+    {
         name: 'Media',
         slug: 'media',
         path: '/media',
@@ -110,7 +241,7 @@ const defaultResources = [
         description: 'Media library and file management',
         category: 'Content',
         showInMenu: true,
-        order: 9
+        order: 10
     },
     {
         name: 'Activity Logs',
@@ -120,7 +251,7 @@ const defaultResources = [
         description: 'System activity and audit logs',
         category: 'Administration',
         showInMenu: true,
-        order: 10
+        order: 11
     }
 ];
 
