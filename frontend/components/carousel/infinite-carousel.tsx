@@ -1,0 +1,87 @@
+"use client"
+
+import { useRef, useState } from "react"
+import Image from "next/image"
+import { cn } from "@/lib/utils"
+
+interface InfiniteCarouselItem {
+  image: string
+  alt: string
+  width?: number
+  height?: number
+}
+
+interface InfiniteCarouselProps {
+  items: InfiniteCarouselItem[]
+  speed?: "slow" | "medium" | "fast"
+  direction?: "left" | "right"
+  pauseOnHover?: boolean
+  className?: string
+  itemClassName?: string
+}
+
+export function InfiniteCarousel({
+  items,
+  speed = "medium",
+  direction = "left",
+  pauseOnHover = true,
+  className,
+  itemClassName,
+}: InfiniteCarouselProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [isPaused, setIsPaused] = useState(false)
+
+  // Duplicate items for seamless loop (need enough duplicates for smooth infinite scroll)
+  const duplicatedItems = [...items, ...items, ...items, ...items]
+
+  const speedClasses = {
+    slow: "animate-scroll-slow",
+    medium: "animate-scroll-medium",
+    fast: "animate-scroll-fast",
+  }
+
+  return (
+    <div className={cn("overflow-hidden", className)}>
+      <div
+        ref={scrollRef}
+        className={cn(
+          "overflow-hidden",
+          pauseOnHover && "group"
+        )}
+        onMouseEnter={() => pauseOnHover && setIsPaused(true)}
+        onMouseLeave={() => pauseOnHover && setIsPaused(false)}
+      >
+        <div
+          className={cn(
+            "flex gap-8 md:gap-12",
+            speedClasses[speed],
+            direction === "right" && "[animation-direction:reverse]",
+            isPaused && "animation-paused"
+          )}
+        >
+          {duplicatedItems.map((item, index) => (
+            <div
+              key={`${item.alt}-${index}`}
+              className={cn(
+                "flex shrink-0 items-center justify-center",
+                itemClassName
+              )}
+            >
+              <div className="relative h-16 w-32 grayscale transition-all hover:grayscale-0 md:h-20 md:w-40">
+                  <Image
+                    src={item.image}
+                    alt={item.alt}
+                    fill
+                    loading="lazy"
+                    className="object-contain"
+                    sizes="(max-width: 768px) 128px, 160px"
+                    quality={80}
+                  />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
