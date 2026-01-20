@@ -22,7 +22,7 @@ const navLinks = [
   { href: "/products/manufacturing", label: "Manufacturing" },
   { href: "/projects", label: "Projects" },
   {
-    href: "/media",
+    href: "/media/literature",
     label: "Media",
     dropdown: [
       { href: "/media/literature", label: "Literature" },
@@ -31,7 +31,7 @@ const navLinks = [
     ],
   },
   { href: "/career", label: "Career" },
-  { href: "/contact", label: "Contact Us" },
+  { href: "/contact-us", label: "Contact Us" },
 ]
 
 export function Header() {
@@ -82,7 +82,7 @@ export function Header() {
             >
               <Link
                 href={link.href}
-                className="flex items-center gap-1 px-4 py-2 text-sm font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+                className="flex items-center gap-1 px-4 py-2 text-sm font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-steel-red"
               >
                 {link.label}
                 {link.dropdown && (
@@ -119,7 +119,7 @@ export function Header() {
                         <Link
                           key={item.href}
                           href={item.href}
-                          className="block rounded-md px-4 py-2.5 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground"
+                          className="block rounded-md px-4 py-2.5 text-sm text-muted-foreground transition-all hover:bg-steel-red/10 hover:text-steel-red"
                         >
                           {item.label}
                         </Link>
@@ -173,7 +173,7 @@ export function Header() {
 
           {/* CTA Button */}
           <Link
-            href="/contact"
+            href="/contact-us"
             className="hidden bg-[#E10600] px-6 py-2.5 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-[#E10600]/90 sm:block"
           >
             Get Quote
@@ -228,7 +228,7 @@ export function Header() {
                   <Link
                     href={link.href}
                     onClick={() => !link.dropdown && setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-4 text-lg font-medium uppercase tracking-wider text-foreground"
+                    className="flex items-center justify-between py-4 text-lg font-medium uppercase tracking-wider text-foreground transition-colors hover:text-steel-red"
                   >
                     {link.label}
                     {link.dropdown && (
@@ -254,7 +254,7 @@ export function Header() {
                           key={item.href}
                           href={item.href}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-muted-foreground transition-colors hover:text-foreground"
+                          className="block rounded-md py-2 px-2 text-muted-foreground transition-all hover:bg-steel-red/10 hover:text-steel-red"
                         >
                           {item.label}
                         </Link>
@@ -270,7 +270,7 @@ export function Header() {
                 className="pt-4"
               >
                 <Link
-                  href="/contact"
+                  href="/contact-us"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block bg-[#E10600] px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider text-white"
                 >

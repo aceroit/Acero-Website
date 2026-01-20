@@ -4,6 +4,7 @@ import { Inter, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SmoothScroll } from "@/components/smooth-scroll"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 const inter = Inter({
@@ -77,6 +78,7 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="dark" storageKey="acero-theme">
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>
+        <Toaster />
         <Analytics />
       </body>
     </html>

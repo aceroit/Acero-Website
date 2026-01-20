@@ -1,0 +1,1608 @@
+[
+    {
+        "industry": "Sports and Leisure",
+        "projects": [
+            {
+                "jobNumber": "AM-A0108",
+                "buildingType": "Hotel",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Armenia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0431",
+                "buildingType": "Club House",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "RW-A0270",
+                "buildingType": "Sports Hall",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Rwanda",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0500",
+                "buildingType": "Sports Facility",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GN-A0389",
+                "buildingType": "Gym",
+                "region": "Asia",
+                "area": "Western Africa",
+                "country": "Ghana",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Industrial",
+        "projects": [
+            {
+                "jobNumber": "ET-A0903",
+                "buildingType": "Aluminum Extrusion Plant",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Ethiopia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TZ-A0820",
+                "buildingType": "Detonator Factory",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MZ-A0560",
+                "buildingType": "Precision Mechanical Machining Workshop",
+                "region": "Africa",
+                "area": "South Africa",
+                "country": "Mozambique",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AR-A0779",
+                "buildingType": "Ceramics Warehouse",
+                "region": "Americas",
+                "area": "South America",
+                "country": "Argentina",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0152",
+                "buildingType": "Factory and Office Building",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "IN-A0534",
+                "buildingType": "Factory and Office Building",
+                "region": "Asia",
+                "area": "South Asia",
+                "country": "India",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0219",
+                "buildingType": "Dewatering & Pump Factory",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "IN-A0550",
+                "buildingType": "Factory and Office Building",
+                "region": "Asia",
+                "area": "South Asia",
+                "country": "India",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ET-A0182",
+                "buildingType": "Aluminum Extrusion Plant",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Ethiopia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0185",
+                "buildingType": "Workshop",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TZ-A0333",
+                "buildingType": "Fiber Threads Factory",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0303",
+                "buildingType": "Natural Spring Mineral Water Bottling Factory",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SL-A0555",
+                "buildingType": "Innovation Center",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Sierra Leone",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ET-A0564",
+                "buildingType": "Cork and Can Factory",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Ethiopia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0133",
+                "buildingType": "Steel Mill",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TZ-A0415",
+                "buildingType": "Pipe Factory",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TG-A0284",
+                "buildingType": "Garment Factory",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Togo",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SN-A0336",
+                "buildingType": "Blending Plant",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "DZ-A0160",
+                "buildingType": "Fish Food Factory",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Algeria",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MU-A0529",
+                "buildingType": "Steel Mill",
+                "region": "Africa",
+                "area": "South Africa",
+                "country": "Mauritius",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MA-A0512",
+                "buildingType": "Packaging Factory",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Morocco",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "IQ-A0400",
+                "buildingType": "Ores Factory",
+                "region": "Asia",
+                "area": "Middle East",
+                "country": "Iraq",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ET-A0203",
+                "buildingType": "Mineral Processing Plant",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Ethiopia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ET-A0190",
+                "buildingType": "Bar Mill",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Ethiopia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "BJ-A0147",
+                "buildingType": "Textile Factory",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Benin",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "LK-A0687",
+                "buildingType": "Sand Drying Processing Facility",
+                "region": "Asia",
+                "area": "South Asia",
+                "country": "Sri Lanka",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "IN-A0297",
+                "buildingType": "Heavy Engineering Manufacturing Factory",
+                "region": "Asia",
+                "area": "South Asia",
+                "country": "India",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0142",
+                "buildingType": "Animal Food Processing Plant",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MA-A0200",
+                "buildingType": "Cooper Pharmaceutical Production Plant",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Morocco",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MA-A0516",
+                "buildingType": "Packing House",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Morocco",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0337",
+                "buildingType": "Blending Plant",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SN-A0229",
+                "buildingType": "Blending Plant",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0552",
+                "buildingType": "Calcium Carbonate Plant",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "BO-02488",
+                "buildingType": "Mineral Processing Plant",
+                "region": "Americas",
+                "area": "South America",
+                "country": "Bolivia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0543",
+                "buildingType": "Factory, Warehouse and Office",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0607",
+                "buildingType": "Valve Manufacturing Factory",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SA-A0428",
+                "buildingType": "Float Glass Factory",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Saudi Arabia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0102",
+                "buildingType": "Wood Processing Factory",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0107",
+                "buildingType": "Ferro Alloy Plant",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Warehousing",
+        "projects": [
+            {
+                "jobNumber": "MG-A0935",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "South Africa",
+                "country": "Madagascar",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "DZ-A0263",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Algeria",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MZ-A0560",
+                "buildingType": "Warehouse, office & Shops",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Mozambique",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0179",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SN-A0164",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TG-A0699",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Togo",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0251",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ET-A0902",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Ethiopia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CZ-A0701",
+                "buildingType": "Warehouse",
+                "region": "Europe",
+                "area": "East Europe",
+                "country": "Czech Republic",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0796",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0285",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0385",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0715",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0375",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "DJ-A0749",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Djibouti",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0565",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GH-A0942",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Ghana",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "DZ-A0843",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Algeria",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SN-A0503",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SN-A0482",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ZM-A0248",
+                "buildingType": "Warehouse for Mining Operations",
+                "region": "Africa",
+                "area": "South Africa",
+                "country": "Zambia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SN-A0126",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "RW-A0354",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Rwanda",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CZ-A0206",
+                "buildingType": "Warehouse",
+                "region": "Europe",
+                "area": "East Europe",
+                "country": "Czech Republic",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0250",
+                "buildingType": "Warehouse for Petrol Station",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0342",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0208",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0419",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MU-A0401",
+                "buildingType": "Soap & Detergent storage Building",
+                "region": "Africa",
+                "area": "South Africa",
+                "country": "Mauritius",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GW-A0135",
+                "buildingType": "Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Guinea-Bissau",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0233",
+                "buildingType": "Electronic Products Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SN-A0149",
+                "buildingType": "Cosmetics Products Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0491",
+                "buildingType": "Storage Shed",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "QA-A0608",
+                "buildingType": "Machinery And Heavy Equipment Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Qatar",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0524",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SA-A0279",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Saudi Arabia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0637",
+                "buildingType": "Retail Distribution Center",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Workshops",
+        "projects": [
+            {
+                "jobNumber": "GE-A0795",
+                "buildingType": "Automotive Workshop",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ZM-A0430",
+                "buildingType": "Automotive Workshop",
+                "region": "Africa",
+                "area": "South Africa",
+                "country": "Zambia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0745",
+                "buildingType": "Automotive Cars Showroom and Service Centre",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "QA-A0282",
+                "buildingType": "Workshop",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Qatar",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0218",
+                "buildingType": "Workshop",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0421",
+                "buildingType": "Truck Service Center",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0211",
+                "buildingType": "Forklift Showroom and Workshop",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0122",
+                "buildingType": "Garage for Fire Trucks",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "KE-A0300",
+                "buildingType": "Mining Equipment Workshop",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Kenya",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0441",
+                "buildingType": "Workshop",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0114",
+                "buildingType": "Furniture Workshop",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Auto Dealership",
+        "projects": [
+            {
+                "jobNumber": "SN-A0444",
+                "buildingType": "Automotive Showroom",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0214",
+                "buildingType": "Automotive Cars Showroom and Service Centre",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "IQ-A0304",
+                "buildingType": "Automotive Cars Showroom and Service Centre",
+                "region": "Asia",
+                "area": "Middle East",
+                "country": "Iraq",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0116",
+                "buildingType": "Automotive Workshop",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0563",
+                "buildingType": "Automotive Cars Showroom and Service Centre",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Food And Beverage",
+        "projects": [
+            {
+                "jobNumber": "TZ-A0650",
+                "buildingType": "Beverage Factory",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "64m Clear Span",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MA-A0507",
+                "buildingType": "Pasta & Couscous Milling Plant",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Morocco",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0616",
+                "buildingType": "Beverage Factory",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GH-A0855",
+                "buildingType": "Beverage Factory",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Ghana",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0579 & CI-A0708",
+                "buildingType": "Palm Oil Factory and Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MA-A0508",
+                "buildingType": "Cold Store",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Morocco",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0746",
+                "buildingType": "--",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "BF-A0395",
+                "buildingType": "Factory and Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Burkina Faso",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0112",
+                "buildingType": "Chicken Rendering Factory",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0350",
+                "buildingType": "Volvo Café",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ET-A0328",
+                "buildingType": "Coffee Processing Plant",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Ethiopia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0536",
+                "buildingType": "Walnut Processing Factory",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0189",
+                "buildingType": "Fish Processing Plant",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "KE-A0628",
+                "buildingType": "Avocado Processing Facility and Warehouse",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Kenya",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0197",
+                "buildingType": "Bottling Factory and Warehouse for Soft Drinks",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Food And Beverage",
+        "projects": [
+            {
+                "jobNumber": "GE-A0561",
+                "buildingType": "Beverage Factory",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Food And Beverage",
+        "projects": [
+            {
+                "jobNumber": "TZ-A0650",
+                "buildingType": "Beverage Factory",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "64m Clear Span",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MA-A0507",
+                "buildingType": "Pasta & Couscous Milling Plant",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Morocco",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0616",
+                "buildingType": "Beverage Factory",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GH-A0855",
+                "buildingType": "Beverage Factory",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Ghana",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0579 & CI-A0708",
+                "buildingType": "Palm Oil Factory and Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MA-A0508",
+                "buildingType": "Cold Store",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Morocco",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0746",
+                "buildingType": "--",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "BF-A0395",
+                "buildingType": "Factory and Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Burkina Faso",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0112",
+                "buildingType": "Chicken Rendering Factory",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0350",
+                "buildingType": "Volvo Café",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "ET-A0328",
+                "buildingType": "Coffee Processing Plant",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Ethiopia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0536",
+                "buildingType": "Walnut Processing Factory",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0189",
+                "buildingType": "Fish Processing Plant",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "KE-A0628",
+                "buildingType": "Avocado Processing Facility and Warehouse",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Kenya",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0197",
+                "buildingType": "Bottling Factory and Warehouse for Soft Drinks",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0561",
+                "buildingType": "Beverage Factory",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Logistics Center",
+        "projects": [
+            {
+                "jobNumber": "SN-A0286",
+                "buildingType": "Logistics Facility",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SL-A0231",
+                "buildingType": "Logistics Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Sierra Leone",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "IN-A0674",
+                "buildingType": "Office Building and Logistics Warehouse",
+                "region": "Asia",
+                "area": "South Asia",
+                "country": "India",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0600",
+                "buildingType": "Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0252",
+                "buildingType": "Logistics Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TZ-A0220",
+                "buildingType": "Logistics Facility",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "QA-A0448",
+                "buildingType": "Automotive Logistic Hub",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Qatar",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MR-A0372",
+                "buildingType": "Port Logistics Center",
+                "region": "Africa",
+                "area": "North Africa",
+                "country": "Mauritania",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "SN-A0103",
+                "buildingType": "Logistics Facility",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Senegal",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Retail and Commercial",
+        "projects": [
+            {
+                "jobNumber": "TZ-A0184",
+                "buildingType": "Porta Cabins",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0709",
+                "buildingType": "Office Building and Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TZ-A0182",
+                "buildingType": "Porta Cabins",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "IN-A0517",
+                "buildingType": "Building Materials Showroom",
+                "region": "Asia",
+                "area": "South Asia",
+                "country": "India",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0654",
+                "buildingType": "Food Court",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GH-A0384",
+                "buildingType": "Showroom",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Ghana",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0240",
+                "buildingType": "Restaurant and Warehouse",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "BJ-A0249",
+                "buildingType": "Central Market",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Benin",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TG-A0527",
+                "buildingType": "Showroom",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Togo",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0106",
+                "buildingType": "Showroom and Warehouse",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Agriculture",
+        "projects": [
+            {
+                "jobNumber": "TEST-101",
+                "buildingType": "Agri-products Warehouse",
+                "region": "Americas",
+                "area": "East Africa",
+                "country": "Argentina",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "NZ-A0168",
+                "buildingType": "Barn",
+                "region": "--",
+                "area": "Oceania",
+                "country": "New Zealand",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "TZ-A0759",
+                "buildingType": "Agri-products Warehouse",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Tanzania",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "NZ-A0170",
+                "buildingType": "Agri-products Warehouse",
+                "region": "Oceania",
+                "area": "Oceania",
+                "country": "New Zealand",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Aviation",
+        "projects": [
+            {
+                "jobNumber": "AM-A0120",
+                "buildingType": "Airport Terminal",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Armenia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Commercial",
+        "projects": [
+            {
+                "jobNumber": "AE-A0424",
+                "buildingType": "Office Building and Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0225",
+                "buildingType": "Office Building and Warehouse",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "GE-A0403",
+                "buildingType": "Office Building and Warehouse",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Education",
+        "projects": [
+            {
+                "jobNumber": "AE-A0359",
+                "buildingType": "School",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0253",
+                "buildingType": "School",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Others",
+        "projects": [
+            {
+                "jobNumber": "SA-A0181",
+                "buildingType": "Pipe Racks",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Saudi Arabia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "AE-A0237",
+                "buildingType": "Industrial Shed",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "United Arab Emirates",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "OM-A0274",
+                "buildingType": "Water Tanks Shed",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Oman",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Car Parking",
+        "projects": [
+            {
+                "jobNumber": "GE-A0544",
+                "buildingType": "Multi-Storey Car Parking",
+                "region": "Asia",
+                "area": "Central Asia",
+                "country": "Georgia",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "QA-A0490",
+                "buildingType": "Car Parking",
+                "region": "Asia",
+                "area": "GCC",
+                "country": "Qatar",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    },
+    {
+        "industry": "Infrastructure and Utility",
+        "projects": [
+            {
+                "jobNumber": "IN-A0213",
+                "buildingType": "Thermal Power Station Transformer Shed",
+                "region": "Asia",
+                "area": "South Asia",
+                "country": "India",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "KE-A0848",
+                "buildingType": "Turbine Generator Building",
+                "region": "Africa",
+                "area": "East Africa",
+                "country": "Kenya",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "NG-A0688",
+                "buildingType": "Fire Station",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Nigeria",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "MG-A0635",
+                "buildingType": "N-Truss Bridge",
+                "region": "Africa",
+                "area": "South Africa",
+                "country": "Madagascar",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0299",
+                "buildingType": "Filling Station and Warehouse",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            },
+            {
+                "jobNumber": "CI-A0298",
+                "buildingType": "Filling Station",
+                "region": "Africa",
+                "area": "Western Africa",
+                "country": "Cote D'Ivoire",
+                "accessoriesAndSpecialFeatures": "--",
+                "builtUpAreaSqm": "--"
+            }
+        ]
+    }
+]
