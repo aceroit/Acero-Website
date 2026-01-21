@@ -828,6 +828,17 @@ exports.unpublishContent = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
+        // If this is a page, update all its sections to draft as well
+        if (resource === 'page') {
+            await Section.updateMany(
+                { pageId: item._id, status: 'published' },
+                { 
+                    status: WORKFLOW_STATES.DRAFT,
+                    updatedBy: req.user._id
+                }
+            );
+        }
+
         // Create version
         await ContentVersion.createVersion(
             resource,
@@ -891,6 +902,18 @@ exports.archiveContent = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
+        // If this is a page, update all its sections to draft as well
+        // (sections don't have archived status, so they go to draft)
+        if (resource === 'page') {
+            await Section.updateMany(
+                { pageId: item._id, status: 'published' },
+                { 
+                    status: WORKFLOW_STATES.DRAFT,
+                    updatedBy: req.user._id
+                }
+            );
+        }
+
         // Create version
         await ContentVersion.createVersion(
             resource,
@@ -953,6 +976,17 @@ exports.restoreContent = async (req, res) => {
         item.status = WORKFLOW_STATES.DRAFT;
         item.updatedBy = req.user._id;
         await item.save();
+
+        // If this is a page, update all its sections to draft as well
+        if (resource === 'page') {
+            await Section.updateMany(
+                { pageId: item._id },
+                { 
+                    status: WORKFLOW_STATES.DRAFT,
+                    updatedBy: req.user._id
+                }
+            );
+        }
 
         // Create version
         await ContentVersion.createVersion(

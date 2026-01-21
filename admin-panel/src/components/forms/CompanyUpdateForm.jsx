@@ -57,7 +57,11 @@ const CompanyUpdateForm = ({
   const fetchCategories = async () => {
     setLoadingCategories(true);
     try {
-      const response = await companyUpdateCategoryService.getAllCompanyUpdateCategories({ isActive: true });
+      // Filter by published status and active for dropdowns
+      const response = await companyUpdateCategoryService.getAllCompanyUpdateCategories({ 
+        isActive: true,
+        status: 'published'
+      });
       if (response.success) {
         setCategories(response.data.categories || response.data.companyUpdateCategories || response.data || []);
       }
