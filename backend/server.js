@@ -59,6 +59,16 @@ app.use('/api/industries', require('./routes/industryRoutes'));
 app.use('/api/countries', require('./routes/countryRoutes'));
 app.use('/api/regions', require('./routes/regionRoutes'));
 app.use('/api/areas', require('./routes/areaRoutes'));
+app.use('/api/header-configurations', require('./routes/headerConfigurationRoutes'));
+app.use('/api/footer-configurations', require('./routes/footerConfigurationRoutes'));
+app.use('/api/website-appearance', require('./routes/websiteAppearanceRoutes'));
+app.use('/api/smtp-settings', require('./routes/smtpSettingsRoutes'));
+app.use('/api/google-recaptcha', require('./routes/googleReCaptchaRoutes'));
+app.use('/api/google-maps', require('./routes/googleMapsRoutes'));
+app.use('/api/vacancies', require('./routes/vacancyRoutes'));
+app.use('/api/enquiries', require('./routes/enquiryRoutes'));
+app.use('/api/applications', require('./routes/applicationRoutes'));
+app.use('/api/form-configurations', require('./routes/formConfigurationRoutes'));
 
 // Testing the server
 app.get("/", (req, res) => {

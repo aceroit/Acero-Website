@@ -168,6 +168,16 @@ const defaultResources = [
         order: 9
     },
     {
+        name: 'Website Configurations',
+        slug: 'website-configurations',
+        path: '/website-configurations',
+        icon: 'SettingOutlined',
+        description: 'Website configuration management',
+        category: 'Settings',
+        showInMenu: true,
+        order: 20
+    },
+    {
         name: 'Branches',
         slug: 'branches',
         path: '/branches',
@@ -234,6 +244,72 @@ const defaultResources = [
         parentSlug: 'company-related-information'
     },
     {
+        name: 'Header Configuration',
+        slug: 'header-configurations',
+        path: '/website-configurations/header',
+        icon: 'MenuOutlined',
+        description: 'Website header configuration',
+        category: 'Settings',
+        showInMenu: true,
+        order: 1,
+        parentSlug: 'website-configurations'
+    },
+    {
+        name: 'Footer Configuration',
+        slug: 'footer-configurations',
+        path: '/website-configurations/footer',
+        icon: 'BorderBottomOutlined',
+        description: 'Website footer configuration',
+        category: 'Settings',
+        showInMenu: true,
+        order: 2,
+        parentSlug: 'website-configurations'
+    },
+    {
+        name: 'Website Appearance',
+        slug: 'website-appearance',
+        path: '/website-configurations/appearance',
+        icon: 'HighlightOutlined',
+        description: 'Website appearance and theme settings',
+        category: 'Settings',
+        showInMenu: true,
+        order: 3,
+        parentSlug: 'website-configurations'
+    },
+    {
+        name: 'SMTP Settings',
+        slug: 'smtp-settings',
+        path: '/website-configurations/smtp',
+        icon: 'MailOutlined',
+        description: 'SMTP configuration for emails',
+        category: 'Settings',
+        showInMenu: true,
+        order: 4,
+        parentSlug: 'website-configurations'
+    },
+    {
+        name: 'Google ReCaptcha',
+        slug: 'google-recaptcha',
+        path: '/website-configurations/recaptcha',
+        icon: 'RobotOutlined',
+        description: 'ReCaptcha configuration',
+        category: 'Settings',
+        showInMenu: true,
+        order: 5,
+        parentSlug: 'website-configurations'
+    },
+    {
+        name: 'Google Maps',
+        slug: 'google-maps',
+        path: '/website-configurations/maps',
+        icon: 'EnvironmentOutlined',
+        description: 'Google Maps configuration',
+        category: 'Settings',
+        showInMenu: true,
+        order: 6,
+        parentSlug: 'website-configurations'
+    },
+    {
         name: 'Media',
         slug: 'media',
         path: '/media',
@@ -252,6 +328,60 @@ const defaultResources = [
         category: 'Administration',
         showInMenu: true,
         order: 11
+    },
+    {
+        name: 'Enquiries and Applications',
+        slug: 'enquiries-applications',
+        path: '/enquiries-applications',
+        icon: 'MailOutlined',
+        description: 'Enquiries and job applications management',
+        category: 'Content',
+        showInMenu: true,
+        order: 12
+    },
+    {
+        name: 'Vacancies',
+        slug: 'vacancies',
+        path: '/enquiries-applications/vacancies',
+        parentSlug: 'enquiries-applications',
+        icon: 'BriefcaseOutlined',
+        description: 'Job vacancies management',
+        category: 'Content',
+        showInMenu: true,
+        order: 1
+    },
+    {
+        name: 'Enquiries',
+        slug: 'enquiries',
+        path: '/enquiries-applications/enquiries',
+        parentSlug: 'enquiries-applications',
+        icon: 'MessageOutlined',
+        description: 'Contact form enquiries',
+        category: 'Content',
+        showInMenu: true,
+        order: 2
+    },
+    {
+        name: 'Applications',
+        slug: 'applications',
+        path: '/enquiries-applications/applications',
+        parentSlug: 'enquiries-applications',
+        icon: 'FileTextOutlined',
+        description: 'Job applications management',
+        category: 'Content',
+        showInMenu: true,
+        order: 3
+    },
+    {
+        name: 'Form Configuration',
+        slug: 'form-configurations',
+        path: '/enquiries-applications/form-configuration',
+        parentSlug: 'enquiries-applications',
+        icon: 'SettingOutlined',
+        description: 'Global form settings and notifications',
+        category: 'Settings',
+        showInMenu: true,
+        order: 4
     }
 ];
 

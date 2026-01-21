@@ -1,6 +1,6 @@
 // src/components/layout/Sidebar.jsx
 import { NavLink, useLocation } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { SearchOutlined, DashboardOutlined } from "@ant-design/icons";
 import { usePermissions } from "../contexts/PermissionContext";
 import { useAuth } from "../contexts/AuthContext";
@@ -10,6 +10,8 @@ import { renderIcon } from "../utils/iconMapper";
 const Sidebar = () => {
     const [search, setSearch] = useState("");
     const location = useLocation();
+    const navRef = useRef(null);
+    const scrollPositionRef = useRef(Number(sessionStorage.getItem('sidebar-scroll-top')) || 0);
     const { hasPermission, hasAnyRole, hasRole, menuResources } = usePermissions();
     const { user } = useAuth();
 
@@ -186,6 +188,16 @@ const Sidebar = () => {
         return buildFilteredTree(menuItems, matchingItems);
     }, [menuItems, search]);
 
+    // Restore scroll position after navigation/mount
+    useEffect(() => {
+        const timer = requestAnimationFrame(() => {
+            if (navRef.current) {
+                navRef.current.scrollTop = scrollPositionRef.current;
+            }
+        });
+        return () => cancelAnimationFrame(timer);
+    }, [location.pathname, filteredMenu]);
+
     // Render menu item (recursive for nested items)
     const renderMenuItem = (item, level = 0) => {
         const isActive = location.pathname === item.path || 
@@ -229,16 +241,41 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="h-full w-70 bg-gray-800 text-white flex flex-col">
+        <>
+            <style>{`
+                .sidebar-scrollbar {
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar-thumb {
+                    background-color: rgba(156, 163, 175, 0.5);
+                    border-radius: 3px;
+                    transition: background-color 0.2s ease;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background-color: rgba(156, 163, 175, 0.8);
+                }
+            `}</style>
+            <div className="h-full w-70 bg-gray-800 text-white flex flex-col">
             {/* Logo */}
             <div className="p-4 pb-3 flex flex-col items-center border-gray-700 hover:bg-gray-700 cursor-pointer">
-                <a href="/dashboard" className="py-1 pt-0">
+                <NavLink to="/dashboard" className="py-1 pt-0">
                     <img
-                        src="images/logo-small.png"
+                        src="/images/logo-small.png"
                         alt="Acero"
                         className="w-34"
                     />
-                </a>
+                </NavLink>
             </div>
 
             {/* Search */}
@@ -257,7 +294,15 @@ const Sidebar = () => {
             </div>
 
             {/* Menu */}
-            <nav className="flex-1 overflow-y-auto px-2 py-1 space-y-1">
+            <nav 
+                ref={navRef}
+                className="flex-1 overflow-y-auto px-2 py-1 space-y-1 sidebar-scrollbar"
+                onScroll={(e) => {
+                    // Update scroll position ref as user scrolls and persist across remounts
+                    scrollPositionRef.current = e.target.scrollTop;
+                    sessionStorage.setItem('sidebar-scroll-top', String(scrollPositionRef.current));
+                }}
+            >
                 {filteredMenu.length === 0 ? (
                     <div className="px-4 py-2 text-gray-400 text-sm">
                         {search ? "No results found" : "No menu items available"}
@@ -267,6 +312,7 @@ const Sidebar = () => {
                 )}
             </nav>
         </div>
+        </>
     );
 };
 

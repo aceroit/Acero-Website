@@ -7,6 +7,12 @@ const Certification = require('../models/Certification');
 const CompanyUpdate = require('../models/CompanyUpdate');
 const CompanyUpdateCategory = require('../models/CompanyUpdateCategory');
 const Brochure = require('../models/Brochure');
+const HeaderConfiguration = require('../models/HeaderConfiguration');
+const FooterConfiguration = require('../models/FooterConfiguration');
+const WebsiteAppearance = require('../models/WebsiteAppearance');
+const SMTPSettings = require('../models/SMTPSettings');
+const GoogleReCaptcha = require('../models/GoogleReCaptcha');
+const GoogleMaps = require('../models/GoogleMaps');
 const ContentVersion = require('../models/ContentVersion');
 const ActivityLog = require('../models/ActivityLog');
 const User = require('../models/User');
@@ -39,18 +45,45 @@ function getModel(resource) {
         industry: require('../models/Industry'),
         country: require('../models/Country'),
         region: require('../models/Region'),
-        area: require('../models/Area')
+        area: require('../models/Area'),
+        'header-configuration': HeaderConfiguration,
+        'footer-configuration': FooterConfiguration,
+        'website-appearance': WebsiteAppearance,
+        'smtp-settings': SMTPSettings,
+        'google-recaptcha': GoogleReCaptcha,
+        'google-maps': GoogleMaps,
+        vacancy: require('../models/Vacancy')
     };
     return models[resource];
 }
 
 // Get resource title
 function getResourceTitle(resource) {
-    // For pages, company updates, and brochures, use title
+    // For pages, company updates, brochures, and vacancies, use title
     if (resource.title) {
         return resource.title;
     }
     
+    // Configuration modules fallback titles
+    if (resource.navigationLinks) {
+        return 'Header Configuration';
+    }
+    if (resource.brandInfo || resource.quickLinks) {
+        return 'Footer Configuration';
+    }
+    if (resource.colorPalette) {
+        return 'Website Appearance';
+    }
+    if (resource.host || resource.port || resource.username) {
+        return 'SMTP Settings';
+    }
+    if (resource.siteKey || resource.secretKey) {
+        return 'Google ReCaptcha';
+    }
+    if (resource.apiKey) {
+        return 'Google Maps';
+    }
+
     // For projects, use jobNumber
     if (resource.jobNumber) {
         return resource.jobNumber;

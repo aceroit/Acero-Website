@@ -22,7 +22,14 @@ const validateResource = (req, res, next) => {
         'industry',
         'country',
         'region',
-        'area'
+        'area',
+        'header-configuration',
+        'footer-configuration',
+        'website-appearance',
+        'smtp-settings',
+        'google-recaptcha',
+        'google-maps',
+        'vacancy'
     ];
     
     if (!validResources.includes(resource)) {

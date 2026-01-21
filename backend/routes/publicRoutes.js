@@ -9,7 +9,16 @@ const Certification = require('../models/Certification');
 const CompanyUpdate = require('../models/CompanyUpdate');
 const CompanyUpdateCategory = require('../models/CompanyUpdateCategory');
 const Brochure = require('../models/Brochure');
+const HeaderConfiguration = require('../models/HeaderConfiguration');
+const FooterConfiguration = require('../models/FooterConfiguration');
+const WebsiteAppearance = require('../models/WebsiteAppearance');
+const GoogleReCaptcha = require('../models/GoogleReCaptcha');
+const GoogleMaps = require('../models/GoogleMaps');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
+const Vacancy = require('../models/Vacancy');
+const Enquiry = require('../models/Enquiry');
+const Application = require('../models/Application');
+const FormConfiguration = require('../models/FormConfiguration');
 
 /**
  * GET /api/public/pages/tree - Get published page tree for navigation
@@ -241,6 +250,102 @@ router.get('/projects/slug/:slug', async (req, res) => {
 });
 
 /**
+ * GET /api/public/vacancies - Get published and featured vacancies
+ * No authentication required
+ */
+router.get('/vacancies', async (req, res) => {
+    try {
+        const { page = 1, limit = 20, department, type, search } = req.query;
+
+        const filters = {};
+        if (department) filters.department = department;
+        if (type) filters.type = type;
+        if (search) {
+            filters.$or = [
+                { title: new RegExp(search, 'i') },
+                { department: new RegExp(search, 'i') },
+                { location: new RegExp(search, 'i') }
+            ];
+        }
+
+        const vacancies = await Vacancy.getPublished(filters);
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published vacancies retrieved successfully', {
+            vacancies,
+            count: vacancies.length
+        });
+    } catch (error) {
+        console.error('Error in public getVacancies:', error);
+        return errorResponse(res, 500, 'Failed to retrieve vacancies');
+    }
+});
+
+/**
+ * POST /api/public/enquiries - Submit an enquiry (Contact Us)
+ * No authentication required
+ */
+router.post('/enquiries', async (req, res) => {
+    try {
+        const payload = req.body || {};
+        const enquiry = new Enquiry(payload);
+        enquiry.submittedAt = new Date();
+        enquiry.ipAddress = req.ip;
+        await enquiry.save();
+
+        return successResponse(res, 201, 'Enquiry submitted successfully', { enquiryId: enquiry._id });
+    } catch (error) {
+        console.error('Error in public submitEnquiry:', error);
+        if (error.name === 'ValidationError') {
+            return errorResponse(res, 400, 'Validation error', error.message);
+        }
+        return errorResponse(res, 500, 'Failed to submit enquiry');
+    }
+});
+
+/**
+ * POST /api/public/applications - Submit a job application (Career page)
+ * No authentication required
+ */
+router.post('/applications', async (req, res) => {
+    try {
+        const payload = req.body || {};
+        const application = new Application(payload);
+        application.submittedAt = new Date();
+        application.ipAddress = req.ip;
+        await application.save();
+
+        return successResponse(res, 201, 'Application submitted successfully', { applicationId: application._id });
+    } catch (error) {
+        console.error('Error in public submitApplication:', error);
+        if (error.name === 'ValidationError') {
+            return errorResponse(res, 400, 'Validation error', error.message);
+        }
+        return errorResponse(res, 500, 'Failed to submit application');
+    }
+});
+
+/**
+ * GET /api/public/form-configuration - Get active form configuration
+ * No authentication required
+ */
+router.get('/form-configuration', async (req, res) => {
+    try {
+        const config = await FormConfiguration.getActive();
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Form configuration retrieved successfully', { config });
+    } catch (error) {
+        console.error('Error in public getFormConfiguration:', error);
+        return errorResponse(res, 500, 'Failed to retrieve form configuration');
+    }
+});
+
+/**
  * GET /api/public/branches - Get published and featured branches
  * No authentication required
  */
@@ -398,6 +503,64 @@ router.get('/brochures', async (req, res) => {
     } catch (error) {
         console.error('Error in public getBrochures:', error);
         return errorResponse(res, 500, 'Failed to retrieve brochures');
+    }
+});
+
+// Header configuration (published + featured)
+router.get('/header-configuration', async (req, res) => {
+    try {
+        const header = await HeaderConfiguration.getPublished();
+        return successResponse(res, 200, 'Published header configuration retrieved successfully', { header });
+    } catch (error) {
+        console.error('Error in public getHeaderConfiguration:', error);
+        return errorResponse(res, 500, 'Failed to retrieve header configuration');
+    }
+});
+
+// Footer configuration (published + featured)
+router.get('/footer-configuration', async (req, res) => {
+    try {
+        const footer = await FooterConfiguration.getPublished();
+        return successResponse(res, 200, 'Published footer configuration retrieved successfully', { footer });
+    } catch (error) {
+        console.error('Error in public getFooterConfiguration:', error);
+        return errorResponse(res, 500, 'Failed to retrieve footer configuration');
+    }
+});
+
+// Website appearance (published + featured)
+router.get('/website-appearance', async (req, res) => {
+    try {
+        const appearance = await WebsiteAppearance.getPublished();
+        return successResponse(res, 200, 'Published website appearance retrieved successfully', { appearance });
+    } catch (error) {
+        console.error('Error in public getWebsiteAppearance:', error);
+        return errorResponse(res, 500, 'Failed to retrieve website appearance');
+    }
+});
+
+// Google ReCaptcha (published + featured) — hide secret key
+router.get('/google-recaptcha', async (req, res) => {
+    try {
+        const recaptcha = await GoogleReCaptcha.getPublished();
+        if (recaptcha) {
+            recaptcha.secretKey = undefined;
+        }
+        return successResponse(res, 200, 'Published Google ReCaptcha settings retrieved successfully', { recaptcha });
+    } catch (error) {
+        console.error('Error in public getGoogleReCaptcha:', error);
+        return errorResponse(res, 500, 'Failed to retrieve Google ReCaptcha settings');
+    }
+});
+
+// Google Maps (published + featured)
+router.get('/google-maps', async (req, res) => {
+    try {
+        const maps = await GoogleMaps.getPublished();
+        return successResponse(res, 200, 'Published Google Maps settings retrieved successfully', { maps });
+    } catch (error) {
+        console.error('Error in public getGoogleMaps:', error);
+        return errorResponse(res, 500, 'Failed to retrieve Google Maps settings');
     }
 });
 

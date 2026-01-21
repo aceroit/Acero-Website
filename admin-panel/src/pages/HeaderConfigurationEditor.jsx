@@ -1,0 +1,615 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Card, Breadcrumb, Spin, Divider, Collapse, Space, Button, Form, Input, Switch, message } from 'antd';
+import { HomeOutlined, MenuOutlined, HistoryOutlined, PlusOutlined, DeleteOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
+import MainLayout from '../components/MainLayout';
+import PermissionWrapper from '../components/common/PermissionWrapper';
+import { usePermissions } from '../contexts/PermissionContext';
+import { WorkflowStatusBadge, WorkflowActions, WorkflowTimeline, WorkflowStatusGuard } from '../components/workflow';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
+import * as headerConfigurationService from '../services/headerConfigurationService';
+import * as versionService from '../services/versionService';
+import { toast } from 'react-toastify';
+
+const { Panel } = Collapse;
+const { TextArea } = Input;
+
+const HeaderConfigurationEditor = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { hasPermission } = usePermissions();
+  const [form] = Form.useForm();
+  const isEdit = !!id;
+  
+  const [headerConfig, setHeaderConfig] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(isEdit);
+
+  // Check workflow status permissions
+  const workflowStatus = useWorkflowStatus({
+    status: headerConfig?.status || 'draft',
+    resourceType: 'header-configuration',
+    createdBy: headerConfig?.createdBy?._id || headerConfig?.createdBy,
+  });
+
+  // Fetch header configuration data if editing
+  useEffect(() => {
+    if (isEdit) {
+      fetchHeaderConfiguration();
+    }
+  }, [id]);
+
+  const fetchHeaderConfiguration = async () => {
+    setFetching(true);
+    try {
+      const response = await headerConfigurationService.getHeaderConfiguration(id);
+      if (response.success) {
+        setHeaderConfig(response.data.headerConfiguration);
+        form.setFieldsValue({
+          title: response.data.headerConfiguration.title,
+          featured: response.data.headerConfiguration.featured,
+          logo: {
+            imageUrl: response.data.headerConfiguration.logo?.imageUrl || '',
+            altText: response.data.headerConfiguration.logo?.altText || '',
+            isFieldActive: response.data.headerConfiguration.logo?.isFieldActive !== false
+          },
+          brandName: {
+            text: response.data.headerConfiguration.brandName?.text || 'ACERO',
+            isFieldActive: response.data.headerConfiguration.brandName?.isFieldActive !== false
+          },
+          navigationLinks: response.data.headerConfiguration.navigationLinks || [],
+          themeToggle: {
+            enabled: response.data.headerConfiguration.themeToggle?.enabled !== false,
+            isFieldActive: response.data.headerConfiguration.themeToggle?.isFieldActive !== false
+          },
+          ctaButton: {
+            text: response.data.headerConfiguration.ctaButton?.text || 'Get Quote',
+            href: response.data.headerConfiguration.ctaButton?.href || '/contact-us',
+            isFieldActive: response.data.headerConfiguration.ctaButton?.isFieldActive !== false
+          }
+        });
+      } else {
+        toast.error('Header configuration not found');
+        navigate('/website-configurations/header');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to fetch header configuration');
+      navigate('/website-configurations/header');
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    try {
+      // Check workflow status permissions before submitting
+      if (isEdit && !workflowStatus.canEdit.canEdit) {
+        toast.error(workflowStatus.canEdit.reason || 'You do not have permission to edit this header configuration');
+        setLoading(false);
+        return;
+      }
+
+      // Transform form values to match backend schema
+      const submitData = {
+        title: values.title || 'Header Configuration',
+        featured: values.featured || false,
+        logo: {
+          imageUrl: values.logo?.imageUrl || null,
+          altText: values.logo?.altText || null,
+          isFieldActive: values.logo?.isFieldActive !== false
+        },
+        brandName: {
+          text: values.brandName?.text || 'ACERO',
+          isFieldActive: values.brandName?.isFieldActive !== false
+        },
+        navigationLinks: values.navigationLinks || [],
+        themeToggle: {
+          enabled: values.themeToggle?.enabled !== false,
+          isFieldActive: values.themeToggle?.isFieldActive !== false
+        },
+        ctaButton: {
+          text: values.ctaButton?.text || 'Get Quote',
+          href: values.ctaButton?.href || '/contact-us',
+          isFieldActive: values.ctaButton?.isFieldActive !== false
+        }
+      };
+
+      let response;
+      if (isEdit) {
+        response = await headerConfigurationService.updateHeaderConfiguration(id, submitData);
+      } else {
+        response = await headerConfigurationService.createHeaderConfiguration(submitData);
+      }
+
+      if (response.success) {
+        toast.success(isEdit ? 'Header configuration updated successfully' : 'Header configuration created successfully');
+        
+        if (isEdit) {
+          await fetchHeaderConfiguration();
+        } else {
+          const newId = response.data?.headerConfiguration?._id || response.data?.headerConfiguration?.id;
+          if (newId) {
+            navigate(`/website-configurations/header/${newId}`);
+          } else {
+            navigate('/website-configurations/header');
+          }
+        }
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 
+        (isEdit ? 'Failed to update header configuration' : 'Failed to create header configuration');
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    navigate('/website-configurations/header');
+  };
+
+  // Handle workflow action completion
+  const handleWorkflowActionComplete = async () => {
+    if (isEdit) {
+      await fetchHeaderConfiguration();
+      setTimeout(() => {
+        fetchHeaderConfiguration();
+      }, 500);
+    }
+  };
+
+  // Build breadcrumb items
+  const breadcrumbItems = [
+    {
+      title: (
+        <a href="/dashboard">
+          <HomeOutlined />
+        </a>
+      ),
+    },
+    {
+      title: (
+        <a href="/website-configurations/header">
+          <span>Header Configuration</span>
+        </a>
+      ),
+    },
+    {
+      title: <span>{isEdit ? 'Edit' : 'Create New'}</span>,
+    },
+  ];
+
+  if (fetching) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-96">
+          <Spin size="large" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Check permissions
+  const requiredPermission = isEdit ? 'update' : 'create';
+  if (!hasPermission('header-configurations', requiredPermission)) {
+    return (
+      <MainLayout>
+        <Card className="border border-gray-200 shadow-md bg-white">
+          <div className="text-center py-8">
+            <p className="text-gray-600">You don't have permission to {isEdit ? 'edit' : 'create'} header configurations.</p>
+          </div>
+        </Card>
+      </MainLayout>
+    );
+  }
+
+  return (
+    <MainLayout>
+      <div className="space-y-6 md:space-y-8 p-4 md:p-0">
+        {/* Breadcrumb */}
+        <Breadcrumb
+          items={breadcrumbItems}
+          className="text-sm"
+        />
+
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">
+              {isEdit ? `Edit Header Configuration${headerConfig?.title ? `: ${headerConfig.title}` : ''}` : 'Create New Header Configuration'}
+            </h1>
+            <p className="text-gray-500 text-sm md:text-base">
+              {isEdit 
+                ? 'Update header configuration details and metadata'
+                : 'Create a new header configuration for your website'
+              }
+            </p>
+          </div>
+          {isEdit && headerConfig && (
+            <div className="flex flex-col items-start md:items-end gap-2">
+              <WorkflowStatusBadge status={headerConfig.status} size="large" />
+              <Space>
+                <WorkflowActions
+                  resource="header-configuration"
+                  resourceId={id}
+                  currentStatus={headerConfig.status}
+                  createdBy={headerConfig.createdBy?._id || headerConfig.createdBy}
+                  onActionComplete={handleWorkflowActionComplete}
+                  showLabels={true}
+                  size="middle"
+                />
+              </Space>
+            </div>
+          )}
+        </div>
+
+        {/* Form Card */}
+        <Card className="border border-gray-200 shadow-md bg-white">
+          {isEdit && headerConfig ? (
+            <WorkflowStatusGuard
+              status={headerConfig.status}
+              resourceType="header-configuration"
+              resourceId={id}
+              createdBy={headerConfig.createdBy?._id || headerConfig.createdBy}
+              action="edit"
+              showMessage={true}
+              messageType="warning"
+            >
+              <HeaderConfigurationForm
+                form={form}
+                initialValues={headerConfig}
+                onSubmit={handleSubmit}
+                onCancel={handleCancel}
+                loading={loading}
+                isEdit={isEdit}
+              />
+            </WorkflowStatusGuard>
+          ) : (
+            <HeaderConfigurationForm
+              form={form}
+              initialValues={{}}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+              loading={loading}
+              isEdit={isEdit}
+            />
+          )}
+        </Card>
+
+        {/* Workflow Timeline - Only show when editing */}
+        {isEdit && headerConfig && (
+          <Card className="border border-gray-200 shadow-md bg-white">
+            <Collapse
+              items={[
+                {
+                  key: 'timeline',
+                  label: (
+                    <Space>
+                      <HistoryOutlined />
+                      <span>Version History & Workflow Timeline</span>
+                    </Space>
+                  ),
+                  extra: (
+                    <Button
+                      type="link"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/versions/header-configuration/${id}`);
+                      }}
+                    >
+                      View Full History
+                    </Button>
+                  ),
+                  children: (
+                    <WorkflowTimeline
+                      resource="header-configuration"
+                      resourceId={id}
+                      onVersionSelect={(version) => {
+                        // Handle version selection (could open a comparison view)
+                        console.log('Version selected:', version);
+                      }}
+                      onRestoreVersion={async (version) => {
+                        try {
+                          const response = await versionService.restoreVersion('header-configuration', id, version);
+                          if (response.success) {
+                            toast.success('Version restored successfully');
+                            await fetchHeaderConfiguration();
+                          }
+                        } catch (error) {
+                          toast.error(error.response?.data?.message || 'Failed to restore version');
+                        }
+                      }}
+                    />
+                  ),
+                },
+              ]}
+            />
+          </Card>
+        )}
+      </div>
+    </MainLayout>
+  );
+};
+
+// Header Configuration Form Component
+const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, loading, isEdit }) => {
+  const [navigationLinks, setNavigationLinks] = useState(initialValues.navigationLinks || []);
+
+  useEffect(() => {
+    if (initialValues.navigationLinks) {
+      setNavigationLinks(initialValues.navigationLinks);
+    }
+  }, [initialValues]);
+
+  const handleFinish = (values) => {
+    onSubmit({ ...values, navigationLinks });
+  };
+
+  const addNavigationLink = () => {
+    const newLink = {
+      label: '',
+      href: '',
+      order: navigationLinks.length,
+      dropdown: [],
+      isFieldActive: true
+    };
+    setNavigationLinks([...navigationLinks, newLink]);
+  };
+
+  const removeNavigationLink = (index) => {
+    const updated = navigationLinks.filter((_, i) => i !== index);
+    setNavigationLinks(updated);
+  };
+
+  const updateNavigationLink = (index, field, value) => {
+    const updated = [...navigationLinks];
+    updated[index] = { ...updated[index], [field]: value };
+    setNavigationLinks(updated);
+  };
+
+  const addDropdownItem = (linkIndex) => {
+    const updated = [...navigationLinks];
+    if (!updated[linkIndex].dropdown) {
+      updated[linkIndex].dropdown = [];
+    }
+    updated[linkIndex].dropdown.push({
+      label: '',
+      href: '',
+      order: updated[linkIndex].dropdown.length
+    });
+    setNavigationLinks(updated);
+  };
+
+  const removeDropdownItem = (linkIndex, dropdownIndex) => {
+    const updated = [...navigationLinks];
+    updated[linkIndex].dropdown = updated[linkIndex].dropdown.filter((_, i) => i !== dropdownIndex);
+    setNavigationLinks(updated);
+  };
+
+  const updateDropdownItem = (linkIndex, dropdownIndex, field, value) => {
+    const updated = [...navigationLinks];
+    updated[linkIndex].dropdown[dropdownIndex] = {
+      ...updated[linkIndex].dropdown[dropdownIndex],
+      [field]: value
+    };
+    setNavigationLinks(updated);
+  };
+
+  return (
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleFinish}
+      initialValues={{
+        title: initialValues.title || 'Header Configuration',
+        featured: initialValues.featured || false,
+        logo: {
+          imageUrl: initialValues.logo?.imageUrl || '',
+          altText: initialValues.logo?.altText || '',
+          isFieldActive: initialValues.logo?.isFieldActive !== false
+        },
+        brandName: {
+          text: initialValues.brandName?.text || 'ACERO',
+          isFieldActive: initialValues.brandName?.isFieldActive !== false
+        },
+        themeToggle: {
+          enabled: initialValues.themeToggle?.enabled !== false,
+          isFieldActive: initialValues.themeToggle?.isFieldActive !== false
+        },
+        ctaButton: {
+          text: initialValues.ctaButton?.text || 'Get Quote',
+          href: initialValues.ctaButton?.href || '/contact-us',
+          isFieldActive: initialValues.ctaButton?.isFieldActive !== false
+        }
+      }}
+    >
+      <Form.Item name="title" label="Title">
+        <Input placeholder="Header Configuration" />
+      </Form.Item>
+
+      <Form.Item name="featured" valuePropName="checked">
+        <Switch checkedChildren="Featured" unCheckedChildren="Not Featured" />
+        <span className="ml-2 text-sm text-gray-600">Mark as featured to publish</span>
+      </Form.Item>
+
+      <Divider>Logo Settings</Divider>
+      
+      <Form.Item name={['logo', 'isFieldActive']} valuePropName="checked">
+        <Switch checkedChildren="Logo Active" unCheckedChildren="Logo Inactive" />
+      </Form.Item>
+
+      <Form.Item name={['logo', 'imageUrl']} label="Logo Image URL">
+        <Input placeholder="https://example.com/logo.png" />
+      </Form.Item>
+
+      <Form.Item name={['logo', 'altText']} label="Logo Alt Text">
+        <Input placeholder="Company Logo" />
+      </Form.Item>
+
+      <Divider>Brand Name</Divider>
+
+      <Form.Item name={['brandName', 'isFieldActive']} valuePropName="checked">
+        <Switch checkedChildren="Brand Name Active" unCheckedChildren="Brand Name Inactive" />
+      </Form.Item>
+
+      <Form.Item name={['brandName', 'text']} label="Brand Name">
+        <Input placeholder="ACERO" />
+      </Form.Item>
+
+      <Divider>Navigation Links</Divider>
+
+      {navigationLinks.map((link, index) => (
+        <Card key={index} className="mb-4 border border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <span className="font-semibold">Link {index + 1}</span>
+            <Space>
+              <Switch
+                checked={link.isFieldActive !== false}
+                onChange={(checked) => updateNavigationLink(index, 'isFieldActive', checked)}
+                checkedChildren="Active"
+                unCheckedChildren="Inactive"
+              />
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => removeNavigationLink(index)}
+              >
+                Remove
+              </Button>
+            </Space>
+          </div>
+          <Form.Item label="Label">
+            <Input
+              value={link.label}
+              onChange={(e) => updateNavigationLink(index, 'label', e.target.value)}
+              placeholder="Link Label"
+            />
+          </Form.Item>
+          <Form.Item label="URL">
+            <Input
+              value={link.href}
+              onChange={(e) => updateNavigationLink(index, 'href', e.target.value)}
+              placeholder="/path"
+            />
+          </Form.Item>
+          <Form.Item label="Order">
+            <Input
+              type="number"
+              value={link.order}
+              onChange={(e) => updateNavigationLink(index, 'order', parseInt(e.target.value) || 0)}
+            />
+          </Form.Item>
+          
+          <div className="mt-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-medium">Dropdown Items</span>
+              <Button
+                type="dashed"
+                size="small"
+                icon={<PlusOutlined />}
+                onClick={() => addDropdownItem(index)}
+              >
+                Add Dropdown Item
+              </Button>
+            </div>
+            {link.dropdown && link.dropdown.map((item, dropdownIndex) => (
+              <Card key={dropdownIndex} className="mb-2 border border-gray-100">
+                <div className="flex justify-end mb-2">
+                  <Button
+                    type="text"
+                    danger
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    onClick={() => removeDropdownItem(index, dropdownIndex)}
+                  >
+                    Remove
+                  </Button>
+                </div>
+                <Form.Item label="Dropdown Label">
+                  <Input
+                    value={item.label}
+                    onChange={(e) => updateDropdownItem(index, dropdownIndex, 'label', e.target.value)}
+                    placeholder="Dropdown Label"
+                  />
+                </Form.Item>
+                <Form.Item label="Dropdown URL">
+                  <Input
+                    value={item.href}
+                    onChange={(e) => updateDropdownItem(index, dropdownIndex, 'href', e.target.value)}
+                    placeholder="/path"
+                  />
+                </Form.Item>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      ))}
+
+      <Button
+        type="dashed"
+        icon={<PlusOutlined />}
+        onClick={addNavigationLink}
+        className="w-full mb-4"
+      >
+        Add Navigation Link
+      </Button>
+
+      <Divider>Theme Toggle</Divider>
+
+      <Form.Item name={['themeToggle', 'isFieldActive']} valuePropName="checked">
+        <Switch checkedChildren="Theme Toggle Active" unCheckedChildren="Theme Toggle Inactive" />
+      </Form.Item>
+
+      <Form.Item name={['themeToggle', 'enabled']} valuePropName="checked">
+        <Switch checkedChildren="Enabled" unCheckedChildren="Disabled" />
+        <span className="ml-2 text-sm text-gray-600">Enable theme toggle button</span>
+      </Form.Item>
+
+      <Divider>CTA Button</Divider>
+
+      <Form.Item name={['ctaButton', 'isFieldActive']} valuePropName="checked">
+        <Switch checkedChildren="CTA Button Active" unCheckedChildren="CTA Button Inactive" />
+      </Form.Item>
+
+      <Form.Item name={['ctaButton', 'text']} label="CTA Button Text">
+        <Input placeholder="Get Quote" />
+      </Form.Item>
+
+      <Form.Item name={['ctaButton', 'href']} label="CTA Button URL">
+        <Input placeholder="/contact-us" />
+      </Form.Item>
+
+      <Form.Item className="mb-0 mt-6">
+        <div className="flex justify-end gap-2">
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            size="large"
+            className="text-white"
+            style={{
+              backgroundColor: '#1f2937',
+              borderColor: '#1f2937',
+              height: '44px',
+              borderRadius: '8px',
+              fontWeight: '600'
+            }}
+          >
+            {isEdit ? 'Update Header Configuration' : 'Create Header Configuration'}
+          </Button>
+          <Button onClick={onCancel} size="large">
+            Cancel
+          </Button>
+        </div>
+      </Form.Item>
+    </Form>
+  );
+};
+
+export default HeaderConfigurationEditor;
+

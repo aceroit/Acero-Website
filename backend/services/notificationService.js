@@ -3,6 +3,8 @@ const fs = require('fs').promises;
 const path = require('path');
 const Notification = require('../models/Notification');
 const User = require('../models/User');
+const FormConfiguration = require('../models/FormConfiguration');
+const Vacancy = require('../models/Vacancy');
 
 class NotificationService {
     constructor() {
@@ -665,6 +667,84 @@ class NotificationService {
             return true;
         } catch (error) {
             console.error('Failed to send workflow published notifications to admins:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Notify on enquiry submission
+     * @param {Object} enquiry - Enquiry document
+     */
+    async notifyEnquirySubmission(enquiry) {
+        try {
+            const activeConfig = await FormConfiguration.getActive();
+            const toEmail = enquiry.notificationEmail || activeConfig?.defaultEnquiryEmail;
+
+            if (!toEmail) {
+                console.warn('No notification email configured for enquiry submission');
+                return false;
+            }
+
+            const subject = `New Enquiry from ${enquiry.fullName || 'Visitor'}`;
+            const templateName = 'enquiry-submitted'; // template should exist
+
+            const data = {
+                fullName: enquiry.fullName || '',
+                email: enquiry.email || '',
+                mobileNumber: enquiry.mobileNumber || '',
+                country: enquiry.country || '',
+                purpose: enquiry.purpose || '',
+                subject: enquiry.subject || '',
+                message: enquiry.message || '',
+                companyName: enquiry.companyName || '',
+                telephoneNumber: enquiry.telephoneNumber || '',
+                countryCode: enquiry.countryCode || ''
+            };
+
+            return await this.sendEmail(toEmail, subject, templateName, data);
+        } catch (error) {
+            console.error('Failed to send enquiry submission notification:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Notify on application submission
+     * @param {Object} application - Application document
+     */
+    async notifyApplicationSubmission(application) {
+        try {
+            // Find vacancy to get configured email
+            const vacancy = await Vacancy.findById(application.vacancyId).lean();
+            const activeConfig = await FormConfiguration.getActive();
+
+            const toEmail = (vacancy && vacancy.notificationEmail) || activeConfig?.defaultApplicationEmail;
+
+            if (!toEmail) {
+                console.warn('No notification email configured for application submission');
+                return false;
+            }
+
+            const subject = `New Application: ${application.firstName || ''} ${application.lastName || ''}`;
+            const templateName = 'application-submitted'; // template should exist
+
+            const data = {
+                fullName: `${application.firstName || ''} ${application.lastName || ''}`.trim(),
+                email: application.email || '',
+                mobileNumber: application.mobileNumber || '',
+                country: application.country || '',
+                experienceLevel: application.experienceLevel || '',
+                educationLevel: application.educationLevel || '',
+                hasEngineeringDegree: application.hasEngineeringDegree || '',
+                languages: Array.isArray(application.languages) ? application.languages.join(', ') : '',
+                coverLetter: application.coverLetter || '',
+                vacancyTitle: vacancy?.title || '',
+                department: vacancy?.department || ''
+            };
+
+            return await this.sendEmail(toEmail, subject, templateName, data);
+        } catch (error) {
+            console.error('Failed to send application submission notification:', error);
             return false;
         }
     }
