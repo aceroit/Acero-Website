@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Upload, Button, Image, message, Input } from 'antd';
-import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined, FolderOutlined } from '@ant-design/icons';
 import * as mediaService from '../../services/mediaService';
 import { toast } from 'react-toastify';
+import MediaPicker from './MediaPicker';
 
 /**
  * Gallery Upload Component
@@ -16,6 +17,7 @@ import { toast } from 'react-toastify';
  * @param {number} props.maxSize - Max file size in MB (default: 10)
  * @param {Object} props.dimensions - Required dimensions { minWidth, minHeight }
  * @param {boolean} props.disabled - Whether upload is disabled
+ * @param {boolean} props.showLibraryButton - Whether to show "Select from Library" button (default: true)
  */
 const GalleryUpload = ({
   value = [],
@@ -25,8 +27,10 @@ const GalleryUpload = ({
   maxSize = 10,
   dimensions = null,
   disabled = false,
+  showLibraryButton = true,
 }) => {
   const [uploading, setUploading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const handleUpload = async (file) => {
     // Validate file size
@@ -95,6 +99,30 @@ const GalleryUpload = ({
     onChange?.(updatedGallery);
   };
 
+  const handlePickerSelect = (selectedMedia) => {
+    if (selectedMedia && selectedMedia.length > 0) {
+      const newImages = selectedMedia.map((media, index) => ({
+        url: media.secureUrl || media.url,
+        publicId: media.publicId,
+        width: media.width,
+        height: media.height,
+        altText: media.altText || media.filename || `Gallery image ${value.length + index + 1}`,
+        order: value.length + index,
+        _id: media._id, // Include ID for reference
+      }));
+      
+      const updatedGallery = [...value, ...newImages];
+      onChange?.(updatedGallery);
+      message.success(`${selectedMedia.length} image(s) selected from library`);
+    }
+  };
+
+  const getSelectedMediaForPicker = () => {
+    return value
+      .filter(img => img._id)
+      .map(img => img._id);
+  };
+
   const uploadProps = {
     beforeUpload: handleUpload,
     showUploadList: false,
@@ -112,17 +140,29 @@ const GalleryUpload = ({
       )}
       
       <div className="space-y-4">
-        {/* Upload Button */}
-        <Upload {...uploadProps}>
-          <Button
-            icon={<UploadOutlined />}
-            loading={uploading}
-            disabled={disabled || uploading}
-            size="large"
-          >
-            Upload Images
-          </Button>
-        </Upload>
+        {/* Upload Buttons */}
+        <div className="flex gap-2">
+          <Upload {...uploadProps}>
+            <Button
+              icon={<UploadOutlined />}
+              loading={uploading}
+              disabled={disabled || uploading}
+              size="large"
+            >
+              Upload Images
+            </Button>
+          </Upload>
+          {showLibraryButton && (
+            <Button
+              icon={<FolderOutlined />}
+              onClick={() => setPickerOpen(true)}
+              disabled={disabled}
+              size="large"
+            >
+              Select from Library
+            </Button>
+          )}
+        </div>
 
         {/* Gallery Preview */}
         {value.length > 0 && (
@@ -170,6 +210,16 @@ const GalleryUpload = ({
       <p className="text-xs text-gray-500 mt-1">
         Max file size: {maxSize}MB per image
       </p>
+
+      <MediaPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={handlePickerSelect}
+        multiple={true}
+        folder={folder}
+        selectedImages={getSelectedMediaForPicker()}
+        resourceType="image"
+      />
     </div>
   );
 };

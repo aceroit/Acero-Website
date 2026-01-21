@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Upload, Button, Image, message } from 'antd';
-import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined, FolderOutlined } from '@ant-design/icons';
 import * as mediaService from '../../services/mediaService';
 import { toast } from 'react-toastify';
+import MediaPicker from './MediaPicker';
 
 /**
  * Image Upload Component
@@ -17,6 +18,7 @@ import { toast } from 'react-toastify';
  * @param {number} props.maxSize - Max file size in MB (default: 10)
  * @param {Object} props.dimensions - Required dimensions { minWidth, minHeight, maxWidth, maxHeight }
  * @param {boolean} props.disabled - Whether upload is disabled
+ * @param {boolean} props.showLibraryButton - Whether to show "Select from Library" button (default: true)
  */
 const ImageUpload = ({
   value = null,
@@ -27,9 +29,11 @@ const ImageUpload = ({
   maxSize = 10,
   dimensions = null,
   disabled = false,
+  showLibraryButton = true,
 }) => {
   const [uploading, setUploading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const handleUpload = async (file) => {
     // Validate file size
@@ -84,6 +88,26 @@ const ImageUpload = ({
     message.success('Image removed');
   };
 
+  const handlePickerSelect = (selectedMedia) => {
+    if (selectedMedia && selectedMedia.length > 0) {
+      const media = selectedMedia[0]; // Single selection
+      const imageData = {
+        url: media.secureUrl || media.url,
+        publicId: media.publicId,
+        width: media.width,
+        height: media.height,
+        _id: media._id, // Include ID for reference
+      };
+      onChange?.(imageData);
+      message.success('Image selected from library');
+    }
+  };
+
+  const getSelectedMediaForPicker = () => {
+    if (!value || !value._id) return [];
+    return [value._id];
+  };
+
   const uploadProps = {
     beforeUpload: handleUpload,
     showUploadList: false,
@@ -129,17 +153,39 @@ const ImageUpload = ({
           </div>
         )}
         
-        <Upload {...uploadProps}>
-          <Button
-            icon={<UploadOutlined />}
-            loading={uploading}
-            disabled={disabled || uploading}
-            size="large"
-          >
-            {value?.url ? 'Change Image' : 'Upload Image'}
-          </Button>
-        </Upload>
+        <div className="flex gap-2">
+          <Upload {...uploadProps}>
+            <Button
+              icon={<UploadOutlined />}
+              loading={uploading}
+              disabled={disabled || uploading}
+              size="large"
+            >
+              {value?.url ? 'Change Image' : 'Upload Image'}
+            </Button>
+          </Upload>
+          {showLibraryButton && (
+            <Button
+              icon={<FolderOutlined />}
+              onClick={() => setPickerOpen(true)}
+              disabled={disabled}
+              size="large"
+            >
+              Select from Library
+            </Button>
+          )}
+        </div>
       </div>
+
+      <MediaPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={handlePickerSelect}
+        multiple={false}
+        folder={folder}
+        selectedImages={getSelectedMediaForPicker()}
+        resourceType="image"
+      />
 
       {dimensions && (
         <p className="text-xs text-gray-500 mt-2">

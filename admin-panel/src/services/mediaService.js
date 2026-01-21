@@ -83,3 +83,14 @@ export const searchMedia = async (params = {}) => {
   return response.data;
 };
 
+/**
+ * Get media by folder
+ * @param {string} folder - Folder path (e.g., "projects/thumbnails")
+ * @param {Object} params - Query parameters (page, limit, sortBy, sortOrder)
+ * @returns {Promise} - Response with media array
+ */
+export const getMediaByFolder = async (folder, params = {}) => {
+  const response = await API.get(`/media/folder/${encodeURIComponent(folder)}`, { params });
+  return response.data;
+};
+
