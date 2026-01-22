@@ -44,34 +44,42 @@ const FooterConfigurationEditor = () => {
     try {
       const response = await footerConfigurationService.getFooterConfiguration(id);
       if (response.success) {
-        setFooterConfig(response.data.footerConfiguration);
+        // Backend returns 'footer', but admin panel expects 'footerConfiguration'
+        const footerData = response.data.footerConfiguration || response.data.footer;
+        if (!footerData) {
+          toast.error('Footer configuration data not found in response');
+          navigate('/website-configurations/footer');
+          return;
+        }
+        
+        setFooterConfig(footerData);
         form.setFieldsValue({
-          title: response.data.footerConfiguration.title,
-          featured: response.data.footerConfiguration.featured,
+          title: footerData.title,
+          featured: footerData.featured === true || footerData.featured === 'true',
           brandInfo: {
             logo: {
-              imageUrl: response.data.footerConfiguration.brandInfo?.logo?.imageUrl || '',
-              altText: response.data.footerConfiguration.brandInfo?.logo?.altText || ''
+              imageUrl: footerData.brandInfo?.logo?.imageUrl || '',
+              altText: footerData.brandInfo?.logo?.altText || ''
             },
-            description: response.data.footerConfiguration.brandInfo?.description || '',
-            isFieldActive: response.data.footerConfiguration.brandInfo?.isFieldActive !== false
+            description: footerData.brandInfo?.description || '',
+            isFieldActive: footerData.brandInfo?.isFieldActive !== false
           },
           contactInfo: {
-            phone: response.data.footerConfiguration.contactInfo?.phone || '',
-            email: response.data.footerConfiguration.contactInfo?.email || '',
-            address: response.data.footerConfiguration.contactInfo?.address || '',
-            isFieldActive: response.data.footerConfiguration.contactInfo?.isFieldActive !== false
+            phone: footerData.contactInfo?.phone || '',
+            email: footerData.contactInfo?.email || '',
+            address: footerData.contactInfo?.address || '',
+            isFieldActive: footerData.contactInfo?.isFieldActive !== false
           },
-          socialLinks: response.data.footerConfiguration.socialLinks || [],
-          quickLinks: response.data.footerConfiguration.quickLinks || [],
-          productsLinks: response.data.footerConfiguration.productsLinks || [],
-          mediaLinks: response.data.footerConfiguration.mediaLinks || [],
+          socialLinks: footerData.socialLinks || [],
+          quickLinks: footerData.quickLinks || [],
+          productsLinks: footerData.productsLinks || [],
+          mediaLinks: footerData.mediaLinks || [],
           copyright: {
-            text: response.data.footerConfiguration.copyright?.text || '',
-            year: response.data.footerConfiguration.copyright?.year || new Date().getFullYear(),
-            isFieldActive: response.data.footerConfiguration.copyright?.isFieldActive !== false
+            text: footerData.copyright?.text || '',
+            year: footerData.copyright?.year || new Date().getFullYear(),
+            isFieldActive: footerData.copyright?.isFieldActive !== false
           },
-          legalLinks: response.data.footerConfiguration.legalLinks || []
+          legalLinks: footerData.legalLinks || []
         });
       } else {
         toast.error('Footer configuration not found');
@@ -97,7 +105,7 @@ const FooterConfigurationEditor = () => {
 
       const submitData = {
         title: values.title || 'Footer Configuration',
-        featured: values.featured || false,
+        featured: values.featured === true || values.featured === 'true',
         brandInfo: {
           logo: {
             imageUrl: values.brandInfo?.logo?.imageUrl || null,
@@ -137,7 +145,9 @@ const FooterConfigurationEditor = () => {
         if (isEdit) {
           await fetchFooterConfiguration();
         } else {
-          const newId = response.data?.footerConfiguration?._id || response.data?.footerConfiguration?.id;
+          // Backend returns 'footer', but admin panel expects 'footerConfiguration'
+          const newFooter = response.data?.footerConfiguration || response.data?.footer;
+          const newId = newFooter?._id || newFooter?.id;
           if (newId) {
             navigate(`/website-configurations/footer/${newId}`);
           } else {
@@ -498,7 +508,7 @@ const FooterConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
       onFinish={handleFinish}
       initialValues={{
         title: initialValues.title || 'Footer Configuration',
-        featured: initialValues.featured || false,
+        featured: initialValues?.featured === true || initialValues?.featured === 'true' || false,
         brandInfo: {
           logo: {
             imageUrl: initialValues.brandInfo?.logo?.imageUrl || '',

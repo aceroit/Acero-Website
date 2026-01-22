@@ -44,28 +44,36 @@ const HeaderConfigurationEditor = () => {
     try {
       const response = await headerConfigurationService.getHeaderConfiguration(id);
       if (response.success) {
-        setHeaderConfig(response.data.headerConfiguration);
+        // Backend returns 'header', but admin panel expects 'headerConfiguration'
+        const headerData = response.data.headerConfiguration || response.data.header;
+        if (!headerData) {
+          toast.error('Header configuration data not found in response');
+          navigate('/website-configurations/header');
+          return;
+        }
+        
+        setHeaderConfig(headerData);
         form.setFieldsValue({
-          title: response.data.headerConfiguration.title,
-          featured: response.data.headerConfiguration.featured,
+          title: headerData.title,
+          featured: headerData.featured === true || headerData.featured === 'true',
           logo: {
-            imageUrl: response.data.headerConfiguration.logo?.imageUrl || '',
-            altText: response.data.headerConfiguration.logo?.altText || '',
-            isFieldActive: response.data.headerConfiguration.logo?.isFieldActive !== false
+            imageUrl: headerData.logo?.imageUrl || '',
+            altText: headerData.logo?.altText || '',
+            isFieldActive: headerData.logo?.isFieldActive !== false
           },
           brandName: {
-            text: response.data.headerConfiguration.brandName?.text || 'ACERO',
-            isFieldActive: response.data.headerConfiguration.brandName?.isFieldActive !== false
+            text: headerData.brandName?.text || 'ACERO',
+            isFieldActive: headerData.brandName?.isFieldActive !== false
           },
-          navigationLinks: response.data.headerConfiguration.navigationLinks || [],
+          navigationLinks: headerData.navigationLinks || [],
           themeToggle: {
-            enabled: response.data.headerConfiguration.themeToggle?.enabled !== false,
-            isFieldActive: response.data.headerConfiguration.themeToggle?.isFieldActive !== false
+            enabled: headerData.themeToggle?.enabled !== false,
+            isFieldActive: headerData.themeToggle?.isFieldActive !== false
           },
           ctaButton: {
-            text: response.data.headerConfiguration.ctaButton?.text || 'Get Quote',
-            href: response.data.headerConfiguration.ctaButton?.href || '/contact-us',
-            isFieldActive: response.data.headerConfiguration.ctaButton?.isFieldActive !== false
+            text: headerData.ctaButton?.text || 'Get Quote',
+            href: headerData.ctaButton?.href || '/contact-us',
+            isFieldActive: headerData.ctaButton?.isFieldActive !== false
           }
         });
       } else {
@@ -94,7 +102,7 @@ const HeaderConfigurationEditor = () => {
       // Transform form values to match backend schema
       const submitData = {
         title: values.title || 'Header Configuration',
-        featured: values.featured || false,
+        featured: values.featured === true || values.featured === 'true',
         logo: {
           imageUrl: values.logo?.imageUrl || null,
           altText: values.logo?.altText || null,
@@ -129,7 +137,9 @@ const HeaderConfigurationEditor = () => {
         if (isEdit) {
           await fetchHeaderConfiguration();
         } else {
-          const newId = response.data?.headerConfiguration?._id || response.data?.headerConfiguration?.id;
+          // Backend returns 'header', but admin panel expects 'headerConfiguration'
+          const newHeader = response.data?.headerConfiguration || response.data?.header;
+          const newId = newHeader?._id || newHeader?.id;
           if (newId) {
             navigate(`/website-configurations/header/${newId}`);
           } else {
@@ -406,7 +416,7 @@ const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
       onFinish={handleFinish}
       initialValues={{
         title: initialValues.title || 'Header Configuration',
-        featured: initialValues.featured || false,
+        featured: initialValues?.featured === true || initialValues?.featured === 'true' || false,
         logo: {
           imageUrl: initialValues.logo?.imageUrl || '',
           altText: initialValues.logo?.altText || '',

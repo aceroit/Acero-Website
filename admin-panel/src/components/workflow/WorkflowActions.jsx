@@ -268,14 +268,10 @@ const WorkflowActions = ({
       return actions;
     }
 
-    // For non-admin users, trust the backend response
-    // Backend getNextPossibleStates already checks:
-    // 1. Workflow resource permissions
-    // 2. Actual resource permissions (pages/sections)
-    // 3. Creator status
-    // 4. Role hierarchy
-    // So we can trust what backend returns
-    return actions;
+    // For non-admin users, filter out restricted actions (archive and unpublish)
+    // These actions should only be visible to Admin and Super Admin
+    const restrictedActions = ['archive', 'unpublish'];
+    return actions.filter(action => !restrictedActions.includes(action));
   }, [actions, workflowStatus]);
 
   // Early returns AFTER all hooks have been called

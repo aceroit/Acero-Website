@@ -42,12 +42,20 @@ const WebsiteAppearanceEditor = () => {
     try {
       const response = await websiteAppearanceService.getWebsiteAppearance(id);
       if (response.success) {
-        setAppearance(response.data.websiteAppearance);
+        // Backend returns 'appearance', but admin panel expects 'websiteAppearance'
+        const appearanceData = response.data.websiteAppearance || response.data.appearance;
+        if (!appearanceData) {
+          toast.error('Website appearance data not found in response');
+          navigate('/website-configurations/appearance');
+          return;
+        }
+        
+        setAppearance(appearanceData);
         // Set form values with defaults
-        const data = response.data.websiteAppearance;
+        const data = appearanceData;
         form.setFieldsValue({
           title: data.title,
-          featured: data.featured,
+          featured: data.featured === true || data.featured === 'true',
           colorPalette: {
             lightMode: {
               background: { value: data.colorPalette?.lightMode?.background?.value || '#F7F7F7', isFieldActive: data.colorPalette?.lightMode?.background?.isFieldActive !== false },
@@ -126,7 +134,7 @@ const WebsiteAppearanceEditor = () => {
       // Transform form values to match backend schema
       const submitData = {
         title: values.title || 'Website Appearance',
-        featured: values.featured || false,
+        featured: values.featured === true || values.featured === 'true',
         colorPalette: {
           lightMode: {
             background: { value: values.colorPalette?.lightMode?.background?.value || '#F7F7F7', isFieldActive: values.colorPalette?.lightMode?.background?.isFieldActive !== false },
@@ -195,7 +203,9 @@ const WebsiteAppearanceEditor = () => {
         if (isEdit) {
           await fetchAppearance();
         } else {
-          const newId = response.data?.websiteAppearance?._id || response.data?.websiteAppearance?.id;
+          // Backend returns 'appearance', but admin panel expects 'websiteAppearance'
+          const newAppearance = response.data?.websiteAppearance || response.data?.appearance;
+          const newId = newAppearance?._id || newAppearance?.id;
           if (newId) {
             navigate(`/website-configurations/appearance/${newId}`);
           } else {
@@ -437,7 +447,7 @@ const WebsiteAppearanceForm = ({ form, initialValues, onSubmit, onCancel, loadin
       onFinish={onSubmit}
       initialValues={{
         title: initialValues.title || 'Website Appearance',
-        featured: initialValues.featured || false,
+        featured: initialValues?.featured === true || initialValues?.featured === 'true' || false,
         colorPalette: {
           lightMode: {
             background: { value: '#F7F7F7', isFieldActive: true },

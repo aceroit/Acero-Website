@@ -1,0 +1,20 @@
+.statistics-editor {
+  width: 100%;
+}
+
+.stats-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.stats-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.statistics-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.statistics-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+

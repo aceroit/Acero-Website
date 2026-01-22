@@ -56,11 +56,13 @@ const HeaderConfigurations = () => {
       if (response.success) {
         const list = Array.isArray(response.data?.headerConfigurations)
           ? response.data.headerConfigurations
-          : Array.isArray(response.data)
-            ? response.data
-            : Array.isArray(response.data?.data)
-              ? response.data.data
-              : [];
+          : Array.isArray(response.data?.headers)
+            ? response.data.headers
+            : Array.isArray(response.data)
+              ? response.data
+              : Array.isArray(response.data?.data)
+                ? response.data.data
+                : [];
         setConfigurations(list);
         if (response.data.pagination?.total !== undefined) {
           setPagination((prev) => ({

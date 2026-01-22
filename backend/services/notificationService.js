@@ -5,6 +5,7 @@ const Notification = require('../models/Notification');
 const User = require('../models/User');
 const FormConfiguration = require('../models/FormConfiguration');
 const Vacancy = require('../models/Vacancy');
+const { getAdminPanelUrl, getPublicSiteUrl } = require('../utils/urlHelper');
 
 class NotificationService {
     constructor() {
@@ -120,7 +121,7 @@ class NotificationService {
                 _id: { $in: reviewerIds }
             }).select('email firstName lastName');
 
-            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const adminPanelUrl = getAdminPanelUrl();
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
             // Build message with change summary if provided
@@ -174,7 +175,7 @@ class NotificationService {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
 
-            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const adminPanelUrl = getAdminPanelUrl();
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
             // Build message with change summary if provided
@@ -225,7 +226,7 @@ class NotificationService {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
 
-            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const adminPanelUrl = getAdminPanelUrl();
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
             // Build message with change summary if provided
@@ -235,7 +236,7 @@ class NotificationService {
                 : baseMessage;
 
             // In-app notification for editor
-            await this.createInAppNotification(editor._id, 'workflow_approved', {
+            const notification = await this.createInAppNotification(editor._id, 'workflow_approved', {
                 title: 'Content Approved',
                 message: messageWithSummary,
                 resource,
@@ -247,6 +248,12 @@ class NotificationService {
                     changeSummary: changeSummary || null
                 }
             });
+            
+            if (!notification) {
+                console.error(`Failed to create approved notification for editor ${editor._id} for resource ${resource} ${resourceId}`);
+            } else {
+                console.log(`Successfully created approved notification for editor ${editor._id} for resource ${resource} ${resourceId}`);
+            }
 
             // Email notification for editor
             await this.sendEmail(
@@ -331,7 +338,7 @@ class NotificationService {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
 
-            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const adminPanelUrl = getAdminPanelUrl();
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
             // Build message with change summary if provided
@@ -449,7 +456,7 @@ class NotificationService {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
 
-            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const adminPanelUrl = getAdminPanelUrl();
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
             // Build message with change summary if provided
@@ -508,7 +515,7 @@ class NotificationService {
                 _id: { $in: approverIds }
             }).select('email firstName lastName');
 
-            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const adminPanelUrl = getAdminPanelUrl();
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
 
             // Build message with change summary if provided
@@ -563,7 +570,7 @@ class NotificationService {
                 _id: { $in: contributorIds }
             }).select('email firstName lastName');
 
-            const publicSiteUrl = process.env.PUBLIC_SITE_URL || 'http://localhost:5174';
+            const publicSiteUrl = getPublicSiteUrl();
 
             // Build message with change summary if provided
             const baseMessage = `"${resourceTitle}" has been published by ${publisher.firstName} ${publisher.lastName}`;
@@ -573,7 +580,7 @@ class NotificationService {
 
             for (const contributor of contributors) {
                 // In-app notification
-                await this.createInAppNotification(contributor._id, 'workflow_published', {
+                const notification = await this.createInAppNotification(contributor._id, 'workflow_published', {
                     title: 'Content Published',
                     message: messageWithSummary,
                     resource,
@@ -585,6 +592,12 @@ class NotificationService {
                         changeSummary: changeSummary || null
                     }
                 });
+                
+                if (!notification) {
+                    console.error(`Failed to create published notification for contributor ${contributor._id} for resource ${resource} ${resourceId}`);
+                } else {
+                    console.log(`Successfully created published notification for contributor ${contributor._id} for resource ${resource} ${resourceId}`);
+                }
 
                 // Email notification
                 await this.sendEmail(
@@ -616,9 +629,9 @@ class NotificationService {
                 _id: { $in: adminIds }
             }).select('email firstName lastName');
 
-            const adminPanelUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:5173';
+            const adminPanelUrl = getAdminPanelUrl();
             const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
-            const publicSiteUrl = process.env.PUBLIC_SITE_URL || 'http://localhost:5174';
+            const publicSiteUrl = getPublicSiteUrl();
 
             // Build message with change summary if provided
             const baseMessage = `"${resourceTitle}" has been published by ${publisher.firstName} ${publisher.lastName}`;

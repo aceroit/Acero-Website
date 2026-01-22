@@ -56,11 +56,13 @@ const WebsiteAppearances = () => {
       if (response.success) {
         const list = Array.isArray(response.data?.websiteAppearances)
           ? response.data.websiteAppearances
-          : Array.isArray(response.data)
-            ? response.data
-            : Array.isArray(response.data?.data)
-              ? response.data.data
-              : [];
+          : Array.isArray(response.data?.appearances)
+            ? response.data.appearances
+            : Array.isArray(response.data)
+              ? response.data
+              : Array.isArray(response.data?.data)
+                ? response.data.data
+                : [];
         setAppearances(list);
         if (response.data.pagination?.total !== undefined) {
           setPagination((prev) => ({

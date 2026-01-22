@@ -131,9 +131,11 @@ const CompanyUpdates = () => {
       title: 'Company Update',
       key: 'update',
       sorter: true,
+      width: 280,
+      fixed: 'left',
       render: (_, record) => (
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0 overflow-hidden">
             {record.featureImage?.url ? (
               <img
                 src={record.featureImage.url}
@@ -141,12 +143,12 @@ const CompanyUpdates = () => {
                 className="w-full h-full object-cover rounded-lg"
               />
             ) : (
-              <NotificationOutlined />
+              <NotificationOutlined className="text-xs" />
             )}
           </div>
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900 truncate">{record.title}</span>
+          <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="font-medium text-gray-900 text-sm truncate">{record.title}</span>
               {record.featured && (
                 <Tag icon={<StarOutlined />} color="gold" className="text-xs flex-shrink-0">
                   Featured
@@ -163,8 +165,9 @@ const CompanyUpdates = () => {
     {
       title: 'Category',
       key: 'category',
+      width: 130,
       render: (_, record) => (
-        <Tag className="px-2 py-1">
+        <Tag className="px-2 py-0.5 text-xs">
           {record.category?.name || 'Uncategorized'}
         </Tag>
       ),
@@ -173,8 +176,10 @@ const CompanyUpdates = () => {
       title: 'Event Date',
       dataIndex: 'eventDate',
       key: 'eventDate',
+      width: 120,
+      className: 'hidden md:table-cell',
       render: (date) => (
-        <span className="text-gray-600 text-sm">
+        <span className="text-gray-600 text-xs">
           {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
         </span>
       ),
@@ -184,10 +189,11 @@ const CompanyUpdates = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      width: 130,
       render: (status) => (
         <Tag 
           color={getStatusColor(status)}
-          className="px-3 py-1 font-semibold rounded-full"
+          className="px-2 py-0.5 font-semibold rounded-full text-xs"
         >
           {getStatusLabel(status)}
         </Tag>
@@ -205,23 +211,27 @@ const CompanyUpdates = () => {
     {
       title: 'Created By',
       key: 'createdBy',
+      width: 140,
+      className: 'hidden lg:table-cell',
       render: (_, record) => {
         const creator = record.createdBy;
         if (creator) {
           const name = creator.firstName && creator.lastName
             ? `${creator.firstName} ${creator.lastName}`
             : creator.email || 'Unknown';
-          return <span className="text-gray-700">{name}</span>;
+          return <span className="text-gray-700 text-sm truncate block" title={name}>{name}</span>;
         }
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-gray-400 text-sm">—</span>;
       },
     },
     {
       title: 'Created',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      width: 120,
+      className: 'hidden md:table-cell',
       render: (date) => (
-        <span className="text-gray-600 text-sm">
+        <span className="text-gray-600 text-xs">
           {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
         </span>
       ),
@@ -231,7 +241,7 @@ const CompanyUpdates = () => {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
-      width: 120,
+      width: 80,
       render: (_, record) => {
         const menuItems = [];
 
@@ -270,6 +280,7 @@ const CompanyUpdates = () => {
                 type="text"
                 icon={<MoreOutlined />}
                 className="hover:bg-gray-100"
+                size="small"
               />
             </Dropdown>
           </div>
@@ -359,37 +370,39 @@ const CompanyUpdates = () => {
           className="border border-gray-200 shadow-md bg-white"
           bodyStyle={{ padding: 0 }}
         >
-          <Table
-            columns={columns}
-            dataSource={companyUpdates}
-            loading={loading}
-            rowKey="_id"
-            className="custom-table company-updates-table"
-            pagination={{
-              ...pagination,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => 
-                `${range[0]}-${range[1]} of ${total} updates`,
-              pageSizeOptions: ['10', '20', '50', '100'],
-              onChange: (page, pageSize) => {
-                setPagination((prev) => ({
-                  ...prev,
-                  current: page,
-                  pageSize,
-                }));
-              },
-            }}
-            scroll={{ x: 'max-content' }}
-            onRow={(record) => ({
-              onClick: () => {
-                if (hasPermission('company-updates', 'update')) {
-                  navigate(`/company-updates/${record._id}`);
-                }
-              },
-              className: hasPermission('company-updates', 'update') ? 'cursor-pointer hover:bg-gray-50' : '',
-            })}
-          />
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              dataSource={companyUpdates}
+              loading={loading}
+              rowKey="_id"
+              className="custom-table company-updates-table"
+              pagination={{
+                ...pagination,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => 
+                  `${range[0]}-${range[1]} of ${total} updates`,
+                pageSizeOptions: ['10', '20', '50', '100'],
+                onChange: (page, pageSize) => {
+                  setPagination((prev) => ({
+                    ...prev,
+                    current: page,
+                    pageSize,
+                  }));
+                },
+              }}
+              scroll={{ x: 1100 }}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (hasPermission('company-updates', 'update')) {
+                    navigate(`/company-updates/${record._id}`);
+                  }
+                },
+                className: hasPermission('company-updates', 'update') ? 'cursor-pointer hover:bg-gray-50' : '',
+              })}
+            />
+          </div>
         </Card>
 
         {/* Delete Confirmation Modal */}

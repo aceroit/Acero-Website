@@ -1,0 +1,20 @@
+.company-updates-editor {
+  width: 100%;
+}
+
+.updates-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.updates-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.company-updates-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.company-updates-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+

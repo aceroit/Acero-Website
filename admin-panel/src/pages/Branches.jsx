@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Card, Tag, Select, Dropdown, Space } from 'antd';
+import { Table, Button, Input, Card, Tag, Select, Dropdown, Space, Tooltip } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -132,28 +132,36 @@ const Branches = () => {
       title: 'Branch',
       key: 'branch',
       sorter: true,
+      width: 240,
+      fixed: 'left',
       render: (_, record) => (
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white">
-            {record.isHeadOffice ? <HomeOutlined /> : <BankOutlined />}
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+            {record.isHeadOffice ? <HomeOutlined className="text-xs" /> : <BankOutlined className="text-xs" />}
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900">{record.branchName}</span>
+          <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Tooltip title={record.branchName} placement="top">
+                <span className="font-medium text-gray-900 text-sm truncate block" style={{ maxWidth: 'calc(100% - 100px)' }}>
+                  {record.branchName}
+                </span>
+              </Tooltip>
               {record.isHeadOffice && (
-                <Tag color="blue" className="text-xs">
+                <Tag color="blue" className="text-xs flex-shrink-0">
                   Head Office
                 </Tag>
               )}
               {record.featured && (
-                <Tag icon={<StarOutlined />} color="gold" className="text-xs">
+                <Tag icon={<StarOutlined />} color="gold" className="text-xs flex-shrink-0">
                   Featured
                 </Tag>
               )}
             </div>
-            <span className="text-xs text-gray-500">
-              {record.city}, {record.state} • {record.country?.name || 'N/A'}
-            </span>
+            <Tooltip title={`${record.city}, ${record.state} • ${record.country?.name || 'N/A'}`} placement="top">
+              <span className="text-xs text-gray-500 truncate block" style={{ maxWidth: 'calc(100% - 100px)' }}>
+                {record.city}, {record.state} • {record.country?.name || 'N/A'}
+              </span>
+            </Tooltip>
           </div>
         </div>
       ),
@@ -161,13 +169,14 @@ const Branches = () => {
     {
       title: 'Location',
       key: 'location',
+      width: 180,
       render: (_, record) => {
         const locationParts = [];
         if (record.city) locationParts.push(record.city);
         if (record.state) locationParts.push(record.state);
         if (record.country?.name) locationParts.push(record.country.name);
         return (
-          <span className="text-gray-700 text-sm">
+          <span className="text-gray-700 text-sm truncate block" title={locationParts.join(', ')}>
             {locationParts.length > 0 ? locationParts.join(', ') : '—'}
           </span>
         );
@@ -176,13 +185,15 @@ const Branches = () => {
     {
       title: 'Contact',
       key: 'contact',
+      width: 200,
+      className: 'hidden lg:table-cell',
       render: (_, record) => (
-        <div className="flex flex-col text-sm">
+        <div className="flex flex-col text-xs min-w-0">
           {record.email && (
-            <span className="text-gray-700">{record.email}</span>
+            <span className="text-gray-700 truncate block" title={record.email}>{record.email}</span>
           )}
           {record.phone && (
-            <span className="text-gray-600">{record.phone}</span>
+            <span className="text-gray-600 truncate block" title={record.phone}>{record.phone}</span>
           )}
           {!record.email && !record.phone && (
             <span className="text-gray-400">—</span>
@@ -190,28 +201,31 @@ const Branches = () => {
         </div>
       ),
     },
-    {
-      title: 'Manager',
-      key: 'manager',
-      render: (_, record) => {
-        const manager = record.manager;
-        if (manager) {
-          const name = manager.firstName && manager.lastName
-            ? `${manager.firstName} ${manager.lastName}`
-            : manager.email || 'Unknown';
-          return <span className="text-gray-700 text-sm">{name}</span>;
-        }
-        return <span className="text-gray-400">—</span>;
-      },
-    },
+    // {
+    //   title: 'Manager',
+    //   key: 'manager',
+    //   width: 140,
+    //   className: 'hidden lg:table-cell',
+    //   render: (_, record) => {
+    //     const manager = record.manager;
+    //     if (manager) {
+    //       const name = manager.firstName && manager.lastName
+    //         ? `${manager.firstName} ${manager.lastName}`
+    //         : manager.email || 'Unknown';
+    //       return <span className="text-gray-700 text-sm truncate block" title={name}>{name}</span>;
+    //     }
+    //     return <span className="text-gray-400 text-sm">—</span>;
+    //   },
+    // },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      width: 130,
       render: (status) => (
         <Tag 
           color={getStatusColor(status)}
-          className="px-3 py-1 font-semibold rounded-full"
+          className="px-2 py-0.5 font-semibold rounded-full text-xs"
         >
           {getStatusLabel(status)}
         </Tag>
@@ -229,23 +243,27 @@ const Branches = () => {
     {
       title: 'Created By',
       key: 'createdBy',
+      width: 140,
+      className: 'hidden md:table-cell',
       render: (_, record) => {
         const creator = record.createdBy;
         if (creator) {
           const name = creator.firstName && creator.lastName
             ? `${creator.firstName} ${creator.lastName}`
             : creator.email || 'Unknown';
-          return <span className="text-gray-700">{name}</span>;
+          return <span className="text-gray-700 text-sm truncate block" title={name}>{name}</span>;
         }
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-gray-400 text-sm">—</span>;
       },
     },
     {
       title: 'Created',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      width: 120,
+      className: 'hidden md:table-cell',
       render: (date) => (
-        <span className="text-gray-600 text-sm">
+        <span className="text-gray-600 text-xs">
           {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
         </span>
       ),
@@ -255,7 +273,7 @@ const Branches = () => {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
-      width: 120,
+      width: 80,
       render: (_, record) => {
         const menuItems = [];
 
@@ -294,6 +312,7 @@ const Branches = () => {
                 type="text"
                 icon={<MoreOutlined />}
                 className="hover:bg-gray-100"
+                size="small"
               />
             </Dropdown>
           </div>
@@ -383,37 +402,39 @@ const Branches = () => {
           className="border border-gray-200 shadow-md bg-white"
           bodyStyle={{ padding: 0 }}
         >
-          <Table
-            columns={columns}
-            dataSource={branches}
-            loading={loading}
-            rowKey="_id"
-            className="custom-table branches-table"
-            pagination={{
-              ...pagination,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => 
-                `${range[0]}-${range[1]} of ${total} branches`,
-              pageSizeOptions: ['10', '20', '50', '100'],
-              onChange: (page, pageSize) => {
-                setPagination((prev) => ({
-                  ...prev,
-                  current: page,
-                  pageSize,
-                }));
-              },
-            }}
-            scroll={{ x: 'max-content' }}
-            onRow={(record) => ({
-              onClick: () => {
-                if (hasPermission('branches', 'update')) {
-                  navigate(`/branches/${record._id}`);
-                }
-              },
-              className: hasPermission('branches', 'update') ? 'cursor-pointer hover:bg-gray-50' : '',
-            })}
-          />
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              dataSource={branches}
+              loading={loading}
+              rowKey="_id"
+              className="custom-table branches-table"
+              pagination={{
+                ...pagination,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => 
+                  `${range[0]}-${range[1]} of ${total} branches`,
+                pageSizeOptions: ['10', '20', '50', '100'],
+                onChange: (page, pageSize) => {
+                  setPagination((prev) => ({
+                    ...prev,
+                    current: page,
+                    pageSize,
+                  }));
+                },
+              }}
+              scroll={{ x: 1200 }}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (hasPermission('branches', 'update')) {
+                    navigate(`/branches/${record._id}`);
+                  }
+                },
+                className: hasPermission('branches', 'update') ? 'cursor-pointer hover:bg-gray-50' : '',
+              })}
+            />
+          </div>
         </Card>
 
         {/* Delete Confirmation Modal */}
@@ -434,4 +455,5 @@ const Branches = () => {
 };
 
 export default Branches;
+
 

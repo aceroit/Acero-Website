@@ -56,11 +56,13 @@ const FooterConfigurations = () => {
       if (response.success) {
         const list = Array.isArray(response.data?.footerConfigurations)
           ? response.data.footerConfigurations
-          : Array.isArray(response.data)
-            ? response.data
-            : Array.isArray(response.data?.data)
-              ? response.data.data
-              : [];
+          : Array.isArray(response.data?.footers)
+            ? response.data.footers
+            : Array.isArray(response.data)
+              ? response.data
+              : Array.isArray(response.data?.data)
+                ? response.data.data
+                : [];
         setConfigurations(list);
         if (response.data.pagination?.total !== undefined) {
           setPagination((prev) => ({

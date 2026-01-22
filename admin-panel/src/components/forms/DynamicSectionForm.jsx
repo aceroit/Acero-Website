@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Select, Switch, DatePicker, ColorPicker, Upload, Button } from 'antd';
+import { Form, Input, InputNumber, Select, Switch, DatePicker, ColorPicker, Upload, Button , Space} from 'antd';
 import { 
   UploadOutlined, 
   PlusOutlined, 
@@ -6,6 +6,12 @@ import {
   PictureOutlined 
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import HeroCarouselSlidesEditor from './HeroCarouselSlidesEditor';
+import ContentWithImageEditor from './ContentWithImageEditor';
+import StatisticsEditor from './StatisticsEditor';
+import InfiniteCarouselEditor from './InfiniteCarouselEditor';
+import ProjectsGridEditor from './ProjectsGridEditor';
+import CompanyUpdatesEditor from './CompanyUpdatesEditor';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -93,6 +99,51 @@ const DynamicSectionForm = ({
               maxLength={field.validation?.maxLength}
               showCount={field.validation?.maxLength ? true : false}
             />
+          </Form.Item>
+        );
+
+      case 'array':
+        // Special handling for content_with_image paragraphs field
+        if (sectionType?.slug === 'content_with_image' && fieldName === 'paragraphs') {
+          // This will be handled by ContentWithImageEditor
+          return null;
+        }
+        
+        // Default array field handling (for other section types)
+        return (
+          <Form.Item
+            {...formItemProps}
+            rules={rules}
+          >
+            <Form.List name={['content', fieldName]} initialValue={fieldValue || []}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                      <Form.Item
+                        {...restField}
+                        name={[name]}
+                        rules={[{ required: true, message: 'Item is required' }]}
+                      >
+                        <Input placeholder="Enter item" size="large" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                      size="large"
+                    >
+                      Add Item
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
           </Form.Item>
         );
 
@@ -384,45 +435,68 @@ const DynamicSectionForm = ({
           </Form.Item>
         );
 
-      case 'array':
-        return (
-          <Form.Item
-            {...formItemProps}
-            rules={rules}
-          >
-            <Form.List name={['content', fieldName]} initialValue={fieldValue || []}>
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                      <Form.Item
-                        {...restField}
-                        name={[name]}
-                        rules={[{ required: true, message: 'Item is required' }]}
-                      >
-                        <Input placeholder="Enter item" size="large" />
-                      </Form.Item>
-                      <MinusCircleOutlined onClick={() => remove(name)} />
-                    </Space>
-                  ))}
-                  <Form.Item>
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      block
-                      icon={<PlusOutlined />}
-                      size="large"
-                    >
-                      Add Item
-                    </Button>
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
-          </Form.Item>
-        );
-
       case 'json':
+        // Special handling for hero_carousel slides field
+        if (sectionType?.slug === 'hero_carousel' && fieldName === 'slides') {
+          return (
+            <Form.Item
+              {...formItemProps}
+              rules={[
+                ...rules,
+                {
+                  validator: (_, value) => {
+                    if (!value || !Array.isArray(value) || value.length === 0) {
+                      if (field.required) {
+                        return Promise.reject(new Error(`${field.label} is required`));
+                      }
+                      return Promise.resolve();
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <HeroCarouselSlidesEditor
+                value={fieldValue || []}
+                onChange={(newSlides) => {
+                  form.setFieldsValue({
+                    content: {
+                      ...form.getFieldValue('content'),
+                      slides: newSlides,
+                    },
+                  });
+                }}
+                form={form}
+              />
+            </Form.Item>
+          );
+        }
+        
+        // Special handling for statistics stats field
+        if (sectionType?.slug === 'statistics' && fieldName === 'stats') {
+          // This will be handled by StatisticsEditor
+          return null;
+        }
+        
+        // Special handling for infinite_carousel items field
+        if (sectionType?.slug === 'infinite_carousel' && fieldName === 'items') {
+          // This will be handled by InfiniteCarouselEditor
+          return null;
+        }
+        
+        // Special handling for projects_grid projects field
+        if (sectionType?.slug === 'projects_grid' && fieldName === 'projects') {
+          // This will be handled by ProjectsGridEditor
+          return null;
+        }
+        
+        // Special handling for company_updates updates field
+        if (sectionType?.slug === 'company_updates' && fieldName === 'updates') {
+          // This will be handled by CompanyUpdatesEditor
+          return null;
+        }
+        
+        // Default JSON field (textarea)
         return (
           <Form.Item
             {...formItemProps}
@@ -479,13 +553,93 @@ const DynamicSectionForm = ({
     );
   }
 
+  // Special handling for content_with_image section type - use custom editor
+  if (sectionType.slug === 'content_with_image') {
+    return (
+      <ContentWithImageEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for statistics section type - use custom editor
+  if (sectionType.slug === 'statistics') {
+    return (
+      <StatisticsEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for infinite_carousel section type - use custom editor
+  if (sectionType.slug === 'infinite_carousel') {
+    return (
+      <InfiniteCarouselEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for projects_grid section type - use custom editor
+  if (sectionType.slug === 'projects_grid') {
+    return (
+      <ProjectsGridEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for company_updates section type - use custom editor
+  if (sectionType.slug === 'company_updates') {
+    return (
+      <CompanyUpdatesEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {sortedFields.map((field) => (
-        <div key={field.name}>
-          {renderField(field)}
-        </div>
-      ))}
+      {sortedFields.map((field) => {
+        const renderedField = renderField(field);
+        // Skip null fields (handled by custom editors)
+        if (renderedField === null) return null;
+        return (
+          <div key={field.name}>
+            {renderedField}
+          </div>
+        );
+      })}
     </div>
   );
 };

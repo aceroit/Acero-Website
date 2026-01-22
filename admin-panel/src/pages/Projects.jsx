@@ -131,21 +131,23 @@ const Projects = () => {
       title: 'Project',
       key: 'project',
       sorter: true,
+      width: 220,
+      fixed: 'left',
       render: (_, record) => (
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white">
-            <ProjectOutlined />
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+            <ProjectOutlined className="text-xs" />
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900">{record.jobNumber}</span>
+          <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="font-medium text-gray-900 text-sm truncate">{record.jobNumber}</span>
               {record.featured && (
-                <Tag icon={<StarOutlined />} color="gold" className="text-xs">
+                <Tag icon={<StarOutlined />} color="gold" className="text-xs flex-shrink-0">
                   Featured
                 </Tag>
               )}
             </div>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 truncate">
               {record.buildingType?.name || 'N/A'} • {record.industry?.name || 'N/A'}
             </span>
           </div>
@@ -155,13 +157,14 @@ const Projects = () => {
     {
       title: 'Location',
       key: 'location',
+      width: 180,
       render: (_, record) => {
         const locationParts = [];
         if (record.country?.name) locationParts.push(record.country.name);
         if (record.region?.name) locationParts.push(record.region.name);
         if (record.area?.name) locationParts.push(record.area.name);
         return (
-          <span className="text-gray-700 text-sm">
+          <span className="text-gray-700 text-sm truncate block" title={locationParts.join(', ')}>
             {locationParts.length > 0 ? locationParts.join(', ') : '—'}
           </span>
         );
@@ -171,18 +174,23 @@ const Projects = () => {
       title: 'Slug',
       dataIndex: 'jobNumberSlug',
       key: 'jobNumberSlug',
+      width: 150,
+      className: 'hidden md:table-cell',
       render: (slug) => (
-        <span className="text-gray-700 font-mono text-sm">{slug || '—'}</span>
+        <span className="text-gray-700 font-mono text-xs truncate block" title={slug}>
+          {slug || '—'}
+        </span>
       ),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      width: 130,
       render: (status) => (
         <Tag 
           color={getStatusColor(status)}
-          className="px-3 py-1 font-semibold rounded-full"
+          className="px-2 py-0.5 font-semibold rounded-full text-xs"
         >
           {getStatusLabel(status)}
         </Tag>
@@ -201,31 +209,37 @@ const Projects = () => {
       title: 'Order',
       dataIndex: 'order',
       key: 'order',
+      width: 80,
+      className: 'hidden lg:table-cell',
       render: (order) => (
-        <span className="text-gray-700">{order ?? 0}</span>
+        <span className="text-gray-700 text-sm">{order ?? 0}</span>
       ),
       sorter: true,
     },
     {
       title: 'Created By',
       key: 'createdBy',
+      width: 140,
+      className: 'hidden lg:table-cell',
       render: (_, record) => {
         const creator = record.createdBy;
         if (creator) {
           const name = creator.firstName && creator.lastName
             ? `${creator.firstName} ${creator.lastName}`
             : creator.email || 'Unknown';
-          return <span className="text-gray-700">{name}</span>;
+          return <span className="text-gray-700 text-sm truncate block" title={name}>{name}</span>;
         }
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-gray-400 text-sm">—</span>;
       },
     },
     {
       title: 'Created',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      width: 120,
+      className: 'hidden md:table-cell',
       render: (date) => (
-        <span className="text-gray-600 text-sm">
+        <span className="text-gray-600 text-xs">
           {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
         </span>
       ),
@@ -235,7 +249,7 @@ const Projects = () => {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
-      width: 120,
+      width: 80,
       render: (_, record) => {
         const menuItems = [];
 
@@ -274,6 +288,7 @@ const Projects = () => {
                 type="text"
                 icon={<MoreOutlined />}
                 className="hover:bg-gray-100"
+                size="small"
               />
             </Dropdown>
           </div>
@@ -363,37 +378,39 @@ const Projects = () => {
           className="border border-gray-200 shadow-md bg-white"
           bodyStyle={{ padding: 0 }}
         >
-          <Table
-            columns={columns}
-            dataSource={projects}
-            loading={loading}
-            rowKey="_id"
-            className="custom-table projects-table"
-            pagination={{
-              ...pagination,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => 
-                `${range[0]}-${range[1]} of ${total} projects`,
-              pageSizeOptions: ['10', '20', '50', '100'],
-              onChange: (page, pageSize) => {
-                setPagination((prev) => ({
-                  ...prev,
-                  current: page,
-                  pageSize,
-                }));
-              },
-            }}
-            scroll={{ x: 'max-content' }}
-            onRow={(record) => ({
-              onClick: () => {
-                if (hasPermission('projects', 'update')) {
-                  navigate(`/projects/${record._id}`);
-                }
-              },
-              className: hasPermission('projects', 'update') ? 'cursor-pointer hover:bg-gray-50' : '',
-            })}
-          />
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              dataSource={projects}
+              loading={loading}
+              rowKey="_id"
+              className="custom-table projects-table"
+              pagination={{
+                ...pagination,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => 
+                  `${range[0]}-${range[1]} of ${total} projects`,
+                pageSizeOptions: ['10', '20', '50', '100'],
+                onChange: (page, pageSize) => {
+                  setPagination((prev) => ({
+                    ...prev,
+                    current: page,
+                    pageSize,
+                  }));
+                },
+              }}
+              scroll={{ x: 1200 }}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (hasPermission('projects', 'update')) {
+                    navigate(`/projects/${record._id}`);
+                  }
+                },
+                className: hasPermission('projects', 'update') ? 'cursor-pointer hover:bg-gray-50' : '',
+              })}
+            />
+          </div>
         </Card>
 
         {/* Delete Confirmation Modal */}

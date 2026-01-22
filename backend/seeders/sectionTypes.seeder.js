@@ -469,7 +469,7 @@ const defaultSectionTypes = [
                 name: 'stats',
                 type: 'json',
                 label: 'Statistics',
-                helpText: 'Array: [{"number": "75+", "label": "Years Experience", "description": "Serving industry since 1950"}, {"number": "500+", "label": "Projects Completed", "description": "Successfully delivered worldwide"}]',
+                helpText: 'Array: [{"value": "75+", "label": "Years Experience", "sublabel": "Serving industry since 1950"}, {"value": "500+", "label": "Projects Completed", "sublabel": "Successfully delivered worldwide"}]',
                 required: true,
                 order: 1
             },

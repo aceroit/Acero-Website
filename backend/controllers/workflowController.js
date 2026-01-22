@@ -535,14 +535,19 @@ exports.approveContent = async (req, res) => {
         });
 
         // Notify content creator
-        await notificationService.notifyWorkflowApproved(
-            resource,
-            item._id,
-            getResourceTitle(item),
-            req.user,
-            item.createdBy._id,
-            changeSummary ? changeSummary.trim() : null
-        );
+        try {
+            await notificationService.notifyWorkflowApproved(
+                resource,
+                item._id,
+                getResourceTitle(item),
+                req.user,
+                item.createdBy._id,
+                changeSummary ? changeSummary.trim() : null
+            );
+        } catch (error) {
+            console.error('Failed to send approved notification:', error);
+            // Don't fail the request if notification fails
+        }
 
         return successResponse(
             res,
@@ -749,14 +754,19 @@ exports.publishContent = async (req, res) => {
         });
 
         // Notify all contributors
-        await notificationService.notifyWorkflowPublished(
-            resource,
-            item._id,
-            getResourceTitle(item),
-            req.user,
-            Array.from(contributors),
-            changeSummary ? changeSummary.trim() : null
-        );
+        try {
+            await notificationService.notifyWorkflowPublished(
+                resource,
+                item._id,
+                getResourceTitle(item),
+                req.user,
+                Array.from(contributors),
+                changeSummary ? changeSummary.trim() : null
+            );
+        } catch (error) {
+            console.error('Failed to send published notification:', error);
+            // Don't fail the request if notification fails
+        }
 
         // Also notify reviewers, admins, and super admins (excluding contributors to avoid duplicates)
         const approverRoles = await Role.find({

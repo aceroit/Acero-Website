@@ -113,11 +113,18 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+// Get network IP address
+const { getNetworkIP } = require('./utils/urlHelper');
+
+const HOST = process.env.HOST || '0.0.0.0'; // Listen on all network interfaces
+const networkIP = getNetworkIP();
+
 // Listening to the server
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
 	console.log(`=================================`);
 	console.log(`🚀 Server is running on port ${PORT}`);
 	console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-	console.log(`🔗 API URL: http://localhost:${PORT}`);
+	console.log(`🔗 Local URL: http://localhost:${PORT}`);
+	console.log(`🌐 Network URL: http://${networkIP}:${PORT}`);
 	console.log(`=================================`);
 });
