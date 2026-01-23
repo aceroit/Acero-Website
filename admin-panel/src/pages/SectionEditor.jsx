@@ -371,7 +371,7 @@ const SectionEditor = () => {
             {/* Show selected section type info */}
             {selectedSectionType && (
               <Alert
-                message={selectedSectionType.name}
+                title={selectedSectionType.name}
                 description={selectedSectionType.description || 'No description available'}
                 type="info"
                 showIcon

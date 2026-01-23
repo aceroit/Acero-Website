@@ -462,10 +462,10 @@ const extendedSectionTypes = [
                 order: 0
             },
             {
-                name: 'images',
+                name: 'items',
                 type: 'json',
-                label: 'Images',
-                helpText: 'Array: [{"src": "url", "alt": "Alt text", "caption": "Optional caption"}]',
+                label: 'Gallery Items',
+                helpText: 'Array: [{"id": "unique-id", "title": "Item Title", "description": "Description", "image": "url", "imageAlt": "Alt text"}]',
                 required: true,
                 validation: {
                     minItems: 1
@@ -504,11 +504,21 @@ const extendedSectionTypes = [
                 order: 0
             },
             {
-                name: 'alt',
+                name: 'imageAlt',
                 type: 'text',
-                label: 'Alt Text',
+                label: 'Image Alt Text',
                 required: true,
                 order: 1
+            },
+            {
+                name: 'title',
+                type: 'text',
+                label: 'Title',
+                required: false,
+                validation: {
+                    maxLength: 200
+                },
+                order: 2
             },
             {
                 name: 'caption',
@@ -518,7 +528,7 @@ const extendedSectionTypes = [
                 validation: {
                     maxLength: 500
                 },
-                order: 2
+                order: 3
             }
         ],
         previewComponent: 'ImageDisplay',
@@ -543,15 +553,25 @@ const extendedSectionTypes = [
                 order: 0
             },
             {
+                name: 'subtitle',
+                type: 'textarea',
+                label: 'Subtitle',
+                required: true,
+                validation: {
+                    maxLength: 500
+                },
+                order: 1
+            },
+            {
                 name: 'applications',
                 type: 'json',
                 label: 'Applications',
-                helpText: 'Array: [{"icon": "icon-name", "title": "Application Title", "description": "Description"}]',
+                helpText: 'Array: [{"id": "unique-id", "name": "Application Name", "icon": "icon-name"}]',
                 required: true,
                 validation: {
                     minItems: 1
                 },
-                order: 1
+                order: 2
             },
             {
                 name: 'columns',
@@ -563,7 +583,7 @@ const extendedSectionTypes = [
                     min: 2,
                     max: 6
                 },
-                order: 2
+                order: 3
             }
         ],
         previewComponent: 'ApplicationCards',
@@ -581,22 +601,33 @@ const extendedSectionTypes = [
                 name: 'title',
                 type: 'text',
                 label: 'Section Title',
-                required: false,
+                required: true,
                 validation: {
                     maxLength: 200
                 },
                 order: 0
             },
             {
+                name: 'centerText',
+                type: 'text',
+                label: 'Center Text',
+                required: false,
+                defaultValue: 'ACERO',
+                validation: {
+                    maxLength: 50
+                },
+                order: 1
+            },
+            {
                 name: 'advantages',
                 type: 'json',
                 label: 'Advantages',
-                helpText: 'Array: [{"icon": "icon-name", "title": "Advantage Title", "description": "Description"}]',
+                helpText: 'Array: [{"id": "unique-id", "title": "Advantage Title", "description": "Description", "icon": "icon-name", "position": 1-9}]',
                 required: true,
                 validation: {
                     minItems: 1
                 },
-                order: 1
+                order: 2
             }
         ],
         previewComponent: 'CircularAdvantages',
@@ -655,6 +686,109 @@ const extendedSectionTypes = [
             }
         ],
         previewComponent: 'PremiumVideoSection',
+        thumbnailUrl: null
+    },
+    {
+        name: 'Image Gallery',
+        slug: 'image_gallery',
+        description: 'Image gallery section with title, paragraph, and grid of images. Used for showcasing photos, engineering work, etc.',
+        icon: '🖼️',
+        category: 'Media',
+        isSystem: true,
+        fields: [
+            {
+                name: 'title',
+                type: 'text',
+                label: 'Gallery Title',
+                placeholder: 'e.g., Engineering Excellence',
+                required: true,
+                validation: {
+                    maxLength: 200
+                },
+                order: 0
+            },
+            {
+                name: 'paragraph',
+                type: 'textarea',
+                label: 'Description Paragraph',
+                placeholder: 'e.g., Description text about the gallery',
+                required: false,
+                validation: {
+                    maxLength: 1000
+                },
+                order: 1
+            },
+            {
+                name: 'images',
+                type: 'json',
+                label: 'Gallery Images',
+                helpText: 'Array: [{"src": "url", "alt": "Alt text"}]',
+                required: true,
+                validation: {
+                    minItems: 1
+                },
+                order: 2
+            },
+            {
+                name: 'columns',
+                type: 'number',
+                label: 'Number of Columns',
+                required: false,
+                defaultValue: 3,
+                validation: {
+                    min: 2,
+                    max: 6
+                },
+                order: 3
+            }
+        ],
+        previewComponent: 'ImageGallerySection',
+        thumbnailUrl: null
+    },
+    {
+        name: 'Features Grid',
+        slug: 'features_grid',
+        description: 'Grid of feature cards with icons, titles, and descriptions. Used for showcasing company features, benefits, etc.',
+        icon: '⭐',
+        category: 'Content',
+        isSystem: true,
+        fields: [
+            {
+                name: 'title',
+                type: 'text',
+                label: 'Section Title',
+                placeholder: 'e.g., Why Acero?',
+                required: true,
+                validation: {
+                    maxLength: 200
+                },
+                order: 0
+            },
+            {
+                name: 'features',
+                type: 'json',
+                label: 'Features',
+                helpText: 'Array: [{"icon": "Globe", "title": "Feature Title", "description": "Feature description"}]',
+                required: true,
+                validation: {
+                    minItems: 1
+                },
+                order: 1
+            },
+            {
+                name: 'columns',
+                type: 'number',
+                label: 'Number of Columns',
+                required: false,
+                defaultValue: 3,
+                validation: {
+                    min: 3,
+                    max: 4
+                },
+                order: 2
+            }
+        ],
+        previewComponent: 'FeaturesSection',
         thumbnailUrl: null
     },
     {
@@ -1244,34 +1378,44 @@ const seedExtendedSectionTypes = async () => {
             slug: { $in: extendedSectionTypes.map(st => st.slug) } 
         }).select('slug name');
 
-        if (existingSlugs.length > 0) {
-            console.log('⚠️  Found existing section types with same slugs:\n');
-            existingSlugs.forEach(st => {
-                console.log(`  - ${st.name} (${st.slug})`);
-            });
-            console.log('\nThese will be skipped. To update them, delete existing ones first.\n');
+        let updatedCount = 0;
+        let insertedCount = 0;
+
+        // Update or insert each section type
+        for (const sectionTypeData of extendedSectionTypes) {
+            const existing = await SectionType.findOne({ slug: sectionTypeData.slug });
+            
+            if (existing) {
+                // Update existing section type
+                await SectionType.findOneAndUpdate(
+                    { slug: sectionTypeData.slug },
+                    { 
+                        $set: {
+                            name: sectionTypeData.name,
+                            description: sectionTypeData.description,
+                            icon: sectionTypeData.icon,
+                            category: sectionTypeData.category,
+                            fields: sectionTypeData.fields,
+                            previewComponent: sectionTypeData.previewComponent,
+                            thumbnailUrl: sectionTypeData.thumbnailUrl,
+                            isSystem: sectionTypeData.isSystem
+                        }
+                    },
+                    { new: true }
+                );
+                updatedCount++;
+                console.log(`✓ Updated: ${sectionTypeData.icon} ${sectionTypeData.name} (${sectionTypeData.slug})`);
+            } else {
+                // Insert new section type
+                await SectionType.create(sectionTypeData);
+                insertedCount++;
+                console.log(`✓ Created: ${sectionTypeData.icon} ${sectionTypeData.name} (${sectionTypeData.slug})`);
+            }
         }
 
-        // Filter out section types that already exist
-        const slugsToSkip = existingSlugs.map(st => st.slug);
-        const sectionTypesToInsert = extendedSectionTypes.filter(st => !slugsToSkip.includes(st.slug));
-
-        if (sectionTypesToInsert.length === 0) {
-            console.log('✓ All extended section types already exist. Nothing to seed.\n');
-            process.exit(0);
-        }
-
-        // Insert new section types
-        const insertedTypes = await SectionType.insertMany(sectionTypesToInsert);
-        console.log(`✓ Successfully seeded ${insertedTypes.length} extended section types:\n`);
-
-        // Display seeded section types
-        insertedTypes.forEach(type => {
-            console.log(`  ${type.icon} ${type.name} (${type.slug})`);
-            console.log(`     Category: ${type.category}`);
-            console.log(`     Fields: ${type.fields.length}`);
-            console.log('');
-        });
+        console.log(`\n✓ Successfully processed ${extendedSectionTypes.length} extended section types:`);
+        console.log(`  - Updated: ${updatedCount}`);
+        console.log(`  - Created: ${insertedCount}\n`);
 
         console.log('Extended section types seeding completed successfully!');
         process.exit(0);

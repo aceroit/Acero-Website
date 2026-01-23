@@ -12,6 +12,22 @@ import StatisticsEditor from './StatisticsEditor';
 import InfiniteCarouselEditor from './InfiniteCarouselEditor';
 import ProjectsGridEditor from './ProjectsGridEditor';
 import CompanyUpdatesEditor from './CompanyUpdatesEditor';
+// New Who We Are page editors
+import HeroImageEditor from './section-editors/HeroImageEditor';
+import PremiumVideoEditor from './section-editors/PremiumVideoEditor';
+import ImageGalleryEditor from './section-editors/ImageGalleryEditor';
+import FeaturesGridEditor from './section-editors/FeaturesGridEditor';
+// Product page editors
+import ProductCardEditor from './section-editors/ProductCardEditor';
+import ImageModalGalleryEditor from './section-editors/ImageModalGalleryEditor';
+import ApplicationCardsEditor from './section-editors/ApplicationCardsEditor';
+import CircularAdvantagesEditor from './section-editors/CircularAdvantagesEditor';
+import ImageDisplayEditor from './section-editors/ImageDisplayEditor';
+import FlipCardEditor from './section-editors/FlipCardEditor';
+import ComparisonTableEditor from './section-editors/ComparisonTableEditor';
+import TabbedComparisonEditor from './section-editors/TabbedComparisonEditor';
+import AdvantagesGridEditor from './section-editors/AdvantagesGridEditor';
+import HoverCardEditor from './section-editors/HoverCardEditor';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -496,6 +512,72 @@ const DynamicSectionForm = ({
           return null;
         }
         
+        // Special handling for image_gallery images field
+        if (sectionType?.slug === 'image_gallery' && fieldName === 'images') {
+          // This will be handled by ImageGalleryEditor
+          return null;
+        }
+        
+        // Special handling for features_grid features field
+        if (sectionType?.slug === 'features_grid' && fieldName === 'features') {
+          // This will be handled by FeaturesGridEditor
+          return null;
+        }
+        
+        // Special handling for product_card cta field
+        if (sectionType?.slug === 'product_card' && fieldName === 'cta') {
+          // This will be handled by ProductCardEditor
+          return null;
+        }
+        
+        // Special handling for image_modal_gallery items field
+        if (sectionType?.slug === 'image_modal_gallery' && fieldName === 'items') {
+          // This will be handled by ImageModalGalleryEditor
+          return null;
+        }
+        
+        // Special handling for application_cards applications field
+        if (sectionType?.slug === 'application_cards' && fieldName === 'applications') {
+          // This will be handled by ApplicationCardsEditor
+          return null;
+        }
+        
+        // Special handling for circular_advantages advantages field
+        if (sectionType?.slug === 'circular_advantages' && fieldName === 'advantages') {
+          // This will be handled by CircularAdvantagesEditor
+          return null;
+        }
+        
+        // Special handling for flip_card cards field
+        if (sectionType?.slug === 'flip_card' && fieldName === 'cards') {
+          // This will be handled by FlipCardEditor
+          return null;
+        }
+        
+        // Special handling for comparison_table systems field
+        if (sectionType?.slug === 'comparison_table' && fieldName === 'systems') {
+          // This will be handled by ComparisonTableEditor
+          return null;
+        }
+        
+        // Special handling for tabbed_comparison tabs field
+        if (sectionType?.slug === 'tabbed_comparison' && fieldName === 'tabs') {
+          // This will be handled by TabbedComparisonEditor
+          return null;
+        }
+        
+        // Special handling for advantages_grid advantages field
+        if (sectionType?.slug === 'advantages_grid' && fieldName === 'advantages') {
+          // This will be handled by AdvantagesGridEditor
+          return null;
+        }
+        
+        // Special handling for hover_card cards field
+        if (sectionType?.slug === 'hover_card' && fieldName === 'cards') {
+          // This will be handled by HoverCardEditor
+          return null;
+        }
+        
         // Default JSON field (textarea)
         return (
           <Form.Item
@@ -617,6 +699,216 @@ const DynamicSectionForm = ({
   if (sectionType.slug === 'company_updates') {
     return (
       <CompanyUpdatesEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for hero_image section type - use custom editor
+  if (sectionType.slug === 'hero_image') {
+    return (
+      <HeroImageEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for premium_video section type - use custom editor
+  if (sectionType.slug === 'premium_video') {
+    return (
+      <PremiumVideoEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for image_gallery section type - use custom editor
+  if (sectionType.slug === 'image_gallery') {
+    return (
+      <ImageGalleryEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for features_grid section type - use custom editor
+  if (sectionType.slug === 'features_grid') {
+    return (
+      <FeaturesGridEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for product_card section type - use custom editor
+  if (sectionType.slug === 'product_card') {
+    return (
+      <ProductCardEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for image_modal_gallery section type - use custom editor
+  if (sectionType.slug === 'image_modal_gallery') {
+    return (
+      <ImageModalGalleryEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for application_cards section type - use custom editor
+  if (sectionType.slug === 'application_cards') {
+    return (
+      <ApplicationCardsEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for circular_advantages section type - use custom editor
+  if (sectionType.slug === 'circular_advantages') {
+    return (
+      <CircularAdvantagesEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for image_display section type - use custom editor
+  if (sectionType.slug === 'image_display') {
+    return (
+      <ImageDisplayEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for flip_card section type - use custom editor
+  if (sectionType.slug === 'flip_card') {
+    return (
+      <FlipCardEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for comparison_table section type - use custom editor
+  if (sectionType.slug === 'comparison_table') {
+    return (
+      <ComparisonTableEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for tabbed_comparison section type - use custom editor
+  if (sectionType.slug === 'tabbed_comparison') {
+    return (
+      <TabbedComparisonEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for advantages_grid section type - use custom editor
+  if (sectionType.slug === 'advantages_grid') {
+    return (
+      <AdvantagesGridEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for hover_card section type - use custom editor
+  if (sectionType.slug === 'hover_card') {
+    return (
+      <HoverCardEditor
         value={initialContent}
         onChange={(newContent) => {
           form.setFieldsValue({

@@ -697,14 +697,45 @@ exports.publishContent = async (req, res) => {
 
         // If this is a page, update all its sections to published as well
         // This ensures sections follow the page's approval workflow
+        // Publish ALL sections regardless of their current status
         if (resource === 'page') {
             const Section = require('../models/Section');
+            const now = new Date();
+            
+            // Update all sections to published status
             await Section.updateMany(
-                { pageId: item._id, status: { $in: ['pending_publish', 'published'] } },
+                { pageId: item._id },
                 { 
-                    status: WORKFLOW_STATES.PUBLISHED,
-                    publishedAt: new Date(),
-                    updatedBy: req.user._id
+                    $set: {
+                        status: WORKFLOW_STATES.PUBLISHED,
+                        updatedBy: req.user._id,
+                        updatedAt: now
+                    }
+                }
+            );
+            
+            // Set publishedAt for sections that don't have it
+            await Section.updateMany(
+                { 
+                    pageId: item._id,
+                    publishedAt: null
+                },
+                { 
+                    $set: {
+                        publishedAt: now
+                    }
+                }
+            );
+            
+            await Section.updateMany(
+                { 
+                    pageId: item._id,
+                    publishedAt: { $exists: false }
+                },
+                { 
+                    $set: {
+                        publishedAt: now
+                    }
                 }
             );
         }

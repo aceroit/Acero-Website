@@ -1,0 +1,20 @@
+.features-grid-editor {
+  width: 100%;
+}
+
+.features-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.features-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.features-grid-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.features-grid-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+

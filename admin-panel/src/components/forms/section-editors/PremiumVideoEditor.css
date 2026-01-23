@@ -1,0 +1,17 @@
+.premium-video-editor {
+  width: 100%;
+}
+
+.premium-video-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.premium-video-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.premium-video-editor code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+

@@ -290,6 +290,7 @@ exports.updatePage = async (req, res) => {
                 return errorResponse(res, 400, `Invalid status. Must be one of: ${validStatuses.join(', ')}`);
             }
             
+            const oldStatus = page.status;
             page.status = status;
             
             // Set publishedAt timestamp when publishing
@@ -300,6 +301,69 @@ exports.updatePage = async (req, res) => {
             // Clear publishedAt when unpublishing
             if (status !== 'published' && page.publishedAt) {
                 page.publishedAt = null;
+            }
+            
+            // Update associated sections when page status changes
+            // If page is being published, publish ALL sections regardless of their current status
+            if (status === 'published' && oldStatus !== 'published') {
+                try {
+                    const now = new Date();
+                    // Update all sections to published status
+                    // This ensures sections follow the page's publication status
+                    const updateResult = await Section.updateMany(
+                        { pageId: page._id },
+                        { 
+                            $set: {
+                                status: 'published',
+                                updatedBy: req.user._id,
+                                updatedAt: now
+                            }
+                        }
+                    );
+                    
+                    // Set publishedAt for sections that don't have it (null or missing)
+                    // Use separate queries to handle null and missing fields
+                    await Section.updateMany(
+                        { 
+                            pageId: page._id,
+                            publishedAt: null
+                        },
+                        { 
+                            $set: {
+                                publishedAt: now
+                            }
+                        }
+                    );
+                    
+                    await Section.updateMany(
+                        { 
+                            pageId: page._id,
+                            publishedAt: { $exists: false }
+                        },
+                        { 
+                            $set: {
+                                publishedAt: now
+                            }
+                        }
+                    );
+                    
+                    console.log(`Published ${updateResult.modifiedCount} section(s) for page ${page._id}`);
+                } catch (sectionError) {
+                    console.error('Error updating sections when publishing page:', sectionError);
+                    // Don't fail the page update if section update fails, but log it
+                }
+            }
+            
+            // If page is being unpublished (to draft or archived), unpublish all published sections
+            if (status !== 'published' && oldStatus === 'published') {
+                await Section.updateMany(
+                    { pageId: page._id, status: 'published' },
+                    { 
+                        status: 'draft',
+                        publishedAt: null,
+                        updatedBy: req.user._id
+                    }
+                );
             }
         }
         

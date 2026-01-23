@@ -1,0 +1,57 @@
+.tabbed-comparison-editor {
+  width: 100%;
+}
+
+.tabbed-comparison-editor .space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.tabbed-comparison-editor .space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.tabbed-comparison-editor .space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+.tabbed-comparison-editor .tabs-editor {
+  width: 100%;
+}
+
+.tabbed-comparison-editor .legend-editor,
+.tabbed-comparison-editor .data-editor {
+  width: 100%;
+}
+
+.tabbed-comparison-editor .ant-card {
+  border-radius: 8px;
+}
+
+.tabbed-comparison-editor .ant-card-head-title {
+  padding: 0;
+}
+
+.tabbed-comparison-editor .grid {
+  display: grid;
+}
+
+.tabbed-comparison-editor .grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.tabbed-comparison-editor .grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tabbed-comparison-editor .grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tabbed-comparison-editor .gap-2 {
+  gap: 0.5rem;
+}
+
+.tabbed-comparison-editor .gap-3 {
+  gap: 0.75rem;
+}
+
