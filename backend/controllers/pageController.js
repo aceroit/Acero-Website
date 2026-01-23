@@ -3,6 +3,7 @@ const Section = require('../models/Section');
 const ContentVersion = require('../models/ContentVersion');
 const ActivityLog = require('../models/ActivityLog');
 const pageTreeService = require('../services/pageTreeService');
+const headerPageSyncService = require('../services/headerPageSyncService');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent, canModifyTree, canModifyTreeBatch } = require('../utils/workflowStatusValidator');
 
@@ -176,6 +177,18 @@ exports.createPage = async (req, res) => {
 
         const populatedPage = await Page.findById(page._id)
             .populate('createdBy', 'firstName lastName email');
+
+        // Sync to HeaderConfiguration if showInMenu is true
+        if (page.showInMenu) {
+            try {
+                await headerPageSyncService.syncPageTreeToHeader(page._id, 'create', {
+                    updatedBy: req.user._id
+                });
+            } catch (syncError) {
+                console.error('Error syncing page to header after create:', syncError);
+                // Don't fail the request if sync fails
+            }
+        }
 
         return successResponse(res, 201, 'Page created successfully', { page: populatedPage });
     } catch (error) {
@@ -397,6 +410,23 @@ exports.updatePage = async (req, res) => {
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
+        // Sync to HeaderConfiguration if showInMenu, title, path, or order changed
+        const showInMenuChanged = showInMenu !== undefined && showInMenu !== oldData.showInMenu;
+        const titleChanged = title && title !== oldData.title;
+        const pathChanged = page.path !== oldData.path;
+        
+        if (showInMenuChanged || titleChanged || pathChanged) {
+            try {
+                const action = showInMenuChanged ? 'toggleMenu' : 'update';
+                await headerPageSyncService.syncPageTreeToHeader(page._id, action, {
+                    updatedBy: req.user._id
+                });
+            } catch (syncError) {
+                console.error('Error syncing page to header after update:', syncError);
+                // Don't fail the request if sync fails
+            }
+        }
+
         return successResponse(res, 200, 'Page updated successfully', { page: updatedPage });
     } catch (error) {
         console.error('Error in updatePage:', error);
@@ -440,6 +470,16 @@ exports.deletePage = async (req, res) => {
 
         const deletedCount = await pageTreeService.softDeletePage(id, req.user._id);
 
+        // Sync to HeaderConfiguration after deletion
+        try {
+            await headerPageSyncService.syncPageTreeToHeader(id, 'delete', {
+                updatedBy: req.user._id
+            });
+        } catch (syncError) {
+            console.error('Error syncing page to header after delete:', syncError);
+            // Don't fail the request if sync fails
+        }
+
         return successResponse(
             res, 
             200,
@@ -482,6 +522,16 @@ exports.movePage = async (req, res) => {
         const populatedPage = await Page.findById(movedPage._id)
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
+
+        // Sync to HeaderConfiguration after move (path changed)
+        try {
+            await headerPageSyncService.syncPageTreeToHeader(movedPage._id, 'update', {
+                updatedBy: req.user._id
+            });
+        } catch (syncError) {
+            console.error('Error syncing page to header after move:', syncError);
+            // Don't fail the request if sync fails
+        }
 
         return successResponse(res, 200, 'Page moved successfully', { page: populatedPage });
     } catch (error) {
@@ -533,6 +583,16 @@ exports.reorderPages = async (req, res) => {
         }
 
         await pageTreeService.reorderPages(mappedOrders, req.user._id);
+
+        // Sync to HeaderConfiguration after reorder
+        try {
+            await headerPageSyncService.syncPageTreeToHeader(null, 'reorder', {
+                updatedBy: req.user._id
+            });
+        } catch (syncError) {
+            console.error('Error syncing page to header after reorder:', syncError);
+            // Don't fail the request if sync fails
+        }
 
         return successResponse(res, 200, 'Pages reordered successfully', null);
     } catch (error) {

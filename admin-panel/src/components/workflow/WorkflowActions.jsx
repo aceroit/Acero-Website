@@ -285,7 +285,7 @@ const WorkflowActions = ({
 
   return (
     <>
-      <Space wrap size="small">
+      <Space size="small" style={{ flexWrap: 'nowrap' }}>
         {filteredActions.map((action) => {
           const config = actionConfigs[action];
           if (!config) return null;

@@ -30,7 +30,7 @@ const seedMediaLiterature = async () => {
                 path: '/media',
                 parentId: null,
                 level: 0,
-                order: 4,
+                order: 5, // Updated to 5 (after Projects at 4)
                 metaTitle: 'Media | Acero Building Systems',
                 metaDescription: 'Browse our literature, videos, and company updates.',
                 metaKeywords: 'media,literature,brochures,videos,company updates',
@@ -40,6 +40,10 @@ const seedMediaLiterature = async () => {
                 createdBy: user._id,
             });
             console.log('✓ Created Media parent page');
+        } else {
+            // Update order if it exists
+            mediaPage.order = 5;
+            await mediaPage.save();
         }
 
         let page = await Page.findOne({ slug: 'literature', parentId: mediaPage._id });

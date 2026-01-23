@@ -71,6 +71,16 @@ const headerConfigurationSchema = new mongoose.Schema({
         text: { type: String, default: 'Get Quote' },
         href: { type: String, default: '/contact-us' },
         isFieldActive: { type: Boolean, default: true }
+    },
+    
+    // Sync tracking fields
+    lastSyncedFromPageTree: {
+        type: Date,
+        default: null
+    },
+    pageTreeVersion: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

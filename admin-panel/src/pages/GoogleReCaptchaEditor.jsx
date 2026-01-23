@@ -421,6 +421,17 @@ const GoogleReCaptchaForm = ({ form, initialValues, onSubmit, onCancel, loading,
 
       <Form.Item className="mb-0 mt-6">
         <div className="flex justify-end gap-2">
+          <Button 
+            onClick={onCancel} 
+            disabled={loading}
+            size="large"
+            style={{
+              height: '44px',
+              borderRadius: '8px'
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             type="primary"
             htmlType="submit"
@@ -436,9 +447,6 @@ const GoogleReCaptchaForm = ({ form, initialValues, onSubmit, onCancel, loading,
             }}
           >
             {isEdit ? 'Update Configuration' : 'Create Configuration'}
-          </Button>
-          <Button onClick={onCancel} size="large">
-            Cancel
           </Button>
         </div>
       </Form.Item>

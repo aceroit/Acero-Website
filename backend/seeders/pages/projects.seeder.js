@@ -32,7 +32,7 @@ const seedProjects = async () => {
                 path: '/projects',
                 parentId: null,
                 level: 0,
-                order: 3,
+                order: 4, // Updated to 4 to place Manufacturing (order 3) between Products (2) and Projects (4)
                 metaTitle: 'Our Projects | Acero Building Systems',
                 metaDescription: 'Explore our diverse portfolio of projects across various industries and building types. Showcasing our expertise through successful steel building projects.',
                 metaKeywords: 'projects,steel building projects,construction projects,PEB projects,industrial projects',
@@ -43,7 +43,10 @@ const seedProjects = async () => {
             });
             console.log('✓ Created Projects page');
         } else {
-            console.log('✓ Projects page already exists');
+            // Update order if it exists
+            page.order = 4;
+            await page.save();
+            console.log('✓ Projects page already exists (order updated to 4)');
         }
 
         const sectionsData = [

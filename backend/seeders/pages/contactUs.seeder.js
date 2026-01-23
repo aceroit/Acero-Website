@@ -29,7 +29,7 @@ const seedContactUs = async () => {
                 path: '/contact-us',
                 parentId: null,
                 level: 0,
-                order: 6,
+                order: 7, // Updated to 7 (after Career at 6)
                 metaTitle: 'Contact Us | Acero Building Systems',
                 metaDescription: 'Get in touch with Acero Building Systems. Find our head office location, branch offices, and contact information.',
                 metaKeywords: 'contact,get in touch,head office,branches,location,address',
@@ -40,7 +40,10 @@ const seedContactUs = async () => {
             });
             console.log('✓ Created Contact Us page');
         } else {
-            console.log('✓ Contact Us page already exists');
+            // Update order if it exists
+            page.order = 7;
+            await page.save();
+            console.log('✓ Contact Us page already exists (order updated to 7)');
         }
 
         const sectionsData = [

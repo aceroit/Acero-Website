@@ -9,6 +9,8 @@ import { WorkflowStatusBadge, WorkflowActions, WorkflowTimeline, WorkflowStatusG
 import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as headerConfigurationService from '../services/headerConfigurationService';
 import * as versionService from '../services/versionService';
+import * as pageService from '../services/pageService';
+import { SyncOutlined, WarningOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
 
 const { Panel } = Collapse;
@@ -24,6 +26,7 @@ const HeaderConfigurationEditor = () => {
   const [headerConfig, setHeaderConfig] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
+  const [syncing, setSyncing] = useState(false);
 
   // Check workflow status permissions
   const workflowStatus = useWorkflowStatus({
@@ -161,6 +164,74 @@ const HeaderConfigurationEditor = () => {
     navigate('/website-configurations/header');
   };
 
+  // Transform page tree to navigationLinks format
+  const transformPageTreeToNavLinks = (pageTree) => {
+    if (!Array.isArray(pageTree)) {
+      return [];
+    }
+
+    return pageTree
+      .filter(page => page.showInMenu !== false && page.isActive !== false)
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .map(page => {
+        const navLink = {
+          label: page.title,
+          href: page.path,
+          order: page.order || 0,
+          isFieldActive: true,
+          dropdown: []
+        };
+
+        // Add children as dropdown items
+        if (page.children && Array.isArray(page.children) && page.children.length > 0) {
+          navLink.dropdown = page.children
+            .filter(child => child.showInMenu !== false && child.isActive !== false)
+            .sort((a, b) => (a.order || 0) - (b.order || 0))
+            .map(child => ({
+              label: child.title,
+              href: child.path,
+              order: child.order || 0
+            }));
+        }
+
+        return navLink;
+      });
+  };
+
+  // Sync from Page Tree
+  const handleSyncFromPageTree = async () => {
+    setSyncing(true);
+    try {
+      // Fetch page tree
+      const treeResponse = await pageService.getPageTree();
+      if (!treeResponse.success || !treeResponse.data?.tree) {
+        toast.error('Failed to fetch page tree');
+        return;
+      }
+
+      // Transform to navigationLinks
+      const navigationLinks = transformPageTreeToNavLinks(treeResponse.data.tree);
+
+      // Update form with synced navigationLinks
+      form.setFieldsValue({
+        navigationLinks
+      });
+
+      // Update local state
+      setHeaderConfig(prev => ({
+        ...prev,
+        navigationLinks
+      }));
+
+      toast.success(`Synced ${navigationLinks.length} navigation link(s) from Page Tree`);
+    } catch (error) {
+      console.error('Error syncing from page tree:', error);
+      toast.error(error.response?.data?.message || 'Failed to sync from Page Tree');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   // Handle workflow action completion
   const handleWorkflowActionComplete = async () => {
     if (isEdit) {
@@ -239,9 +310,17 @@ const HeaderConfigurationEditor = () => {
             </p>
           </div>
           {isEdit && headerConfig && (
-            <div className="flex flex-col items-start md:items-end gap-2">
+            <div className="flex flex-col items-start md:items-end gap-3">
               <WorkflowStatusBadge status={headerConfig.status} size="large" />
-              <Space>
+              <Space size="middle" align="center" style={{ flexWrap: 'nowrap' }}>
+                <Button
+                  icon={<SyncOutlined />}
+                  onClick={handleSyncFromPageTree}
+                  loading={syncing}
+                  size="middle"
+                >
+                  Sync from Page Tree
+                </Button>
                 <WorkflowActions
                   resource="header-configuration"
                   resourceId={id}
@@ -275,6 +354,7 @@ const HeaderConfigurationEditor = () => {
                 onCancel={handleCancel}
                 loading={loading}
                 isEdit={isEdit}
+                headerConfig={headerConfig}
               />
             </WorkflowStatusGuard>
           ) : (
@@ -346,7 +426,7 @@ const HeaderConfigurationEditor = () => {
 };
 
 // Header Configuration Form Component
-const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, loading, isEdit }) => {
+const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, loading, isEdit, headerConfig }) => {
   const [navigationLinks, setNavigationLinks] = useState(initialValues.navigationLinks || []);
 
   useEffect(() => {
@@ -472,6 +552,23 @@ const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
 
       <Divider>Navigation Links</Divider>
 
+      {isEdit && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+          <div className="flex items-center gap-2 mb-2">
+            <SyncOutlined className="text-blue-600" />
+            <span className="font-medium text-blue-900">Sync from Page Tree</span>
+          </div>
+          <p className="text-sm text-blue-700 mb-2">
+            Click the "Sync from Page Tree" button above to automatically populate navigation links from your page tree structure.
+          </p>
+          {headerConfig?.lastSyncedFromPageTree && (
+            <p className="text-xs text-blue-600">
+              Last synced: {new Date(headerConfig.lastSyncedFromPageTree).toLocaleString()}
+            </p>
+          )}
+        </div>
+      )}
+
       {navigationLinks.map((link, index) => (
         <Card key={index} className="mb-4 border border-gray-200">
           <div className="flex justify-between items-center mb-4">
@@ -596,6 +693,17 @@ const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
 
       <Form.Item className="mb-0 mt-6">
         <div className="flex justify-end gap-2">
+          <Button 
+            onClick={onCancel} 
+            disabled={loading}
+            size="large"
+            style={{
+              height: '44px',
+              borderRadius: '8px'
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             type="primary"
             htmlType="submit"
@@ -611,9 +719,6 @@ const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
             }}
           >
             {isEdit ? 'Update Header Configuration' : 'Create Header Configuration'}
-          </Button>
-          <Button onClick={onCancel} size="large">
-            Cancel
           </Button>
         </div>
       </Form.Item>

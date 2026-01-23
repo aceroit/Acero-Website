@@ -297,9 +297,9 @@ const WebsiteAppearanceEditor = () => {
             </p>
           </div>
           {isEdit && appearance && (
-            <div className="flex flex-col items-start md:items-end gap-2">
+            <div className="flex flex-col items-start md:items-end gap-3">
               <WorkflowStatusBadge status={appearance.status} size="large" />
-              <Space>
+              <Space size="middle" align="center" style={{ flexWrap: 'nowrap' }}>
                 <WorkflowActions
                   resource="website-appearance"
                   resourceId={id}
@@ -681,6 +681,17 @@ const WebsiteAppearanceForm = ({ form, initialValues, onSubmit, onCancel, loadin
 
       <Form.Item className="mb-0 mt-6">
         <div className="flex justify-end gap-2">
+          <Button 
+            onClick={onCancel} 
+            disabled={loading}
+            size="large"
+            style={{
+              height: '44px',
+              borderRadius: '8px'
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             type="primary"
             htmlType="submit"
@@ -696,9 +707,6 @@ const WebsiteAppearanceForm = ({ form, initialValues, onSubmit, onCancel, loadin
             }}
           >
             {isEdit ? 'Update Website Appearance' : 'Create Website Appearance'}
-          </Button>
-          <Button onClick={onCancel} size="large">
-            Cancel
           </Button>
         </div>
       </Form.Item>

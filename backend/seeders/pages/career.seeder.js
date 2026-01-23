@@ -29,7 +29,7 @@ const seedCareer = async () => {
                 path: '/career',
                 parentId: null,
                 level: 0,
-                order: 5,
+                order: 6, // Updated to 6 (after Media at 5)
                 metaTitle: 'Career Opportunities | Acero Building Systems',
                 metaDescription: 'Join Acero Building Systems and be part of a leading steel manufacturing company. Explore career opportunities and apply for open positions.',
                 metaKeywords: 'career,jobs,employment,opportunities,join Acero',
@@ -40,7 +40,10 @@ const seedCareer = async () => {
             });
             console.log('✓ Created Career page');
         } else {
-            console.log('✓ Career page already exists');
+            // Update order if it exists
+            page.order = 6;
+            await page.save();
+            console.log('✓ Career page already exists (order updated to 6)');
         }
 
         const sectionsData = [

@@ -1,4 +1,5 @@
 const HeaderConfiguration = require('../models/HeaderConfiguration');
+const headerPageSyncService = require('../services/headerPageSyncService');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent } = require('../utils/workflowStatusValidator');
 
@@ -125,6 +126,11 @@ exports.updateHeader = async (req, res) => {
             return errorResponse(res, 400, 'Cannot edit published content. Please unpublish first or use workflow actions.');
         }
 
+        // Store old navigationLinks to check if they changed
+        const oldNavigationLinks = JSON.stringify(header.navigationLinks || []);
+        const navigationLinksChanged = updateData.navigationLinks && 
+            JSON.stringify(updateData.navigationLinks) !== oldNavigationLinks;
+
         Object.keys(updateData).forEach(key => {
             if (updateData[key] !== undefined && key !== '_id' && key !== 'createdBy') {
                 header[key] = updateData[key];
@@ -133,6 +139,18 @@ exports.updateHeader = async (req, res) => {
 
         header.updatedBy = req.user._id;
         await header.save();
+
+        // Sync to Page Tree if navigationLinks changed
+        if (navigationLinksChanged && header.navigationLinks) {
+            try {
+                await headerPageSyncService.syncHeaderToPageTree(header._id, header.navigationLinks, {
+                    updatedBy: req.user._id
+                });
+            } catch (syncError) {
+                console.error('Error syncing header to page tree after update:', syncError);
+                // Don't fail the request if sync fails
+            }
+        }
 
         const updated = await HeaderConfiguration.findById(header._id)
             .populate('createdBy', 'firstName lastName email')

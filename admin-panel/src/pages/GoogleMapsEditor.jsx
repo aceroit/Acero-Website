@@ -366,6 +366,17 @@ const GoogleMapsForm = ({ form, initialValues, onSubmit, onCancel, loading, isEd
 
       <Form.Item className="mb-0 mt-6">
         <div className="flex justify-end gap-2">
+          <Button 
+            onClick={onCancel} 
+            disabled={loading}
+            size="large"
+            style={{
+              height: '44px',
+              borderRadius: '8px'
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             type="primary"
             htmlType="submit"
@@ -381,9 +392,6 @@ const GoogleMapsForm = ({ form, initialValues, onSubmit, onCancel, loading, isEd
             }}
           >
             {isEdit ? 'Update Configuration' : 'Create Configuration'}
-          </Button>
-          <Button onClick={onCancel} size="large">
-            Cancel
           </Button>
         </div>
       </Form.Item>

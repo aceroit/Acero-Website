@@ -1,11 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useTheme } from "@/components/theme-provider"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
+import { useHeader } from "@/hooks/use-header"
 
-const navLinks = [
+// Default fallback values
+const defaultNavLinks = [
   { href: "/who-we-are", label: "Who We Are" },
   {
     href: "/products",
@@ -34,11 +37,86 @@ const navLinks = [
   { href: "/contact-us", label: "Contact Us" },
 ]
 
+const defaultBrandName = "ACERO"
+const defaultCtaButton = { text: "Get Quote", href: "/contact-us" }
+
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const { theme, toggleTheme } = useTheme()
+  const { header, isLoading } = useHeader()
+
+  // Map backend navigationLinks to component format
+  const navLinks = useMemo(() => {
+    if (!header?.navigationLinks || header.navigationLinks.length === 0) {
+      return defaultNavLinks
+    }
+
+    return header.navigationLinks
+      .filter((link) => link.isFieldActive)
+      .sort((a, b) => a.order - b.order)
+      .map((link) => ({
+        href: link.href,
+        label: link.label,
+        dropdown:
+          link.dropdown && link.dropdown.length > 0
+            ? link.dropdown
+                .filter((item) => item)
+                .sort((a, b) => a.order - b.order)
+                .map((item) => ({
+                  href: item.href,
+                  label: item.label,
+                }))
+            : undefined,
+      }))
+  }, [header])
+
+  // Get brand name
+  const brandName = useMemo(() => {
+    if (header?.brandName?.isFieldActive && header.brandName.text) {
+      return header.brandName.text
+    }
+    return defaultBrandName
+  }, [header])
+
+  // Get CTA button
+  const ctaButton = useMemo(() => {
+    if (header?.ctaButton?.isFieldActive) {
+      return {
+        text: header.ctaButton.text || defaultCtaButton.text,
+        href: header.ctaButton.href || defaultCtaButton.href,
+      }
+    }
+    return defaultCtaButton
+  }, [header])
+
+  // Check if theme toggle should be shown
+  const showThemeToggle = useMemo(() => {
+    return header?.themeToggle?.isFieldActive && header.themeToggle.enabled !== false
+  }, [header])
+
+  // Get logo
+  const logo = useMemo(() => {
+    if (header?.logo?.isFieldActive && header.logo.imageUrl) {
+      return {
+        imageUrl: header.logo.imageUrl,
+        altText: header.logo.altText || "Acero Logo",
+      }
+    }
+    return null
+  }, [header])
+
+  // Determine if we should show brand name text
+  // Only show text if logo is not available or not active
+  const showBrandName = useMemo(() => {
+    // If logo is active and has image, don't show text
+    if (logo) {
+      return false
+    }
+    // Otherwise, show text if brandName is active
+    return header?.brandName?.isFieldActive !== false
+  }, [logo, header])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,20 +137,33 @@ export function Header() {
           : "bg-background/80 backdrop-blur-sm"
       }`}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+      <nav className="mx-auto flex max-w-[95rem] items-center justify-between px-6 py-4 lg:px-8 xl:px-12">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center">
+          {logo ? (
+            <Image
+              src={logo.imageUrl}
+              alt={logo.altText}
+              width={48}
+              height={48}
+              className="h-12 w-auto object-contain"
+              style={{ maxHeight: '48px' }}
+            />
+          ) : (
+            <div className="relative flex h-12 w-12 items-center justify-center">
             <div className="absolute h-full w-full rotate-45 border-2 border-[#E10600]" />
-            <span className="text-lg font-bold text-foreground">A</span>
+              <span className="text-xl font-bold text-foreground">A</span>
           </div>
+          )}
+          {showBrandName && (
           <span className="text-xl font-bold tracking-tight text-foreground">
-            ACERO
+              {brandName}
           </span>
+          )}
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-1 lg:flex">
+        <div className="hidden items-center gap-0.5 lg:flex">
           {navLinks.map((link) => (
             <div
               key={link.href}
@@ -82,7 +173,7 @@ export function Header() {
             >
               <Link
                 href={link.href}
-                className="flex items-center gap-1 px-4 py-2 text-sm font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-steel-red"
+                className="flex items-center gap-1 px-3 py-2 text-sm font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-steel-red whitespace-nowrap"
               >
                 {link.label}
                 {link.dropdown && (
@@ -135,6 +226,7 @@ export function Header() {
         {/* Actions */}
         <div className="flex items-center gap-3">
           {/* Theme Toggle */}
+          {showThemeToggle && (
           <button
             onClick={toggleTheme}
             className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary/50 transition-all hover:bg-secondary hover:border-[#E10600]"
@@ -170,13 +262,14 @@ export function Header() {
               </svg>
             )}
           </button>
+          )}
 
           {/* CTA Button */}
           <Link
-            href="/contact-us"
+            href={ctaButton.href}
             className="hidden bg-[#E10600] px-6 py-2.5 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-[#E10600]/90 sm:block"
           >
-            Get Quote
+            {ctaButton.text}
           </Link>
 
           {/* Mobile Menu Toggle */}
@@ -270,11 +363,11 @@ export function Header() {
                 className="pt-4"
               >
                 <Link
-                  href="/contact-us"
+                  href={ctaButton.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block bg-[#E10600] px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider text-white"
                 >
-                  Get Quote
+                  {ctaButton.text}
                 </Link>
               </motion.div>
             </div>
