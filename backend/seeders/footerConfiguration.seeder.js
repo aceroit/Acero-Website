@@ -58,7 +58,7 @@ const footerConfigData = {
     ],
     quickLinks: [
         { label: 'Who We Are', href: '/who-we-are', isFieldActive: true },
-        { label: 'Manufacturing', href: '/products/manufacturing', isFieldActive: true },
+        { label: 'Manufacturing', href: '/manufacturing', isFieldActive: true },
         { label: 'Projects', href: '/projects', isFieldActive: true },
         { label: 'Career', href: '/career', isFieldActive: true },
         { label: 'Contact Us', href: '/contact-us', isFieldActive: true } // Note: frontend has /contact but should be /contact-us

@@ -266,7 +266,7 @@ const Sidebar = () => {
                     background-color: rgba(156, 163, 175, 0.8);
                 }
             `}</style>
-            <div className="h-full w-70 bg-gray-800 text-white flex flex-col">
+            <div className="h-full w-full bg-gray-800 text-white flex flex-col">
             {/* Logo */}
             <div className="p-4 pb-3 flex flex-col items-center border-gray-700 hover:bg-gray-700 cursor-pointer">
                 <NavLink to="/dashboard" className="py-1 pt-0">

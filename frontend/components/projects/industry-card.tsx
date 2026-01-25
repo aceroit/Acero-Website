@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Industry } from "@/utils/projects-data"
@@ -25,6 +26,20 @@ export function IndustryCard({ industry, index = 0, className }: IndustryCardPro
         className="block h-full transition-transform duration-300 hover:scale-[1.02]"
       >
         <div className="relative h-full overflow-hidden rounded-lg border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/50 hover:shadow-xl">
+          {/* Background Image */}
+          {industry.logo && industry.logo !== "/placeholder.jpg" && (
+            <>
+              <Image
+                src={industry.logo}
+                alt={industry.name}
+                fill
+                className="object-cover opacity-40 transition-opacity duration-500 group-hover:opacity-50"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+              />
+              {/* Darker overlay to make image more visible */}
+              <div className="absolute inset-0 bg-black/40" />
+            </>
+          )}
           {/* Premium gradient overlay on hover */}
           <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/3 group-hover:to-steel-red/5" />
 

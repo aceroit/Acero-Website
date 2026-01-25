@@ -1,5 +1,6 @@
-import { Form, Input, Button, Switch } from 'antd';
+import { Form, Input, InputNumber, Button, Switch } from 'antd';
 import { useEffect } from 'react';
+import ImageUpload from '../common/ImageUpload';
 
 /**
  * Building Type Form Component
@@ -33,10 +34,25 @@ const BuildingTypeForm = ({
     }
   }, [initialValues, form]);
 
+  // Auto-generate slug from name
+  const handleNameChange = (e) => {
+    const name = e.target.value;
+    if (!isEdit && name) {
+      const slug = name
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+      form.setFieldsValue({ slug });
+    }
+  };
+
   const handleSubmit = async (values) => {
     const cleanedValues = {
       ...values,
       name: values.name?.trim(),
+      slug: values.slug?.trim().toLowerCase(),
       featured: values.featured !== undefined ? values.featured : false,
       isActive: values.isActive !== undefined ? values.isActive : true,
     };
@@ -71,6 +87,48 @@ const BuildingTypeForm = ({
           <Input
             placeholder="Enter building type name"
             size="large"
+            onChange={handleNameChange}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="slug"
+          label="Slug"
+          rules={[
+            { required: true, message: 'Please enter slug' },
+            {
+              pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+              message: 'Slug must contain only lowercase letters, numbers, and hyphens'
+            },
+          ]}
+          tooltip="URL-friendly identifier (auto-generated from name)"
+        >
+          <Input
+            placeholder="Enter slug"
+            size="large"
+            disabled={isEdit}
+          />
+        </Form.Item>
+      </div>
+
+      {/* Image */}
+      <div className="border-b border-gray-200 pb-4 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Image</h3>
+        
+        <Form.Item
+          name="image"
+          label="Building Type Image"
+          tooltip="Image for the building type (min: 126×100px)"
+        >
+          <ImageUpload
+            value={form.getFieldValue('image')}
+            onChange={(image) => {
+              form.setFieldsValue({ image });
+              form.validateFields(['image']);
+            }}
+            folder="building-types/images"
+            dimensions={{ minWidth: 126, minHeight: 100 }}
+            maxSize={5}
           />
         </Form.Item>
       </div>

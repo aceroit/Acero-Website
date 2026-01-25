@@ -323,7 +323,7 @@ const Branches = () => {
 
   return (
     <MainLayout>
-      <div className="space-y-6 md:space-y-8 p-4 md:p-0">
+      <div className="space-y-4 md:space-y-6 lg:space-y-8 w-full max-w-full overflow-x-hidden">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -399,16 +399,16 @@ const Branches = () => {
 
         {/* Branches Table */}
         <Card 
-          className="border border-gray-200 shadow-md bg-white"
+          className="border border-gray-200 shadow-md bg-white w-full"
           bodyStyle={{ padding: 0 }}
         >
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto w-full">
             <Table
               columns={columns}
               dataSource={branches}
               loading={loading}
               rowKey="_id"
-              className="custom-table branches-table"
+              className="custom-table branches-table w-full"
               pagination={{
                 ...pagination,
                 showSizeChanger: true,
@@ -424,7 +424,7 @@ const Branches = () => {
                   }));
                 },
               }}
-              scroll={{ x: 1200 }}
+              scroll={{ x: 'max-content' }}
               onRow={(record) => ({
                 onClick: () => {
                   if (hasPermission('branches', 'update')) {

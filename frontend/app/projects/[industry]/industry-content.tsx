@@ -9,11 +9,7 @@ import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
 import { ProjectFilters } from "@/components/projects/project-filters"
 import { ProjectsGridSection } from "@/components/projects/projects-grid-section"
-import {
-  getBuildingTypes,
-  getIndustryName,
-  processedData,
-} from "@/utils/projects-data"
+import { useBuildingTypes, useIndustries } from "@/hooks/use-projects"
 
 export function IndustryContent({ industrySlug }: { industrySlug: string }) {
   const searchParams = useSearchParams()
@@ -28,24 +24,85 @@ export function IndustryContent({ industrySlug }: { industrySlug: string }) {
   const region = regionParam && regionParam !== "all" ? regionParam : undefined
   const country = countryParam && countryParam !== "all" ? countryParam : undefined
 
-  const industryName = getIndustryName(industrySlug, processedData)
+  // Fetch industry name from backend
+  const { industries, isLoading: industriesLoading } = useIndustries()
+  const industry = industries.find((ind) => ind.slug === industrySlug)
+  const industryName = industry?.name
+  const industryLogo = industry?.logo?.url || null
 
-  if (!industryName) {
-    notFound()
-  }
-
-  const buildingTypes = getBuildingTypes(industrySlug, processedData, {
+  // Fetch building types from backend
+  const { buildingTypes: backendBuildingTypes, isLoading: buildingTypesLoading } = useBuildingTypes(industrySlug, {
     area,
     region,
     country,
   })
+
+  const isLoading = industriesLoading || buildingTypesLoading
+
+  // Check if industry exists after loading
+  if (!isLoading && !industryName) {
+    notFound()
+  }
+
+
+  // Debug: Log raw backend data
+  if (!isLoading) {
+    console.log('=== Building Types Debug ===')
+    console.log(`Backend returned ${backendBuildingTypes.length} building types`)
+    console.log('Raw backend building types:', backendBuildingTypes.map(bt => ({ 
+      name: bt.name, 
+      slug: bt.slug, 
+      hasSlug: !!bt.slug,
+      slugType: typeof bt.slug,
+      slugValue: bt.slug,
+      _id: bt._id,
+      fullObject: bt
+    })))
+  }
+
+  // Transform backend data to match frontend component expectations
+  const buildingTypes = backendBuildingTypes
+    .filter((bt) => {
+      // Check if slug exists and is not empty
+      const hasSlug = bt.slug && typeof bt.slug === 'string' && bt.slug.trim() !== ''
+      if (!hasSlug) {
+        console.warn(`BuildingType "${bt.name}" (${bt._id}) has no valid slug - skipping`, {
+          slug: bt.slug,
+          slugType: typeof bt.slug,
+          fullObject: bt
+        })
+        return false
+      }
+      return true
+    })
+    .map((bt) => ({
+      name: bt.name,
+      slug: bt.slug?.trim() || '', // Ensure slug is trimmed and never undefined
+      image: bt.image?.url || null, // Use null instead of placeholder so background doesn't show if no image
+      projectCount: bt.projectCount || 0,
+      projects: [], // Not needed for the grid display
+    }))
+  
+  // Debug logging
+  if (!isLoading) {
+    console.log(`Industry "${industrySlug}": After filtering: ${buildingTypes.length} building types`)
+    if (buildingTypes.length > 0) {
+      console.log('Transformed building types:', buildingTypes.map(bt => ({ name: bt.name, slug: bt.slug })))
+    } else if (backendBuildingTypes.length > 0) {
+      console.error('ERROR: All building types were filtered out! Check slug values above.')
+    }
+    console.log('=== End Debug ===')
+  }
 
   return (
     <>
       <Header />
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
-        <HeroImageSection image="/images/projects/hero.jpg" title={industryName} />
+        <HeroImageSection 
+          image={industryLogo || "/images/projects/hero.jpg"} 
+          title={industryName || "Industry"} 
+        />
 
         {/* Building Types Section */}
         <section
@@ -76,14 +133,24 @@ export function IndustryContent({ industrySlug }: { industrySlug: string }) {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mb-12"
             >
-              <ProjectFilters hideIndustry />
+              <ProjectFilters hideIndustry industrySlug={industrySlug} />
             </motion.div>
 
             {/* Building Types Grid */}
-            <ProjectsGridSection
-              buildingTypes={buildingTypes}
-              industrySlug={industrySlug}
-            />
+            {isLoading ? (
+              <div className="py-12 text-center">
+                <p className="text-lg text-muted-foreground">Loading building types...</p>
+              </div>
+            ) : buildingTypes.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-lg text-muted-foreground">No building types found.</p>
+              </div>
+            ) : (
+              <ProjectsGridSection
+                buildingTypes={buildingTypes}
+                industrySlug={industrySlug}
+              />
+            )}
           </div>
         </section>
       </main>

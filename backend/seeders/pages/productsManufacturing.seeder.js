@@ -15,7 +15,7 @@ const User = require('../../models/User');
 const connectDB = require('../../configs/database');
 
 /**
- * Seed Manufacturing page with all sections from frontend/app/products/manufacturing/page.tsx
+ * Seed Manufacturing page with all sections from frontend/app/manufacturing/page.tsx
  */
 const seedProductsManufacturing = async () => {
     try {
@@ -51,7 +51,7 @@ const seedProductsManufacturing = async () => {
             manufacturingPage = await Page.create({
                 title: 'Manufacturing',
                 slug: 'manufacturing',
-                path: '/products/manufacturing',
+                path: '/manufacturing', // Standalone page, not under products
                 parentId: null,
                 level: 0,
                 order: 3, // Between Products (2) and Projects (4)
@@ -65,10 +65,11 @@ const seedProductsManufacturing = async () => {
             });
             console.log('✓ Created Manufacturing page');
         } else {
-            // Update order if it exists
+            // Update path and order if it exists
+            manufacturingPage.path = '/manufacturing';
             manufacturingPage.order = 2.5;
             await manufacturingPage.save();
-            console.log('✓ Manufacturing page already exists (order updated)');
+            console.log('✓ Manufacturing page already exists (path and order updated)');
         }
 
         // Step 2: Create Sections (in order)

@@ -14,6 +14,11 @@ const FooterConfiguration = require('../models/FooterConfiguration');
 const WebsiteAppearance = require('../models/WebsiteAppearance');
 const GoogleReCaptcha = require('../models/GoogleReCaptcha');
 const GoogleMaps = require('../models/GoogleMaps');
+const Industry = require('../models/Industry');
+const BuildingType = require('../models/BuildingType');
+const Country = require('../models/Country');
+const Region = require('../models/Region');
+const Area = require('../models/Area');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const Vacancy = require('../models/Vacancy');
 const Enquiry = require('../models/Enquiry');
@@ -186,19 +191,267 @@ router.get('/search', async (req, res) => {
 });
 
 /**
+ * GET /api/public/industries - Get published industries with logos
+ * Query params: country, region, area (for filtering)
+ * No authentication required
+ */
+router.get('/industries', async (req, res) => {
+    try {
+        const { country, region, area } = req.query;
+        
+        // Build filter based on location filters
+        let industryFilter = {};
+        if (country || region || area) {
+            // Find projects matching location filters to get industries
+            const projectFilters = {};
+            if (country) {
+                const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
+                if (countryDoc) projectFilters.country = countryDoc._id;
+            }
+            if (region) {
+                const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
+                if (regionDoc) projectFilters.region = regionDoc._id;
+            }
+            if (area) {
+                const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
+                if (areaDoc) projectFilters.area = areaDoc._id;
+            }
+            
+            // Get unique industry IDs from matching projects
+            const projects = await Project.find({
+                ...projectFilters,
+                status: 'published',
+                featured: true,
+                isActive: true
+            }).distinct('industry');
+            
+            if (projects.length > 0) {
+                industryFilter._id = { $in: projects };
+            } else {
+                // No projects match, return empty array
+                return successResponse(res, 200, 'Published industries retrieved successfully', {
+                    industries: [],
+                    count: 0
+                });
+            }
+        }
+
+        const industries = await Industry.getPublished(industryFilter);
+
+        // Build location filters for project count
+        const locationFilters = {};
+        if (country) {
+            const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
+            if (countryDoc) locationFilters.country = countryDoc._id;
+        }
+        if (region) {
+            const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
+            if (regionDoc) locationFilters.region = regionDoc._id;
+        }
+        if (area) {
+            const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
+            if (areaDoc) locationFilters.area = areaDoc._id;
+        }
+
+        // Calculate project count for each industry
+        const industriesWithCounts = await Promise.all(
+            industries.map(async (industry) => {
+                const projectCount = await Project.countDocuments({
+                    industry: industry._id,
+                    status: 'published',
+                    featured: true,
+                    isActive: true,
+                    ...locationFilters,
+                });
+                return {
+                    ...industry.toObject(),
+                    projectCount
+                };
+            })
+        );
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published industries retrieved successfully', {
+            industries: industriesWithCounts,
+            count: industriesWithCounts.length
+        });
+    } catch (error) {
+        console.error('Error in public getIndustries:', error);
+        return errorResponse(res, 500, 'Failed to retrieve industries');
+    }
+});
+
+/**
+ * GET /api/public/building-types - Get published building types by industry slug
+ * Query params: industry (slug), country, region, area (for filtering)
+ * No authentication required
+ */
+router.get('/building-types', async (req, res) => {
+    try {
+        const { industry, country, region, area } = req.query;
+        
+        if (!industry) {
+            return errorResponse(res, 400, 'Industry slug is required');
+        }
+
+        // Find industry by slug
+        const industryDoc = await Industry.findBySlug(industry);
+        if (!industryDoc) {
+            console.log(`Industry with slug "${industry}" not found`);
+            return errorResponse(res, 404, 'Industry not found');
+        }
+
+        // Always filter building types by finding projects with this industry
+        // Build project filters (always include industry)
+        const projectFilters = { 
+            industry: industryDoc._id,
+            status: 'published',
+            featured: true,
+            isActive: true
+        };
+        
+        // Add location filters if provided
+        if (country) {
+            const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
+            if (countryDoc) projectFilters.country = countryDoc._id;
+        }
+        if (region) {
+            const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
+            if (regionDoc) projectFilters.region = regionDoc._id;
+        }
+        if (area) {
+            const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
+            if (areaDoc) projectFilters.area = areaDoc._id;
+        }
+        
+        // Debug: Check total projects for this industry
+        const totalProjectsForIndustry = await Project.countDocuments({
+            industry: industryDoc._id,
+            isActive: true
+        });
+        const publishedProjectsForIndustry = await Project.countDocuments(projectFilters);
+        console.log(`Industry "${industry}" (${industryDoc._id}): Total projects: ${totalProjectsForIndustry}, Published/Featured: ${publishedProjectsForIndustry}`);
+        
+        // Get unique building type IDs from matching projects
+        const buildingTypeIds = await Project.find(projectFilters).distinct('buildingType');
+        
+        console.log(`Industry "${industry}": Found ${buildingTypeIds.length} unique building type IDs from projects`);
+        
+        if (buildingTypeIds.length === 0) {
+            // No projects match, return empty array
+            console.log(`No building types found for industry "${industry}" with the given filters`);
+            console.log(`Project filters used:`, JSON.stringify(projectFilters, null, 2));
+            return successResponse(res, 200, 'Published building types retrieved successfully', {
+                buildingTypes: [],
+                count: 0
+            });
+        }
+
+        // Get building types that have projects in this industry
+        // Note: We get building types that have published projects, but the building types themselves
+        // don't need to be published/featured - they just need to exist and be active
+        const buildingTypes = await BuildingType.find({
+            _id: { $in: buildingTypeIds },
+            isActive: true
+        }).select('name slug image status featured isActive publishedAt createdAt updatedAt createdBy updatedBy').sort({ name: 1 });
+        
+        console.log(`Found ${buildingTypes.length} active building types with projects in industry "${industry}"`);
+        
+        // Debug: Check if any building types are missing slugs
+        const buildingTypesWithoutSlugs = buildingTypes.filter(bt => !bt.slug || bt.slug === '');
+        if (buildingTypesWithoutSlugs.length > 0) {
+            console.warn(`Warning: ${buildingTypesWithoutSlugs.length} building types are missing slugs:`, buildingTypesWithoutSlugs.map(bt => ({ name: bt.name, _id: bt._id })));
+        }
+
+        // Calculate project count for each building type
+        const buildingTypesWithCounts = await Promise.all(
+            buildingTypes.map(async (buildingType) => {
+                const projectCount = await Project.countDocuments({
+                    industry: industryDoc._id,
+                    buildingType: buildingType._id,
+                    status: 'published',
+                    featured: true,
+                    isActive: true,
+                });
+                const buildingTypeObj = buildingType.toObject();
+                // Ensure slug is included
+                console.log(`BuildingType "${buildingTypeObj.name}": slug="${buildingTypeObj.slug}", projectCount=${projectCount}`);
+                return {
+                    ...buildingTypeObj,
+                    projectCount
+                };
+            })
+        );
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Published building types retrieved successfully', {
+            buildingTypes: buildingTypesWithCounts,
+            count: buildingTypesWithCounts.length
+        });
+    } catch (error) {
+        console.error('Error in public getBuildingTypes:', error);
+        return errorResponse(res, 500, 'Failed to retrieve building types');
+    }
+});
+
+/**
  * GET /api/public/projects - Get published and featured projects
+ * Query params: industry (slug), buildingType (slug), country, region, area
  * No authentication required
  */
 router.get('/projects', async (req, res) => {
     try {
-        const { page = 1, limit = 20, buildingType, country, region, area, industry } = req.query;
+        const { industry, buildingType, country, region, area } = req.query;
         
         const filters = {};
-        if (buildingType) filters.buildingType = buildingType;
-        if (country) filters.country = country;
-        if (region) filters.region = region;
-        if (area) filters.area = area;
-        if (industry) filters.industry = industry;
+        
+        // Handle industry slug
+        if (industry) {
+            const industryDoc = await Industry.findBySlug(industry);
+            if (industryDoc) {
+                filters.industry = industryDoc._id;
+            } else {
+                // Industry not found, return empty
+                console.log(`Industry with slug "${industry}" not found`);
+                return successResponse(res, 200, 'Published projects retrieved successfully', {
+                    projects: [],
+                    count: 0
+                });
+            }
+        }
+        
+        // Handle buildingType slug
+        if (buildingType) {
+            const buildingTypeDoc = await BuildingType.findBySlug(buildingType);
+            if (buildingTypeDoc) {
+                filters.buildingType = buildingTypeDoc._id;
+            } else {
+                // BuildingType not found, return empty
+                console.log(`BuildingType with slug "${buildingType}" not found`);
+                return successResponse(res, 200, 'Published projects retrieved successfully', {
+                    projects: [],
+                    count: 0
+                });
+            }
+        }
+        
+        // Handle location filters
+        if (country) {
+            const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
+            if (countryDoc) filters.country = countryDoc._id;
+        }
+        if (region) {
+            const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
+            if (regionDoc) filters.region = regionDoc._id;
+        }
+        if (area) {
+            const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
+            if (areaDoc) filters.area = areaDoc._id;
+        }
 
         const projects = await Project.getPublished(filters);
 
@@ -212,6 +465,123 @@ router.get('/projects', async (req, res) => {
     } catch (error) {
         console.error('Error in public getProjects:', error);
         return errorResponse(res, 500, 'Failed to retrieve projects');
+    }
+});
+
+/**
+ * GET /api/public/filter-options - Get available filter options based on current selections (cascading filters)
+ * Query params: industry (slug), buildingType (slug), country, region, area
+ * No authentication required
+ */
+router.get('/filter-options', async (req, res) => {
+    try {
+        const { industry, buildingType, country, region, area } = req.query;
+        
+        // Build base project query based on current selections
+        const projectQuery = {
+            status: 'published',
+            featured: true,
+            isActive: true
+        };
+        
+        // Add industry filter if provided
+        if (industry) {
+            const industryDoc = await Industry.findBySlug(industry);
+            if (industryDoc) {
+                projectQuery.industry = industryDoc._id;
+            }
+        }
+        
+        // Add buildingType filter if provided
+        if (buildingType) {
+            const buildingTypeDoc = await BuildingType.findBySlug(buildingType);
+            if (buildingTypeDoc) {
+                projectQuery.buildingType = buildingTypeDoc._id;
+            }
+        }
+        
+        // Add location filters if provided
+        if (country) {
+            const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
+            if (countryDoc) projectQuery.country = countryDoc._id;
+        }
+        if (region) {
+            const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
+            if (regionDoc) projectQuery.region = regionDoc._id;
+        }
+        if (area) {
+            const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
+            if (areaDoc) projectQuery.area = areaDoc._id;
+        }
+        
+        // Get all matching projects
+        const projects = await Project.find(projectQuery)
+            .populate('industry', 'name slug')
+            .populate('buildingType', 'name slug')
+            .populate('country', 'name code')
+            .populate('region', 'name code')
+            .populate('area', 'name code');
+        
+        // Extract unique values for each filter
+        const industriesMap = new Map();
+        const countriesMap = new Map();
+        const regionsMap = new Map();
+        const areasMap = new Map();
+        
+        projects.forEach(project => {
+            // Industries
+            if (project.industry && project.industry.slug) {
+                industriesMap.set(project.industry.slug, {
+                    name: project.industry.name,
+                    slug: project.industry.slug
+                });
+            }
+            
+            // Countries
+            if (project.country && project.country.code) {
+                countriesMap.set(project.country.code, {
+                    name: project.country.name,
+                    code: project.country.code
+                });
+            }
+            
+            // Regions
+            if (project.region && project.region.code) {
+                regionsMap.set(project.region.code, {
+                    name: project.region.name,
+                    code: project.region.code,
+                    country: project.country ? project.country.code : null
+                });
+            }
+            
+            // Areas
+            if (project.area && project.area.code) {
+                areasMap.set(project.area.code, {
+                    name: project.area.name,
+                    code: project.area.code,
+                    region: project.region ? project.region.code : null
+                });
+            }
+        });
+        
+        // Convert maps to sorted arrays
+        const industries = Array.from(industriesMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+        const countries = Array.from(countriesMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+        const regions = Array.from(regionsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+        const areas = Array.from(areasMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Set cache headers (cache for 2 minutes - shorter due to dynamic nature)
+        res.set('Cache-Control', 'public, max-age=120');
+        
+        return successResponse(res, 200, 'Filter options retrieved successfully', {
+            industries,
+            countries,
+            regions,
+            areas
+        });
+    } catch (error) {
+        console.error('Error in public getFilterOptions:', error);
+        return errorResponse(res, 500, 'Failed to retrieve filter options');
     }
 });
 

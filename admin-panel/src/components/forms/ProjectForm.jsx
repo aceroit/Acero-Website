@@ -4,6 +4,7 @@ import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
 import * as referenceService from '../../services/referenceService';
 import ImageUpload from '../common/ImageUpload';
+import GalleryUpload from '../common/GalleryUpload';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -586,11 +587,36 @@ const ProjectForm = ({
           />
         </Form.Item>
 
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <p className="text-sm text-gray-600 mb-2">
-            <strong>Note:</strong> Project images (gallery) can be added after creating the project.
-          </p>
-        </div>
+        <Form.Item
+          name="projectImages"
+          label="Project Gallery Images"
+          tooltip="Gallery images for the project (minimum 5 images required, min: 736×368px or 546×273px)"
+          rules={[
+            {
+              validator: (_, value) => {
+                if (!value || value.length === 0) {
+                  return Promise.resolve(); // Allow empty on create, validate on publish
+                }
+                if (value.length < 5) {
+                  return Promise.reject(new Error('At least 5 images are required for the gallery'));
+                }
+                return Promise.resolve();
+              }
+            }
+          ]}
+        >
+          <GalleryUpload
+            value={form.getFieldValue('projectImages') || []}
+            onChange={(images) => {
+              form.setFieldsValue({ projectImages: images });
+              form.validateFields(['projectImages']);
+            }}
+            folder="projects/gallery"
+            label="Upload Project Gallery Images"
+            dimensions={{ minWidth: 546, minHeight: 273 }}
+            maxSize={10}
+          />
+        </Form.Item>
       </div>
 
       <Form.Item className="mb-0 mt-6">

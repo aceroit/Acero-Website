@@ -22,7 +22,7 @@ const defaultNavLinks = [
       { href: "/products/peb-comparison", label: "PEB Comparison" },
     ],
   },
-  { href: "/products/manufacturing", label: "Manufacturing" },
+  { href: "/manufacturing", label: "Manufacturing" },
   { href: "/projects", label: "Projects" },
   {
     href: "/media/literature",

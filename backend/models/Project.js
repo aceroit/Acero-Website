@@ -234,6 +234,15 @@ projectSchema.pre('save', async function() {
     }
 });
 
+// Pre-save middleware to validate projectImages when status is 'published'
+projectSchema.pre('save', async function() {
+    // Only validate if status is being set to 'published' or is already 'published'
+    if (this.status === 'published' && (!this.projectImages || this.projectImages.length < 5)) {
+        // Don't throw error, just log warning - allow saving but warn user
+        console.warn(`Warning: Project ${this.jobNumber || this._id} has less than 5 images but status is 'published'. Consider adding more images.`);
+    }
+});
+
 // Static method to get published projects
 projectSchema.statics.getPublished = async function(filters = {}) {
     const query = {
@@ -244,7 +253,7 @@ projectSchema.statics.getPublished = async function(filters = {}) {
     };
     
     return await this.find(query)
-        .populate('buildingType', 'name')
+        .populate('buildingType', 'name slug image')
         .populate('country', 'name code')
         .populate('region', 'name code')
         .populate('area', 'name code')

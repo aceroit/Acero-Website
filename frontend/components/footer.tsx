@@ -9,7 +9,7 @@ import { useFooter } from "@/hooks/use-footer"
 const defaultFooterLinks = {
   quickLinks: [
     { label: "Who We Are", href: "/who-we-are" },
-    { label: "Manufacturing", href: "/products/manufacturing" },
+    { label: "Manufacturing", href: "/manufacturing" },
     { label: "Projects", href: "/projects" },
     { label: "Career", href: "/career" },
     { label: "Contact Us", href: "/contact-us" },

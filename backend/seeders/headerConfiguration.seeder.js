@@ -49,7 +49,7 @@ const headerConfigData = {
         },
         {
             label: 'Manufacturing',
-            href: '/products/manufacturing',
+            href: '/manufacturing',
             order: 2,
             dropdown: [],
             isFieldActive: true

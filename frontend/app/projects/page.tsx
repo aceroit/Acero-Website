@@ -4,18 +4,14 @@ import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { HeroImageSection } from "@/components/sections/hero-image-section"
+import { SectionRenderer } from "@/components/sections/section-renderer"
 import { ProjectFilters } from "@/components/projects/project-filters"
 import { ProjectsGridSection } from "@/components/projects/projects-grid-section"
-import { getIndustries, processedData } from "@/utils/projects-data"
-import { motion } from "framer-motion"
-import { useRef } from "react"
-import { useInView } from "framer-motion"
+import { useIndustries } from "@/hooks/use-projects"
+import { usePage } from "@/hooks/use-page"
 
 function ProjectsContent() {
   const searchParams = useSearchParams()
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   const areaParam = searchParams.get("area")
   const regionParam = searchParams.get("region")
@@ -27,62 +23,95 @@ function ProjectsContent() {
   const country = countryParam && countryParam !== "all" ? countryParam : undefined
   const industry = industryParam && industryParam !== "all" ? industryParam : undefined
 
-  const industries = getIndustries(
-    processedData,
-    industry ? undefined : { area, region, country }
-  )
+  // Fetch page with sections from CMS
+  const { page, sections, isLoading: pageLoading } = usePage("projects")
+
+  // Fetch industries from backend
+  const { industries: backendIndustries, isLoading: industriesLoading } = useIndustries({
+    country,
+    region,
+    area,
+  })
+
+  const isLoading = pageLoading || industriesLoading
+
+  // Transform backend data to match frontend component expectations
+  const industries = backendIndustries
+    .filter((ind) => ind.slug) // Filter out industries without slugs
+    .map((ind) => ({
+      name: ind.name,
+      slug: ind.slug || "", // Ensure slug is never undefined
+      logo: ind.logo?.url || null, // Use null instead of placeholder so background doesn't show if no image
+      projectCount: ind.projectCount || 0,
+    }))
 
   // Filter industries by industry filter if provided
   const filteredIndustries = industry
-    ? industries.filter((ind) => ind.name === industry)
+    ? industries.filter((ind) => ind.slug === industry)
     : industries
+
+  // Separate sections by type
+  const heroSection = sections.find((s) => s.sectionTypeSlug === "hero_image")
+  const projectsGridSection = sections.find((s) => s.sectionTypeSlug === "projects_grid_with_filters")
+  const otherSections = sections.filter(
+    (s) => s.sectionTypeSlug !== "hero_image" && s.sectionTypeSlug !== "projects_grid_with_filters"
+  )
 
   return (
     <>
       <Header />
       <main className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <HeroImageSection
-          image="/images/projects/hero.jpg"
-          title="Our Projects"
-        />
-
-        {/* Our Projects Section */}
-        <section
-          ref={ref}
-          className="border-t border-border bg-background py-24 md:py-32"
-        >
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {/* Section Title */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.6 }}
-              className="mb-12 text-center"
-            >
-              <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-                Our Projects
-              </h2>
-              <p className="mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
-                Explore our diverse portfolio of projects across various industries and building
-                types
-              </p>
-            </motion.div>
-
-            {/* Filters */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mb-12"
-            >
-              <ProjectFilters />
-            </motion.div>
-
-            {/* Industries Grid */}
-            <ProjectsGridSection industries={filteredIndustries} />
+        {/* Render sections from CMS */}
+        {isLoading ? (
+          <div className="py-12 text-center">
+            <p className="text-lg text-muted-foreground">Loading...</p>
           </div>
-        </section>
+        ) : (
+          <>
+            {/* Render hero section from CMS */}
+            {heroSection && <SectionRenderer sections={[heroSection]} />}
+
+            {/* Render projects grid section with filters */}
+            {projectsGridSection && (
+              <section className="border-t border-border bg-background py-24 md:py-32">
+                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                  {/* Section Title from CMS */}
+                  {projectsGridSection.content?.title && (
+                    <div className="mb-12 text-center">
+                      <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+                        {projectsGridSection.content.title as string}
+                      </h2>
+                      {projectsGridSection.content.subtitle && (
+                        <p className="mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
+                          {projectsGridSection.content.subtitle as string}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Filters */}
+                  {projectsGridSection.content?.showFilters !== false && (
+                    <div className="mb-12">
+                      <ProjectFilters />
+                    </div>
+                  )}
+
+                  {/* Industries Grid */}
+                  {industriesLoading ? (
+                    <div className="py-12 text-center">
+                      <p className="text-lg text-muted-foreground">Loading industries...</p>
+                    </div>
+                  ) : (
+                    <ProjectsGridSection industries={filteredIndustries} />
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* Render other sections */}
+            {otherSections.length > 0 && <SectionRenderer sections={otherSections} />}
+          </>
+        )}
       </main>
       <Footer />
     </>

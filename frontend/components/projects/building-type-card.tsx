@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { BuildingType } from "@/utils/projects-data"
@@ -19,6 +20,12 @@ export function BuildingTypeCard({
   index = 0,
   className,
 }: BuildingTypeCardProps) {
+  // Ensure slug exists before creating link
+  if (!buildingType.slug) {
+    console.warn(`BuildingType "${buildingType.name}" has no slug`)
+    return null
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -31,6 +38,20 @@ export function BuildingTypeCard({
         className="block h-full transition-transform duration-300 hover:scale-[1.02]"
       >
         <div className="relative h-full overflow-hidden rounded-lg border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/50 hover:shadow-xl">
+          {/* Background Image */}
+          {buildingType.image && buildingType.image !== "/placeholder.jpg" && (
+            <>
+              <Image
+                src={buildingType.image}
+                alt={buildingType.name}
+                fill
+                className="object-cover opacity-40 transition-opacity duration-500 group-hover:opacity-50"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+              />
+              {/* Darker overlay to make image more visible */}
+              <div className="absolute inset-0 bg-black/40" />
+            </>
+          )}
           {/* Premium gradient overlay on hover */}
           <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/3 group-hover:to-steel-red/5" />
 
