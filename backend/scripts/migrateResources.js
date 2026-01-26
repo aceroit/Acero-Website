@@ -244,6 +244,17 @@ const defaultResources = [
         parentSlug: 'company-related-information'
     },
     {
+        name: 'Media Library',
+        slug: 'media-library',
+        path: '/media-library',
+        icon: 'PictureOutlined',
+        description: 'Comprehensive media file management including images, videos, and YouTube links',
+        category: 'Content',
+        showInMenu: true,
+        order: 7,
+        parentSlug: 'company-related-information'
+    },
+    {
         name: 'Header Configuration',
         slug: 'header-configurations',
         path: '/website-configurations/header',
@@ -310,11 +321,11 @@ const defaultResources = [
         parentSlug: 'website-configurations'
     },
     {
-        name: 'Media',
-        slug: 'media',
-        path: '/media',
+        name: 'Media Library',
+        slug: 'media-library',
+        path: '/media-library',
         icon: 'PictureOutlined',
-        description: 'Media library and file management',
+        description: 'Comprehensive media file management including images, videos, and YouTube links',
         category: 'Content',
         showInMenu: true,
         order: 10

@@ -876,6 +876,55 @@ router.get('/brochures', async (req, res) => {
     }
 });
 
+/**
+ * GET /api/public/videos - Get YouTube videos from Media Library
+ * No authentication required
+ */
+router.get('/videos', async (req, res) => {
+    try {
+        const Media = require('../models/Media');
+        
+        // Fetch Media entries with YouTube links
+        const videos = await Media.find({
+            isActive: true,
+            youtubeId: { $exists: true, $ne: null }
+        })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        // Transform to video format
+        const transformedVideos = videos.map(media => ({
+            _id: media._id,
+            title: media.filename || media.originalName || 'Untitled Video',
+            description: media.description || '',
+            youtubeId: media.youtubeId,
+            youtubeUrl: media.youtubeUrl || media.url,
+            thumbnailUrl: media.youtubeThumbnail || getYouTubeThumbnail(media.youtubeId),
+            order: 0,
+            featured: false,
+            status: 'published',
+            isActive: media.isActive
+        }));
+
+        // Set cache headers (cache for 5 minutes)
+        res.set('Cache-Control', 'public, max-age=300');
+
+        return successResponse(res, 200, 'Videos retrieved successfully', {
+            videos: transformedVideos,
+            count: transformedVideos.length
+        });
+    } catch (error) {
+        console.error('Error in public getVideos:', error);
+        return errorResponse(res, 500, 'Failed to retrieve videos');
+    }
+});
+
+// Helper function to get YouTube thumbnail
+function getYouTubeThumbnail(videoId, quality = 'hqdefault') {
+    if (!videoId) return null;
+    return `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
+}
+
 // Header configuration (published + featured)
 router.get('/header-configuration', async (req, res) => {
     try {

@@ -34,10 +34,23 @@ const CompanyUpdateForm = ({
 
   useEffect(() => {
     if (initialValues) {
+      let eventDateValue = null;
+      if (initialValues.eventDate) {
+        if (dayjs.isDayjs(initialValues.eventDate)) {
+          eventDateValue = initialValues.eventDate;
+        } else if (typeof initialValues.eventDate === 'string') {
+          const dayjsValue = dayjs(initialValues.eventDate);
+          eventDateValue = dayjsValue.isValid() ? dayjsValue : null;
+        } else if (initialValues.eventDate instanceof Date) {
+          const dayjsValue = dayjs(initialValues.eventDate);
+          eventDateValue = dayjsValue.isValid() ? dayjsValue : null;
+        }
+      }
+      
       const formValues = {
         ...initialValues,
         category: initialValues.category?._id || initialValues.category,
-        eventDate: initialValues.eventDate ? dayjs(initialValues.eventDate) : null,
+        eventDate: eventDateValue,
         featured: initialValues.featured !== undefined ? initialValues.featured : false,
         isActive: initialValues.isActive !== undefined ? initialValues.isActive : true,
         gallery: initialValues.gallery || [],
@@ -230,6 +243,29 @@ const CompanyUpdateForm = ({
           name="eventDate"
           label="Event Date"
           tooltip="Date of the event or update (optional)"
+          getValueProps={(value) => {
+            if (!value) return { value: null };
+            // If it's already a dayjs object, return as is
+            if (dayjs.isDayjs(value)) return { value };
+            // If it's a string, convert to dayjs
+            if (typeof value === 'string') {
+              const dayjsValue = dayjs(value);
+              return { value: dayjsValue.isValid() ? dayjsValue : null };
+            }
+            // If it's a Date object, convert to dayjs
+            if (value instanceof Date) {
+              const dayjsValue = dayjs(value);
+              return { value: dayjsValue.isValid() ? dayjsValue : null };
+            }
+            return { value: null };
+          }}
+          normalize={(value) => {
+            if (!value) return null;
+            if (dayjs.isDayjs(value)) {
+              return value;
+            }
+            return value;
+          }}
         >
           <DatePicker
             size="large"

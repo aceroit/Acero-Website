@@ -53,6 +53,7 @@ app.use('/api/certifications', require('./routes/certificationRoutes'));
 app.use('/api/company-updates', require('./routes/companyUpdateRoutes'));
 app.use('/api/company-update-categories', require('./routes/companyUpdateCategoryRoutes'));
 app.use('/api/brochures', require('./routes/brochureRoutes'));
+app.use('/api/media-library', require('./routes/mediaLibraryRoutes'));
 app.use('/api/reference', require('./routes/referenceRoutes'));
 app.use('/api/building-types', require('./routes/buildingTypeRoutes'));
 app.use('/api/industries', require('./routes/industryRoutes'));

@@ -4,22 +4,19 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
 import { VideoCardsSection } from "@/components/sections/video-cards-section"
-import { processedVideos } from "@/utils/videos-data"
-
-// Inline type definitions (temporary - will be moved to types/video.ts later)
-interface Video {
-  _id: string
-  title: string
-  description?: string
-  youtubeId: string
-  thumbnailUrl?: string
-  order: number
-  featured: boolean
-  status: string
-  isActive: boolean
-}
+import { useVideos } from "@/hooks/use-videos"
+import { usePage } from "@/hooks/use-page"
+import type { Video } from "@/services/media.service"
 
 export default function MediaVideoPage() {
+  // Fetch videos from Media Library
+  const { videos, isLoading: videosLoading } = useVideos()
+  
+  // Fetch Videos page for hero image
+  const { sections, isLoading: pageLoading } = usePage("videos")
+  const heroSection = sections.find((s) => s.sectionTypeSlug === "hero_image")
+  const heroImage = heroSection?.content?.image as string | undefined
+
   const handleVideoClick = (video: Video) => {
     // Open video in YouTube (new tab)
     window.open(`https://www.youtube.com/watch?v=${video.youtubeId}`, "_blank")
@@ -30,13 +27,19 @@ export default function MediaVideoPage() {
       <Header />
       <main className="min-h-screen bg-background">
         <HeroImageSection
-          image="/placeholder.jpg"
+          image={heroImage || "/images/projects/hero.jpg"}
           title="Videos"
         />
-        <VideoCardsSection
-          videos={processedVideos}
-          onVideoClick={handleVideoClick}
-        />
+        {videosLoading ? (
+          <div className="py-12 text-center">
+            <p className="text-lg text-muted-foreground">Loading videos...</p>
+          </div>
+        ) : (
+          <VideoCardsSection
+            videos={videos}
+            onVideoClick={handleVideoClick}
+          />
+        )}
       </main>
       <Footer />
     </>

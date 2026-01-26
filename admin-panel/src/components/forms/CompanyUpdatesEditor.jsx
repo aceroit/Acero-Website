@@ -182,12 +182,28 @@ const CompanyUpdatesEditor = ({ value = {}, onChange, form }) => {
                                 label="Update Date"
                                 tooltip="Date when the update was published"
                                 rules={[{ required: true, message: 'Date is required' }]}
-                                getValueProps={(value) => ({
-                                  value: value ? dayjs(value) : null,
-                                })}
+                                getValueProps={(value) => {
+                                  if (!value) return { value: null };
+                                  // If it's already a dayjs object, return as is
+                                  if (dayjs.isDayjs(value)) return { value };
+                                  // If it's a string, convert to dayjs
+                                  if (typeof value === 'string') {
+                                    const dayjsValue = dayjs(value);
+                                    return { value: dayjsValue.isValid() ? dayjsValue : null };
+                                  }
+                                  // If it's a Date object, convert to dayjs
+                                  if (value instanceof Date) {
+                                    const dayjsValue = dayjs(value);
+                                    return { value: dayjsValue.isValid() ? dayjsValue : null };
+                                  }
+                                  return { value: null };
+                                }}
                                 normalize={(value) => {
                                   if (!value) return null;
-                                  return value.format('YYYY-MM-DD');
+                                  if (dayjs.isDayjs(value)) {
+                                    return value.format('YYYY-MM-DD');
+                                  }
+                                  return value;
                                 }}
                               >
                                 <DatePicker
