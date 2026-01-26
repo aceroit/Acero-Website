@@ -41,7 +41,7 @@ interface CareerFormData {
   hasEngineeringDegree: string // "yes" | "no" | ""
   languages: string[]
   coverLetter: string
-  cvFile: File | CVFile | null
+  cvFile: File | null // Only File during form interaction, converted to CVFile on submit
 }
 
 interface FormErrors {
@@ -156,18 +156,14 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
     setSubmitting(true)
 
     try {
-      // Step 1: Upload CV file if it's a File object
-      let cvFileData: CVFile
-      if (formData.cvFile instanceof File) {
-        setUploadingCV(true)
-        cvFileData = await uploadCV(formData.cvFile)
-        setUploadingCV(false)
-      } else if (formData.cvFile && typeof formData.cvFile === 'object' && 'url' in formData.cvFile) {
-        // Already uploaded
-        cvFileData = formData.cvFile as CVFile
-      } else {
+      // Step 1: Upload CV file
+      if (!formData.cvFile) {
         throw new Error('CV file is required')
       }
+
+      setUploadingCV(true)
+      const cvFileData = await uploadCV(formData.cvFile)
+      setUploadingCV(false)
 
       // Step 2: Submit application
       const applicationData = {
