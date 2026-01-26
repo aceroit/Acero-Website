@@ -109,6 +109,34 @@ As the evening drew to a close, attendees departed with hearts full of gratitude
             },
         ],
         featured: true,
+        linkedInPosts: [
+            {
+                companyName: 'Acero Building Systems',
+                date: 'March 2024',
+                text: 'Strong. Reliable. Engineered by Acero.\n\nThis N-Truss Bridge in Madagascar designed, manufactured and supplied by Acero.',
+                imageUrl: '/placeholder.jpg',
+                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                videoThumbnail: '/placeholder.jpg',
+                hashtags: ['#Acero', '#AceroSteel', '#PEB', '#SteelBridgeDesign', '#InfrastructureDevelopment', '#MadagascarProjects', '#EngineeringExcellence'],
+                likes: 42,
+                comments: 1,
+                isVideo: true,
+                publishedAt: new Date('2024-03-15'),
+                order: 0,
+            },
+            {
+                companyName: 'Acero Building Systems',
+                date: 'February 2024',
+                text: 'Celebrating another successful project completion. Our team\'s dedication to excellence shines through in every structure we build.',
+                imageUrl: '/placeholder.jpg',
+                hashtags: ['#Acero', '#ProjectCompletion', '#Excellence', '#SteelConstruction'],
+                likes: 28,
+                comments: 3,
+                isVideo: false,
+                publishedAt: new Date('2024-02-20'),
+                order: 1,
+            },
+        ],
     },
     {
         slug: 'new-manufacturing-facility-inauguration',
@@ -146,7 +174,35 @@ The inauguration ceremony was attended by key stakeholders, partners, and member
                 order: 1,
             },
         ],
-        featured: false,
+        featured: true,
+        linkedInPosts: [
+            {
+                companyName: 'Acero Building Systems',
+                date: 'February 2024',
+                text: 'Innovation meets tradition. Our latest PEB project showcases the perfect blend of modern engineering and timeless quality.',
+                imageUrl: '/placeholder.jpg',
+                videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                videoThumbnail: '/placeholder.jpg',
+                hashtags: ['#Acero', '#PEB', '#Innovation', '#Engineering'],
+                likes: 35,
+                comments: 2,
+                isVideo: true,
+                publishedAt: new Date('2024-02-10'),
+                order: 0,
+            },
+            {
+                companyName: 'Acero Building Systems',
+                date: 'January 2024',
+                text: 'Quality is not an act, it is a habit. Our commitment to excellence drives everything we do at Acero.',
+                imageUrl: '/placeholder.jpg',
+                hashtags: ['#Acero', '#Quality', '#Excellence', '#SteelManufacturing'],
+                likes: 19,
+                comments: 0,
+                isVideo: false,
+                publishedAt: new Date('2024-01-05'),
+                order: 1,
+            },
+        ],
     },
 ];
 
@@ -457,7 +513,7 @@ const seedCompanyRelatedData = async () => {
             }
             
             if (!existing) {
-                await CompanyUpdate.create({
+                const updateDoc = {
                     title: updateData.title,
                     heading: updateData.heading,
                     slug: updateData.slug,
@@ -480,14 +536,82 @@ const seedCompanyRelatedData = async () => {
                         order: img.order,
                     })),
                     status: 'published',
-                    featured: updateData.featured,
+                    featured: updateData.featured !== undefined ? updateData.featured : true, // Default to featured
                     isActive: true,
                     publishedAt: updateData.eventDate || new Date(),
                     createdBy: user._id,
-                });
+                };
+
+                // Add LinkedIn posts if provided
+                if (updateData.linkedInPosts && Array.isArray(updateData.linkedInPosts)) {
+                    updateDoc.linkedInPosts = updateData.linkedInPosts.map(post => ({
+                        companyName: post.companyName || 'Acero Building Systems',
+                        date: post.date || '',
+                        text: post.text || '',
+                        imageUrl: post.imageUrl || null,
+                        videoUrl: post.videoUrl || null,
+                        videoThumbnail: post.videoThumbnail || null,
+                        hashtags: post.hashtags || [],
+                        likes: post.likes || 0,
+                        comments: post.comments || 0,
+                        isVideo: post.isVideo || false,
+                        publishedAt: post.publishedAt || null,
+                        order: post.order !== undefined ? post.order : 0,
+                    }));
+                }
+
+                await CompanyUpdate.create(updateDoc);
                 updatesCreated++;
             } else {
-                updatesSkipped++;
+                // Update existing to published and featured if not already
+                if (existing.status !== 'published' || !existing.featured) {
+                    existing.status = 'published';
+                    existing.featured = true;
+                    existing.publishedAt = existing.publishedAt || updateData.eventDate || new Date();
+                    
+                    // Update LinkedIn posts if provided
+                    if (updateData.linkedInPosts && Array.isArray(updateData.linkedInPosts)) {
+                        existing.linkedInPosts = updateData.linkedInPosts.map(post => ({
+                            companyName: post.companyName || 'Acero Building Systems',
+                            date: post.date || '',
+                            text: post.text || '',
+                            imageUrl: post.imageUrl || null,
+                            videoUrl: post.videoUrl || null,
+                            videoThumbnail: post.videoThumbnail || null,
+                            hashtags: post.hashtags || [],
+                            likes: post.likes || 0,
+                            comments: post.comments || 0,
+                            isVideo: post.isVideo || false,
+                            publishedAt: post.publishedAt || null,
+                            order: post.order !== undefined ? post.order : 0,
+                        }));
+                    }
+                    
+                    await existing.save();
+                    updatesCreated++;
+                } else {
+                    // Update LinkedIn posts even if already published
+                    if (updateData.linkedInPosts && Array.isArray(updateData.linkedInPosts)) {
+                        existing.linkedInPosts = updateData.linkedInPosts.map(post => ({
+                            companyName: post.companyName || 'Acero Building Systems',
+                            date: post.date || '',
+                            text: post.text || '',
+                            imageUrl: post.imageUrl || null,
+                            videoUrl: post.videoUrl || null,
+                            videoThumbnail: post.videoThumbnail || null,
+                            hashtags: post.hashtags || [],
+                            likes: post.likes || 0,
+                            comments: post.comments || 0,
+                            isVideo: post.isVideo || false,
+                            publishedAt: post.publishedAt || null,
+                            order: post.order !== undefined ? post.order : 0,
+                        }));
+                        await existing.save();
+                        updatesCreated++;
+                    } else {
+                        updatesSkipped++;
+                    }
+                }
             }
         }
 
@@ -603,6 +727,39 @@ const seedCompanyRelatedData = async () => {
 
         console.log(`   ✓ Created/Updated: ${branchesCreated}, Skipped: ${branchesSkipped}\n`);
 
+        // 7. Update all existing Company Updates to published and featured
+        console.log('7. Updating all existing Company Updates to published and featured...');
+        const updateResult = await CompanyUpdate.updateMany(
+            {
+                $or: [
+                    { status: { $ne: 'published' } },
+                    { featured: { $ne: true } },
+                    { isActive: { $ne: true } }
+                ]
+            },
+            {
+                $set: {
+                    status: 'published',
+                    featured: true,
+                    isActive: true
+                }
+            }
+        );
+        
+        // Also set publishedAt for updates that don't have it
+        await CompanyUpdate.updateMany(
+            {
+                publishedAt: null
+            },
+            {
+                $set: {
+                    publishedAt: new Date()
+                }
+            }
+        );
+        const additionalUpdatesCount = updateResult.modifiedCount;
+        console.log(`   ✓ Updated ${additionalUpdatesCount} existing company updates to published and featured\n`);
+
         // Summary
         console.log('═══════════════════════════════════════════════════════════');
         console.log('Company Related Data Seeding Summary:');
@@ -610,7 +767,10 @@ const seedCompanyRelatedData = async () => {
         console.log(`Certifications:        ${certificationsCreated} created/updated, ${certificationsSkipped} skipped (${certificationsData.length} total)`);
         console.log(`Customers:             ${customersCreated} created/updated, ${customersSkipped} skipped (${customersData.length} total)`);
         console.log(`Update Categories:     ${categoriesCreated} created/updated, ${categoriesSkipped} skipped (${companyUpdateCategoriesData.length} total)`);
-        console.log(`Company Updates:       ${updatesCreated} created, ${updatesSkipped} skipped (${companyUpdatesData.length} total)`);
+        console.log(`Company Updates:       ${updatesCreated} created/updated, ${updatesSkipped} skipped (${companyUpdatesData.length} total)`);
+        if (additionalUpdatesCount > 0) {
+            console.log(`   Additional Updates: ${additionalUpdatesCount} existing updates set to published & featured`);
+        }
         console.log(`Brochures:             ${brochuresCreated} created/updated, ${brochuresSkipped} skipped (${brochuresData.length} total)`);
         console.log(`Branches:              ${branchesCreated} created/updated, ${branchesSkipped} skipped (${branchesData.length} total)`);
         console.log('═══════════════════════════════════════════════════════════\n');

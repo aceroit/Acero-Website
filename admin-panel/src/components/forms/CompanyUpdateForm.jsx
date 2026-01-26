@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import * as companyUpdateCategoryService from '../../services/companyUpdateCategoryService';
 import ImageUpload from '../common/ImageUpload';
 import GalleryUpload from '../common/GalleryUpload';
+import LinkedInPostFormItem from './LinkedInPostFormItem';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -54,6 +55,7 @@ const CompanyUpdateForm = ({
         featured: initialValues.featured !== undefined ? initialValues.featured : false,
         isActive: initialValues.isActive !== undefined ? initialValues.isActive : true,
         gallery: initialValues.gallery || [],
+        linkedInPosts: initialValues.linkedInPosts || [],
         metaKeywords: Array.isArray(initialValues.metaKeywords) 
           ? initialValues.metaKeywords.join(', ') 
           : initialValues.metaKeywords || '',
@@ -114,6 +116,38 @@ const CompanyUpdateForm = ({
       }
     }
 
+    // Process LinkedIn posts
+    let linkedInPosts = [];
+    if (values.linkedInPosts && Array.isArray(values.linkedInPosts)) {
+      linkedInPosts = values.linkedInPosts.map((post, index) => {
+        // Convert hashtags string to array if needed
+        let hashtags = [];
+        if (post.hashtags) {
+          if (typeof post.hashtags === 'string') {
+            hashtags = post.hashtags.split(',').map(t => t.trim()).filter(t => t);
+          } else if (Array.isArray(post.hashtags)) {
+            hashtags = post.hashtags;
+          }
+        }
+        
+        return {
+          ...post,
+          companyName: post.companyName?.trim() || 'Acero Building Systems',
+          date: post.date?.trim() || '',
+          text: post.text?.trim() || '',
+          imageUrl: post.imageUrl?.trim() || null,
+          videoUrl: post.videoUrl?.trim() || null,
+          videoThumbnail: post.videoThumbnail?.trim() || null,
+          hashtags: hashtags,
+          order: post.order !== undefined ? post.order : index,
+          likes: parseInt(post.likes) || 0,
+          comments: parseInt(post.comments) || 0,
+          isVideo: post.isVideo || false,
+          publishedAt: post.publishedAt || null
+        };
+      });
+    }
+
     const cleanedValues = {
       ...values,
       eventDate: values.eventDate ? values.eventDate.toISOString() : null,
@@ -122,6 +156,7 @@ const CompanyUpdateForm = ({
       metaTitle: values.metaTitle?.trim() || null,
       metaDescription: values.metaDescription?.trim() || null,
       metaKeywords: metaKeywords,
+      linkedInPosts: linkedInPosts,
       featured: values.featured !== undefined ? values.featured : false,
       isActive: values.isActive !== undefined ? values.isActive : true,
     };
@@ -137,6 +172,7 @@ const CompanyUpdateForm = ({
         featured: false,
         isActive: true,
         gallery: [],
+        linkedInPosts: [],
         ...initialValues,
       }}
     >
@@ -329,6 +365,20 @@ const CompanyUpdateForm = ({
             dimensions={{ minWidth: 550, minHeight: 500 }}
             maxSize={10}
           />
+        </Form.Item>
+      </div>
+
+      {/* LinkedIn Posts - Optional */}
+      <div className="border-b border-gray-200 pb-4 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          LinkedIn Posts (Optional)
+        </h3>
+        <Form.Item
+          name="linkedInPosts"
+          label="LinkedIn Posts"
+          tooltip="Add LinkedIn posts to display alongside this company update"
+        >
+          <LinkedInPostFormItem />
         </Form.Item>
       </div>
 

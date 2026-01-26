@@ -51,6 +51,20 @@ export interface CompanyUpdate {
   }
   metaDescription?: string
   metaKeywords?: string[]
+  linkedInPosts?: Array<{
+    companyName: string
+    date: string
+    text: string
+    imageUrl?: string
+    videoUrl?: string
+    videoThumbnail?: string
+    hashtags: string[]
+    likes: number
+    comments: number
+    isVideo: boolean
+    publishedAt?: string
+    order?: number
+  }>
   status: string
   featured: boolean
   isActive: boolean

@@ -102,6 +102,62 @@ const companyUpdateSchema = new mongoose.Schema({
         // Minimum dimensions: 550 x 500px
     }],
     
+    // LinkedIn Posts (Optional)
+    linkedInPosts: [{
+        companyName: {
+            type: String,
+            default: 'Acero Building Systems',
+            trim: true
+        },
+        date: {
+            type: String, // Format: "January 2026"
+            trim: true
+        },
+        text: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        imageUrl: {
+            type: String,
+            default: null
+        },
+        videoUrl: {
+            type: String,
+            default: null
+        },
+        videoThumbnail: {
+            type: String,
+            default: null
+        },
+        hashtags: {
+            type: [String],
+            default: []
+        },
+        likes: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+        comments: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+        isVideo: {
+            type: Boolean,
+            default: false
+        },
+        publishedAt: {
+            type: Date,
+            default: null
+        },
+        order: {
+            type: Number,
+            default: 0
+        }
+    }],
+    
     // Content
     shortDescription: {
         type: String,

@@ -69,13 +69,13 @@ export function CompanyUpdateLayout({
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Left Column - Featured Update (75% width, sticky) */}
-          <div className="lg:col-span-9 lg:sticky lg:top-24 lg:self-start">
+          {/* Left Column - Featured Update (75% width) */}
+          <div className="lg:col-span-9">
             <FeaturedUpdateCard update={featuredUpdate} onReadMore={onReadMore} />
           </div>
 
-          {/* Right Column - LinkedIn Posts (25% width, scrollable) */}
-          <div className="lg:col-span-3">
+          {/* Right Column - LinkedIn Posts (25% width, sticky) */}
+          <div className="lg:col-span-3 lg:sticky lg:top-24 lg:self-start">
             <LinkedInPostsSection posts={linkedInPosts} onPostClick={onPostClick} />
           </div>
         </div>
