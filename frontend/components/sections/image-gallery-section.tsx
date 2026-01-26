@@ -69,15 +69,15 @@ export function ImageGallerySection({
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="group relative overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50"
+              className="group relative overflow-hidden rounded-lg transition-all"
             >
-              <div className="relative aspect-square overflow-hidden bg-secondary">
+              <div className="relative aspect-square overflow-hidden">
                 <Image
                   src={image.src}
                   alt={image.alt}
                   fill
                   loading="lazy"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="object-contain transition-transform duration-700 group-hover:scale-110"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
                   quality={85}
                 />

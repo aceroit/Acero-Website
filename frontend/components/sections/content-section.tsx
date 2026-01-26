@@ -115,7 +115,7 @@ export function ContentSection({
             <motion.div
               variants={itemVariants}
               className={cn(
-                "relative aspect-[4/3] overflow-hidden rounded-lg",
+                "relative aspect-[4/3] overflow-hidden rounded-lg self-center",
                 layout === "image-center" ? "mx-auto max-w-4xl" : "",
                 getImageOrder()
               )}
@@ -125,7 +125,7 @@ export function ContentSection({
                 alt={imageAlt || title}
                 fill
                 loading="lazy"
-                className="object-cover transition-transform duration-700 hover:scale-105"
+                className="object-contain transition-transform duration-700 hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 quality={85}
               />

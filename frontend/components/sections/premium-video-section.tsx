@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 
 interface PremiumVideoSectionProps {
@@ -22,12 +22,15 @@ export function PremiumVideoSection({
   className,
 }: PremiumVideoSectionProps) {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+  // Use continuous intersection observer to monitor visibility
+  const isInView = useInView(ref, { once: false, margin: "-50px" })
   const [isLoaded, setIsLoaded] = useState(false)
+  const [iframeKey, setIframeKey] = useState(0)
 
   // Build YouTube embed URL with parameters to hide UI elements
+  // Only autoplay when video is in view and autoplay prop is true
   const embedUrl = `https://www.youtube.com/embed/${videoId}?${new URLSearchParams({
-    autoplay: autoplay ? "1" : "0",
+    autoplay: (autoplay && isInView) ? "1" : "0",
     mute: muted ? "1" : "0",
     loop: loop ? "1" : "0",
     controls: "0",
@@ -38,6 +41,14 @@ export function PremiumVideoSection({
   })
     .toString()
     .replace(/&undefined/g, "")}`
+
+  // Force iframe reload when visibility changes to apply new autoplay setting
+  useEffect(() => {
+    if (isInView && autoplay) {
+      setIframeKey((prev) => prev + 1)
+      setIsLoaded(false)
+    }
+  }, [isInView, autoplay])
 
   return (
     <section
@@ -70,6 +81,7 @@ export function PremiumVideoSection({
               </div>
             )}
             <iframe
+              key={iframeKey}
               src={embedUrl}
               title={title || "Video"}
               allow="autoplay; encrypted-media"
