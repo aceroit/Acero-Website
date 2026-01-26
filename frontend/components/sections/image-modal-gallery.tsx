@@ -68,7 +68,7 @@ export function ImageModalGallery({
                 className="group cursor-pointer"
                 onClick={() => setSelectedItem(item)}
               >
-                <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50">
+                <div className="relative aspect-[3/2] overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50">
                   <Image
                     src={item.image}
                     alt={item.imageAlt}
@@ -95,15 +95,15 @@ export function ImageModalGallery({
 
       {/* Modal */}
       <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-3xl">
           {selectedItem && (
             <>
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-secondary">
+              <div className="relative w-full min-h-[300px] max-h-[70vh] overflow-hidden rounded-lg flex items-center justify-center">
                 <Image
                   src={selectedItem.image}
                   alt={selectedItem.imageAlt}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   sizes="(max-width: 768px) 100vw, 800px"
                   quality={90}
                 />

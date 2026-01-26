@@ -83,7 +83,7 @@ export function FlipCardSection({
                 onMouseLeave={() => handleFlip(card.id)}
               >
                 <div
-                  className="relative h-[400px] w-full cursor-pointer"
+                  className="relative aspect-[4/3] w-full cursor-pointer"
                   style={{
                     transformStyle: "preserve-3d",
                     transition: "transform 0.7s ease-in-out",
@@ -98,13 +98,13 @@ export function FlipCardSection({
                       WebkitBackfaceVisibility: "hidden",
                     }}
                   >
-                    <div className="relative h-full w-full overflow-hidden rounded-lg">
+                    <div className="relative h-full w-full overflow-hidden rounded-lg bg-secondary">
                       <Image
                         src={card.image}
                         alt={card.imageAlt}
                         fill
                         loading="lazy"
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="object-contain transition-transform duration-700 group-hover:scale-105"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                         quality={85}
                       />

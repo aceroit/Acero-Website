@@ -14,6 +14,7 @@ interface ApplicationCardsSectionProps {
   title?: string
   subtitle: string
   applications: Application[]
+  columns?: number
   className?: string
 }
 
@@ -21,10 +22,42 @@ export function ApplicationCardsSection({
   title,
   subtitle,
   applications,
+  columns,
   className,
 }: ApplicationCardsSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  // Generate grid classes based on columns prop or calculate optimal columns
+  const getGridClasses = () => {
+    if (columns) {
+      // Use provided columns (max 4 as per admin panel)
+      const cols = Math.min(Math.max(columns, 2), 4)
+      switch (cols) {
+        case 2:
+          return "grid-cols-2 sm:grid-cols-2 md:grid-cols-2"
+        case 3:
+          return "grid-cols-2 sm:grid-cols-3 md:grid-cols-3"
+        case 4:
+          return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+        default:
+          return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+      }
+    }
+    
+    // Calculate optimal columns based on application count
+    const count = applications.length
+    if (count <= 4) {
+      return "grid-cols-2 sm:grid-cols-2 md:grid-cols-4"
+    } else if (count <= 6) {
+      return "grid-cols-2 sm:grid-cols-3 md:grid-cols-3"
+    } else if (count <= 8) {
+      return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+    } else {
+      // For more than 8, use 4 columns max
+      return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+    }
+  }
 
   return (
     <section
@@ -54,7 +87,7 @@ export function ApplicationCardsSection({
         </motion.p>
 
         {/* Application Cards Grid */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 md:gap-6">
+        <div className={cn("grid gap-4 md:gap-6", getGridClasses())}>
           {applications.map((application, index) => (
             <motion.div
               key={application.id}

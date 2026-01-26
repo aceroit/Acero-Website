@@ -359,6 +359,7 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
               case 'application_cards': {
                 const title = (content.title as string) || undefined
                 const subtitle = (content.subtitle as string) || ''
+                const columns = (content.columns as number) || undefined
                 const applicationsData = (content.applications as Array<{
                   id: string
                   name: string
@@ -378,6 +379,7 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                     title={title}
                     subtitle={subtitle}
                     applications={applications}
+                    columns={columns}
                   />
                 )
               }
