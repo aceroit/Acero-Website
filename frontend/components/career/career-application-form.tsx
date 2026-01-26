@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState , useEffect } from "react"
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
 import { useRouter } from "next/navigation"
@@ -20,11 +20,12 @@ import { Button } from "@/components/ui/button"
 import { FileUpload } from "./file-upload"
 import { useToast } from "@/hooks/use-toast"
 import {
-  activeVacancies,
   experienceLevels,
   educationLevels,
   languages,
 } from "@/utils/career-data"
+import { useVacancies } from "@/hooks/use-vacancies"
+import { uploadCV, submitApplication, type CVFile } from "@/services/application.service"
 import { cn } from "@/lib/utils"
 
 // Inline type definitions (temporary)
@@ -40,19 +41,25 @@ interface CareerFormData {
   hasEngineeringDegree: string // "yes" | "no" | ""
   languages: string[]
   coverLetter: string
-  cvFile: File | null
+  cvFile: File | CVFile | null
 }
 
 interface FormErrors {
   [key: string]: string
 }
 
-export function CareerApplicationForm() {
+interface CareerApplicationFormProps {
+  selectedVacancyId?: string
+}
+
+export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFormProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const router = useRouter()
   const { toast } = useToast()
+  const { vacancies, isLoading: vacanciesLoading } = useVacancies()
   const [submitting, setSubmitting] = useState(false)
+  const [uploadingCV, setUploadingCV] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
 
   const [formData, setFormData] = useState<CareerFormData>({
@@ -61,7 +68,7 @@ export function CareerApplicationForm() {
     email: "",
     mobileNumber: "",
     country: "",
-    vacancyId: "",
+    vacancyId: selectedVacancyId || "",
     experienceLevel: "",
     educationLevel: "",
     hasEngineeringDegree: "",
@@ -69,6 +76,24 @@ export function CareerApplicationForm() {
     coverLetter: "",
     cvFile: null,
   })
+
+  // Update vacancyId when selectedVacancyId prop changes
+  useEffect(() => {
+    if (selectedVacancyId && selectedVacancyId !== formData.vacancyId) {
+      setFormData((prev) => ({
+        ...prev,
+        vacancyId: selectedVacancyId,
+      }))
+      // Clear vacancy error if it exists
+      if (errors.vacancyId) {
+        setErrors((prev) => {
+          const newErrors = { ...prev }
+          delete newErrors.vacancyId
+          return newErrors
+        })
+      }
+    }
+  }, [selectedVacancyId])
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -130,11 +155,56 @@ export function CareerApplicationForm() {
 
     setSubmitting(true)
 
-    // Simulate form submission (backend integration coming soon)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      // Step 1: Upload CV file if it's a File object
+      let cvFileData: CVFile
+      if (formData.cvFile instanceof File) {
+        setUploadingCV(true)
+        cvFileData = await uploadCV(formData.cvFile)
+        setUploadingCV(false)
+      } else if (formData.cvFile && typeof formData.cvFile === 'object' && 'url' in formData.cvFile) {
+        // Already uploaded
+        cvFileData = formData.cvFile as CVFile
+      } else {
+        throw new Error('CV file is required')
+      }
 
-    // Redirect to thank you page
-    router.push("/thank-you?from=career")
+      // Step 2: Submit application
+      const applicationData = {
+        vacancyId: formData.vacancyId,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        mobileNumber: formData.mobileNumber.trim(),
+        country: formData.country.trim(),
+        experienceLevel: formData.experienceLevel,
+        educationLevel: formData.educationLevel,
+        hasEngineeringDegree: formData.hasEngineeringDegree as 'yes' | 'no',
+        languages: formData.languages,
+        coverLetter: formData.coverLetter.trim(),
+        cvFile: cvFileData,
+      }
+
+      await submitApplication(applicationData)
+
+      toast({
+        title: "Application Submitted",
+        description: "Your application has been submitted successfully!",
+      })
+
+      // Redirect to thank you page
+      router.push("/thank-you?from=career")
+    } catch (error) {
+      console.error('Application submission error:', error)
+      toast({
+        title: "Submission Failed",
+        description: error instanceof Error ? error.message : "Failed to submit application. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setSubmitting(false)
+      setUploadingCV(false)
+    }
   }
 
   const handleLanguageToggle = (languageValue: string) => {
@@ -316,19 +386,26 @@ export function CareerApplicationForm() {
           <Select
             value={formData.vacancyId}
             onValueChange={(value) => setFormData({ ...formData, vacancyId: value })}
+            disabled={vacanciesLoading}
           >
             <SelectTrigger
               id="vacancyId"
               className={cn("h-12", errors.vacancyId && "border-destructive")}
             >
-              <SelectValue placeholder="Select a vacancy" />
+              <SelectValue placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"} />
             </SelectTrigger>
             <SelectContent>
-              {activeVacancies.map((vacancy) => (
-                <SelectItem key={vacancy._id} value={vacancy._id}>
-                  {vacancy.title} - {vacancy.department}
+              {vacancies.length === 0 && !vacanciesLoading ? (
+                <SelectItem value="no-vacancies" disabled>
+                  No vacancies available
                 </SelectItem>
-              ))}
+              ) : (
+                vacancies.map((vacancy) => (
+                  <SelectItem key={vacancy._id} value={vacancy._id}>
+                    {vacancy.title} - {vacancy.department}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
           {errors.vacancyId && (
@@ -606,11 +683,11 @@ export function CareerApplicationForm() {
       >
         <Button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || uploadingCV}
           className="group relative h-16 overflow-hidden bg-steel-red px-16 text-base font-semibold uppercase tracking-wider text-steel-white transition-all hover:bg-steel-red/90 hover:shadow-xl hover:shadow-steel-red/20 disabled:opacity-50"
         >
           <span className="relative z-10">
-            {submitting ? "Submitting..." : "Submit Application"}
+            {uploadingCV ? "Uploading CV..." : submitting ? "Submitting..." : "Submit Application"}
           </span>
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
         </Button>

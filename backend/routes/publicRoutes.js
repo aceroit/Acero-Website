@@ -24,6 +24,18 @@ const Vacancy = require('../models/Vacancy');
 const Enquiry = require('../models/Enquiry');
 const Application = require('../models/Application');
 const FormConfiguration = require('../models/FormConfiguration');
+const fileUpload = require('express-fileupload');
+
+// Configure file upload middleware for public CV uploads
+const uploadMiddleware = fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+    limits: {
+        fileSize: 2 * 1024 * 1024 // 2MB max for CV files
+    },
+    abortOnLimit: true,
+    createParentPath: true
+});
 
 /**
  * GET /api/public/pages/tree - Get published page tree for navigation
@@ -682,18 +694,115 @@ router.post('/enquiries', async (req, res) => {
 router.post('/applications', async (req, res) => {
     try {
         const payload = req.body || {};
+        
+        // Validate required fields
+        if (!payload.vacancyId) {
+            return errorResponse(res, 400, 'Vacancy ID is required');
+        }
+        if (!payload.cvFile || !payload.cvFile.url) {
+            return errorResponse(res, 400, 'CV file is required');
+        }
+
+        // Ensure CV file has all required fields
+        if (!payload.cvFile.publicId || !payload.cvFile.filename) {
+            return errorResponse(res, 400, 'CV file must include url, publicId, and filename');
+        }
+
         const application = new Application(payload);
         application.submittedAt = new Date();
-        application.ipAddress = req.ip;
+        application.ipAddress = req.ip || req.connection.remoteAddress;
         await application.save();
 
-        return successResponse(res, 201, 'Application submitted successfully', { applicationId: application._id });
+        return successResponse(res, 201, 'Application submitted successfully', { 
+            applicationId: application._id 
+        });
     } catch (error) {
         console.error('Error in public submitApplication:', error);
         if (error.name === 'ValidationError') {
             return errorResponse(res, 400, 'Validation error', error.message);
         }
-        return errorResponse(res, 500, 'Failed to submit application');
+        return errorResponse(res, 500, 'Failed to submit application', error.message);
+    }
+});
+
+/**
+ * POST /api/public/upload-cv - Upload CV file for job application
+ * No authentication required
+ */
+router.post('/upload-cv', uploadMiddleware, async (req, res) => {
+    try {
+        if (!req.files || !req.files.file) {
+            return errorResponse(res, 400, 'No file uploaded');
+        }
+
+        const file = req.files.file;
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        
+        // Validate file type (PDF, DOC, DOCX, JPEG, JPG, PNG)
+        const allowedTypes = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];
+        if (!allowedTypes.includes(fileExt)) {
+            return errorResponse(res, 400, 'Invalid file type. Allowed: PDF, DOC, DOCX, JPEG, JPG, PNG');
+        }
+
+        // Validate file size (max 2MB)
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+            return errorResponse(res, 400, 'File size exceeds 2MB limit');
+        }
+
+        // Upload directly to Cloudinary (bypass Media model for public CV uploads)
+        const cloudinary = require('cloudinary').v2;
+        const isImage = ['jpeg', 'jpg', 'png'].includes(fileExt);
+        
+        const uploadOptions = {
+            folder: `${process.env.MEDIA_FOLDER_PREFIX || 'acero-cms'}/career-applications/cv`,
+            resource_type: isImage ? 'image' : 'raw',
+        };
+
+        let result;
+        if (file.buffer) {
+            result = await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    uploadOptions,
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                uploadStream.end(file.buffer);
+            });
+        } else if (file.path || file.tempFilePath) {
+            result = await cloudinary.uploader.upload(
+                file.path || file.tempFilePath,
+                uploadOptions
+            );
+        } else {
+            return errorResponse(res, 400, 'Invalid file object');
+        }
+
+        // Determine mime type from file extension
+        const mimeTypes = {
+            'pdf': 'application/pdf',
+            'doc': 'application/msword',
+            'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'jpeg': 'image/jpeg',
+            'jpg': 'image/jpeg',
+            'png': 'image/png'
+        };
+        const mimeType = mimeTypes[fileExt] || null;
+
+        return successResponse(res, 201, 'CV uploaded successfully', {
+            cvFile: {
+                url: result.secure_url || result.url,
+                publicId: result.public_id,
+                filename: result.original_filename || file.name || file.originalname,
+                size: result.bytes,
+                mimeType: mimeType
+            }
+        });
+    } catch (error) {
+        console.error('Error in public uploadCV:', error);
+        return errorResponse(res, 500, 'Failed to upload CV file', error.message);
     }
 });
 
