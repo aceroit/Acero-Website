@@ -93,7 +93,7 @@ export function CompanyUpdatesSection({
 
 function UpdateCard({ update }: { update: CompanyUpdate }) {
   const cardContent = (
-    <div className="group relative flex h-full flex-col overflow-hidden border border-border bg-card transition-all hover:border-steel-red/50">
+    <div className="group relative flex h-full min-h-[400px] flex-col overflow-hidden border border-border bg-card transition-all hover:border-steel-red/50 hover:shadow-lg cursor-pointer">
       {/* Image */}
       <div className="relative aspect-[4/3] shrink-0 overflow-hidden bg-secondary">
         <Image
@@ -126,28 +126,24 @@ function UpdateCard({ update }: { update: CompanyUpdate }) {
 
       {/* Content */}
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="mb-2 text-xl font-semibold text-foreground">
+        <h3 className="mb-2 text-xl font-semibold text-foreground line-clamp-2">
           {update.title}
         </h3>
         <p className="mb-4 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
           {update.description}
         </p>
-        {update.link && (
-          <Link
-            href={update.link}
-            className="mt-auto inline-flex items-center gap-2 text-sm font-medium text-foreground transition-all hover:gap-3 hover:text-steel-red"
-          >
-            Read More
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        )}
+        <div className="mt-auto inline-flex items-center gap-2 text-sm font-medium text-foreground transition-all group-hover:gap-3 group-hover:text-steel-red">
+          Read More
+          <ArrowRight className="h-4 w-4" />
+        </div>
       </div>
     </div>
   )
 
+  // Always wrap in Link if link exists, otherwise return card as-is
   if (update.link) {
     return (
-      <Link href={update.link} className="block">
+      <Link href={update.link} className="block h-full">
         {cardContent}
       </Link>
     )

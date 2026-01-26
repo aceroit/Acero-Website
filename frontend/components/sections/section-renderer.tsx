@@ -5,8 +5,11 @@ import { HeroCarousel, type HeroCarouselSlide } from '@/components/carousel/hero
 import { ContentSection } from '@/components/sections/content-section'
 import { StatsDisplay } from '@/components/sections/stats-display'
 import { InfiniteCarousel } from '@/components/carousel/infinite-carousel'
+import { DynamicInfiniteCarousel } from '@/components/sections/dynamic-infinite-carousel'
 import { ProjectsSection, type Project } from '@/components/sections/projects-section'
+import { DynamicProjectsSection } from '@/components/sections/dynamic-projects-section'
 import { CompanyUpdatesSection, type CompanyUpdate } from '@/components/sections/company-updates-section'
+import { DynamicCompanyUpdatesSection } from '@/components/sections/dynamic-company-updates-section'
 import { HeroImageSection } from '@/components/sections/hero-image-section'
 import { PremiumVideoSection } from '@/components/sections/premium-video-section'
 import { ImageGallerySection } from '@/components/sections/image-gallery-section'
@@ -99,48 +102,21 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                 const speed = (content.speed as 'slow' | 'medium' | 'fast') || 'medium'
                 const direction = (content.direction as 'left' | 'right') || 'left'
                 const pauseOnHover = (content.pauseOnHover as boolean) ?? true
-                const itemClassName = (content.itemClassName as string) || 'h-20 w-32 md:h-24 md:w-40'
+                const itemClassName = (content.itemClassName as string) || undefined
+                const sectionClasses = section.cssClasses || ''
 
-                // InfiniteCarousel doesn't accept title, so we need to wrap it
-                if (title) {
-                  // Use cssClasses from section if available, otherwise use default
-                  // "Our Customers" section uses bg-muted/30, others use bg-background
-                  const sectionClasses = section.cssClasses || ''
-                  const bgClass = sectionClasses.includes('bg-muted') 
-                    ? 'bg-muted/30' 
-                    : title === 'Our Customers' 
-                    ? 'bg-muted/30' 
-                    : 'bg-background'
-
-                  return (
-                    <section
-                      key={section._id}
-                      className={`border-t border-border ${bgClass} py-16 md:py-24`}
-                    >
-                      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <h2 className="mb-12 text-center text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-                          {title}
-                        </h2>
-                        <InfiniteCarousel
-                          items={items}
-                          speed={speed}
-                          direction={direction}
-                          pauseOnHover={pauseOnHover}
-                          itemClassName={itemClassName}
-                        />
-                      </div>
-                    </section>
-                  )
-                }
-
+                // Use DynamicInfiniteCarousel which handles fetching certificates/customers
                 return (
-                  <InfiniteCarousel
+                  <DynamicInfiniteCarousel
                     key={section._id}
-                    items={items}
+                    sectionId={section._id}
+                    title={title}
+                    staticItems={items}
                     speed={speed}
                     direction={direction}
                     pauseOnHover={pauseOnHover}
                     itemClassName={itemClassName}
+                    sectionClasses={sectionClasses}
                   />
                 )
               }
@@ -149,13 +125,17 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                 const projects = (content.projects as Project[]) || []
                 const title = (content.title as string) || ''
                 const subtitle = (content.subtitle as string) || undefined
+                const columns = (content.columns as 3 | 4) || 3
 
+                // Use DynamicProjectsSection which fetches from backend
                 return (
-                  <ProjectsSection
+                  <DynamicProjectsSection
                     key={section._id}
-                    projects={projects}
+                    sectionId={section._id}
+                    staticProjects={projects}
                     title={title}
                     subtitle={subtitle}
+                    columns={columns}
                   />
                 )
               }
@@ -172,19 +152,17 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                 }>) || []
                 const title = (content.title as string) || ''
                 const subtitle = (content.subtitle as string) || undefined
+                const columns = (content.columns as 3 | 4) || 3
 
-                // Transform dates from strings to Date objects
-                const transformedUpdates: CompanyUpdate[] = updates.map((update) => ({
-                  ...update,
-                  date: typeof update.date === 'string' ? new Date(update.date) : update.date,
-                }))
-
+                // Use DynamicCompanyUpdatesSection which fetches from backend
                 return (
-                  <CompanyUpdatesSection
+                  <DynamicCompanyUpdatesSection
                     key={section._id}
-                    updates={transformedUpdates}
+                    sectionId={section._id}
+                    staticUpdates={updates}
                     title={title}
                     subtitle={subtitle}
+                    columns={columns}
                   />
                 )
               }

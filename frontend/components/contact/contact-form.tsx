@@ -16,6 +16,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import { submitEnquiry, type EnquiryData } from "@/services/enquiry.service"
 import { cn } from "@/lib/utils"
 
 // Inline type definitions (temporary)
@@ -136,11 +137,39 @@ export function ContactForm() {
 
     setSubmitting(true)
 
-    // Simulate form submission (backend integration coming soon)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const enquiryData: EnquiryData = {
+        purpose: formData.purpose as 'general' | 'sales' | 'support' | 'partnership' | 'other',
+        fullName: formData.fullName.trim(),
+        companyName: formData.companyName.trim() || undefined,
+        mobileNumber: formData.mobileNumber.trim(),
+        email: formData.email.trim().toLowerCase(),
+        country: formData.country.trim(),
+        countryCode: formData.countryCode.trim() || undefined,
+        telephoneNumber: formData.telephoneNumber.trim() || undefined,
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+      }
 
-    // Redirect to thank you page
-    router.push("/thank-you?from=contact")
+      await submitEnquiry(enquiryData)
+
+      toast({
+        title: "Enquiry Submitted",
+        description: "Your enquiry has been submitted successfully! We'll get back to you soon.",
+      })
+
+      // Redirect to thank you page
+      router.push("/thank-you?from=contact")
+    } catch (error) {
+      console.error('Enquiry submission error:', error)
+      toast({
+        title: "Submission Failed",
+        description: error instanceof Error ? error.message : "Failed to submit enquiry. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const sectionVariants = {
@@ -482,7 +511,7 @@ export function ContactForm() {
           className="group relative h-20 overflow-hidden bg-gradient-to-r from-steel-red to-steel-red/90 px-20 text-lg font-bold uppercase tracking-wider text-steel-white shadow-2xl shadow-steel-red/30 transition-all hover:from-steel-red/95 hover:to-steel-red/85 hover:shadow-2xl hover:shadow-steel-red/40 disabled:opacity-50"
         >
           <span className="relative z-10">
-            {submitting ? "Submitting..." : "Submit Application"}
+            {submitting ? "Submitting..." : "Send Message"}
           </span>
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
           {/* Shine effect */}

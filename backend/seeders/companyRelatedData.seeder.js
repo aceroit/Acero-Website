@@ -607,9 +607,9 @@ const seedCompanyRelatedData = async () => {
                             order: post.order !== undefined ? post.order : 0,
                         }));
                         await existing.save();
-                        updatesCreated++;
-                    } else {
-                        updatesSkipped++;
+                updatesCreated++;
+            } else {
+                updatesSkipped++;
                     }
                 }
             }

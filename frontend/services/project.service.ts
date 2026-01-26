@@ -189,6 +189,24 @@ export async function getProjectsByBuildingType(
 }
 
 /**
+ * Get published and featured projects (for home page)
+ */
+export async function getFeaturedProjects(): Promise<Project[]> {
+  try {
+    const result = await apiGet<{ projects: Project[]; count: number }>(API_ENDPOINTS.PUBLIC_PROJECTS)
+
+    if (result.success && result.data) {
+      return result.data.projects || []
+    }
+
+    return []
+  } catch (error) {
+    console.error('Error fetching featured projects:', error)
+    return []
+  }
+}
+
+/**
  * Get available filter options based on current selections (for cascading filters)
  */
 export async function getFilterOptions(filters?: FilterParams): Promise<FilterOptions> {

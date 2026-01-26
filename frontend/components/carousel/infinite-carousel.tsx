@@ -18,6 +18,7 @@ interface InfiniteCarouselProps {
   pauseOnHover?: boolean
   className?: string
   itemClassName?: string
+  removeBackground?: boolean // For certificates - remove white background
 }
 
 export function InfiniteCarousel({
@@ -27,6 +28,7 @@ export function InfiniteCarousel({
   pauseOnHover = true,
   className,
   itemClassName,
+  removeBackground = false,
 }: InfiniteCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
@@ -64,10 +66,25 @@ export function InfiniteCarousel({
               key={`${item.alt}-${index}`}
               className={cn(
                 "flex shrink-0 items-center justify-center",
-                itemClassName
+                itemClassName || "h-20 w-32 md:h-24 md:w-40"
               )}
             >
-              <div className="relative h-16 w-32 grayscale transition-all hover:grayscale-0 md:h-20 md:w-40">
+              {removeBackground ? (
+                // For certificates - no background, just the image, use full size
+                <div className="relative h-full w-full">
+                  <Image
+                    src={item.image}
+                    alt={item.alt}
+                    fill
+                    loading="lazy"
+                    className="object-contain"
+                    sizes="(max-width: 768px) 512px, (max-width: 1024px) 640px, 768px"
+                    quality={90}
+                  />
+                </div>
+              ) : (
+                // For customers - keep grayscale effect
+                <div className="relative h-16 w-32 grayscale transition-all hover:grayscale-0 md:h-20 md:w-40">
                   <Image
                     src={item.image}
                     alt={item.alt}
@@ -77,7 +94,8 @@ export function InfiniteCarousel({
                     sizes="(max-width: 768px) 128px, 160px"
                     quality={80}
                   />
-              </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

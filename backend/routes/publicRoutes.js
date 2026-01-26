@@ -672,18 +672,44 @@ router.get('/vacancies', async (req, res) => {
 router.post('/enquiries', async (req, res) => {
     try {
         const payload = req.body || {};
+        
+        // Validate required fields
+        if (!payload.purpose) {
+            return errorResponse(res, 400, 'Purpose is required');
+        }
+        if (!payload.fullName || !payload.fullName.trim()) {
+            return errorResponse(res, 400, 'Full name is required');
+        }
+        if (!payload.email || !payload.email.trim()) {
+            return errorResponse(res, 400, 'Email is required');
+        }
+        if (!payload.mobileNumber || !payload.mobileNumber.trim()) {
+            return errorResponse(res, 400, 'Mobile number is required');
+        }
+        if (!payload.country || !payload.country.trim()) {
+            return errorResponse(res, 400, 'Country is required');
+        }
+        if (!payload.subject || !payload.subject.trim()) {
+            return errorResponse(res, 400, 'Subject is required');
+        }
+        if (!payload.message || !payload.message.trim()) {
+            return errorResponse(res, 400, 'Message is required');
+        }
+
         const enquiry = new Enquiry(payload);
         enquiry.submittedAt = new Date();
-        enquiry.ipAddress = req.ip;
+        enquiry.ipAddress = req.ip || req.connection.remoteAddress;
         await enquiry.save();
 
-        return successResponse(res, 201, 'Enquiry submitted successfully', { enquiryId: enquiry._id });
+        return successResponse(res, 201, 'Enquiry submitted successfully', { 
+            enquiryId: enquiry._id 
+        });
     } catch (error) {
         console.error('Error in public submitEnquiry:', error);
         if (error.name === 'ValidationError') {
             return errorResponse(res, 400, 'Validation error', error.message);
         }
-        return errorResponse(res, 500, 'Failed to submit enquiry');
+        return errorResponse(res, 500, 'Failed to submit enquiry', error.message);
     }
 });
 

@@ -188,8 +188,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         description: "Your application has been submitted successfully!",
       })
 
-      // Redirect to thank you page
-      router.push("/thank-you?from=career")
+    // Redirect to thank you page
+    router.push("/thank-you?from=career")
     } catch (error) {
       console.error('Application submission error:', error)
       toast({
@@ -397,9 +397,9 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                 </SelectItem>
               ) : (
                 vacancies.map((vacancy) => (
-                  <SelectItem key={vacancy._id} value={vacancy._id}>
-                    {vacancy.title} - {vacancy.department}
-                  </SelectItem>
+                <SelectItem key={vacancy._id} value={vacancy._id}>
+                  {vacancy.title} - {vacancy.department}
+                </SelectItem>
                 ))
               )}
             </SelectContent>
