@@ -7,6 +7,8 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "seed:permissions": "node seeders/permissions.seeder.js",
+    "seed:section-types": "node seeders/sectionTypesConsolidated.seeder.js",
+    "cleanup:section-types": "node scripts/cleanupUnusedSectionTypes.js",
     "migrate:resources": "node scripts/migrateResources.js",
     "migrate:roles": "node scripts/migrateRoles.js",
     "setup:superadmin": "node scripts/setupSuperAdmin.js"

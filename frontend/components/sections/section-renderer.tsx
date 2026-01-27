@@ -27,6 +27,7 @@ import { VideoCardsSection } from '@/components/sections/video-cards-section'
 import { ImageDisplaySection } from '@/components/sections/image-display-section'
 import { HoverCardSection } from '@/components/sections/hover-card-section'
 import { ComparisonTableSection } from '@/components/sections/comparison-table-section'
+import { CtaSection } from '@/components/sections/cta-section'
 import { getIconComponent } from '@/lib/utils/icon-mapper'
 
 interface SectionRendererProps {
@@ -548,6 +549,27 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                     title={title}
                     factors={factors}
                     systems={systems}
+                  />
+                )
+              }
+
+              case 'cta': {
+                const heading = (content.heading as string) || ''
+                const description = (content.description as string) || undefined
+                const buttonText = (content.buttonText as string) || ''
+                const buttonLink = (content.buttonLink as string) || '#'
+                const backgroundColor = (content.backgroundColor as string) || '#1e3a5f'
+                const textColor = (content.textColor as string) || '#ffffff'
+
+                return (
+                  <CtaSection
+                    key={section._id}
+                    heading={heading}
+                    description={description}
+                    buttonText={buttonText}
+                    buttonLink={buttonLink}
+                    backgroundColor={backgroundColor}
+                    textColor={textColor}
                   />
                 )
               }

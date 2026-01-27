@@ -96,6 +96,11 @@ const SectionTypes = () => {
     setSearchText(value);
   };
 
+  // Show toast instead of navigating to create section type
+  const handleCreateSectionTypeClick = () => {
+    toast.info('To add new section types, please contact the developer team.');
+  };
+
   // Filter section types based on search
   const filteredSectionTypes = sectionTypes.filter((st) => {
     if (!searchText) return true;
@@ -280,7 +285,7 @@ const SectionTypes = () => {
             type="primary"
             icon={<PlusOutlined />}
             size="large"
-            onClick={() => navigate('/section-types/new')}
+            onClick={handleCreateSectionTypeClick}
             className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all text-white"
             style={{
               backgroundColor: '#1f2937',
@@ -339,7 +344,7 @@ const SectionTypes = () => {
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
-                      onClick={() => navigate('/section-types/new')}
+                      onClick={handleCreateSectionTypeClick}
                       style={{
                         backgroundColor: '#1f2937',
                         borderColor: '#1f2937',
