@@ -1,7 +1,7 @@
 "use client"
 
 import { ProjectsSection, type Project as ProjectType } from '@/components/sections/projects-section'
-import { useFeaturedProjects } from '@/hooks/use-featured-projects'
+import { useHomePageProjects } from '@/hooks/use-home-projects'
 
 interface DynamicProjectsSectionProps {
   sectionId: string
@@ -28,8 +28,8 @@ export function DynamicProjectsSection({
   subtitle,
   columns = 3,
 }: DynamicProjectsSectionProps) {
-  // Fetch featured projects from backend
-  const { projects, isLoading } = useFeaturedProjects()
+  // Fetch home page projects (showOnHomePage only, max 6)
+  const { projects, isLoading } = useHomePageProjects()
 
   // Transform backend data to match Project interface
   let transformedProjects: ProjectType[] = []

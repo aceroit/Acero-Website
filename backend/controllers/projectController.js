@@ -120,11 +120,25 @@ exports.getProjectBySlug = async (req, res) => {
     }
 };
 
+const HOME_PAGE_PROJECTS_MAX = 6;
+const HOME_PAGE_LIMIT_MESSAGE = "Already 6 projects are shown on home page. Remove 'Show on home page' from one project to add this one.";
+
 /**
  * Create new project
  */
 exports.createProject = async (req, res) => {
     try {
+        if (req.body.showOnHomePage === true) {
+            const homeCount = await Project.countDocuments({
+                status: 'published',
+                showOnHomePage: true,
+                isActive: true
+            });
+            if (homeCount >= HOME_PAGE_PROJECTS_MAX) {
+                return errorResponse(res, 400, HOME_PAGE_LIMIT_MESSAGE);
+            }
+        }
+
         const projectData = {
             ...req.body,
             createdBy: req.user._id
@@ -181,6 +195,19 @@ exports.updateProject = async (req, res) => {
         const editValidation = await canEditContent(req.user, project, 'projects', 'update');
         if (!editValidation.canEdit) {
             return errorResponse(res, 403, editValidation.reason || 'You do not have permission to edit this project');
+        }
+
+        if (updateData.showOnHomePage === true) {
+            const homeQuery = {
+                status: 'published',
+                showOnHomePage: true,
+                isActive: true,
+                _id: { $ne: id }
+            };
+            const homeCount = await Project.countDocuments(homeQuery);
+            if (homeCount >= HOME_PAGE_PROJECTS_MAX) {
+                return errorResponse(res, 400, HOME_PAGE_LIMIT_MESSAGE);
+            }
         }
         
         // Prevent editing published content directly - must unpublish first

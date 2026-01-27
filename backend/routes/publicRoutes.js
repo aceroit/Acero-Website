@@ -411,7 +411,25 @@ router.get('/building-types', async (req, res) => {
 });
 
 /**
- * GET /api/public/projects - Get published and featured projects
+ * GET /api/public/projects/home - Get projects shown on home page (showOnHomePage only, max 6)
+ * No authentication required
+ */
+router.get('/projects/home', async (req, res) => {
+    try {
+        const projects = await Project.getHomePageProjects();
+        res.set('Cache-Control', 'public, max-age=300');
+        return successResponse(res, 200, 'Home page projects retrieved successfully', {
+            projects,
+            count: projects.length
+        });
+    } catch (error) {
+        console.error('Error in public getHomePageProjects:', error);
+        return errorResponse(res, 500, 'Failed to retrieve home page projects');
+    }
+});
+
+/**
+ * GET /api/public/projects - Get published and featured projects (Projects listing page)
  * Query params: industry (slug), buildingType (slug), country, region, area
  * No authentication required
  */

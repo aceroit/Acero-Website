@@ -55,6 +55,7 @@ const ProjectForm = ({
         industry: initialValues.industry?._id || initialValues.industry,
         specialFeatures: initialValues.specialFeatures || [],
         featured: initialValues.featured !== undefined ? initialValues.featured : false,
+        showOnHomePage: initialValues.showOnHomePage !== undefined ? initialValues.showOnHomePage : false,
         isActive: initialValues.isActive !== undefined ? initialValues.isActive : true,
       };
       form.setFieldsValue(formValues);
@@ -219,6 +220,7 @@ const ProjectForm = ({
       metaKeywords: values.metaKeywords || [],
       totalArea: values.totalArea?.trim() || null,
       featured: values.featured !== undefined ? values.featured : false,
+      showOnHomePage: values.showOnHomePage !== undefined ? values.showOnHomePage : false,
       isActive: values.isActive !== undefined ? values.isActive : true,
     };
     await onSubmit(cleanedValues);
@@ -232,6 +234,7 @@ const ProjectForm = ({
       initialValues={{
         order: 0,
         featured: false,
+        showOnHomePage: false,
         isActive: true,
         specialFeatures: [],
         ...initialValues,
@@ -454,10 +457,15 @@ const ProjectForm = ({
                 size="large"
                 value={newFeature}
                 onChange={(e) => setNewFeature(e.target.value)}
-                onPressEnter={handleAddFeature}
+                onPressEnter={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAddFeature();
+                }}
               />
               <Button
                 type="default"
+                htmlType="button"
                 icon={<PlusOutlined />}
                 size="large"
                 onClick={handleAddFeature}
@@ -490,7 +498,16 @@ const ProjectForm = ({
             name="featured"
             label="Featured"
             valuePropName="checked"
-            tooltip="Featured projects are visible on the public website (must also be published)"
+            tooltip="Featured projects appear on the Projects listing page (must also be published)"
+          >
+            <Switch />
+          </Form.Item>
+
+          <Form.Item
+            name="showOnHomePage"
+            label="Show on home page"
+            valuePropName="checked"
+            tooltip="Show this project in the home page projects section (max 6). Featured controls the Projects listing page."
           >
             <Switch />
           </Form.Item>
@@ -567,23 +584,6 @@ const ProjectForm = ({
             folder="projects/thumbnails"
             dimensions={{ minWidth: 1000, minHeight: 500 }}
             maxSize={10}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="metaImage"
-          label="Meta Image (OG Image)"
-          tooltip="Image for social media sharing (150×150px)"
-        >
-          <ImageUpload
-            value={form.getFieldValue('metaImage')}
-            onChange={(image) => {
-              form.setFieldsValue({ metaImage: image });
-              form.validateFields(['metaImage']);
-            }}
-            folder="projects/meta"
-            dimensions={{ minWidth: 150, minHeight: 150 }}
-            maxSize={5}
           />
         </Form.Item>
 

@@ -15,12 +15,36 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as industryService from '../services/industryService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const IndustryRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'industry',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('industries', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/industries/${record._id}`) });
+  }
+  if (hasPermission('industries', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 // Status color mapping
 const getStatusColor = (status) => {
@@ -55,6 +79,8 @@ const Industries = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState(null);
+  const [sortField, setSortField] = useState('order');
+  const [sortOrder, setSortOrder] = useState('ascend');
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
@@ -70,11 +96,15 @@ const Industries = () => {
   const fetchIndustries = async (params = {}) => {
     setLoading(true);
     try {
+      const sortBy = params.sortBy ?? sortField;
+      const sortOrderApi = (params.sortOrder ?? sortOrder) === 'descend' ? 'desc' : 'asc';
       const response = await industryService.getAllIndustries({
-        page: pagination.current,
-        limit: pagination.pageSize,
-        search: searchText,
-        status: statusFilter,
+        page: params.page ?? pagination.current,
+        limit: params.limit ?? pagination.pageSize,
+        search: params.search !== undefined ? params.search : searchText,
+        status: params.status !== undefined ? params.status : statusFilter,
+        sortBy: params.sortBy ?? sortBy,
+        sortOrder: params.sortOrder ?? sortOrderApi,
         ...params,
       });
 
@@ -101,7 +131,7 @@ const Industries = () => {
 
   useEffect(() => {
     fetchIndustries();
-  }, [pagination.current, pagination.pageSize, statusFilter]);
+  }, [pagination.current, pagination.pageSize, statusFilter, sortField, sortOrder]);
 
   // Handle delete industry
   const handleDelete = async () => {
@@ -125,12 +155,22 @@ const Industries = () => {
     fetchIndustries({ search: value });
   };
 
+  const handleTableChange = (paginationConfig, filters, sorter) => {
+    if (sorter?.field != null && sorter?.order != null) {
+      setSortField(sorter.field);
+      setSortOrder(sorter.order);
+      setPagination((prev) => ({ ...prev, current: 1 }));
+    }
+  };
+
   // Table columns
   const columns = [
     {
       title: 'Industry',
       key: 'industry',
+      dataIndex: 'name',
       sorter: true,
+      sortOrder: sortField === 'name' ? sortOrder : null,
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0 overflow-hidden">
@@ -167,6 +207,7 @@ const Industries = () => {
         <span className="text-gray-600 font-medium">{order || 0}</span>
       ),
       sorter: true,
+      sortOrder: sortField === 'order' ? sortOrder : null,
       width: 80,
     },
     {
@@ -215,55 +256,20 @@ const Industries = () => {
         </span>
       ),
       sorter: true,
+      sortOrder: sortField === 'createdAt' ? sortOrder : null,
     },
     {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('industries', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/industries/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('industries', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedIndustry(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <IndustryRowActions
+          record={record}
+          onNavigate={(path) => navigate(path)}
+          onDeleteClick={(r) => { setSelectedIndustry(r); setIsDeleteModalOpen(true); }}
+        />
+      ),
     },
   ];
 
@@ -354,6 +360,7 @@ const Industries = () => {
             loading={loading}
             rowKey="_id"
             className="custom-table industries-table"
+            onChange={handleTableChange}
             pagination={{
               ...pagination,
               showSizeChanger: true,
@@ -369,7 +376,7 @@ const Industries = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('industries', 'update')) {

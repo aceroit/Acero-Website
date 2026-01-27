@@ -191,6 +191,11 @@ const projectSchema = new mongoose.Schema({
         default: false,
         index: true
     },
+    showOnHomePage: {
+        type: Boolean,
+        default: false,
+        index: true
+    },
     
     // Creator and Updater tracking
     createdBy: {
@@ -217,6 +222,8 @@ projectSchema.index({ order: 1, createdAt: -1 });
 projectSchema.index({ jobNumberSlug: 1 }, { unique: true });
 // Compound index for public queries (status, featured, isActive)
 projectSchema.index({ status: 1, featured: 1, isActive: 1 });
+// Compound index for home page projects (status, showOnHomePage, isActive)
+projectSchema.index({ status: 1, showOnHomePage: 1, isActive: 1 });
 
 // Compound index for filtering
 projectSchema.index({ country: 1, region: 1, area: 1, industry: 1, buildingType: 1, status: 1, isActive: 1 });
@@ -243,7 +250,7 @@ projectSchema.pre('save', async function() {
     }
 });
 
-// Static method to get published projects
+// Static method to get published projects (used for Projects listing page; featured only)
 projectSchema.statics.getPublished = async function(filters = {}) {
     const query = {
         status: 'published',
@@ -259,6 +266,24 @@ projectSchema.statics.getPublished = async function(filters = {}) {
         .populate('area', 'name code')
         .populate('industry', 'name slug logo')
         .sort({ order: 1, createdAt: -1 });
+};
+
+// Static method to get projects shown on home page (max 6; showOnHomePage only)
+projectSchema.statics.getHomePageProjects = async function() {
+    const query = {
+        status: 'published',
+        showOnHomePage: true,
+        isActive: true
+    };
+    return await this.find(query)
+        .populate('buildingType', 'name slug image')
+        .populate('country', 'name code')
+        .populate('region', 'name code')
+        .populate('area', 'name code')
+        .populate('industry', 'name slug logo')
+        .sort({ order: 1, createdAt: -1 })
+        .limit(6)
+        .lean();
 };
 
 // Static method to get projects by filters

@@ -42,9 +42,19 @@ const useWorkflowStatus = ({ status, resourceType = 'page', createdBy = null }) 
     return String(userId) === String(createdBy);
   }, [user, createdBy]);
 
-  // Get resource name for permission checks
+  // Get resource name for permission checks (plural form used by hasPermission)
   const resourceName = useMemo(() => {
-    return resourceType === 'page' ? 'pages' : 'sections';
+    const map = {
+      page: 'pages',
+      section: 'sections',
+      project: 'projects',
+      'building-type': 'building-types',
+      industry: 'industries',
+      country: 'countries',
+      region: 'regions',
+      area: 'areas',
+    };
+    return map[resourceType] ?? (resourceType ? `${resourceType}s` : 'pages');
   }, [resourceType]);
 
   // Check if user can edit content

@@ -189,7 +189,7 @@ export async function getProjectsByBuildingType(
 }
 
 /**
- * Get published and featured projects (for home page)
+ * Get published and featured projects (for Projects listing page; uses filters)
  */
 export async function getFeaturedProjects(): Promise<Project[]> {
   try {
@@ -202,6 +202,24 @@ export async function getFeaturedProjects(): Promise<Project[]> {
     return []
   } catch (error) {
     console.error('Error fetching featured projects:', error)
+    return []
+  }
+}
+
+/**
+ * Get projects shown on home page (showOnHomePage only, max 6)
+ */
+export async function getHomePageProjects(): Promise<Project[]> {
+  try {
+    const result = await apiGet<{ projects: Project[]; count: number }>(API_ENDPOINTS.PUBLIC_PROJECTS_HOME)
+
+    if (result.success && result.data) {
+      return result.data.projects || []
+    }
+
+    return []
+  } catch (error) {
+    console.error('Error fetching home page projects:', error)
     return []
   }
 }
