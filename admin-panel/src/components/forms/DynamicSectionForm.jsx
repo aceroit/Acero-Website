@@ -29,6 +29,7 @@ import TabbedComparisonEditor from './section-editors/TabbedComparisonEditor';
 import AdvantagesGridEditor from './section-editors/AdvantagesGridEditor';
 import HoverCardEditor from './section-editors/HoverCardEditor';
 import CertificatesGridEditor from './section-editors/CertificatesGridEditor';
+import VideoCardsEditor from './section-editors/VideoCardsEditor';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -925,6 +926,21 @@ const DynamicSectionForm = ({
   if (sectionType.slug === 'certificates_grid') {
     return (
       <CertificatesGridEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for video_cards section type - YouTube links/IDs, grid on frontend
+  if (sectionType.slug === 'video_cards') {
+    return (
+      <VideoCardsEditor
         value={initialContent}
         onChange={(newContent) => {
           form.setFieldsValue({

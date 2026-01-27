@@ -22,6 +22,7 @@ import { AdvantagesGridSection } from '@/components/sections/advantages-grid-sec
 import { ApplicationCardsSection } from '@/components/sections/application-cards-section'
 import { CircularAdvantagesSection } from '@/components/sections/circular-advantages-section'
 import { CertificatesGridSection } from '@/components/sections/certificates-grid-section'
+import { VideoCardsSection } from '@/components/sections/video-cards-section'
 import { ImageDisplaySection } from '@/components/sections/image-display-section'
 import { HoverCardSection } from '@/components/sections/hover-card-section'
 import { ComparisonTableSection } from '@/components/sections/comparison-table-section'
@@ -437,6 +438,39 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                     title={title}
                     paragraphs={paragraphs}
                     certificates={certificates}
+                  />
+                )
+              }
+
+              case 'video_cards': {
+                const rawVideos = (content.videos as Array<{
+                  youtubeId: string
+                  title?: string
+                  description?: string
+                }>) || []
+                const videos = rawVideos
+                  .filter((v) => v?.youtubeId)
+                  .map((v, i) => ({
+                    _id: v.youtubeId || String(i),
+                    youtubeId: v.youtubeId,
+                    title: v.title || 'Video',
+                    description: v.description,
+                    order: i,
+                    featured: false,
+                    status: 'published',
+                    isActive: true,
+                  }))
+
+                return (
+                  <VideoCardsSection
+                    key={section._id}
+                    videos={videos}
+                    onVideoClick={(video) => {
+                      window.open(
+                        `https://www.youtube.com/watch?v=${video.youtubeId}`,
+                        '_blank'
+                      )
+                    }}
                   />
                 )
               }

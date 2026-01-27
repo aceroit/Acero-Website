@@ -57,10 +57,7 @@ const seedMediaVideo = async () => {
                 sectionTypeSlug: 'video_cards',
                 order: 1,
                 content: {
-                    // Note: Videos will be fetched dynamically from the backend Video model
-                    // (if it exists, or from a future Video model)
-                    title: null,
-                    subtitle: null,
+                    videos: [], // [{ youtubeId, title?, description? }] – add via Admin > Pages > Videos > Edit section
                 },
             },
         ];

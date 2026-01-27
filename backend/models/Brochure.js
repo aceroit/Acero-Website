@@ -44,7 +44,7 @@ const brochureSchema = new mongoose.Schema({
         default: null
     },
     
-    // Optional: Link to download or view brochure
+    // Optional: Legacy single download link (superseded by languages when present)
     downloadLink: {
         type: String,
         trim: true,
@@ -57,7 +57,14 @@ const brochureSchema = new mongoose.Schema({
             message: 'Download link must be a valid URL'
         }
     },
-    
+
+    // PDFs by language: one URL per language (uploaded via Cloudinary)
+    languages: [{
+        languageCode: { type: String, trim: true, required: true },
+        languageName: { type: String, trim: true, required: true },
+        fileUrl: { type: String, trim: true, required: true }
+    }],
+
     // Workflow Status (following CMS pattern)
     status: {
         type: String,

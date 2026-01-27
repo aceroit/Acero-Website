@@ -1,6 +1,8 @@
 import { Form, Input, InputNumber, Button, Switch } from 'antd';
 import { useEffect } from 'react';
+import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import ImageUpload from '../common/ImageUpload';
+import PdfUpload from '../common/PdfUpload';
 
 const { TextArea } = Input;
 
@@ -32,17 +34,26 @@ const BrochureForm = ({
         order: initialValues.order !== undefined ? initialValues.order : 0,
         featured: initialValues.featured !== undefined ? initialValues.featured : false,
         isActive: initialValues.isActive !== undefined ? initialValues.isActive : true,
+        languages: Array.isArray(initialValues.languages) ? initialValues.languages : [],
       };
       form.setFieldsValue(formValues);
     }
   }, [initialValues, form]);
 
   const handleSubmit = async (values) => {
+    const languages = (values.languages || [])
+      .filter((l) => l?.languageCode?.trim() && l?.languageName?.trim() && l?.fileUrl?.trim())
+      .map((l) => ({
+        languageCode: l.languageCode.trim(),
+        languageName: l.languageName.trim(),
+        fileUrl: l.fileUrl.trim(),
+      }));
     const cleanedValues = {
       ...values,
       title: values.title?.trim(),
       description: values.description?.trim() || null,
       downloadLink: values.downloadLink?.trim() || null,
+      languages,
       order: values.order || 0,
       featured: values.featured !== undefined ? values.featured : false,
       isActive: values.isActive !== undefined ? values.isActive : true,
@@ -110,20 +121,75 @@ const BrochureForm = ({
 
         <Form.Item
           name="downloadLink"
-          label="Download Link"
-          rules={[
-            {
-              type: 'url',
-              message: 'Please enter a valid URL',
-            },
-          ]}
-          tooltip="URL to download or view the brochure (optional)"
+          label="Legacy Download Link (optional)"
+          tooltip="Single URL fallback if no language PDFs are set. Prefer PDFs by language below."
         >
           <Input
             placeholder="https://example.com/brochure.pdf"
             size="large"
           />
         </Form.Item>
+
+        <Form.List name="languages">
+          {(fields, { add, remove }) => (
+            <>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">
+                  PDFs by language (upload one PDF per language)
+                </span>
+                <Button
+                  type="dashed"
+                  onClick={() => add()}
+                  icon={<PlusOutlined />}
+                  size="large"
+                >
+                  Add language
+                </Button>
+              </div>
+              {fields.map(({ key, name, ...restField }) => (
+                <div
+                  key={key}
+                  className="flex flex-wrap gap-4 p-4 border border-gray-200 rounded-lg mb-3 bg-gray-50"
+                >
+                  <Form.Item
+                    {...restField}
+                    name={[name, 'languageCode']}
+                    label="Language code"
+                    rules={[{ required: true, message: 'Required' }]}
+                    className="mb-0"
+                  >
+                    <Input placeholder="e.g. en" size="large" />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, 'languageName']}
+                    label="Language name"
+                    rules={[{ required: true, message: 'Required' }]}
+                    className="mb-0"
+                  >
+                    <Input placeholder="e.g. English" size="large" />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, 'fileUrl']}
+                    label="PDF file"
+                    rules={[{ required: true, message: 'Upload PDF for this language' }]}
+                    className="mb-0 flex-1 min-w-[200px]"
+                  >
+                    <PdfUpload folder="brochures/pdfs" label="" maxSize={20} />
+                  </Form.Item>
+                  <Button
+                    type="text"
+                    danger
+                    icon={<MinusCircleOutlined />}
+                    onClick={() => remove(name)}
+                    className="self-end"
+                  />
+                </div>
+              ))}
+            </>
+          )}
+        </Form.List>
       </div>
 
       {/* Brochure Image */}
