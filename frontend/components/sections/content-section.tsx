@@ -19,6 +19,7 @@ interface ContentSectionProps {
   imageAlt?: string
   images?: Array<{ url: string; imageAlt?: string }>
   layout?: "image-left" | "image-right" | "image-center" | "text-only" | "split"
+  imageFit?: "contain" | "cover"
   variant?: "default" | "accent" | "muted"
   className?: string
 }
@@ -31,6 +32,7 @@ export function ContentSection({
   imageAlt,
   images,
   layout = "image-right",
+  imageFit = "contain",
   variant = "default",
   className,
 }: ContentSectionProps) {
@@ -121,6 +123,35 @@ export function ContentSection({
     }
   }
 
+  const isSvgUrl = (url: string) => /\.svg($|\?)/i.test(url ?? "")
+
+  const renderMedia = (img: { url: string; imageAlt?: string }, alt: string) => {
+    if (isSvgUrl(img.url)) {
+      return (
+        <object
+          data={img.url}
+          type="image/svg+xml"
+          className="absolute inset-0 h-full w-full object-contain"
+          aria-label={alt}
+        />
+      )
+    }
+    return (
+      <Image
+        src={img.url}
+        alt={alt}
+        fill
+        loading="lazy"
+        className={cn(
+          "transition-transform duration-300",
+          imageFit === "cover" ? "object-cover" : "object-contain"
+        )}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+        quality={85}
+      />
+    )
+  }
+
   return (
     <section
       ref={ref}
@@ -156,15 +187,7 @@ export function ContentSection({
                   key={idx}
                   className="relative min-h-0 flex-1 w-full overflow-hidden rounded-lg border border-border bg-card"
                 >
-                  <Image
-                    src={img.url}
-                    alt={img.imageAlt || title}
-                    fill
-                    loading="lazy"
-                    className="object-cover transition-transform duration-700 hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                    quality={85}
-                  />
+                  {renderMedia(img, img.imageAlt || title)}
                 </div>
               ))}
             </motion.div>
@@ -180,18 +203,7 @@ export function ContentSection({
                 getImageOrder()
               )}
             >
-              <Image
-                src={allImages[0].url}
-                alt={allImages[0].imageAlt || title}
-                fill
-                loading="lazy"
-                className={cn(
-                  "transition-transform duration-700 hover:scale-105",
-                  layout === "image-center" ? "object-contain" : "object-cover"
-                )}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                quality={85}
-              />
+              {renderMedia(allImages[0], allImages[0].imageAlt || title)}
             </motion.div>
           )}
 

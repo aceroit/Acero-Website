@@ -119,11 +119,25 @@ const ContentWithImageEditor = ({ value = {}, onChange, form }) => {
         {/* Image Section */}
         <Card className="border border-gray-200 shadow-sm bg-white">
           <h3 className="text-sm font-semibold text-gray-700 mb-4">Image Settings</h3>
+          <p className="text-xs text-gray-500 mb-4">
+            Recommended size: <strong>1200×800 px (3:2)</strong> so the image fits the column and content height without overlap. Use <strong>Contain</strong> for diagrams/infographics (no cropping); use <strong>Cover</strong> for photos when filling the box is fine.
+          </p>
           <div className="space-y-4">
+            <Form.Item
+              name={['content', 'imageFit']}
+              label="Image Fit"
+              tooltip="Contain: show full image (no cropping). Cover: fill the box (may crop edges)."
+              initialValue="contain"
+            >
+              <Select size="large" placeholder="Image fit">
+                <Option value="contain">Contain (show full image)</Option>
+                <Option value="cover">Cover (fill box, may crop)</Option>
+              </Select>
+            </Form.Item>
             <Form.Item
               name={['content', 'image']}
               label="Image"
-              tooltip="Optional image to display alongside content"
+              tooltip="Optional image to display alongside content. Use 1200×800 px for best fit."
               valuePropName="value"
               getValueFromEvent={(imageData) => {
                 return imageData?.url || '';
@@ -159,7 +173,7 @@ const ContentWithImageEditor = ({ value = {}, onChange, form }) => {
         <Card className="border border-gray-200 shadow-sm bg-white">
           <h3 className="text-sm font-semibold text-gray-700 mb-2">Additional Images</h3>
           <p className="text-xs text-gray-500 mb-4">
-            Add extra images to show in a row (e.g. Primary Members section). When added, these are displayed alongside the content.
+            Add extra images to show in a vertical stack alongside the content. Recommended per image: <strong>1200×500 px</strong> for a perfect fit and no overlap.
           </p>
           <Form.List name={['content', 'images']} initialValue={value.images || []}>
             {(fields, { add, remove }) => (

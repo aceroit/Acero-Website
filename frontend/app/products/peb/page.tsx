@@ -27,9 +27,7 @@ export default function PEBPage() {
             <div className="text-muted-foreground">No content available</div>
           </div>
         ) : (
-          <SectionRenderer
-            sections={sections.filter((s) => s.sectionTypeSlug !== "circular_advantages")}
-          />
+          <SectionRenderer sections={sections} />
         )}
       </main>
       <Footer />

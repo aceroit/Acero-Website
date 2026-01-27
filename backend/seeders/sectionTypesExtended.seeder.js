@@ -135,7 +135,7 @@ const extendedSectionTypes = [
                 name: 'image',
                 type: 'image',
                 label: 'Image',
-                helpText: 'Optional image to display alongside content',
+                helpText: 'Optional image to display alongside content. Recommended: 1200×800 px (3:2) so it fits the column and content height without overlap.',
                 required: false,
                 order: 2
             },
@@ -150,7 +150,7 @@ const extendedSectionTypes = [
                 name: 'images',
                 type: 'json',
                 label: 'Additional Images',
-                helpText: 'Optional array for multiple images: [{"url": "...", "imageAlt": "..."}]. When provided, these are shown alongside or instead of the single image (e.g. Primary Members section).',
+                helpText: 'Optional array for multiple images: [{"url": "...", "imageAlt": "..."}]. When 2+ images exist, they appear in a vertical stack. Recommended per image: 1200×500 px for a perfect fit and no overlap.',
                 required: false,
                 order: 3.5
             },
@@ -168,6 +168,19 @@ const extendedSectionTypes = [
                     { label: 'Split', value: 'split' }
                 ],
                 order: 4
+            },
+            {
+                name: 'imageFit',
+                type: 'select',
+                label: 'Image Fit',
+                helpText: 'Contain: show full image (no cropping)—use for diagrams/infographics. Cover: fill the box (may crop)—use for photos.',
+                required: false,
+                defaultValue: 'contain',
+                options: [
+                    { label: 'Contain (show full image)', value: 'contain' },
+                    { label: 'Cover (fill box, may crop)', value: 'cover' }
+                ],
+                order: 4.5
             },
             {
                 name: 'cta',
@@ -639,6 +652,26 @@ const extendedSectionTypes = [
             }
         ],
         previewComponent: 'CircularAdvantages',
+        thumbnailUrl: null
+    },
+    {
+        name: 'PEB Advantages Graphic',
+        slug: 'peb_advantage_svg',
+        description: 'Displays only the PEB advantages SVG graphic with no section wrapper. Used on PEB page for the advantages diagram.',
+        icon: '📐',
+        category: 'Content',
+        isSystem: true,
+        fields: [
+            {
+                name: 'svgUrl',
+                type: 'text',
+                label: 'SVG URL (optional)',
+                helpText: 'Override the default /svgs/peb-advantage.svg. Leave blank to use default.',
+                required: false,
+                order: 0
+            }
+        ],
+        previewComponent: 'PebAdvantageSvg',
         thumbnailUrl: null
     },
     {

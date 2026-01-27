@@ -77,6 +77,8 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                         .map((i) => ({ url: i.url!, imageAlt: i.imageAlt ?? '' }))
                     : undefined
                 const layout = (content.layout as 'image-left' | 'image-right' | 'image-center' | 'text-only' | 'split') || 'image-right'
+                const imageFit = (content.imageFit as 'contain' | 'cover') || 'contain'
+                const variant = (content.variant as 'default' | 'accent' | 'muted') || 'default'
 
                 return (
                   <ContentSection
@@ -88,6 +90,8 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                     imageAlt={imageAlt}
                     images={images}
                     layout={layout}
+                    imageFit={imageFit}
+                    variant={variant}
                   />
                 )
               }
@@ -420,6 +424,19 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                     centerText={centerText}
                     advantages={advantages}
                   />
+                )
+              }
+
+              case 'peb_advantage_svg': {
+                const svgUrl = (content.svgUrl as string)?.trim() || '/svgs/peb-advantage.svg'
+                return (
+                  <div key={section._id} className="w-full overflow-hidden bg-background">
+                    <img
+                      src={svgUrl}
+                      alt="Advantages of PEB"
+                      className="w-full h-auto max-w-5xl mx-auto block"
+                    />
+                  </div>
                 )
               }
 

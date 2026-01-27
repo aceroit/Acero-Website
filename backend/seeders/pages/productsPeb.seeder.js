@@ -199,76 +199,10 @@ const seedProductsPeb = async () => {
                 },
             },
             {
-                sectionTypeSlug: 'circular_advantages',
+                sectionTypeSlug: 'peb_advantage_svg',
                 order: 6,
                 content: {
-                    title: 'Advantages of PEB',
-                    centerText: 'ACERO',
-                    advantages: [
-                        {
-                            id: 'speed',
-                            title: 'Speed of Construction',
-                            description: 'One of the primary advantages of PEBs is their speed of production since the components are fabricated using standardized raw material which is readily available. The materials are efficiently transported to the construction site and assembled easily and quickly.',
-                            icon: 'Zap',
-                            position: 1,
-                        },
-                        {
-                            id: 'cost',
-                            title: 'Cost-Effectiveness',
-                            description: 'PEBs offer exceptional cost-effectiveness through standardized processes, reduced construction time, and efficient material usage, resulting in lower overall project costs compared to traditional building methods.',
-                            icon: 'DollarSign',
-                            position: 2,
-                        },
-                        {
-                            id: 'seismic',
-                            title: 'Seismic Resistance',
-                            description: 'Pre-engineered steel buildings are designed to withstand seismic activity and extreme weather conditions, providing superior structural integrity and safety in earthquake-prone regions.',
-                            icon: 'Shield',
-                            position: 3,
-                        },
-                        {
-                            id: 'sustainability',
-                            title: 'Sustainability',
-                            description: 'Steel buildings offer eco-friendly features including recyclability, energy efficiency, and reduced waste during construction, making them an environmentally responsible choice.',
-                            icon: 'Leaf',
-                            position: 4,
-                        },
-                        {
-                            id: 'quality',
-                            title: 'Quality Control',
-                            description: 'PEBs are produced in controlled factory environments with rigorous quality assurance processes, ensuring consistency, precision, and adherence to international building codes and standards.',
-                            icon: 'CheckCircle',
-                            position: 5,
-                        },
-                        {
-                            id: 'efficiency',
-                            title: 'Structural Efficiency and Durability',
-                            description: 'Pre-engineered steel buildings are renowned for their durability and strength, ensuring a long lifespan with minimal maintenance. Steel\'s inherent properties provide exceptional structural efficiency.',
-                            icon: 'Layers',
-                            position: 6,
-                        },
-                        {
-                            id: 'energy',
-                            title: 'Energy Efficiency',
-                            description: 'Meticulously designed steel structures optimize energy efficiency through environmentally friendly roofing and wall panels, skylights, wall lights for natural light, and superior insulation capabilities.',
-                            icon: 'Lightbulb',
-                            position: 7,
-                        },
-                        {
-                            id: 'customization',
-                            title: 'Customization',
-                            description: 'PEBs offer exceptional versatility with designs that can be customized to meet specific requirements, allowing for various building sizes, configurations, and architectural styles to suit diverse needs.',
-                            icon: 'Settings',
-                            position: 8,
-                        },
-                        {
-                            id: 'versatility',
-                            title: 'Versatility',
-                            description: 'The flexible nature of steel as a building material enables wide-span designs, creating large, open interior spaces without the need for intrusive support columns, making PEBs suitable for numerous applications.',
-                            icon: 'Grid',
-                            position: 9,
-                        },
-                    ],
+                    // Uses default /svgs/peb-advantage.svg. Set svgUrl in admin to override.
                 },
             },
         ];
