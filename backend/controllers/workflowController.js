@@ -18,6 +18,7 @@ const ActivityLog = require('../models/ActivityLog');
 const User = require('../models/User');
 const Role = require('../models/Role');
 const notificationService = require('../services/notificationService');
+const headerPageSyncService = require('../services/headerPageSyncService');
 const {
     WORKFLOW_STATES,
     canTransition,
@@ -903,11 +904,21 @@ exports.unpublishContent = async (req, res) => {
             metadata: { action: 'unpublish_content' }
         });
 
+        // If page was in header nav, tell frontend so user can be alerted to update header
+        let pageWasInHeader = false;
+        if (resource === 'page' && item.path) {
+            try {
+                pageWasInHeader = await headerPageSyncService.isPagePathInHeader(item.path);
+            } catch (e) {
+                // ignore
+            }
+        }
+
         return successResponse(
             res,
             200,
             'Content unpublished successfully',
-            { [resource]: item, message: 'Content unpublished' }
+            { [resource]: item, message: 'Content unpublished', pageWasInHeader }
         );
     } catch (error) {
         console.error('Unpublish content error:', error);

@@ -378,11 +378,40 @@ async function syncHeaderToPageTree(headerConfigId, navigationLinks, options = {
     }
 }
 
+/**
+ * Check if a page path appears in any active header's navigation links (top-level or dropdown).
+ * Used to alert users when they delete/unpublish a page that is still linked in the header.
+ * @param {String} pagePath - Page path (e.g. '/who-we-are', '/products/peb')
+ * @returns {Promise<Boolean>}
+ */
+async function isPagePathInHeader(pagePath) {
+    if (!pagePath || typeof pagePath !== 'string') return false;
+    const path = pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
+    let headerConfig = await HeaderConfiguration.findOne({
+        isActive: true,
+        status: 'published',
+        featured: true
+    });
+    if (!headerConfig) {
+        headerConfig = await HeaderConfiguration.findOne({ isActive: true }).sort({ updatedAt: -1 });
+    }
+    if (!headerConfig || !headerConfig.navigationLinks || !headerConfig.navigationLinks.length) {
+        return false;
+    }
+    for (const nav of headerConfig.navigationLinks) {
+        if (!nav.isFieldActive) continue;
+        if (nav.href === path) return true;
+        if (Array.isArray(nav.dropdown) && nav.dropdown.some((d) => d.href === path)) return true;
+    }
+    return false;
+}
+
 module.exports = {
     syncPageTreeToHeader,
     syncHeaderToPageTree,
     transformPageTreeToNavLinks,
     transformNavLinksToPageUpdates,
-    getMenuPageTree
+    getMenuPageTree,
+    isPagePathInHeader
 };
 

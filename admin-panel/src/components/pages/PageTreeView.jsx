@@ -161,6 +161,12 @@ const PageTreeView = ({ onPageSelect, onRefresh }) => {
       const response = await pageService.deletePage(selectedPage._id);
       if (response.success) {
         toast.success('Page deleted successfully');
+        if (response.data?.pageWasInHeader) {
+          toast.warning(
+            'This page was in the header. Update Header Configuration to remove its link and keep the site in sync.',
+            { autoClose: 8000 }
+          );
+        }
         setIsDeleteModalOpen(false);
         setSelectedPage(null);
         fetchTree();

@@ -336,7 +336,7 @@ const SectionTypes = () => {
                 pageSizeOptions: ['10', '20', '50', '100'],
                 responsive: true,
               }}
-              scroll={{ x: 800 }}
+              scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
               locale={{
                 emptyText: (
                   <div className="py-12 text-center">

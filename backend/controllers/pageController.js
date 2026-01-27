@@ -468,6 +468,14 @@ exports.deletePage = async (req, res) => {
             );
         }
 
+        // Check if page was in header nav before delete (for user alert)
+        let pageWasInHeader = false;
+        try {
+            pageWasInHeader = await headerPageSyncService.isPagePathInHeader(page.path);
+        } catch (e) {
+            // ignore
+        }
+
         const deletedCount = await pageTreeService.softDeletePage(id, req.user._id);
 
         // Sync to HeaderConfiguration after deletion
@@ -481,10 +489,10 @@ exports.deletePage = async (req, res) => {
         }
 
         return successResponse(
-            res, 
+            res,
             200,
             `Successfully deleted ${deletedCount} page(s)`,
-            { deletedCount }
+            { deletedCount, pageWasInHeader }
         );
     } catch (error) {
         console.error('Error in deletePage:', error);

@@ -164,6 +164,12 @@ const WorkflowActions = ({
 
       if (response.success) {
         toast.success(response.message || 'Action completed successfully');
+        if (resource === 'page' && action === 'unpublish' && response.data?.pageWasInHeader) {
+          toast.warning(
+            'This page was in the header. Update Header Configuration to remove its link and keep the site in sync.',
+            { autoClose: 8000 }
+          );
+        }
         if (onActionComplete) {
           onActionComplete(action, response);
         }
