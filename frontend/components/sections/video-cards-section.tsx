@@ -142,7 +142,7 @@ export function VideoCardsSection({
                   </div>
 
                 {/* Video Info */}
-                <div className="border-t border-border bg-card p-4 md:p-6">
+                {/* <div className="border-t border-border bg-card p-4 md:p-6">
                   <h3 className="mb-2 text-lg font-semibold text-foreground line-clamp-2">
                     {video.title}
                   </h3>
@@ -151,7 +151,7 @@ export function VideoCardsSection({
                       {video.description}
                     </p>
                   )}
-                </div>
+                </div> */}
               </div>
             </motion.div>
             )

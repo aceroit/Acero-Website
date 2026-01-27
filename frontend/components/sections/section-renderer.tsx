@@ -1,5 +1,6 @@
 "use client"
 
+import type { ComponentProps } from 'react'
 import type { Section } from '@/lib/api/types'
 import { HeroCarousel, type HeroCarouselSlide } from '@/components/carousel/hero-carousel'
 import { ContentSection } from '@/components/sections/content-section'
@@ -301,7 +302,7 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
 
               case 'tabbed_comparison': {
                 const title = (content.title as string) || ''
-                const subtitle = (content.subtitle as string) || undefined
+                const subtitle = (content.subtitle as string) ?? ''
                 const tabs = (content.tabs as Array<{
                   id: string
                   label: string
@@ -314,12 +315,13 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                   }>
                 }>) || []
 
+                type TabbedTabs = ComponentProps<typeof TabbedComparisonSection>['tabs']
                 return (
                   <TabbedComparisonSection
                     key={section._id}
                     title={title}
                     subtitle={subtitle}
-                    tabs={tabs}
+                    tabs={tabs as TabbedTabs}
                   />
                 )
               }
