@@ -39,7 +39,30 @@ const defaultResources = [
         description: 'Permission and role management',
         category: 'Administration',
         showInMenu: true,
-        order: 2
+        order: 1,
+        parentSlug: 'users'
+    },
+    {
+        name: 'Roles',
+        slug: 'roles',
+        path: '/roles',
+        icon: 'TeamOutlined',
+        description: 'Role management',
+        category: 'Administration',
+        showInMenu: true,
+        order: 2,
+        parentSlug: 'users'
+    },
+    {
+        name: 'Resources',
+        slug: 'resources',
+        path: '/resources',
+        icon: 'DatabaseOutlined',
+        description: 'Resource and route management',
+        category: 'Administration',
+        showInMenu: true,
+        order: 3,
+        parentSlug: 'users'
     },
     {
         name: 'Pages',
@@ -59,8 +82,8 @@ const defaultResources = [
         description: 'Hierarchical page tree view',
         category: 'Content',
         showInMenu: true,
-        order: 4,
-        parentSlug: 'pages' // Will be set after parent is created
+        order: 2,
+        parentSlug: 'pages'
     },
     {
         name: 'Sections',
@@ -79,8 +102,9 @@ const defaultResources = [
         icon: 'SettingOutlined',
         description: 'Section type definitions and templates',
         category: 'Content',
-        showInMenu: false, // Only super_admin can access
-        order: 6
+        showInMenu: true,
+        order: 1,
+        parentSlug: 'pages'
     },
     {
         name: 'Products',

@@ -1,7 +1,7 @@
-// src/components/layout/Sidebar.jsx
+// src/components/Sidebar.jsx
 import { NavLink, useLocation } from "react-router-dom";
-import { useState, useMemo, useRef, useEffect } from "react";
-import { SearchOutlined, DashboardOutlined } from "@ant-design/icons";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { SearchOutlined, DashboardOutlined, RightOutlined, DownOutlined } from "@ant-design/icons";
 import { usePermissions } from "../contexts/PermissionContext";
 import { useAuth } from "../contexts/AuthContext";
 import { ROLES } from "../utils/constants";
@@ -9,11 +9,32 @@ import { renderIcon } from "../utils/iconMapper";
 
 const Sidebar = () => {
     const [search, setSearch] = useState("");
+    const [expandedKeys, setExpandedKeys] = useState(() => new Set());
     const location = useLocation();
     const navRef = useRef(null);
     const scrollPositionRef = useRef(Number(sessionStorage.getItem('sidebar-scroll-top')) || 0);
     const { hasPermission, hasAnyRole, hasRole, menuResources } = usePermissions();
     const { user } = useAuth();
+
+    // Collect parent keys that should be expanded when pathname matches a descendant
+    const getExpandedKeysForPath = useCallback((items, pathname, acc = new Set()) => {
+        if (!items || !Array.isArray(items)) return acc;
+        for (const item of items) {
+            const key = item._id ? (item._id.toString ? item._id.toString() : String(item._id)) : item.path;
+            const pathMatch = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path + (item.path.endsWith('/') ? '' : '/')));
+            if (pathMatch && item.children && item.children.length > 0) {
+                acc.add(key);
+                getExpandedKeysForPath(item.children, pathname, acc);
+            } else if (item.children && item.children.length > 0) {
+                const childAcc = getExpandedKeysForPath(item.children, pathname, new Set());
+                if (childAcc.size > 0) {
+                    acc.add(key);
+                    childAcc.forEach(k => acc.add(k));
+                }
+            }
+        }
+        return acc;
+    }, []);
 
     // Build menu items from dynamic resources
     const menuItems = useMemo(() => {
@@ -25,35 +46,18 @@ const Sidebar = () => {
             path: "/dashboard",
             icon: <DashboardOutlined />,
             permission: null,
-            order: -1, // Always first
-            _id: 'dashboard-hardcoded', // Add _id for tree building
+            order: -1,
+            _id: 'dashboard-hardcoded',
         });
 
-        // Add dynamic resources from backend
-        console.log('Sidebar: Building menu items', { 
-            menuResources, 
-            menuResourcesLength: menuResources?.length,
-            isArray: Array.isArray(menuResources),
-            userRole: user?.role 
-        });
-        
         if (menuResources && Array.isArray(menuResources) && menuResources.length > 0) {
-            console.log('Sidebar: Processing', menuResources.length, 'menu resources');
             menuResources.forEach((resource) => {
-                // Skip if resource is not active or shouldn't show in menu
-                // Default to true if not specified (for backward compatibility)
                 const isActive = resource.isActive !== undefined ? resource.isActive : true;
                 const showInMenu = resource.showInMenu !== undefined ? resource.showInMenu : true;
-                
-                if (!isActive || !showInMenu) {
-                    console.log('Sidebar: Skipping resource', resource.name, { isActive, showInMenu });
-                    return;
-                }
+                if (!isActive || !showInMenu) return;
 
-                // Check if user has read permission for this resource
-                // Super admin has all permissions
                 const resourceSlug = resource.slug || resource._id?.toString();
-                const hasAccess = user?.role === ROLES.SUPER_ADMIN || 
+                const hasAccess = user?.role === ROLES.SUPER_ADMIN ||
                     (resourceSlug && hasPermission(resourceSlug, 'read'));
 
                 if (hasAccess) {
@@ -68,79 +72,37 @@ const Sidebar = () => {
                     });
                 }
             });
-        } else {
-            // Debug: Log if menuResources is not available
-            console.log('Sidebar: menuResources is not available or not an array', {
-                menuResources,
-                isArray: Array.isArray(menuResources),
-                type: typeof menuResources,
-                length: menuResources?.length
-            });
         }
-        
-        console.log('Sidebar: Total items before tree building', items.length, items);
 
-        // Sort by order, then by name
         items.sort((a, b) => {
-            if (a.order !== b.order) {
-                return (a.order || 0) - (b.order || 0);
-            }
+            if (a.order !== b.order) return (a.order || 0) - (b.order || 0);
             return a.name.localeCompare(b.name);
         });
 
-        // Build hierarchical structure
         const buildTree = (allItems, parentId = null, processedIds = new Set(), depth = 0) => {
-            // Safety check: prevent infinite recursion (max depth of 10 levels)
-            if (depth > 10) {
-                console.warn('Maximum tree depth reached, possible circular reference');
-                return [];
-            }
-
-            // Find items that match the current parent
+            if (depth > 10) return [];
             const matchingItems = allItems.filter(item => {
-                // Skip if already processed (prevent infinite loops)
                 const itemId = item._id ? (item._id.toString ? item._id.toString() : String(item._id)) : null;
-                if (!itemId || processedIds.has(itemId)) {
-                    return false;
-                }
-
-                // Prevent self-referencing (item cannot be its own parent)
-                if (parentId && itemId === (parentId.toString ? parentId.toString() : String(parentId))) {
-                    return false;
-                }
-
-                if (parentId === null) {
-                    // Root level: items with no parent
-                    return !item.parentId;
-                } else {
-                    // Child level: items matching the parent
-                    const itemParentId = item.parentId ? (item.parentId.toString ? item.parentId.toString() : String(item.parentId)) : null;
-                    const targetParentId = parentId ? (parentId.toString ? parentId.toString() : String(parentId)) : null;
-                    return itemParentId === targetParentId;
-                }
+                if (!itemId || processedIds.has(itemId)) return false;
+                if (parentId && itemId === (parentId.toString ? parentId.toString() : String(parentId))) return false;
+                if (parentId === null) return !item.parentId;
+                const itemParentId = item.parentId ? (item.parentId.toString ? item.parentId.toString() : String(item.parentId)) : null;
+                const targetParentId = parentId ? (parentId.toString ? parentId.toString() : String(parentId)) : null;
+                return itemParentId === targetParentId;
             });
-
-            // Mark items as processed and build tree
             return matchingItems.map(item => {
                 const itemId = item._id ? (item._id.toString ? item._id.toString() : String(item._id)) : null;
-                if (itemId) {
-                    processedIds.add(itemId);
-                }
-                
-                return {
-                    ...item,
-                    children: buildTree(allItems, item._id, processedIds, depth + 1)
-                };
+                if (itemId) processedIds.add(itemId);
+                return { ...item, children: buildTree(allItems, item._id, processedIds, depth + 1) };
             });
         };
 
         return buildTree(items);
     }, [menuResources, hasPermission, user]);
 
-    // Flatten tree for filtering (for search)
     const flattenMenu = (items) => {
         const result = [];
-        items.forEach(item => {
+        (items || []).forEach(item => {
             result.push(item);
             if (item.children && item.children.length > 0) {
                 result.push(...flattenMenu(item.children));
@@ -149,91 +111,131 @@ const Sidebar = () => {
         return result;
     };
 
-    // Filter menu based on search
     const filteredMenu = useMemo(() => {
-        const flatItems = flattenMenu(menuItems);
-        
-        if (!search) {
-            return menuItems;
-        }
-
+        if (!search) return menuItems;
         const searchLower = search.toLowerCase();
+        const flatItems = flattenMenu(menuItems);
         const matchingItems = flatItems.filter(item =>
-            item.name.toLowerCase().includes(searchLower) ||
-            item.path.toLowerCase().includes(searchLower)
+            item.name.toLowerCase().includes(searchLower) || (item.path && item.path.toLowerCase().includes(searchLower))
         );
-
-        // Rebuild tree with matching items and their parents
-        const buildFilteredTree = (allItems, matchingItems) => {
-            const matchingIds = new Set(matchingItems.map(item => item._id?.toString()));
+        const matchingIds = new Set(matchingItems.map(item => item._id?.toString()));
+        const buildFilteredTree = (allItems) => {
             const result = [];
-
             allItems.forEach(item => {
-                const hasMatchingChild = item.children && item.children.some(child =>
-                    matchingIds.has(child._id?.toString())
-                );
+                const hasMatchingChild = item.children && item.children.some(child => matchingIds.has(child._id?.toString()));
                 const isMatching = matchingIds.has(item._id?.toString());
-
                 if (isMatching || hasMatchingChild) {
                     result.push({
                         ...item,
-                        children: item.children ? buildFilteredTree(item.children, matchingItems) : []
+                        children: item.children ? buildFilteredTree(item.children) : []
                     });
                 }
             });
-
             return result;
         };
-
-        return buildFilteredTree(menuItems, matchingItems);
+        return buildFilteredTree(menuItems);
     }, [menuItems, search]);
 
-    // Restore scroll position after navigation/mount
+    // Sync expanded keys: replace with path-based keys on route change (so leaving a subtree closes smoothly)
+    useEffect(() => {
+        let keys = new Set();
+        if (search) {
+            const collectKeys = (items) => {
+                (items || []).forEach(item => {
+                    if (item.children && item.children.length > 0) {
+                        const k = item._id ? (item._id.toString ? item._id.toString() : String(item._id)) : item.path;
+                        keys.add(k);
+                        collectKeys(item.children);
+                    }
+                });
+            };
+            collectKeys(filteredMenu);
+        } else {
+            keys = getExpandedKeysForPath(menuItems, location.pathname);
+        }
+        setExpandedKeys(keys);
+    }, [location.pathname, getExpandedKeysForPath, menuItems, search, filteredMenu]);
+
     useEffect(() => {
         const timer = requestAnimationFrame(() => {
-            if (navRef.current) {
-                navRef.current.scrollTop = scrollPositionRef.current;
-            }
+            if (navRef.current) navRef.current.scrollTop = scrollPositionRef.current;
         });
         return () => cancelAnimationFrame(timer);
     }, [location.pathname, filteredMenu]);
 
-    // Render menu item (recursive for nested items)
+    const toggleExpand = (e, item) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const key = item._id ? (item._id.toString ? item._id.toString() : String(item._id)) : item.path;
+        setExpandedKeys(prev => {
+            const next = new Set(prev);
+            if (next.has(key)) next.delete(key);
+            else next.add(key);
+            return next;
+        });
+    };
+
+    // True if current route is this item or any descendant (so parent must stay open on child routes)
+    const isAncestorOfCurrentPath = useCallback((item) => {
+        if (!item) return false;
+        const base = item.path && !item.path.endsWith('/') ? item.path + '/' : item.path || '';
+        if (location.pathname === item.path) return true;
+        if (item.path !== '/dashboard' && location.pathname.startsWith(base)) return true;
+        if (item.children && item.children.length > 0) {
+            return item.children.some((ch) => isAncestorOfCurrentPath(ch));
+        }
+        return false;
+    }, [location.pathname]);
+
     const renderMenuItem = (item, level = 0) => {
-        const isActive = location.pathname === item.path || 
-            (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
-        
+        const key = item._id ? (item._id.toString ? item._id.toString() : String(item._id)) : item.path;
+        const isActive = location.pathname === item.path ||
+            (item.path !== '/dashboard' && location.pathname.startsWith(item.path + (item.path.endsWith('/') ? '' : '/')));
+        const hasChildren = item.children && item.children.length > 0;
+        const expandedByPath = hasChildren && isAncestorOfCurrentPath(item);
+        const isExpanded = expandedKeys.has(key) || expandedByPath;
         const paddingLeft = level > 0 ? `${level * 16 + 16}px` : '16px';
 
         return (
-            <div key={item._id || item.path}>
-                <NavLink
-                    to={item.path}
-                    className={`flex items-center px-4 py-2 rounded gap-2 group transition-colors duration-300 ease-out hover:bg-gray-700 ${
-                        isActive ? "bg-gray-700" : ""
-                    }`}
-                    style={{ paddingLeft }}
+            <div key={key} className="sidebar-item-wrapper">
+                <div
+                    className={`flex items-center rounded gap-2 group transition-colors duration-300 ease-out hover:bg-gray-700 ${isActive ? "bg-gray-700" : ""}`}
+                    style={{ paddingLeft, minHeight: '44px' }}
                 >
-                    {item.icon && (
-                        <span
-                            className={`transition-colors duration-300 ease-out ${
-                                isActive ? "text-gray-200" : "text-gray-500"
-                            } group-hover:text-gray-200`}
+                    {hasChildren ? (
+                        <button
+                            type="button"
+                            aria-label={isExpanded ? "Collapse" : "Expand"}
+                            onClick={(e) => toggleExpand(e, item)}
+                            className="shrink-0 p-1 rounded transition-colors duration-200 text-gray-500 hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-500"
                         >
-                            {item.icon}
-                        </span>
+                            {isExpanded ? <DownOutlined className="text-xs" /> : <RightOutlined className="text-xs" />}
+                        </button>
+                    ) : (
+                        <span className="shrink-0 w-5" aria-hidden />
                     )}
-                    <span
-                        className={`transition-colors duration-300 ease-out ${
+                    <NavLink
+                        to={item.path}
+                        className={`flex-1 flex items-center gap-2 py-2 pr-4 rounded min-w-0 ${
                             isActive ? "text-gray-200" : "text-gray-400"
-                        } group-hover:text-gray-200 font-semibold`}
+                        } group-hover:text-gray-200 font-semibold transition-colors duration-300 ease-out`}
                     >
-                        {item.name}
-                    </span>
-                </NavLink>
-                {item.children && item.children.length > 0 && (
-                    <div className="ml-4">
-                        {item.children.map(child => renderMenuItem(child, level + 1))}
+                        {item.icon && (
+                            <span className={`shrink-0 transition-colors duration-300 ease-out ${isActive ? "text-gray-200" : "text-gray-500"} group-hover:text-gray-200`}>
+                                {item.icon}
+                            </span>
+                        )}
+                        <span className="truncate">{item.name}</span>
+                    </NavLink>
+                </div>
+                {hasChildren && (
+                    <div
+                        className={`sidebar-collapse-content ${isExpanded ? 'sidebar-collapse-open' : 'sidebar-collapse-closed'}`}
+                        aria-hidden={!isExpanded}
+                    >
+                        <div className="sidebar-collapse-inner">
+                            {item.children.map(child => renderMenuItem(child, level + 1))}
+                        </div>
                     </div>
                 )}
             </div>
@@ -247,71 +249,71 @@ const Sidebar = () => {
                     scrollbar-width: thin;
                     scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
                 }
-                
-                .sidebar-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                }
-                
-                .sidebar-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                
+                .sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
+                .sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .sidebar-scrollbar::-webkit-scrollbar-thumb {
                     background-color: rgba(156, 163, 175, 0.5);
                     border-radius: 3px;
                     transition: background-color 0.2s ease;
                 }
-                
                 .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
                     background-color: rgba(156, 163, 175, 0.8);
                 }
+                .sidebar-item-wrapper + .sidebar-item-wrapper { margin-top: 2px; }
+                .sidebar-collapse-content {
+                    display: grid;
+                    overflow: hidden;
+                    transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .sidebar-collapse-content.sidebar-collapse-closed {
+                    grid-template-rows: 0fr;
+                }
+                .sidebar-collapse-content.sidebar-collapse-open {
+                    grid-template-rows: 1fr;
+                }
+                .sidebar-collapse-inner {
+                    min-height: 0;
+                    overflow: hidden;
+                }
             `}</style>
             <div className="h-full w-full bg-gray-800 text-white flex flex-col">
-            {/* Logo */}
-            <div className="p-4 pb-3 flex flex-col items-center border-gray-700 hover:bg-gray-700 cursor-pointer">
-                <NavLink to="/dashboard" className="py-1 pt-0">
-                    <img
-                        src="/images/logo-small.png"
-                        alt="Acero"
-                        className="w-34"
+                <div className="p-4 pb-3 flex flex-col items-center border-b border-gray-700 hover:bg-gray-700/50 cursor-pointer">
+                    <NavLink to="/dashboard" className="py-1 pt-0">
+                        <img src="/images/logo-small.png" alt="Acero" className="w-34" />
+                    </NavLink>
+                </div>
+
+                <div className="p-4 relative shrink-0">
+                    <SearchOutlined
+                        className="absolute right-8 top-1/2 -translate-y-1/2 rotate-90 scale-110 text-gray-500"
+                        style={{ color: '#6b7280' }}
                     />
-                </NavLink>
-            </div>
+                    <input
+                        type="text"
+                        placeholder="Search in menu"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="text-sm w-full px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
+                    />
+                </div>
 
-            {/* Search */}
-            <div className="p-4 relative">
-                <SearchOutlined
-                    className="absolute right-8 top-1/2 -translate-y-1/2 rotate-90 scale-110"
-                    style={{ color: '#374151' }}
-                />
-                <input
-                    type="text"
-                    placeholder="Search in menu"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="text-sm w-full px-3 py-2 rounded-lg border border-gray-700 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-gray-400"
-                />
+                <nav
+                    ref={navRef}
+                    className="flex-1 overflow-y-auto px-2 py-1 space-y-0 sidebar-scrollbar"
+                    onScroll={(e) => {
+                        scrollPositionRef.current = e.target.scrollTop;
+                        sessionStorage.setItem('sidebar-scroll-top', String(scrollPositionRef.current));
+                    }}
+                >
+                    {filteredMenu.length === 0 ? (
+                        <div className="px-4 py-2 text-gray-500 text-sm">
+                            {search ? "No results found" : "No menu items available"}
+                        </div>
+                    ) : (
+                        filteredMenu.map((item) => renderMenuItem(item))
+                    )}
+                </nav>
             </div>
-
-            {/* Menu */}
-            <nav 
-                ref={navRef}
-                className="flex-1 overflow-y-auto px-2 py-1 space-y-1 sidebar-scrollbar"
-                onScroll={(e) => {
-                    // Update scroll position ref as user scrolls and persist across remounts
-                    scrollPositionRef.current = e.target.scrollTop;
-                    sessionStorage.setItem('sidebar-scroll-top', String(scrollPositionRef.current));
-                }}
-            >
-                {filteredMenu.length === 0 ? (
-                    <div className="px-4 py-2 text-gray-400 text-sm">
-                        {search ? "No results found" : "No menu items available"}
-                    </div>
-                ) : (
-                    filteredMenu.map((item) => renderMenuItem(item))
-                )}
-            </nav>
-        </div>
         </>
     );
 };
