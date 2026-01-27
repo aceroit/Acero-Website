@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Card, Breadcrumb, Spin, Divider, Collapse, Space, Button } from 'antd';
-import { HomeOutlined, FileTextOutlined, HistoryOutlined } from '@ant-design/icons';
+import { Card, Breadcrumb, Spin, Divider, Collapse, Space, Button, Alert } from 'antd';
+import { HomeOutlined, FileTextOutlined, HistoryOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import PageForm from '../components/forms/PageForm';
 import PermissionWrapper from '../components/common/PermissionWrapper';
@@ -24,6 +24,7 @@ const PageEditor = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [breadcrumb, setBreadcrumb] = useState([]);
+  const [showHeaderSyncMessage, setShowHeaderSyncMessage] = useState(false);
 
   // Check workflow status permissions
   const workflowStatus = useWorkflowStatus({
@@ -80,7 +81,16 @@ const PageEditor = () => {
 
       if (response.success) {
         toast.success(isEdit ? 'Page updated successfully' : 'Page created successfully');
-        
+        if (values.showInMenu) {
+          setShowHeaderSyncMessage(true);
+          toast.info(
+            'This page is set to show in the menu. Go to Header Configuration → Sync from Page Tree → Submit for approval to display it in the site header.',
+            { autoClose: 8000 }
+          );
+        } else {
+          setShowHeaderSyncMessage(false);
+        }
+
         if (isEdit) {
           // After updating, stay on the edit page
           navigate(`/pages/${id}`);
@@ -224,6 +234,28 @@ const PageEditor = () => {
             </div>
           )}
         </div>
+
+        {/* Header sync message when page is set to show in menu */}
+        {showHeaderSyncMessage && (
+          <Alert
+            type="info"
+            icon={<InfoCircleOutlined />}
+            message="Show in menu"
+            description={
+              <>
+                This page is set to show in the menu. To display it in the site header, go to{' '}
+                <Button type="link" onClick={() => navigate('/website-configurations/header')} className="p-0 h-auto" style={{ fontWeight: 600 }}>
+                  Header Configuration
+                </Button>
+                , use <strong>Sync from Page Tree</strong>, and submit the header for approval.
+              </>
+            }
+            showIcon
+            closable
+            onClose={() => setShowHeaderSyncMessage(false)}
+            className="mb-4"
+          />
+        )}
 
         {/* Form Card */}
         <Card className="border border-gray-200 shadow-md bg-white">

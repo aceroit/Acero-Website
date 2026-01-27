@@ -108,28 +108,55 @@ const RolePermissions = () => {
     }
   };
 
-  // Fetch user-specific permissions
-  const fetchUserPermissions = async (userId) => {
+  // Build form data from permissions object (resourceSlug_action -> boolean)
+  const permissionsToFormData = (perms, resourcesList) => {
+    const formData = {};
+    if (!perms || typeof perms !== 'object') return formData;
+    const resourceMap = {};
+    (resourcesList || resources).forEach((r) => {
+      const slug = typeof r === 'object' ? r.slug : r;
+      if (r && typeof r === 'object' && r._id) resourceMap[r._id.toString()] = slug;
+      if (slug) resourceMap[slug] = slug;
+    });
+    Object.keys(perms).forEach((resourceKey) => {
+      const perm = perms[resourceKey];
+      if (!perm || !perm.actions || !Array.isArray(perm.actions)) return;
+      const slug = resourceMap[resourceKey] || (perm.resource && (typeof perm.resource === 'object' ? perm.resource.slug : perm.resource)) || resourceKey;
+      perm.actions.forEach((action) => {
+        formData[`${slug}_${action}`] = true;
+      });
+    });
+    return formData;
+  };
+
+  // Fetch role permissions + user permissions, then merge: role perms as base (all on), user perms override
+  const fetchUserPermissionsWithRoleBase = async (userId, resourcesList) => {
+    if (!role) return;
+    const list = resourcesList || resources;
+    if (!list.length) return;
     setLoadingPermissions(true);
     try {
-      const response = await permissionService.getUserPermissionsById(userId);
-      if (response.success) {
-        const perms = response.data.permissions || {};
-        const formData = {};
-        
-        // Convert permissions to form format
-        Object.keys(perms).forEach((resource) => {
-          const perm = perms[resource];
-          if (perm && perm.actions && Array.isArray(perm.actions)) {
-            perm.actions.forEach((action) => {
-              formData[`${resource}_${action}`] = true;
-            });
-          }
+      const [roleRes, userRes] = await Promise.all([
+        permissionService.getRolePermissions(role._id || role.slug || roleName),
+        permissionService.getUserPermissionsById(userId),
+      ]);
+      const rolePerms = roleRes?.data?.permissions || roleRes?.permissions || {};
+      const userPerms = userRes?.data?.permissions || userRes?.permissions || {};
+      const roleForm = permissionsToFormData(rolePerms, list);
+      const userForm = permissionsToFormData(userPerms, list);
+      // Base = all role permissions toggled on; then overlay user-specific overrides
+      const merged = { ...roleForm };
+      Object.keys(userForm).forEach((k) => { merged[k] = userForm[k]; });
+      // Ensure every resource+action has a value: missing -> use role or true for role perm
+      list.forEach((r) => {
+        const slug = typeof r === 'object' ? r.slug : r;
+        Object.values(ACTIONS).forEach((action) => {
+          const key = `${slug}_${action}`;
+          if (merged[key] === undefined) merged[key] = !!roleForm[key];
         });
-        
-        setUserPermissions(formData);
-        setInitialUserPermissions(JSON.parse(JSON.stringify(formData)));
-      }
+      });
+      setUserPermissions(merged);
+      setInitialUserPermissions(JSON.parse(JSON.stringify(merged)));
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to load user permissions');
     } finally {
@@ -151,11 +178,19 @@ const RolePermissions = () => {
     setHasChanges(changed);
   }, [userPermissions, initialUserPermissions]);
 
-  // Handle open user permissions modal
-  const handleManageUserPermissions = (user) => {
+  // Handle open user permissions modal: pre-fill with role permissions (all on), then user overrides
+  const handleManageUserPermissions = async (user) => {
     setSelectedUser(user);
     setIsUserPermissionsModalOpen(true);
-    fetchUserPermissions(user._id);
+    let list = resources;
+    if (!list.length) {
+      const res = await permissionService.getResourcesAndActions();
+      if (res.success && (res.data?.resources || []).length) {
+        list = res.data.resources || [];
+        setResources(list);
+      }
+    }
+    if (list.length) await fetchUserPermissionsWithRoleBase(user._id, list);
   };
 
   // Handle toggle change
@@ -165,6 +200,28 @@ const RolePermissions = () => {
       ...prev,
       [key]: !prev[key],
     }));
+  };
+
+  // Toggle all permissions on (all resources, all actions)
+  const handleToggleAllOn = () => {
+    const next = {};
+    resources.forEach((r) => {
+      const slug = typeof r === 'object' ? r.slug : r;
+      Object.values(ACTIONS).forEach((action) => {
+        next[`${slug}_${action}`] = true;
+      });
+    });
+    setUserPermissions(next);
+  };
+
+  // Toggle all actions on for one resource
+  const handleToggleResourceOn = (resourceSlug) => {
+    const next = { ...userPermissions };
+    const allOn = Object.values(ACTIONS).every((action) => next[`${resourceSlug}_${action}`]);
+    Object.values(ACTIONS).forEach((action) => {
+      next[`${resourceSlug}_${action}`] = !allOn;
+    });
+    setUserPermissions(next);
   };
 
   // Handle save user permissions
@@ -269,8 +326,8 @@ const RolePermissions = () => {
       render: (_, record) => {
         const menuItems = [
           {
-            key: 'manage-permissions',
-            label: 'Manage Permissions',
+            key: 'manage-user-permission',
+            label: 'Manage User Permission',
             icon: <SettingOutlined />,
             onClick: () => handleManageUserPermissions(record),
           },
@@ -442,7 +499,7 @@ const RolePermissions = () => {
           title={
             <div className="flex items-center gap-2">
               <SettingOutlined />
-              <span>Manage Permissions: {selectedUser ? getUserFullName(selectedUser) : ''}</span>
+              <span>Manage User Permission: {selectedUser ? getUserFullName(selectedUser) : ''}</span>
             </div>
           }
           open={isUserPermissionsModalOpen}
@@ -495,20 +552,43 @@ const RolePermissions = () => {
                   These settings will take precedence over the role's default permissions.
                 </p>
               </div>
+
+              <div className="mb-4 flex flex-wrap gap-2">
+                <Button
+                  type="default"
+                  onClick={handleToggleAllOn}
+                  className="text-gray-700"
+                >
+                  Toggle all ON (all resources)
+                </Button>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto">
                 {resources.map((resource) => {
                   // Use slug as the key for permissions (backend expects slug/path/ObjectId)
                   const resourceSlug = typeof resource === 'object' ? resource.slug : resource;
                   const resourceName = typeof resource === 'object' ? resource.name || resource.slug : resource;
+                  const allOnForResource = Object.values(ACTIONS).every(
+                    (action) => userPermissions[`${resourceSlug}_${action}`]
+                  );
                   
                   return (
                     <Card
                       key={resourceSlug}
                       className="border border-gray-200 shadow-sm hover:shadow-md transition-all"
                       title={
-                        <div className="font-semibold text-gray-900 text-sm">
-                          {formatResourceName(resource)}
+                        <div className="flex items-center justify-between gap-2 w-full">
+                          <span className="font-semibold text-gray-900 text-sm truncate">
+                            {formatResourceName(resource)}
+                          </span>
+                          <Button
+                            type="link"
+                            size="small"
+                            onClick={(e) => { e.stopPropagation(); handleToggleResourceOn(resourceSlug); }}
+                            className="shrink-0 p-0 h-auto text-xs"
+                          >
+                            {allOnForResource ? 'All OFF' : 'All ON'}
+                          </Button>
                         </div>
                       }
                       bodyStyle={{ padding: '12px' }}

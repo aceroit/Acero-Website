@@ -300,6 +300,28 @@ const Roles = () => {
     }));
   };
 
+  // Toggle all permissions on (all resources, all actions) — for Manage role Permission modal
+  const handleToggleAllOnRole = () => {
+    const next = {};
+    resources.forEach((r) => {
+      const slug = typeof r === 'object' ? r.slug : r;
+      Object.values(ACTIONS).forEach((action) => {
+        next[`${slug}_${action}`] = true;
+      });
+    });
+    setRolePermissions(next);
+  };
+
+  // Toggle all actions on/off for one resource — for Manage role Permission modal
+  const handleToggleResourceOnRole = (resourceSlug) => {
+    const next = { ...rolePermissions };
+    const allOn = Object.values(ACTIONS).every((action) => next[`${resourceSlug}_${action}`]);
+    Object.values(ACTIONS).forEach((action) => {
+      next[`${resourceSlug}_${action}`] = !allOn;
+    });
+    setRolePermissions(next);
+  };
+
   // Check if permissions have changed
   useEffect(() => {
     const changed = JSON.stringify(rolePermissions) !== JSON.stringify(initialRolePermissions);
@@ -495,14 +517,14 @@ const Roles = () => {
       render: (_, record) => {
         const menuItems = [
           {
-            key: 'view-permissions',
-            label: 'View Permissions',
-            icon: <EyeOutlined />,
+            key: 'view-role-users',
+            label: 'View role specific users',
+            icon: <UserOutlined />,
             onClick: () => handleViewPermissions(record),
           },
           {
-            key: 'manage-permissions',
-            label: 'Manage Permissions',
+            key: 'manage-role-permission',
+            label: 'Manage role Permission',
             icon: <SettingOutlined />,
             onClick: () => handleManageRolePermissions(record),
           },
@@ -790,20 +812,43 @@ const Roles = () => {
                   Users with this role will inherit these permissions unless they have user-specific overrides.
                 </p>
               </div>
+
+              <div className="mb-4 flex flex-wrap gap-2">
+                <Button
+                  type="default"
+                  onClick={handleToggleAllOnRole}
+                  className="text-gray-700"
+                >
+                  Toggle all ON (all resources)
+                </Button>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto">
                 {resources.map((resource) => {
                   // Use slug as the key for permissions (backend expects slug/path/ObjectId)
                   const resourceSlug = typeof resource === 'object' ? resource.slug : resource;
                   const resourceName = typeof resource === 'object' ? resource.name || resource.slug : resource;
+                  const allOnForResource = Object.values(ACTIONS).every(
+                    (action) => rolePermissions[`${resourceSlug}_${action}`]
+                  );
                   
                   return (
                     <Card
                       key={resourceSlug}
                       className="border border-gray-200 shadow-sm hover:shadow-md transition-all"
                       title={
-                        <div className="font-semibold text-gray-900 text-sm">
-                          {formatResourceName(resource)}
+                        <div className="flex items-center justify-between gap-2 w-full">
+                          <span className="font-semibold text-gray-900 text-sm truncate">
+                            {formatResourceName(resource)}
+                          </span>
+                          <Button
+                            type="link"
+                            size="small"
+                            onClick={(e) => { e.stopPropagation(); handleToggleResourceOnRole(resourceSlug); }}
+                            className="shrink-0 p-0 h-auto text-xs"
+                          >
+                            {allOnForResource ? 'All OFF' : 'All ON'}
+                          </Button>
                         </div>
                       }
                       bodyStyle={{ padding: '12px' }}

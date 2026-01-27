@@ -283,83 +283,54 @@ const WorkflowActions = ({
     return null;
   }
 
+  // Every workflow action uses confirmation: Yes / No → then proceed (or open feedback modal)
+  const renderConfirmButton = (action) => {
+    const config = actionConfigs[action];
+    if (!config) return null;
+
+    const buttonProps = {
+      size,
+      icon: config.icon,
+      loading: loading,
+      disabled: loading,
+    };
+    if (config.type === 'primary') {
+      buttonProps.type = 'primary';
+      if (config.color) {
+        buttonProps.style = { backgroundColor: config.color, borderColor: config.color };
+      }
+    } else if (config.danger) {
+      buttonProps.danger = true;
+    }
+
+    const onConfirm = () => {
+      if (config.requiresFeedback) {
+        openFeedbackModal(action);
+      } else {
+        handleAction(action);
+      }
+    };
+
+    return (
+      <Popconfirm
+        key={action}
+        title={`${config.label}?`}
+        description={`Are you sure you want to ${config.label.toLowerCase()} this content?`}
+        onConfirm={onConfirm}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button {...buttonProps}>
+          {showLabels && config.label}
+        </Button>
+      </Popconfirm>
+    );
+  };
+
   return (
     <>
       <Space size="small" style={{ flexWrap: 'nowrap' }}>
-        {filteredActions.map((action) => {
-          const config = actionConfigs[action];
-          if (!config) return null;
-
-          // For destructive actions (reject/archive), show confirmation first
-          if (action === 'reject' || action === 'archive') {
-            const buttonProps = {
-              size,
-              icon: config.icon,
-              loading: loading,
-              disabled: loading,
-            };
-
-            if (config.type === 'primary') {
-              buttonProps.type = 'primary';
-              if (config.color) {
-                buttonProps.style = { backgroundColor: config.color, borderColor: config.color };
-              }
-            } else if (config.danger) {
-              buttonProps.danger = true;
-            }
-
-            return (
-              <Popconfirm
-                key={action}
-                title={`${config.label}?`}
-                description={`Are you sure you want to ${config.label.toLowerCase()} this content?`}
-                onConfirm={() => {
-                  // For reject: show feedback modal after confirmation
-                  // For archive: perform action directly after confirmation
-                  if (action === 'reject') {
-                    openFeedbackModal(action);
-                  } else {
-                    handleAction(action);
-                  }
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Button {...buttonProps}>
-                  {showLabels && config.label}
-                </Button>
-              </Popconfirm>
-            );
-          }
-
-          // For non-destructive actions, use normal onClick handler
-          const buttonProps = {
-            size,
-            icon: config.icon,
-            loading: loading,
-            disabled: loading,
-            onClick: config.requiresFeedback
-              ? () => openFeedbackModal(action)
-              : () => handleAction(action),
-          };
-
-          if (config.type === 'primary') {
-            buttonProps.type = 'primary';
-            if (config.color) {
-              buttonProps.style = { backgroundColor: config.color, borderColor: config.color };
-            }
-          } else if (config.danger) {
-            buttonProps.danger = true;
-          }
-
-          return (
-            <Tooltip key={action} title={config.label}>
-              <Button {...buttonProps}>
-                {showLabels && config.label}
-              </Button>
-            </Tooltip>
-          );
-        })}
+        {filteredActions.map((action) => renderConfirmButton(action))}
       </Space>
 
       <FeedbackModal

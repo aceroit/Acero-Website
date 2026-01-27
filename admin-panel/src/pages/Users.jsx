@@ -44,6 +44,7 @@ const Users = () => {
     pageSize: 10,
     total: 0,
   });
+  const [sortConfig, setSortConfig] = useState({ sortBy: 'createdAt', sortOrder: 'desc' });
 
   const { user: currentUser } = useAuth();
   const { hasPermission } = usePermissions();
@@ -58,6 +59,8 @@ const Users = () => {
         search: searchText,
         role: roleFilter,
         isActive: statusFilter,
+        sortBy: sortConfig.sortBy,
+        sortOrder: sortConfig.sortOrder,
         ...params,
       });
 
@@ -122,7 +125,26 @@ const Users = () => {
   useEffect(() => {
     fetchUsers();
     fetchStats();
-  }, [pagination.current, pagination.pageSize, searchText, roleFilter, statusFilter]);
+  }, [pagination.current, pagination.pageSize, searchText, roleFilter, statusFilter, sortConfig.sortBy, sortConfig.sortOrder]);
+
+  // Handle table change (sort, pagination)
+  const handleTableChange = (newPagination, filters, sorter) => {
+    if (newPagination && (newPagination.current !== pagination.current || newPagination.pageSize !== pagination.pageSize)) {
+      setPagination((prev) => ({
+        ...prev,
+        current: newPagination.current,
+        pageSize: newPagination.pageSize || prev.pageSize,
+      }));
+    }
+    if (sorter && (sorter.field != null || sorter.column?.dataIndex != null) && sorter.order != null) {
+      const field = sorter.field ?? sorter.column?.dataIndex ?? sorter.column?.key;
+      const fieldMap = { firstName: 'firstName', name: 'firstName', email: 'email', role: 'role', isActive: 'isActive' };
+      const sortBy = fieldMap[field] ?? (typeof field === 'string' ? field : 'createdAt');
+      const sortOrder = sorter.order === 'ascend' ? 'asc' : 'desc';
+      setSortConfig({ sortBy, sortOrder });
+      setPagination((prev) => ({ ...prev, current: 1 }));
+    }
+  };
 
   // Handle create user
   const handleCreate = async (values) => {
@@ -195,12 +217,21 @@ const Users = () => {
     fetchUsers({ search: value });
   };
 
+  // Map sort field to column sortOrder
+  const getSortOrder = (field) => {
+    if (sortConfig.sortBy !== field) return undefined;
+    return sortConfig.sortOrder === 'asc' ? 'ascend' : 'descend';
+  };
+
   // Table columns
   const columns = [
     {
       title: 'Name',
       key: 'name',
+      dataIndex: 'firstName',
       sorter: true,
+      sortOrder: getSortOrder('firstName'),
+      sortDirections: ['ascend', 'descend'],
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-semibold">
@@ -215,6 +246,8 @@ const Users = () => {
       dataIndex: 'email',
       key: 'email',
       sorter: true,
+      sortOrder: getSortOrder('email'),
+      sortDirections: ['ascend', 'descend'],
       render: (email) => (
         <span className="text-gray-700">{email}</span>
       ),
@@ -223,6 +256,9 @@ const Users = () => {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
+      sorter: true,
+      sortOrder: getSortOrder('role'),
+      sortDirections: ['ascend', 'descend'],
       render: (role) => {
         // Handle both Role object and string
         const roleDisplay = typeof role === 'object' ? getRoleDisplayName(role) : formatRole(role);
@@ -236,12 +272,14 @@ const Users = () => {
           </Tag>
         );
       },
-      sorter: true,
     },
     {
       title: 'Status',
       dataIndex: 'isActive',
       key: 'isActive',
+      sorter: true,
+      sortOrder: getSortOrder('isActive'),
+      sortDirections: ['ascend', 'descend'],
       render: (isActive) => (
         <Tag 
           color={isActive !== false ? 'green' : 'red'}
@@ -406,7 +444,7 @@ const Users = () => {
           </div>
         </Card>
 
-        {/* Users Table */}
+        {/* Users Table - only table body scrolls, not the whole page */}
         <Card 
           className="border border-gray-200 shadow-md bg-white"
           bodyStyle={{ padding: 0 }}
@@ -417,6 +455,7 @@ const Users = () => {
             loading={loading}
             rowKey="_id"
             className="custom-table users-table"
+            onChange={handleTableChange}
             pagination={{
               ...pagination,
               showSizeChanger: true,
@@ -424,15 +463,8 @@ const Users = () => {
               showTotal: (total, range) => 
                 `${range[0]}-${range[1]} of ${total} users`,
               pageSizeOptions: ['10', '20', '50', '100'],
-              onChange: (page, pageSize) => {
-                setPagination((prev) => ({
-                  ...prev,
-                  current: page,
-                  pageSize,
-                }));
-              },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 340px)' }}
           />
         </Card>
 

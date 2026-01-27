@@ -50,14 +50,21 @@ const Sidebar = () => {
             _id: 'dashboard-hardcoded',
         });
 
+        // Paths visible only to super_admin (hidden from sidebar for everyone else)
+        const superAdminOnlyPaths = ['/roles', '/resources', '/permissions', '/section-types'];
+        const isSuperAdmin = hasRole(ROLES.SUPER_ADMIN);
+
         if (menuResources && Array.isArray(menuResources) && menuResources.length > 0) {
             menuResources.forEach((resource) => {
                 const isActive = resource.isActive !== undefined ? resource.isActive : true;
                 const showInMenu = resource.showInMenu !== undefined ? resource.showInMenu : true;
                 if (!isActive || !showInMenu) return;
 
+                const resourcePath = resource.path || '';
+                if (superAdminOnlyPaths.includes(resourcePath) && !isSuperAdmin) return;
+
                 const resourceSlug = resource.slug || resource._id?.toString();
-                const hasAccess = user?.role === ROLES.SUPER_ADMIN ||
+                const hasAccess = isSuperAdmin ||
                     (resourceSlug && hasPermission(resourceSlug, 'read'));
 
                 if (hasAccess) {
@@ -98,7 +105,7 @@ const Sidebar = () => {
         };
 
         return buildTree(items);
-    }, [menuResources, hasPermission, user]);
+    }, [menuResources, hasPermission, hasRole, user]);
 
     const flattenMenu = (items) => {
         const result = [];

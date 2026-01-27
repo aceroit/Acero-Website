@@ -15,12 +15,60 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as pageService from '../services/pageService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+// Row actions with workflow-based visibility (Edit/Delete only when allowed by status + permission)
+const PageRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'page',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('sections', 'read')) {
+    menuItems.push({
+      key: 'sections',
+      label: 'View Sections',
+      icon: <UnorderedListOutlined />,
+      onClick: () => onNavigate(`/pages/${record._id}/sections`),
+    });
+  }
+  if (hasPermission('pages', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({
+      key: 'edit',
+      label: 'Edit',
+      icon: <EditOutlined />,
+      onClick: () => onNavigate(`/pages/${record._id}`),
+    });
+  }
+  if (hasPermission('pages', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({
+      key: 'delete',
+      label: 'Delete',
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: () => onDeleteClick(record),
+    });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown
+        menu={{ items: menuItems }}
+        trigger={['click']}
+        placement="bottomRight"
+      >
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" />
+      </Dropdown>
+    </div>
+  );
+};
 
 // Status color mapping
 const getStatusColor = (status) => {
@@ -62,6 +110,8 @@ const Pages = () => {
     pageSize: 10,
     total: 0,
   });
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('descend');
 
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
@@ -70,13 +120,17 @@ const Pages = () => {
   const fetchPages = async (params = {}) => {
     setLoading(true);
     try {
-      const response = await pageService.getAllPages({
-        page: pagination.current,
-        limit: pagination.pageSize,
-        search: searchText,
-        status: statusFilter,
-        ...params,
-      });
+      const sortBy = params.sortBy ?? sortField;
+      const order = params.sortOrder ?? sortOrder;
+      const apiParams = {
+        page: params.page ?? pagination.current,
+        limit: params.limit ?? pagination.pageSize,
+        search: params.search !== undefined ? params.search : searchText,
+        status: params.status !== undefined ? params.status : statusFilter,
+        sortBy: sortBy === 'title' ? 'title' : 'createdAt',
+        sortOrder: order === 'ascend' ? 'asc' : 'desc',
+      };
+      const response = await pageService.getAllPages(apiParams);
 
       if (response.success) {
         setPages(response.data.pages || response.data || []);
@@ -101,7 +155,25 @@ const Pages = () => {
 
   useEffect(() => {
     fetchPages();
-  }, [pagination.current, pagination.pageSize, statusFilter]);
+  }, [pagination.current, pagination.pageSize, statusFilter, sortField, sortOrder, searchText]);
+
+  // Handle table change (pagination, filters, sort)
+  const handleTableChange = (newPagination, newFilters, newSorter) => {
+    const newStatus = newFilters?.status?.[0] ?? null;
+    const sorter = Array.isArray(newSorter) ? newSorter[0] : newSorter;
+    const filterOrSortChanged = statusFilter !== newStatus || (sorter?.field && (sorter.field !== sortField || sorter.order !== sortOrder));
+
+    setPagination((prev) => ({
+      ...prev,
+      current: filterOrSortChanged ? 1 : newPagination.current,
+      pageSize: newPagination.pageSize,
+    }));
+    setStatusFilter(newStatus);
+    if (sorter?.field) {
+      setSortField(sorter.field === 'title' ? 'title' : 'createdAt');
+      setSortOrder(sorter.order || 'descend');
+    }
+  };
 
   // Handle delete page
   const handleDelete = async () => {
@@ -129,6 +201,7 @@ const Pages = () => {
   const columns = [
     {
       title: 'Title',
+      dataIndex: 'title',
       key: 'title',
       sorter: true,
       render: (_, record) => (
@@ -155,6 +228,7 @@ const Pages = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      filteredValue: statusFilter ? [statusFilter] : undefined,
       render: (status) => (
         <Tag 
           color={getStatusColor(status)}
@@ -211,60 +285,16 @@ const Pages = () => {
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-        
-        if (hasPermission('sections', 'read')) {
-          menuItems.push({
-            key: 'sections',
-            label: 'View Sections',
-            icon: <UnorderedListOutlined />,
-            onClick: () => {
-              navigate(`/pages/${record._id}/sections`);
-            },
-          });
-        }
-
-        if (hasPermission('pages', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/pages/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('pages', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedPage(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <PageRowActions
+          record={record}
+          onNavigate={(path) => navigate(path)}
+          onDeleteClick={(page) => {
+            setSelectedPage(page);
+            setIsDeleteModalOpen(true);
+          }}
+        />
+      ),
     },
   ];
 
@@ -352,9 +382,9 @@ const Pages = () => {
           </div>
         </Card>
 
-        {/* Pages Table */}
+        {/* Pages Table - only table body scrolls, not the whole page */}
         <Card 
-          className="border border-gray-200 shadow-md bg-white"
+          className="border border-gray-200 shadow-md bg-white overflow-hidden"
           bodyStyle={{ padding: 0 }}
         >
           <Table
@@ -378,7 +408,8 @@ const Pages = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content' }}
+            onChange={handleTableChange}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('pages', 'update')) {

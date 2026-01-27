@@ -311,7 +311,7 @@ const PageTreeView = ({ onPageSelect, onRefresh }) => {
 
         await pageService.reorderPages(reorderList);
         toast.success('Pages reordered successfully');
-        
+        toast.info('Sync Header from Page Tree in Header Configuration to update the site navigation.', { autoClose: 6000 });
         fetchTree();
         if (onRefresh) onRefresh();
       } catch (error) {
@@ -413,7 +413,7 @@ const PageTreeView = ({ onPageSelect, onRefresh }) => {
       try {
         await pageService.reorderPages(reorderList);
         toast.success('Pages reordered successfully');
-        
+        toast.info('Sync Header from Page Tree in Header Configuration to update the site navigation.', { autoClose: 6000 });
         fetchTree();
         if (onRefresh) onRefresh();
       } catch (error) {

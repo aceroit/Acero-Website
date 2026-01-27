@@ -463,7 +463,7 @@ const Resources = () => {
                     pageSizeOptions: ['10', '20', '50', '100'],
                     responsive: true,
                   }}
-                  scroll={{ x: 1000 }}
+                  scroll={{ x: 1000, y: 'calc(100vh - 340px)' }}
                   locale={{
                     emptyText: (
                       <div className="py-12 text-center">

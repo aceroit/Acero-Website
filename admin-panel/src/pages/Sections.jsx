@@ -90,6 +90,48 @@ const getStatusLabel = (status) => {
   return labels[status] || status;
 };
 
+// Row actions with workflow-based visibility (Edit/Delete only when allowed by status + permission)
+const SectionRowActions = ({ record, pageId, onNavigate, onDuplicate, onDelete, hasPermission }) => {
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'section',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('sections', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({
+      key: 'edit',
+      label: 'Edit',
+      icon: <EditOutlined />,
+      onClick: () => onNavigate(`/pages/${pageId}/sections/${record._id}`),
+    });
+  }
+  if (hasPermission('sections', 'create')) {
+    menuItems.push({
+      key: 'duplicate',
+      label: 'Duplicate',
+      icon: <CopyOutlined />,
+      onClick: () => onDuplicate(record._id),
+    });
+  }
+  if (hasPermission('sections', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({
+      key: 'delete',
+      label: 'Delete',
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: () => onDelete(record._id),
+    });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" />
+      </Dropdown>
+    </div>
+  );
+};
+
 const Sections = () => {
   const { pageId } = useParams();
   const navigate = useNavigate();
@@ -158,21 +200,9 @@ const Sections = () => {
     }
   };
 
-  // Handle toggle visibility
+  // Handle toggle visibility (VisibilitySwitch already disables when user cannot edit; backend validates)
   const handleToggleVisibility = async (sectionId, currentVisibility, sectionStatus, sectionCreatedBy) => {
     try {
-      // Check if user can edit this section based on workflow status
-      const workflowStatus = useWorkflowStatus({
-        status: sectionStatus,
-        resourceType: 'section',
-        createdBy: sectionCreatedBy
-      });
-
-      if (!workflowStatus.canEdit.canEdit) {
-        toast.error(workflowStatus.canEdit.reason || 'You do not have permission to toggle section visibility');
-        return;
-      }
-
       const response = await sectionService.toggleVisibility(sectionId);
       if (response.success) {
         toast.success(
@@ -344,59 +374,16 @@ const Sections = () => {
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-        
-        if (hasPermission('sections', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/pages/${pageId}/sections/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('sections', 'create')) {
-          menuItems.push({
-            key: 'duplicate',
-            label: 'Duplicate',
-            icon: <CopyOutlined />,
-            onClick: () => {
-              handleDuplicate(record._id);
-            },
-          });
-        }
-
-        if (hasPermission('sections', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              handleDelete(record._id);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <SectionRowActions
+          record={record}
+          pageId={pageId}
+          onNavigate={(path) => navigate(path)}
+          onDuplicate={handleDuplicate}
+          onDelete={handleDelete}
+          hasPermission={hasPermission}
+        />
+      ),
     },
   ];
 
