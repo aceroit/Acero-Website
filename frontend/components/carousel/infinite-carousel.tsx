@@ -69,33 +69,18 @@ export function InfiniteCarousel({
                 itemClassName || "h-20 w-32 md:h-24 md:w-40"
               )}
             >
-              {removeBackground ? (
-                // For certificates - no background, just the image, use full size
-                <div className="relative h-full w-full">
-                  <Image
-                    src={item.image}
-                    alt={item.alt}
-                    fill
-                    loading="lazy"
-                    className="object-contain"
-                    sizes="(max-width: 768px) 512px, (max-width: 1024px) 640px, 768px"
-                    quality={90}
-                  />
-                </div>
-              ) : (
-                // For customers - keep grayscale effect
-                <div className="relative h-16 w-32 grayscale transition-all hover:grayscale-0 md:h-20 md:w-40">
-                  <Image
-                    src={item.image}
-                    alt={item.alt}
-                    fill
-                    loading="lazy"
-                    className="object-contain"
-                    sizes="(max-width: 768px) 128px, 160px"
-                    quality={80}
-                  />
-                </div>
-              )}
+              {/* No grey tint – keep images original (no grayscale) */}
+              <div className="relative h-full w-full">
+                <Image
+                  src={item.image}
+                  alt={item.alt}
+                  fill
+                  loading="lazy"
+                  className="object-contain"
+                  sizes="(max-width: 768px) 256px, (max-width: 1024px) 320px, 384px"
+                  quality={90}
+                />
+              </div>
             </div>
           ))}
         </div>

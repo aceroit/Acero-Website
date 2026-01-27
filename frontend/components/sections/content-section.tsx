@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useState, useLayoutEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -17,6 +17,7 @@ interface ContentSectionProps {
   }
   image?: string
   imageAlt?: string
+  images?: Array<{ url: string; imageAlt?: string }>
   layout?: "image-left" | "image-right" | "image-center" | "text-only" | "split"
   variant?: "default" | "accent" | "muted"
   className?: string
@@ -28,12 +29,36 @@ export function ContentSection({
   cta,
   image,
   imageAlt,
+  images,
   layout = "image-right",
   variant = "default",
   className,
 }: ContentSectionProps) {
+  // Merge single image + images array: initial image first, then array, all shown in vertical stack when 2+
+  const allImages: Array<{ url: string; imageAlt?: string }> = [
+    ...(image ? [{ url: image, imageAlt: imageAlt ?? title }] : []),
+    ...(images ?? []),
+  ].filter((i) => i?.url)
+  const showVerticalStack = allImages.length > 1 && layout !== "text-only"
+  const showSingleImage = allImages.length === 1 && layout !== "text-only"
   const ref = useRef(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [contentHeight, setContentHeight] = useState<number | null>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  // Constrain image stack height to content height (so images don’t extend past content)
+  useLayoutEffect(() => {
+    if (!showVerticalStack) return
+    const el = contentRef.current
+    if (!el) return
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) {
+        setContentHeight(e.contentRect.height)
+      }
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [showVerticalStack, title, paragraphs.length])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -61,7 +86,7 @@ export function ContentSection({
       case "image-right":
         return "lg:grid-cols-2"
       case "image-center":
-        return "lg:grid-cols-1"
+        return "lg:grid-cols-2"
       case "text-only":
         return "lg:grid-cols-1"
       case "split":
@@ -74,12 +99,14 @@ export function ContentSection({
   const getImageOrder = () => {
     if (layout === "image-left") return "lg:order-1"
     if (layout === "image-right") return "lg:order-2"
+    if (layout === "image-center") return "lg:order-2"
     return ""
   }
 
   const getContentOrder = () => {
     if (layout === "image-left") return "lg:order-2"
     if (layout === "image-right") return "lg:order-1"
+    if (layout === "image-center") return "lg:order-1"
     return ""
   }
 
@@ -110,22 +137,58 @@ export function ContentSection({
           animate={isInView ? "visible" : "hidden"}
           className={cn("grid gap-12 md:gap-16", getLayoutClasses())}
         >
-          {/* Image */}
-          {image && layout !== "text-only" && (
+          {/* Image(s) — vertical stack when 2+ images, single full-height when 1 */}
+          {showVerticalStack && (
+            <motion.div
+              variants={itemVariants}
+              style={
+                contentHeight != null
+                  ? { maxHeight: contentHeight }
+                  : undefined
+              }
+              className={cn(
+                "flex flex-col gap-3 md:gap-4 w-full min-h-0 overflow-hidden lg:self-stretch",
+                getImageOrder()
+              )}
+            >
+              {allImages.map((img, idx) => (
+                <div
+                  key={idx}
+                  className="relative min-h-0 flex-1 w-full overflow-hidden rounded-lg border border-border bg-card"
+                >
+                  <Image
+                    src={img.url}
+                    alt={img.imageAlt || title}
+                    fill
+                    loading="lazy"
+                    className="object-cover transition-transform duration-700 hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                    quality={85}
+                  />
+                </div>
+              ))}
+            </motion.div>
+          )}
+          {showSingleImage && (
             <motion.div
               variants={itemVariants}
               className={cn(
-                "relative aspect-[4/3] overflow-hidden rounded-lg self-center",
-                layout === "image-center" ? "mx-auto max-w-4xl" : "",
+                "relative overflow-hidden rounded-lg",
+                layout === "image-center"
+                  ? "aspect-[4/3] w-full max-w-2xl lg:max-w-full mx-auto lg:mx-0 self-center"
+                  : "aspect-[4/3] lg:aspect-auto self-center lg:self-stretch min-h-[280px] lg:min-h-0",
                 getImageOrder()
               )}
             >
               <Image
-                src={image}
-                alt={imageAlt || title}
+                src={allImages[0].url}
+                alt={allImages[0].imageAlt || title}
                 fill
                 loading="lazy"
-                className="object-contain transition-transform duration-700 hover:scale-105"
+                className={cn(
+                  "transition-transform duration-700 hover:scale-105",
+                  layout === "image-center" ? "object-contain" : "object-cover"
+                )}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 quality={85}
               />
@@ -134,6 +197,7 @@ export function ContentSection({
 
           {/* Content */}
           <motion.div
+            ref={contentRef}
             variants={itemVariants}
             className={cn(
               "flex flex-col justify-center",

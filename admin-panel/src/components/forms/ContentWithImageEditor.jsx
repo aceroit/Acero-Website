@@ -128,9 +128,9 @@ const ContentWithImageEditor = ({ value = {}, onChange, form }) => {
               getValueFromEvent={(imageData) => {
                 return imageData?.url || '';
               }}
-              getValueProps={(value) => {
+              getValueProps={(val) => {
                 return {
-                  value: value ? { url: value } : null
+                  value: val ? { url: val } : null
                 };
               }}
             >
@@ -153,6 +153,63 @@ const ContentWithImageEditor = ({ value = {}, onChange, form }) => {
               />
             </Form.Item>
           </div>
+        </Card>
+
+        {/* Additional Images (e.g. for Primary Members - 3 images) */}
+        <Card className="border border-gray-200 shadow-sm bg-white">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">Additional Images</h3>
+          <p className="text-xs text-gray-500 mb-4">
+            Add extra images to show in a row (e.g. Primary Members section). When added, these are displayed alongside the content.
+          </p>
+          <Form.List name={['content', 'images']} initialValue={value.images || []}>
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field) => (
+                  <Card
+                    key={field.key}
+                    size="small"
+                    className="border border-gray-200 shadow-sm bg-white mb-4"
+                    title={
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-gray-700">Image {field.name + 1}</span>
+                        <Button
+                          type="text"
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={() => remove(field.name)}
+                          size="small"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    }
+                  >
+                    <Form.Item
+                      name={[field.name, 'url']}
+                      label="Image URL"
+                      valuePropName="value"
+                      getValueFromEvent={(imageData) => imageData?.url || ''}
+                      getValueProps={(val) => ({ value: val ? { url: val } : null })}
+                    >
+                      <ImageUpload folder="content" label="" maxSize={10} />
+                    </Form.Item>
+                    <Form.Item name={[field.name, 'imageAlt']} label="Image Alt Text">
+                      <Input placeholder="Alt text for accessibility" size="large" maxLength={200} />
+                    </Form.Item>
+                  </Card>
+                ))}
+                <Button
+                  type="dashed"
+                  icon={<PlusOutlined />}
+                  onClick={() => add({ url: '', imageAlt: '' })}
+                  block
+                  size="large"
+                >
+                  Add Image
+                </Button>
+              </>
+            )}
+          </Form.List>
         </Card>
 
         {/* Layout and Variant */}

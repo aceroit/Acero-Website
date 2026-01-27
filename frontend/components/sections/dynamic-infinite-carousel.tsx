@@ -16,8 +16,19 @@ interface DynamicInfiniteCarouselProps {
 }
 
 /**
- * Dynamic Infinite Carousel that fetches data from backend
- * Detects if it's a certification or customer section based on title
+ * Dynamic Infinite Carousel – where do images come from?
+ *
+ * 1. OUR QUALITY CERTIFICATIONS (title contains "certification" or "quality")
+ *    → FROM CERTIFICATIONS MASTER: useCertificates() fetches published certs from the API.
+ *    → Section content.items are ignored. Edit in Admin: Certifications.
+ *
+ * 2. OUR CUSTOMERS (title contains "customer")
+ *    → FROM CUSTOMERS MASTER: useCustomers() fetches published customers from the API.
+ *    → Section content.items are ignored. Edit in Admin: Customers.
+ *
+ * 3. ANY OTHER infinite_carousel (e.g. custom logos)
+ *    → FROM SECTION: uses staticItems (content.items) from the section in the CMS.
+ *    → Edit in Admin: Page → Section → Carousel items.
  */
 export function DynamicInfiniteCarousel({
   sectionId,
@@ -46,30 +57,31 @@ export function DynamicInfiniteCarousel({
 
   if (isCertificationSection) {
     isLoading = certLoading
-    // Transform certificates to carousel items
+    // From Certifications master (API) – section items ignored
     items = certificates.map((cert) => ({
       image: cert.certificationImage?.url || '',
       alt: cert.name,
     })).filter((item) => item.image) // Filter out items without images
-    
-    // Set really large size for certificates if not specified
-    if (!itemClassName) {
-      finalItemClassName = 'h-96 w-[36rem] md:h-[28rem] md:w-[44rem] lg:h-[32rem] lg:w-[52rem]'
-    }
+
+    // Larger cert logos so they’re clearly visible in the carousel (from master API)
+    // Always use substantial cert logo size (~100–120px height); ignore section itemClassName
+    finalItemClassName =
+      'h-[100px] w-[140px] shrink-0 md:h-[120px] md:w-[170px] lg:h-[120px] lg:w-[180px]'
   } else if (isCustomerSection) {
     isLoading = customerLoading
-    // Transform customers to carousel items
+    // From Customers master (API) – section items ignored
     items = customers.map((customer) => ({
       image: customer.customerImage?.url || '',
       alt: customer.name,
     })).filter((item) => item.image) // Filter out items without images
-    
-    // Set larger size for customers if not specified
+
+    // Large customer logos from master – ~2–3× bigger than before
     if (!itemClassName) {
-      finalItemClassName = 'h-24 w-40 md:h-32 md:w-52'
+      finalItemClassName =
+        'h-40 w-64 shrink-0 md:h-52 md:w-80 lg:h-64 lg:w-96'
     }
   } else {
-    // Use static items if provided
+    // From section content (staticItems = content.items)
     items = staticItems || []
     finalItemClassName = itemClassName || 'h-20 w-32 md:h-24 md:w-40'
   }

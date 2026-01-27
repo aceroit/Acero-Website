@@ -68,6 +68,13 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                 const cta = content.cta as { label: string; href: string } | undefined
                 const image = (content.image as string) || undefined
                 const imageAlt = (content.imageAlt as string) || undefined
+                const rawImages = content.images as Array<{ url?: string; imageAlt?: string }> | undefined
+                const images =
+                  Array.isArray(rawImages) && rawImages.length >= 1
+                    ? rawImages
+                        .filter((i) => i?.url)
+                        .map((i) => ({ url: i.url!, imageAlt: i.imageAlt ?? '' }))
+                    : undefined
                 const layout = (content.layout as 'image-left' | 'image-right' | 'image-center' | 'text-only' | 'split') || 'image-right'
 
                 return (
@@ -78,6 +85,7 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                     cta={cta}
                     image={image}
                     imageAlt={imageAlt}
+                    images={images}
                     layout={layout}
                   />
                 )

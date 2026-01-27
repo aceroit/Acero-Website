@@ -28,6 +28,7 @@ import ComparisonTableEditor from './section-editors/ComparisonTableEditor';
 import TabbedComparisonEditor from './section-editors/TabbedComparisonEditor';
 import AdvantagesGridEditor from './section-editors/AdvantagesGridEditor';
 import HoverCardEditor from './section-editors/HoverCardEditor';
+import CertificatesGridEditor from './section-editors/CertificatesGridEditor';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -909,6 +910,21 @@ const DynamicSectionForm = ({
   if (sectionType.slug === 'hover_card') {
     return (
       <HoverCardEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for certificates_grid section type - use custom editor with Certifications master
+  if (sectionType.slug === 'certificates_grid') {
+    return (
+      <CertificatesGridEditor
         value={initialContent}
         onChange={(newContent) => {
           form.setFieldsValue({

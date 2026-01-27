@@ -57,25 +57,25 @@ export function ImageModalGallery({
             </motion.h2>
           )}
 
-          {/* Image Grid */}
-          <div className={cn("grid gap-4 md:gap-6", gridCols)}>
+          {/* Image Grid - smaller cards (max-w-[320px]) per design */}
+          <div className={cn("grid gap-6 md:gap-8 justify-items-center", gridCols)}>
             {items.map((item, index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group cursor-pointer"
+                className="group cursor-pointer w-full max-w-[320px]"
                 onClick={() => setSelectedItem(item)}
               >
-                <div className="relative aspect-[3/2] overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50">
                   <Image
                     src={item.image}
                     alt={item.imageAlt}
                     fill
                     loading="lazy"
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 320px"
                     quality={85}
                   />
                   {/* Overlay */}

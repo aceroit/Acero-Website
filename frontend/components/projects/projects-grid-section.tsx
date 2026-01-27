@@ -34,7 +34,7 @@ export function ProjectsGridSection({
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {industries &&
             industries.map((industry, index) => (
               <IndustryCard

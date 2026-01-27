@@ -147,6 +147,14 @@ const extendedSectionTypes = [
                 order: 3
             },
             {
+                name: 'images',
+                type: 'json',
+                label: 'Additional Images',
+                helpText: 'Optional array for multiple images: [{"url": "...", "imageAlt": "..."}]. When provided, these are shown alongside or instead of the single image (e.g. Primary Members section).',
+                required: false,
+                order: 3.5
+            },
+            {
                 name: 'layout',
                 type: 'select',
                 label: 'Layout',
