@@ -34,10 +34,12 @@ const useWorkflowStatus = ({ status, resourceType = 'page', createdBy = null }) 
     return getUserRoleSlug === 'admin' || getUserRoleSlug === 'super_admin';
   }, [getUserRoleSlug]);
 
-  // Check if user is the creator
+  // Check if user is the creator (normalize IDs so ObjectId and string match)
   const isCreator = useMemo(() => {
     if (!user || !createdBy) return false;
-    return user._id === createdBy || user.id === createdBy;
+    const userId = user._id ?? user.id;
+    if (!userId) return false;
+    return String(userId) === String(createdBy);
   }, [user, createdBy]);
 
   // Get resource name for permission checks
