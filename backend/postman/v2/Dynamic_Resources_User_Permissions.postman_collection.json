@@ -1,0 +1,1201 @@
+{
+	"info": {
+		"_postman_id": "v2-dynamic-resources-permissions",
+		"name": "V2 - Dynamic Resources & User Permissions",
+		"description": "Complete testing collection for Dynamic Resources and User Permissions System\n\n**Prerequisites:**\n- Empty database (fresh start)\n- Backend server running on {{base_url}}\n- MongoDB connected\n- Environment file imported\n\n**Test Flow:**\n1. Create Super Admin User\n2. Login as Super Admin\n3. Create All Resources\n4. Assign Role-Based Permissions\n5. Test User-Specific Permissions\n6. Verify Dynamic Sidebar\n\n**Expected Runtime:** ~5 minutes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Setup: User Creation",
+			"item": [
+				{
+					"name": "Register Super Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Super Admin created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.user).to.have.property('role', 'super_admin');",
+									"    pm.expect(response.data.user).to.have.property('email', 'superadmin@acero.com');",
+									"    pm.expect(response.data).to.have.property('token');",
+									"    ",
+									"    // Store token and user ID",
+									"    pm.environment.set('super_admin_token', response.data.token);",
+									"    pm.environment.set('super_admin_id', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Super\",\n  \"lastName\": \"Admin\",\n  \"email\": \"superadmin@acero.com\",\n  \"password\": \"SuperAdmin@123\",\n  \"role\": \"super_admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Create the first Super Admin user. This user will have full access to create resources and manage permissions."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Super Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Login successful\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data).to.have.property('token');",
+									"    ",
+									"    pm.environment.set('super_admin_token', response.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"superadmin@acero.com\",\n  \"password\": \"SuperAdmin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login as Super Admin to get authentication token."
+					},
+					"response": []
+				},
+				{
+					"name": "Register Admin User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin user created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.user).to.have.property('role', 'admin');",
+									"    pm.environment.set('admin_id', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"email\": \"admin@acero.com\",\n  \"password\": \"Admin@123\",\n  \"role\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Editor User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Editor user created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.user).to.have.property('role', 'editor');",
+									"    pm.environment.set('editor_id', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Editor\",\n  \"lastName\": \"User\",\n  \"email\": \"editor@acero.com\",\n  \"password\": \"Editor@123\",\n  \"role\": \"editor\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Create users for testing. Start with Super Admin, then create other roles."
+		},
+		{
+			"name": "02 - Create Resources",
+			"item": [
+				{
+					"name": "Create Dashboard Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Dashboard resource created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.resource).to.have.property('slug', 'dashboard');",
+									"    pm.environment.set('resource_dashboard_id', response.data.resource._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Dashboard\",\n  \"slug\": \"dashboard\",\n  \"path\": \"/dashboard\",\n  \"icon\": \"DashboardOutlined\",\n  \"description\": \"Main dashboard page\",\n  \"category\": \"General\",\n  \"showInMenu\": true,\n  \"order\": 0,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Users Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Users resource created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.resource).to.have.property('slug', 'users');",
+									"    pm.environment.set('resource_users_id', response.data.resource._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Users\",\n  \"slug\": \"users\",\n  \"path\": \"/users\",\n  \"icon\": \"UserOutlined\",\n  \"description\": \"User management\",\n  \"category\": \"Administration\",\n  \"showInMenu\": true,\n  \"order\": 1,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Permissions Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Permissions resource created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.resource).to.have.property('slug', 'permissions');",
+									"    pm.environment.set('resource_permissions_id', response.data.resource._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Permissions\",\n  \"slug\": \"permissions\",\n  \"path\": \"/permissions\",\n  \"icon\": \"SettingOutlined\",\n  \"description\": \"Permission management\",\n  \"category\": \"Administration\",\n  \"showInMenu\": true,\n  \"order\": 2,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Pages Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Pages resource created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.resource).to.have.property('slug', 'pages');",
+									"    pm.environment.set('resource_pages_id', response.data.resource._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Pages\",\n  \"slug\": \"pages\",\n  \"path\": \"/pages\",\n  \"icon\": \"FileTextOutlined\",\n  \"description\": \"Page management\",\n  \"category\": \"Content\",\n  \"showInMenu\": true,\n  \"order\": 3,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Page Tree Resource (Child)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Page Tree resource created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.resource).to.have.property('slug', 'page_tree');",
+									"    pm.expect(response.data.resource).to.have.property('parentId');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Page Tree\",\n  \"slug\": \"page_tree\",\n  \"path\": \"/pages/tree\",\n  \"parentId\": \"{{resource_pages_id}}\",\n  \"icon\": \"BranchesOutlined\",\n  \"description\": \"Page tree view\",\n  \"category\": \"Content\",\n  \"showInMenu\": true,\n  \"order\": 4,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Section Types Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Section Types resource created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.resource).to.have.property('slug', 'section_types');",
+									"    pm.environment.set('resource_section_types_id', response.data.resource._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Section Types\",\n  \"slug\": \"section_types\",\n  \"path\": \"/section-types\",\n  \"icon\": \"SettingOutlined\",\n  \"description\": \"Section type management\",\n  \"category\": \"Content\",\n  \"showInMenu\": true,\n  \"order\": 5,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Resources Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resources resource created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.resource).to.have.property('slug', 'resources');",
+									"    pm.environment.set('resource_resources_id', response.data.resource._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Resources\",\n  \"slug\": \"resources\",\n  \"path\": \"/resources\",\n  \"icon\": \"AppstoreOutlined\",\n  \"description\": \"Resource management\",\n  \"category\": \"Administration\",\n  \"showInMenu\": true,\n  \"order\": 6,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Resources",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resources retrieved\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.resources).to.be.an('array');",
+									"    pm.expect(response.data.resources.length).to.be.at.least(7);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Resources",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Menu resources retrieved\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.resources).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/resources/menu",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources", "menu"]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Create all default resources that will be used in the system."
+		},
+		{
+			"name": "03 - Assign Role Permissions",
+			"item": [
+				{
+					"name": "Get Resources and Actions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resources and actions retrieved\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.resources).to.be.an('array');",
+									"    pm.expect(response.data.actions).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/resources-actions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "resources-actions"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Admin Role Permissions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin permissions assigned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"permissions\": [\n    {\n      \"resource\": \"dashboard\",\n      \"actions\": [\"read\"],\n      \"conditions\": {},\n      \"isActive\": true\n    },\n    {\n      \"resource\": \"users\",\n      \"actions\": [\"read\", \"create\", \"update\"],\n      \"conditions\": {},\n      \"isActive\": true\n    },\n    {\n      \"resource\": \"pages\",\n      \"actions\": [\"read\", \"create\", \"update\", \"delete\", \"publish\"],\n      \"conditions\": {},\n      \"isActive\": true\n    },\n    {\n      \"resource\": \"section_types\",\n      \"actions\": [\"read\"],\n      \"conditions\": {},\n      \"isActive\": true\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/admin",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "admin"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Editor Role Permissions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Editor permissions assigned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"permissions\": [\n    {\n      \"resource\": \"dashboard\",\n      \"actions\": [\"read\"],\n      \"conditions\": {},\n      \"isActive\": true\n    },\n    {\n      \"resource\": \"pages\",\n      \"actions\": [\"read\", \"create\", \"update\"],\n      \"conditions\": {},\n      \"isActive\": true\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/editor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "editor"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Admin Role Permissions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin permissions retrieved\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.permissions).to.be.an('object');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/admin",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "admin"]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Assign role-based permissions to different roles."
+		},
+		{
+			"name": "04 - User-Specific Permissions",
+			"item": [
+				{
+					"name": "Get Users by Role (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Users by role retrieved\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.users).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/admin/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "admin", "users"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Permissions (Admin User)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User permissions retrieved\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data).to.have.property('user');",
+									"    pm.expect(response.data).to.have.property('permissions');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/user/{{admin_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "user", "{{admin_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User-Specific Permissions (Give Admin Delete Permission)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User permissions updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"permissions\": [\n    {\n      \"resource\": \"users\",\n      \"actions\": [\"read\", \"create\", \"update\", \"delete\"],\n      \"conditions\": {},\n      \"isActive\": true\n    },\n    {\n      \"resource\": \"permissions\",\n      \"actions\": [\"read\"],\n      \"conditions\": {},\n      \"isActive\": true\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/user/{{admin_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "user", "{{admin_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify User Permissions After Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User has delete permission\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.permissions).to.have.property('users');",
+									"    pm.expect(response.data.permissions.users.actions).to.include('delete');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/user/{{admin_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "user", "{{admin_id}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Test user-specific permission overrides."
+		},
+		{
+			"name": "05 - Verify Dynamic Sidebar",
+			"item": [
+				{
+					"name": "Login as Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin logged in\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.environment.set('admin_token', response.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@acero.com\",\n  \"password\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Permissions (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"My permissions retrieved\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data).to.have.property('permissions');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Resources (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Menu resources filtered by permissions\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.resources).to.be.an('array');",
+									"    // Admin should see dashboard, users, pages, section_types",
+									"    const slugs = response.data.resources.map(r => r.slug);",
+									"    pm.expect(slugs).to.include('dashboard');",
+									"    pm.expect(slugs).to.include('users');",
+									"    pm.expect(slugs).to.include('pages');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/resources/menu",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources", "menu"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Permission (Admin - Users Delete)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin has delete permission (user override)\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data).to.have.property('hasPermission', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resource\": \"users\",\n  \"action\": \"delete\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/check",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "check"]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Verify that the dynamic sidebar works correctly with permissions."
+		},
+		{
+			"name": "06 - Resource CRUD Operations",
+			"item": [
+				{
+					"name": "Create New Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"New resource created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.environment.set('new_resource_id', response.data.resource._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Products\",\n  \"slug\": \"products\",\n  \"path\": \"/products\",\n  \"icon\": \"ShoppingOutlined\",\n  \"description\": \"Product management\",\n  \"category\": \"Content\",\n  \"showInMenu\": true,\n  \"order\": 7,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Resource by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resource retrieved by ID\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.resource).to.have.property('slug', 'products');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/resources/{{new_resource_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources", "{{new_resource_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resource updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.resource).to.have.property('order', 10);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order\": 10,\n  \"description\": \"Updated product management\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resources/{{new_resource_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources", "{{new_resource_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Resource Tree",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resource tree retrieved\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    pm.expect(response.data.tree).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/resources/tree",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources", "tree"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resource deleted\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/resources/{{new_resource_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resources", "{{new_resource_id}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Test all CRUD operations for resources."
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	]
+}
+

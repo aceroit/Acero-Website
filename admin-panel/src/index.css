@@ -1,0 +1,232 @@
+@import "tailwindcss";
+
+/* Custom Table Styles */
+.custom-table .ant-table {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.custom-table .ant-table-thead > tr > th {
+  background: #f9fafb !important;
+  font-weight: 600;
+  color: #111827 !important;
+  border-bottom: 2px solid #e5e7eb !important;
+  padding: 16px;
+}
+
+.custom-table .ant-table-tbody > tr > td {
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6 !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.custom-table .ant-table-tbody > tr:hover > td {
+  background: #f9fafb !important;
+}
+
+.custom-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: none;
+}
+
+/* Permissions Table Specific */
+.permissions-table .ant-table-thead > tr > th {
+  background: #f9fafb !important;
+  border-bottom: 2px solid #e5e7eb !important;
+  white-space: nowrap;
+  color: #111827 !important;
+}
+
+.permissions-table .ant-table-tbody > tr > td {
+  background: #ffffff !important;
+  border-right: 1px solid #f3f4f6 !important;
+  vertical-align: middle;
+  color: #111827 !important;
+}
+
+.permissions-table .ant-table-tbody > tr:hover > td {
+  background: #f9fafb !important;
+}
+
+.permissions-table .ant-table-tbody > tr > td:first-child {
+  background: #ffffff !important;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.permissions-table .ant-table-container {
+  overflow-x: visible !important;
+}
+
+/* Users Table - Same as default, no special styling needed */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .custom-table .ant-table-thead > tr > th,
+  .custom-table .ant-table-tbody > tr > td {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Ant Design Card Overrides */
+.ant-card {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.ant-card-head {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.ant-card-head-title {
+  color: #111827 !important;
+}
+
+.ant-card-body {
+  color: #111827 !important;
+}
+
+/* Ant Design Input Overrides */
+.ant-input,
+.ant-input-search {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+.ant-input::placeholder,
+.ant-input-search::placeholder {
+  color: #9ca3af !important;
+}
+
+.ant-input:hover,
+.ant-input-search:hover {
+  border-color: #9ca3af !important;
+  background: #ffffff !important;
+}
+
+.ant-input:focus,
+.ant-input-search:focus {
+  border-color: #6b7280 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.1) !important;
+}
+
+/* Ant Design Select Overrides */
+.ant-select-selector {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+.ant-select-selection-placeholder {
+  color: #9ca3af !important;
+}
+
+.ant-select-selection-item {
+  color: #111827 !important;
+}
+
+.ant-select:hover .ant-select-selector {
+  border-color: #9ca3af !important;
+}
+
+.ant-select-focused .ant-select-selector {
+  border-color: #6b7280 !important;
+  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.1) !important;
+}
+
+/* Ant Design Dropdown Overrides */
+.ant-dropdown {
+  background: #ffffff !important;
+}
+
+.ant-dropdown-menu {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ant-dropdown-menu-item {
+  color: #111827 !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+/* Ant Design Pagination Overrides */
+.ant-pagination-item {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+}
+
+.ant-pagination-item a {
+  color: #111827 !important;
+}
+
+.ant-pagination-item:hover {
+  border-color: #9ca3af !important;
+}
+
+.ant-pagination-item:hover a {
+  color: #111827 !important;
+}
+
+.ant-pagination-item-active {
+  background: #f3f4f6 !important;
+  border-color: #6b7280 !important;
+}
+
+.ant-pagination-item-active a {
+  color: #111827 !important;
+}
+
+/* Permission Modal Form - Remove bottom spacing */
+.permission-modal .ant-form-item:last-child {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Permissions Page - Card Spacing */
+.permissions-page-card-wrapper {
+  margin-bottom: 1.5rem !important; /* 24px */
+}
+
+@media (min-width: 768px) {
+  .permissions-page-card-wrapper {
+    margin-bottom: 2rem !important; /* 32px */
+  }
+}

@@ -1,0 +1,1928 @@
+{
+	"info": {
+		"_postman_id": "phase2-page-section-system",
+		"name": "Phase 2 - Page-Section System",
+		"description": "Comprehensive testing for Phase 2: Page Tree Management, Section Management, Section Types, and Public API\n\n**Prerequisites:**\n- Phase 1 completed (users and tokens captured)\n- Backend server running\n- MongoDB connected\n\n**Test Coverage:**\n- Section Types (seed, CRUD, usage tracking)\n- Page Tree Management (hierarchy, moving, reordering)\n- Section Management (all section types, validation)\n- Public API (published content only)\n\n**Expected Runtime:** ~3 minutes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Section Types",
+			"item": [
+				{
+					"name": "Seed Default Section Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 201\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"",
+									"pm.test(\"Section types seeded\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});",
+									"",
+									"console.log('Section types seeded successfully');"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/seeders/section-types",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seeders", "section-types"]
+						},
+						"description": "Seed default section types (hero, text_block, image_gallery, features_grid, video, timeline)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Section Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section types array returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(6);",
+									"});",
+									"",
+									"pm.test(\"First section type captured\", function () {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.length > 0) {",
+									"        const heroType = response.data.find(t => t.slug === 'hero');",
+									"        if (heroType) {",
+									"            pm.environment.set('hero_section_type_slug', heroType.slug);",
+									"        }",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Response time < 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/section-types",
+							"host": ["{{base_url}}"],
+							"path": ["api", "section-types"]
+						},
+						"description": "Get all section types (active and inactive)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Section Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Only active section types returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    response.data.forEach(type => {",
+									"        pm.expect(type.isActive).to.be.true;",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/section-types/active",
+							"host": ["{{base_url}}"],
+							"path": ["api", "section-types", "active"]
+						},
+						"description": "Get only active section types. Used in section library."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Section Type by Slug (hero)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Hero section type details returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('slug', 'hero');",
+									"    pm.expect(response.data).to.have.property('fields');",
+									"    pm.expect(response.data.fields).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/section-types/hero",
+							"host": ["{{base_url}}"],
+							"path": ["api", "section-types", "hero"]
+						},
+						"description": "Get hero section type definition including field schema."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Custom Section Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Custom section type created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('slug', 'testimonial-carousel');",
+									"    pm.expect(response.data).to.have.property('fields');",
+									"    pm.environment.set('custom_section_type_slug', response.data.slug);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Testimonial Carousel\",\n  \"slug\": \"testimonial-carousel\",\n  \"description\": \"Display customer testimonials in a carousel\",\n  \"category\": \"Content\",\n  \"icon\": \"fa-quote-left\",\n  \"fields\": [\n    {\n      \"name\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Section Heading\",\n      \"required\": false\n    },\n    {\n      \"name\": \"testimonials\",\n      \"type\": \"array\",\n      \"label\": \"Testimonials\",\n      \"required\": true,\n      \"validation\": {\n        \"minItems\": 1\n      }\n    },\n    {\n      \"name\": \"autoplay\",\n      \"type\": \"boolean\",\n      \"label\": \"Auto-play Carousel\",\n      \"defaultValue\": true\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/section-types",
+							"host": ["{{base_url}}"],
+							"path": ["api", "section-types"]
+						},
+						"description": "Create a custom section type. Only Super Admin can create section types."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Section Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section type updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('description');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Display customer testimonials in a beautiful carousel with ratings\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/section-types/{{custom_section_type_slug}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "section-types", "{{custom_section_type_slug}}"]
+						},
+						"description": "Update a section type definition."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Section Type Usage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Usage statistics returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('count');",
+									"    pm.expect(response.data.count).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/section-types/hero/usage",
+							"host": ["{{base_url}}"],
+							"path": ["api", "section-types", "hero", "usage"]
+						},
+						"description": "Get usage count for a section type (how many sections use it)."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Section Type (should fail if in use)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+									"});",
+									"",
+									"if (pm.response.code === 400) {",
+									"    pm.test(\"Error message about usage\", function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response.message).to.include('in use');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/section-types/{{custom_section_type_slug}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "section-types", "{{custom_section_type_slug}}"]
+						},
+						"description": "Delete a section type. Should fail if sections are using it."
+					},
+					"response": []
+				}
+			],
+			"description": "Test section type management including seeding default types and creating custom types."
+		},
+		{
+			"name": "02 - Page Tree Management",
+			"item": [
+				{
+					"name": "Create Root Page (Home)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Home page created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('title', 'Home');",
+									"    pm.expect(response.data).to.have.property('slug', 'home');",
+									"    pm.expect(response.data).to.have.property('path', '/home');",
+									"    pm.expect(response.data).to.have.property('level', 0);",
+									"    pm.expect(response.data.parentId).to.be.null;",
+									"    pm.environment.set('home_page_id', response.data._id);",
+									"});",
+									"",
+									"pm.test(\"Response time < 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Home\",\n  \"slug\": \"home\",\n  \"metaTitle\": \"Acero Steel - Home\",\n  \"metaDescription\": \"Welcome to Acero Steel, leading manufacturer of steel products\",\n  \"showInMenu\": true,\n  \"menuIcon\": \"home\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create Home page as root page (no parent)."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Root Page (About)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"About page created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('title', 'About Us');",
+									"    pm.expect(response.data).to.have.property('path', '/about-us');",
+									"    pm.environment.set('about_page_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"About Us\",\n  \"slug\": \"about-us\",\n  \"metaTitle\": \"About Acero Steel\",\n  \"metaDescription\": \"Learn about our company history and values\",\n  \"showInMenu\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create About Us page as root page."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sub-Page (Our History)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Sub-page created with correct path\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('title', 'Our History');",
+									"    pm.expect(response.data).to.have.property('path', '/about-us/our-history');",
+									"    pm.expect(response.data).to.have.property('level', 1);",
+									"    pm.expect(response.data.parentId).to.equal(pm.environment.get('about_page_id'));",
+									"    pm.environment.set('history_page_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Our History\",\n  \"slug\": \"our-history\",\n  \"parentId\": \"{{about_page_id}}\",\n  \"metaTitle\": \"Our History - Acero Steel\",\n  \"metaDescription\": \"The history of Acero Steel since 1950\",\n  \"showInMenu\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create Our History as child of About Us."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sub-Sub-Page (Leadership)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Sub-sub-page created with correct path\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('title', 'Leadership Team');",
+									"    pm.expect(response.data).to.have.property('path', '/about-us/our-history/leadership-team');",
+									"    pm.expect(response.data).to.have.property('level', 2);",
+									"    pm.environment.set('leadership_page_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Leadership Team\",\n  \"slug\": \"leadership-team\",\n  \"parentId\": \"{{history_page_id}}\",\n  \"metaTitle\": \"Our Leadership - Acero Steel\",\n  \"metaDescription\": \"Meet our leadership team\",\n  \"showInMenu\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create Leadership Team as child of Our History (3-level deep)."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Root Page (Products)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Products page created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('products_page_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Products\",\n  \"slug\": \"products\",\n  \"metaTitle\": \"Our Products - Acero Steel\",\n  \"metaDescription\": \"Explore our range of steel products\",\n  \"showInMenu\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create Products page."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Page Tree (Hierarchical)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Tree structure returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(3);",
+									"});",
+									"",
+									"pm.test(\"Hierarchical structure validated\", function () {",
+									"    const response = pm.response.json();",
+									"    const aboutPage = response.data.find(p => p.slug === 'about-us');",
+									"    if (aboutPage && aboutPage.children) {",
+									"        pm.expect(aboutPage.children).to.be.an('array');",
+									"        const historyPage = aboutPage.children.find(c => c.slug === 'our-history');",
+									"        if (historyPage) {",
+									"            pm.expect(historyPage).to.exist;",
+									"        }",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Response time < 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages/tree",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "tree"]
+						},
+						"description": "Get hierarchical page tree structure for admin sidebar."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Pages (Flat List)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Flat list returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(5);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Get all pages as flat list with filtering and pagination support."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Page by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page details returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('_id');",
+									"    pm.expect(response.data).to.have.property('title');",
+									"    pm.expect(response.data).to.have.property('path');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{home_page_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{home_page_id}}"]
+						},
+						"description": "Get specific page details by ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('metaDescription');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"metaDescription\": \"Updated description for the Home page\",\n  \"metaKeywords\": \"steel, manufacturing, acero\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{home_page_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{home_page_id}}"]
+						},
+						"description": "Update page metadata and content."
+					},
+					"response": []
+				},
+				{
+					"name": "Move Page to New Parent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page moved and path updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('parentId');",
+									"    pm.expect(response.data).to.have.property('path');",
+									"    console.log('New path:', response.data.path);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"newParentId\": \"{{products_page_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{leadership_page_id}}/move",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{leadership_page_id}}", "move"]
+						},
+						"description": "Move Leadership page from Our History to Products (test path recalculation)."
+					},
+					"response": []
+				},
+				{
+					"name": "Reorder Pages (Siblings)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Pages reordered\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pages\": [\n    {\n      \"_id\": \"{{products_page_id}}\",\n      \"order\": 1\n    },\n    {\n      \"_id\": \"{{about_page_id}}\",\n      \"order\": 2\n    },\n    {\n      \"_id\": \"{{home_page_id}}\",\n      \"order\": 3\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/reorder",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "reorder"]
+						},
+						"description": "Reorder sibling pages (change menu order)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Page Children",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Children array returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{about_page_id}}/children",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{about_page_id}}", "children"]
+						},
+						"description": "Get direct children of a page."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Page Breadcrumb",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Breadcrumb trail returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    if (response.data.length > 0) {",
+									"        pm.expect(response.data[0]).to.have.property('title');",
+									"        pm.expect(response.data[0]).to.have.property('path');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{history_page_id}}/breadcrumb",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{history_page_id}}", "breadcrumb"]
+						},
+						"description": "Get breadcrumb trail from root to current page."
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate Page (without sections)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Page duplicated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('_id');",
+									"    pm.expect(response.data.title).to.include('Copy');",
+									"    pm.environment.set('duplicate_page_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"includeSections\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{home_page_id}}/duplicate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{home_page_id}}", "duplicate"]
+						},
+						"description": "Duplicate a page without copying sections."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Page (Soft Delete)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page deleted\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{duplicate_page_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{duplicate_page_id}}"]
+						},
+						"description": "Soft delete a page (set isActive to false)."
+					},
+					"response": []
+				}
+			],
+			"description": "Test page tree management including creation, moving, reordering, and hierarchy operations."
+		},
+		{
+			"name": "03 - Section Management",
+			"item": [
+				{
+					"name": "Create Hero Section (for Home page)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Hero section created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('sectionTypeSlug', 'hero');",
+									"    pm.expect(response.data).to.have.property('pageId', pm.environment.get('home_page_id'));",
+									"    pm.expect(response.data).to.have.property('content');",
+									"    pm.environment.set('hero_section_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"hero\",\n  \"order\": 1,\n  \"content\": {\n    \"title\": \"Welcome to Acero Steel\",\n    \"subtitle\": \"Leading Manufacturer of Quality Steel Products\",\n    \"backgroundImage\": \"https://images.unsplash.com/photo-1565043666747-69f6646db69-1\",\n    \"ctaButtonText\": \"Explore Products\",\n    \"ctaButtonLink\": \"/products\",\n    \"height\": \"large\",\n    \"textAlignment\": \"center\"\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{home_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{home_page_id}}", "sections"]
+						},
+						"description": "Create a hero section for the Home page."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Text Block Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Text block created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('sectionTypeSlug', 'text_block');",
+									"    pm.environment.set('text_section_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"text_block\",\n  \"order\": 2,\n  \"content\": {\n    \"heading\": \"About Our Company\",\n    \"content\": \"<p>Acero Steel has been a leader in steel manufacturing since 1950. We pride ourselves on quality, innovation, and customer service.</p><p>Our state-of-the-art facilities produce a wide range of steel products for construction, automotive, and industrial applications.</p>\",\n    \"alignment\": \"left\"\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{home_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{home_page_id}}", "sections"]
+						},
+						"description": "Create a text block section for the Home page."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Image Gallery Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Gallery section created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('sectionTypeSlug', 'image_gallery');",
+									"    pm.environment.set('gallery_section_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"image_gallery\",\n  \"order\": 3,\n  \"content\": {\n    \"images\": [\n      {\n        \"url\": \"https://images.unsplash.com/photo-1565043666747-69f6646db69-2\",\n        \"caption\": \"Manufacturing facility\",\n        \"alt\": \"Modern steel manufacturing plant\"\n      },\n      {\n        \"url\": \"https://images.unsplash.com/photo-1565043666747-69f6646db69-3\",\n        \"caption\": \"Quality control\",\n        \"alt\": \"Quality inspection process\"\n      },\n      {\n        \"url\": \"https://images.unsplash.com/photo-1565043666747-69f6646db69-4\",\n        \"caption\": \"Finished products\",\n        \"alt\": \"Steel products ready for delivery\"\n      }\n    ],\n    \"layout\": \"grid\",\n    \"columns\": 3,\n    \"showCaptions\": true\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{home_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{home_page_id}}", "sections"]
+						},
+						"description": "Create an image gallery section for the Home page."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Features Grid Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Features grid created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('sectionTypeSlug', 'features_grid');",
+									"    pm.environment.set('features_section_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"features_grid\",\n  \"order\": 4,\n  \"content\": {\n    \"heading\": \"Why Choose Acero Steel\",\n    \"features\": [\n      {\n        \"title\": \"Quality Materials\",\n        \"description\": \"We use only the highest grade steel\",\n        \"icon\": \"check-circle\"\n      },\n      {\n        \"title\": \"Fast Delivery\",\n        \"description\": \"Quick turnaround on all orders\",\n        \"icon\": \"truck\"\n      },\n      {\n        \"title\": \"Expert Support\",\n        \"description\": \"24/7 technical assistance\",\n        \"icon\": \"headset\"\n      },\n      {\n        \"title\": \"Competitive Pricing\",\n        \"description\": \"Best value in the industry\",\n        \"icon\": \"dollar-sign\"\n      }\n    ],\n    \"columns\": 4\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{home_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{home_page_id}}", "sections"]
+						},
+						"description": "Create a features grid section for the Home page."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Video Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Video section created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('sectionTypeSlug', 'video');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"video\",\n  \"order\": 5,\n  \"content\": {\n    \"title\": \"Virtual Factory Tour\",\n    \"description\": \"Take a virtual tour of our manufacturing facility\",\n    \"videoUrl\": \"https://www.youtube.com/embed/dQw4w9WgXcQ\",\n    \"autoplay\": false\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{about_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{about_page_id}}", "sections"]
+						},
+						"description": "Create a video section for the About Us page."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Timeline Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Timeline section created\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('sectionTypeSlug', 'timeline');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"timeline\",\n  \"order\": 1,\n  \"content\": {\n    \"heading\": \"Our Journey\",\n    \"items\": [\n      {\n        \"year\": \"1950\",\n        \"title\": \"Company Founded\",\n        \"description\": \"Acero Steel was established in Pittsburgh\"\n      },\n      {\n        \"year\": \"1975\",\n        \"title\": \"Expansion\",\n        \"description\": \"Opened second manufacturing facility\"\n      },\n      {\n        \"year\": \"2000\",\n        \"title\": \"Innovation\",\n        \"description\": \"Introduced new steel alloy technology\"\n      },\n      {\n        \"year\": \"2025\",\n        \"title\": \"Industry Leader\",\n        \"description\": \"Recognized as top steel manufacturer\"\n      }\n    ]\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{history_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{history_page_id}}", "sections"]
+						},
+						"description": "Create a timeline section for the History page."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Sections for Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Sections array returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(4);",
+									"});",
+									"",
+									"pm.test(\"Sections ordered correctly\", function () {",
+									"    const response = pm.response.json();",
+									"    for (let i = 1; i < response.data.length; i++) {",
+									"        pm.expect(response.data[i].order).to.be.at.least(response.data[i-1].order);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{home_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{home_page_id}}", "sections"]
+						},
+						"description": "Get all sections for the Home page (ordered by order field)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Section by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section details returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('_id');",
+									"    pm.expect(response.data).to.have.property('content');",
+									"    pm.expect(response.data).to.have.property('sectionTypeSlug');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sections/{{hero_section_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "{{hero_section_id}}"]
+						},
+						"description": "Get specific section details by ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Section Content",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.content).to.have.property('title', 'Welcome to Acero Steel - Updated');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": {\n    \"title\": \"Welcome to Acero Steel - Updated\",\n    \"subtitle\": \"Leading Manufacturer of Quality Steel Products Since 1950\",\n    \"backgroundImage\": \"https://images.unsplash.com/photo-1565043666747-69f6646db69-1\",\n    \"ctaButtonText\": \"Explore Products\",\n    \"ctaButtonLink\": \"/products\",\n    \"height\": \"large\",\n    \"textAlignment\": \"center\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/{{hero_section_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "{{hero_section_id}}"]
+						},
+						"description": "Update section content."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Section with Invalid Content (validation fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Validation error message\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message).to.include('validation');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": {\n    \"invalidField\": \"This should fail validation\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/{{hero_section_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "{{hero_section_id}}"]
+						},
+						"description": "Try to update section with invalid content that doesn't match section type schema."
+					},
+					"response": []
+				},
+				{
+					"name": "Reorder Sections",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Sections reordered\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sections\": [\n    {\n      \"_id\": \"{{text_section_id}}\",\n      \"order\": 1\n    },\n    {\n      \"_id\": \"{{hero_section_id}}\",\n      \"order\": 2\n    },\n    {\n      \"_id\": \"{{gallery_section_id}}\",\n      \"order\": 3\n    },\n    {\n      \"_id\": \"{{features_section_id}}\",\n      \"order\": 4\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/reorder",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "reorder"]
+						},
+						"description": "Reorder sections within a page."
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Section Visibility",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Visibility toggled\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('isVisible');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sections/{{features_section_id}}/visibility",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "{{features_section_id}}", "visibility"]
+						},
+						"description": "Toggle section visibility (show/hide)."
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Section duplicated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('_id');",
+									"    pm.expect(response.data._id).to.not.equal(pm.environment.get('hero_section_id'));",
+									"    pm.environment.set('duplicate_section_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sections/{{hero_section_id}}/duplicate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "{{hero_section_id}}", "duplicate"]
+						},
+						"description": "Duplicate a section."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sections by Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Sections of type returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    response.data.forEach(section => {",
+									"        pm.expect(section.sectionTypeSlug).to.equal('hero');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sections/type/hero",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "type", "hero"]
+						},
+						"description": "Get all sections of a specific type (e.g., all hero sections)."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section deleted\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sections/{{duplicate_section_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "{{duplicate_section_id}}"]
+						},
+						"description": "Delete a section."
+					},
+					"response": []
+				}
+			],
+			"description": "Test section CRUD operations, content validation, and management features."
+		},
+		{
+			"name": "04 - Public API (No Auth)",
+			"item": [
+				{
+					"name": "Publish Home Page for Public API Testing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page published\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'published');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"published\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{home_page_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{home_page_id}}"]
+						},
+						"description": "Publish Home page so it appears in public API."
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Sections for Public API Testing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section published\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'published');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"published\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/{{hero_section_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "{{hero_section_id}}"]
+						},
+						"description": "Publish hero section so it appears in public API."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Published Page Tree",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Published tree returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('tree');",
+									"    pm.expect(response.data.tree).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Cache headers set\", function () {",
+									"    pm.expect(pm.response.headers.get('cache-control')).to.include('public');",
+									"});",
+									"",
+									"pm.test(\"Response time < 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/public/pages/tree",
+							"host": ["{{base_url}}"],
+							"path": ["api", "public", "pages", "tree"]
+						},
+						"description": "Get published page tree for navigation (no auth required)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Page by Slug",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page and sections returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('page');",
+									"    pm.expect(response.data).to.have.property('sections');",
+									"    pm.expect(response.data.sections).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Only published sections included\", function () {",
+									"    const response = pm.response.json();",
+									"    response.data.sections.forEach(section => {",
+									"        pm.expect(section.status).to.equal('published');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/public/pages/slug/home",
+							"host": ["{{base_url}}"],
+							"path": ["api", "public", "pages", "slug", "home"]
+						},
+						"description": "Get published page by slug with all published sections."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Published Sections for Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/public/pages/slug/home",
+							"host": ["{{base_url}}"],
+							"path": ["api", "public", "pages", "slug", "home"]
+						},
+						"description": "Get published sections for a specific page."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Draft Content NOT Returned",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Draft page not found\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message).to.include('not found');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/public/pages/slug/about-us",
+							"host": ["{{base_url}}"],
+							"path": ["api", "public", "pages", "slug", "about-us"]
+						},
+						"description": "Try to get a draft page. Should return 404 as only published pages are exposed."
+					},
+					"response": []
+				}
+			],
+			"description": "Test public API endpoints that serve published content to the frontend website (no authentication required)."
+		}
+	]
+}
+

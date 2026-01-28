@@ -1,0 +1,1264 @@
+{
+	"info": {
+		"_postman_id": "phase4-activity-services",
+		"name": "Phase 4 - Activity Logging & Services",
+		"description": "Comprehensive testing for Phase 4: Activity Logging, Media Management, and Input Validation\n\n**Prerequisites:**\n- Phases 1-3 completed\n- Backend server running\n- Test data created\n\n**Test Coverage:**\n- Activity log querying and export\n- Media upload and management\n- File validation\n- Input sanitization\n- Media usage tracking\n\n**Expected Runtime:** ~2 minutes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Activity Logs",
+			"item": [
+				{
+					"name": "Get All Activities (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Activities array returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Activity has required fields\", function () {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.length > 0) {",
+									"        const activity = response.data[0];",
+									"        pm.expect(activity).to.have.property('userId');",
+									"        pm.expect(activity).to.have.property('action');",
+									"        pm.expect(activity).to.have.property('resource');",
+									"        pm.expect(activity).to.have.property('timestamp');",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Response time < 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity"]
+						},
+						"description": "Get all activity logs as Admin. Shows all system activities."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Activities (Editor - only own)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Only own activities returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    const editorId = pm.environment.get('editor_id');",
+									"    response.data.forEach(activity => {",
+									"        pm.expect(activity.userId.toString()).to.equal(editorId);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity"]
+						},
+						"description": "Get activities as Editor. Should only see own activities due to RBAC."
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Personal activities returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity/my-activity",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity", "my-activity"]
+						},
+						"description": "Get current user's activity history."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Activities",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"User activities returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity/user/{{editor_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity", "user", "{{editor_id}}"]
+						},
+						"description": "Get activities for a specific user."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Resource History (specific page)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resource history returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"All activities for same resource\", function () {",
+									"    const response = pm.response.json();",
+									"    const resourceId = pm.environment.get('workflow_page_id');",
+									"    response.data.forEach(activity => {",
+									"        pm.expect(activity.resourceId).to.equal(resourceId);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity/resource/page/{{workflow_page_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity", "resource", "page", "{{workflow_page_id}}"]
+						},
+						"description": "Get activity history for a specific resource (page)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Activity Stats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Statistics returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('totalActivities');",
+									"    pm.expect(response.data).to.have.property('byAction');",
+									"    pm.expect(response.data).to.have.property('byResource');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity", "stats"]
+						},
+						"description": "Get activity statistics (counts by action type, resource type, etc)."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Activities by Date Range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Filtered activities returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity?startDate=2025-01-01&endDate=2025-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-01-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-12-31"
+								}
+							]
+						},
+						"description": "Filter activities by date range."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Activities by Action Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Only create actions returned\", function () {",
+									"    const response = pm.response.json();",
+									"    response.data.forEach(activity => {",
+									"        pm.expect(activity.action).to.equal('create');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity?action=create",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity"],
+							"query": [
+								{
+									"key": "action",
+									"value": "create"
+								}
+							]
+						},
+						"description": "Filter activities by action type (create, update, delete, etc)."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Activities by Resource Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Only page activities returned\", function () {",
+									"    const response = pm.response.json();",
+									"    response.data.forEach(activity => {",
+									"        pm.expect(activity.resource).to.equal('page');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity?resource=page",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity"],
+							"query": [
+								{
+									"key": "resource",
+									"value": "page"
+								}
+							]
+						},
+						"description": "Filter activities by resource type (page, section, user, etc)."
+					},
+					"response": []
+				},
+				{
+					"name": "Export Activity Logs (CSV)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"CSV content returned\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('csv');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity/export?format=csv",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity", "export"],
+							"query": [
+								{
+									"key": "format",
+									"value": "csv"
+								}
+							]
+						},
+						"description": "Export activity logs as CSV for compliance/audit purposes."
+					},
+					"response": []
+				}
+			],
+			"description": "Test activity logging system with querying, filtering, and export capabilities."
+		},
+		{
+			"name": "02 - Media Management",
+			"item": [
+				{
+					"name": "Upload Single Image",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Image uploaded successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('url');",
+									"    pm.expect(response.data).to.have.property('publicId');",
+									"    pm.expect(response.data).to.have.property('resourceType', 'image');",
+									"    pm.environment.set('test_media_id', response.data._id);",
+									"    pm.environment.set('test_media_public_id', response.data.publicId);",
+									"});",
+									"",
+									"pm.test(\"Cloudinary URL returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.url).to.include('cloudinary');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/path/to/test-image.jpg"
+								},
+								{
+									"key": "folder",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "tags",
+									"value": "test,sample",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/media/upload",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "upload"]
+						},
+						"description": "Upload a single image file. Note: Use actual file in Postman. This is a placeholder."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Media (with pagination)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Media array returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Pagination metadata present\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('pagination');",
+									"    pm.expect(response.pagination).to.have.property('total');",
+									"    pm.expect(response.pagination).to.have.property('page');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/media?page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all media with pagination and filtering."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Media by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Media details returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('_id');",
+									"    pm.expect(response.data).to.have.property('url');",
+									"    pm.expect(response.data).to.have.property('uploadedBy');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/media/{{test_media_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "{{test_media_id}}"]
+						},
+						"description": "Get specific media file details by ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Media by Filename",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Search results returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/media/search?q=test",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "test"
+								}
+							]
+						},
+						"description": "Search media by filename, tags, or description."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Media by Folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Media in folder returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/media/folder/test",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "folder", "test"]
+						},
+						"description": "Get all media in a specific folder."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Media Stats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Media statistics returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('totalFiles');",
+									"    pm.expect(response.data).to.have.property('totalSize');",
+									"    pm.expect(response.data).to.have.property('byType');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/media/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "stats"]
+						},
+						"description": "Get media library statistics."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Media Metadata (tags)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Media updated\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('tags');",
+									"    pm.expect(response.data.tags).to.include('updated');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tags\": [\"test\", \"sample\", \"updated\"],\n  \"description\": \"Updated test image\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/media/{{test_media_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "{{test_media_id}}"]
+						},
+						"description": "Update media metadata (tags, description, filename)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Media Usage (where used)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Usage info returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('isUsed');",
+									"    pm.expect(response.data).to.have.property('usedIn');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/media/{{test_media_id}}/usage",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "{{test_media_id}}", "usage"]
+						},
+						"description": "Check where media is being used (pages, sections, etc)."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Unused Media",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Media deleted\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/media/{{test_media_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "{{test_media_id}}"]
+						},
+						"description": "Delete unused media from library and Cloudinary."
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Invalid File Type (should fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error message about file type\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message).to.include('type');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/path/to/test.exe"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/media/upload",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "upload"]
+						},
+						"description": "Try to upload invalid file type. Should fail validation."
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Oversized File (should fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 413\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 413]);",
+									"});",
+									"",
+									"pm.test(\"Error message about file size\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/path/to/large-file.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/media/upload",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "upload"]
+						},
+						"description": "Try to upload oversized file. Should fail validation (>10MB for images)."
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Delete Media (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Bulk delete result returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('deleted');",
+									"    pm.expect(response.data).to.have.property('failed');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"mediaIds\": []\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/media/bulk-delete",
+							"host": ["{{base_url}}"],
+							"path": ["api", "media", "bulk-delete"]
+						},
+						"description": "Bulk delete multiple media files (admin only)."
+					},
+					"response": []
+				}
+			],
+			"description": "Test media management including upload, validation, search, and deletion."
+		},
+		{
+			"name": "03 - Validation Testing",
+			"item": [
+				{
+					"name": "Create Page with Invalid Data (missing required)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Validation error for missing fields\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message).to.include('required');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"slug\": \"invalid-page\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Try to create page without required 'title' field."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Page with XSS Attempt (sanitized)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"XSS content sanitized\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.title).to.not.include('<script>');",
+									"    pm.expect(response.data.metaDescription).to.not.include('<script>');",
+									"    pm.environment.set('xss_test_page_id', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Test Page <script>alert('XSS')</script>\",\n  \"slug\": \"xss-test-page\",\n  \"metaDescription\": \"<img src=x onerror=alert('XSS')>\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Test XSS prevention - malicious scripts should be sanitized."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Section with Invalid ObjectId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Validation error for invalid ID\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"text_block\",\n  \"order\": 1,\n  \"content\": {\n    \"heading\": \"Test\",\n    \"content\": \"Test content\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/invalid-id-123/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "invalid-id-123", "sections"]
+						},
+						"description": "Try to create section with invalid MongoDB ObjectId."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User with Invalid Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Validation error for invalid email\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message).to.include('email');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"not-an-email\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/{{editor_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{editor_id}}"]
+						},
+						"description": "Try to update user with invalid email format."
+					},
+					"response": []
+				},
+				{
+					"name": "Test Pagination Validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+									"});",
+									"",
+									"if (pm.response.code === 400) {",
+									"    pm.test(\"Validation error for invalid pagination\", function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('success', false);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages?page=-1&limit=1000",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"],
+							"query": [
+								{
+									"key": "page",
+									"value": "-1"
+								},
+								{
+									"key": "limit",
+									"value": "1000"
+								}
+							]
+						},
+						"description": "Test pagination validation with invalid values."
+					},
+					"response": []
+				},
+				{
+					"name": "Clean Up XSS Test Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{xss_test_page_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{xss_test_page_id}}"]
+						},
+						"description": "Clean up test data created during validation testing."
+					},
+					"response": []
+				}
+			],
+			"description": "Test input validation, sanitization, and error handling."
+		}
+	]
+}
+

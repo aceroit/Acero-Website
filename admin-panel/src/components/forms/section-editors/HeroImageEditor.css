@@ -1,0 +1,12 @@
+.hero-image-editor {
+  width: 100%;
+}
+
+.hero-image-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.hero-image-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+

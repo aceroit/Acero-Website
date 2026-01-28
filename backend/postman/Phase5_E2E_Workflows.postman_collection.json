@@ -1,0 +1,1041 @@
+{
+	"info": {
+		"_postman_id": "phase5-e2e-workflows",
+		"name": "Phase 5 - End-to-End Workflows",
+		"description": "Comprehensive End-to-End testing scenarios that validate complete user journeys through the CMS\n\n**Prerequisites:**\n- Phases 1-4 completed\n- Backend server running\n- Clean database state recommended\n\n**Test Coverage:**\n- Complete content creation and publishing journey\n- User onboarding and permission assignment\n- Permission boundary testing across all roles\n- Integration between all system modules\n\n**Expected Runtime:** ~4 minutes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Complete Content Creation Flow",
+			"item": [
+				{
+					"name": "Step 1 - Editor Creates Draft Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Page created as draft\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'draft');",
+									"    pm.environment.set('e2e_page_id', response.data._id);",
+									"    console.log('✓ Step 1: Page created as draft');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"E2E Test: Our Services\",\n  \"slug\": \"e2e-our-services\",\n  \"metaTitle\": \"Our Services - Acero Steel\",\n  \"metaDescription\": \"Comprehensive steel manufacturing services\",\n  \"metaKeywords\": \"steel, services, manufacturing\",\n  \"showInMenu\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Editor creates a new page in draft status."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2 - Editor Adds Hero Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Hero section created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('e2e_hero_id', response.data._id);",
+									"    console.log('✓ Step 2: Hero section added');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"hero\",\n  \"order\": 1,\n  \"content\": {\n    \"title\": \"Comprehensive Steel Services\",\n    \"subtitle\": \"From design to delivery\",\n    \"backgroundImage\": \"https://images.unsplash.com/photo-services\",\n    \"ctaButtonText\": \"Get Started\",\n    \"ctaButtonLink\": \"/contact\"\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{e2e_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{e2e_page_id}}", "sections"]
+						},
+						"description": "Editor adds hero section to the page."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 3 - Editor Adds Features Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Features section created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('e2e_features_id', response.data._id);",
+									"    console.log('✓ Step 3: Features section added');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"features_grid\",\n  \"order\": 2,\n  \"content\": {\n    \"heading\": \"Our Service Portfolio\",\n    \"features\": [\n      {\n        \"title\": \"Custom Fabrication\",\n        \"description\": \"Tailored steel solutions\",\n        \"icon\": \"wrench\"\n      },\n      {\n        \"title\": \"Quality Testing\",\n        \"description\": \"Rigorous quality control\",\n        \"icon\": \"check-circle\"\n      },\n      {\n        \"title\": \"Fast Delivery\",\n        \"description\": \"On-time delivery guaranteed\",\n        \"icon\": \"truck\"\n      }\n    ]\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{e2e_page_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{e2e_page_id}}", "sections"]
+						},
+						"description": "Editor adds features grid section."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 4 - Editor Submits Page for Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Page submitted for review\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'in_review');",
+									"    console.log('✓ Step 4: Page submitted for review');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Ready for review - E2E test page\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{e2e_page_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{e2e_page_id}}", "submit"]
+						},
+						"description": "Editor submits the page for review."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 5 - Editor Submits Sections for Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Hero section submitted\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    console.log('✓ Step 5: Sections submitted for review');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/section/{{e2e_hero_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "section", "{{e2e_hero_id}}", "submit"]
+						},
+						"description": "Editor submits hero section for review."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 6 - Reviewer Checks Pending Items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Pending items visible to reviewer\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    console.log('✓ Step 6: Reviewer sees pending items');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/pending",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "pending"]
+						},
+						"description": "Reviewer checks their dashboard for pending reviews."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 7 - Reviewer Marks Page as Reviewed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Page moved to pending_approval\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'pending_approval');",
+									"    console.log('✓ Step 7: Page reviewed and approved');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comments\": \"Content looks good, ready for approval\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{e2e_page_id}}/review",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{e2e_page_id}}", "review"]
+						},
+						"description": "Reviewer approves the page content."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 8 - Reviewer Marks Sections as Reviewed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Section reviewed\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    console.log('✓ Step 8: Sections reviewed');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/section/{{e2e_hero_id}}/review",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "section", "{{e2e_hero_id}}", "review"]
+						},
+						"description": "Reviewer approves hero section."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 9 - Approver Checks Pending Approvals",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Pending approvals visible\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    console.log('✓ Step 9: Approver sees pending approvals');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{approver_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/pending",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "pending"]
+						},
+						"description": "Approver checks their dashboard for pending approvals."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 10 - Approver Approves Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Page approved for publishing\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'pending_publish');",
+									"    console.log('✓ Step 10: Page approved for publishing');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{approver_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comments\": \"Approved for publishing\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{e2e_page_id}}/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{e2e_page_id}}", "approve"]
+						},
+						"description": "Approver approves the page for publishing."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 11 - Approver Approves Sections",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Section approved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    console.log('✓ Step 11: Sections approved');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{approver_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/section/{{e2e_hero_id}}/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "section", "{{e2e_hero_id}}", "approve"]
+						},
+						"description": "Approver approves hero section."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 12 - Admin Publishes Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Page published successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'published');",
+									"    console.log('✓ Step 12: Page published!');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Publishing to production\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{e2e_page_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{e2e_page_id}}", "publish"]
+						},
+						"description": "Admin publishes the page to production."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 13 - Admin Publishes Sections",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Section published\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    console.log('✓ Step 13: Sections published');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/section/{{e2e_hero_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "section", "{{e2e_hero_id}}", "publish"]
+						},
+						"description": "Admin publishes hero section."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 14 - Verify Published Page in Public API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Published page accessible publicly\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('page');",
+									"    pm.expect(response.data).to.have.property('sections');",
+									"    pm.expect(response.data.sections).to.be.an('array');",
+									"    console.log('✓ Step 14: Page live and accessible publicly!');",
+									"    console.log('\\n🎉 E2E WORKFLOW COMPLETE: Draft → Review → Approval → Published');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/public/pages/slug/e2e-our-services",
+							"host": ["{{base_url}}"],
+							"path": ["api", "public", "pages", "slug", "e2e-our-services"]
+						},
+						"description": "Verify the published page is accessible via public API (no auth)."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 15 - Verify Activity Log Captured All Steps",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"All activities logged\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(5);",
+									"    console.log('✓ Step 15: Activity log verified - ' + response.data.length + ' activities captured');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/activity/resource/page/{{e2e_page_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "activity", "resource", "page", "{{e2e_page_id}}"]
+						},
+						"description": "Verify all workflow steps were logged in activity log."
+					},
+					"response": []
+				}
+			],
+			"description": "Complete 15-step journey: Editor creates page with sections → Submits for review → Reviewer approves → Approver approves → Admin publishes → Verify public access and activity logging."
+		},
+		{
+			"name": "02 - User Management Flow",
+			"item": [
+				{
+					"name": "Create New Editor User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"New editor created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('new_editor_id', response.data._id);",
+									"    console.log('✓ New editor user created');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Jane Editor\",\n  \"email\": \"jane.editor@acero.com\",\n  \"password\": \"JaneEditor@123\",\n  \"role\": \"editor\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "Super Admin creates a new editor user."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Default Permissions Applied",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Editor permissions exist\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    console.log('✓ Default editor permissions verified');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/editor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "editor"]
+						},
+						"description": "Verify editor role has default permissions."
+					},
+					"response": []
+				},
+				{
+					"name": "Login as New Editor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"New editor can login\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('new_editor_token', response.data.token);",
+									"    console.log('✓ New editor logged in successfully');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jane.editor@acero.com\",\n  \"password\": \"JaneEditor@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "New editor logs in."
+					},
+					"response": []
+				},
+				{
+					"name": "Test Editor Can Create Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Editor can create page\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.environment.set('new_editor_page_id', pm.response.json().data._id);",
+									"    console.log('✓ Editor can perform assigned actions');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{new_editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Test Page by New Editor\",\n  \"slug\": \"new-editor-test\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Verify editor has page creation permission."
+					},
+					"response": []
+				},
+				{
+					"name": "Test Editor Cannot Delete Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Editor denied user deletion\", function () {",
+									"    pm.response.to.have.status(403);",
+									"    console.log('✓ Permission boundaries enforced');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{new_editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{viewer_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{viewer_id}}"]
+						},
+						"description": "Verify editor cannot delete users (permission denied)."
+					},
+					"response": []
+				},
+				{
+					"name": "Cleanup - Delete Test Page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Cleanup successful\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{new_editor_page_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{new_editor_page_id}}"]
+						},
+						"description": "Clean up test page."
+					},
+					"response": []
+				}
+			],
+			"description": "Complete user onboarding flow: Create user → Verify permissions → Login → Test allowed actions → Test denied actions."
+		},
+		{
+			"name": "03 - Permission Boundary Testing",
+			"item": [
+				{
+					"name": "Viewer Can Read Pages",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Viewer can read pages\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    console.log('✓ Viewer read access verified');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Viewer should be able to read pages."
+					},
+					"response": []
+				},
+				{
+					"name": "Viewer Cannot Create Pages",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Viewer denied page creation\", function () {",
+									"    pm.response.to.have.status(403);",
+									"    console.log('✓ Viewer write access denied');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{viewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Unauthorized Page\",\n  \"slug\": \"unauthorized\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Viewer should not be able to create pages."
+					},
+					"response": []
+				},
+				{
+					"name": "Reviewer Cannot Publish Content",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Reviewer denied publish action\", function () {",
+									"    pm.response.to.have.status(403);",
+									"    console.log('✓ Reviewer publish access denied');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{e2e_page_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{e2e_page_id}}", "publish"]
+						},
+						"description": "Reviewer should not be able to publish (admin-only action)."
+					},
+					"response": []
+				},
+				{
+					"name": "Editor Cannot Update Permissions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Editor denied permission updates\", function () {",
+									"    pm.response.to.have.status(403);",
+									"    console.log('✓ Editor permission management denied');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"permissions\": []\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/role/editor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "role", "editor"]
+						},
+						"description": "Editor should not be able to modify permissions (super_admin only)."
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Can Publish Content",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin can publish\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    console.log('✓ Admin publish access verified');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{e2e_page_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{e2e_page_id}}", "publish"]
+						},
+						"description": "Admin should be able to publish content."
+					},
+					"response": []
+				},
+				{
+					"name": "Super Admin Can Manage Permissions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Super Admin can manage permissions\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    console.log('✓ Super Admin full access verified');",
+									"    console.log('\\n🎉 PERMISSION BOUNDARIES VALIDATED');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{super_admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/matrix",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", "matrix"]
+						},
+						"description": "Super Admin should have full permission management access."
+					},
+					"response": []
+				}
+			],
+			"description": "Test permission boundaries across all roles to ensure RBAC is properly enforced."
+		}
+	]
+}
+

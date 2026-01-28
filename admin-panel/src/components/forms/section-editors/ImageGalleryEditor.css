@@ -1,0 +1,20 @@
+.image-gallery-editor {
+  width: 100%;
+}
+
+.gallery-images-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.gallery-images-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.image-gallery-editor .ant-card {
+  transition: all 0.2s ease;
+}
+
+.image-gallery-editor .ant-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
