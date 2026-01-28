@@ -250,3 +250,20 @@ export interface PageResponse {
   sections: Section[]
 }
 
+// Form Configuration (thank-you timeout and redirect for Contact/Career forms)
+export interface FormConfigSection {
+  thankYouTimeout: number
+  thankYouRedirectUrl: string
+}
+
+export interface FormConfiguration {
+  career: FormConfigSection
+  contact: FormConfigSection
+  defaultEnquiryEmail?: string
+  defaultApplicationEmail?: string
+}
+
+export interface FormConfigurationResponse {
+  config: FormConfiguration
+}
+

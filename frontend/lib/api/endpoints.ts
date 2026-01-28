@@ -15,5 +15,7 @@ export const API_ENDPOINTS = {
   PUBLIC_PROJECTS_HOME: '/api/public/projects/home',
   PUBLIC_FILTER_OPTIONS: '/api/public/filter-options',
   PUBLIC_BRANCHES: '/api/public/branches',
+  PUBLIC_COMPANY_UPDATES_HOME: '/api/public/company-updates/home',
+  PUBLIC_FORM_CONFIGURATION: '/api/public/form-configuration',
 } as const
 

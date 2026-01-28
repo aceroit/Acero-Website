@@ -15,12 +15,36 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as customerService from '../services/customerService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const CustomerRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'customer',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('customers', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/customers/${record._id}`) });
+  }
+  if (hasPermission('customers', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 // Status color mapping
 const getStatusColor = (status) => {
@@ -55,6 +79,8 @@ const Customers = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState(null);
+  const [sortField, setSortField] = useState('order');
+  const [sortOrder, setSortOrder] = useState('ascend');
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
@@ -70,11 +96,15 @@ const Customers = () => {
   const fetchCustomers = async (params = {}) => {
     setLoading(true);
     try {
+      const sortBy = params.sortBy ?? sortField;
+      const sortOrderApi = (params.sortOrder ?? sortOrder) === 'descend' ? 'desc' : 'asc';
       const response = await customerService.getAllCustomers({
-        page: pagination.current,
-        limit: pagination.pageSize,
-        search: searchText,
-        status: statusFilter,
+        page: params.page ?? pagination.current,
+        limit: params.limit ?? pagination.pageSize,
+        search: params.search !== undefined ? params.search : searchText,
+        status: params.status !== undefined ? params.status : statusFilter,
+        sortBy: params.sortBy ?? sortBy,
+        sortOrder: params.sortOrder ?? sortOrderApi,
         ...params,
       });
 
@@ -101,7 +131,7 @@ const Customers = () => {
 
   useEffect(() => {
     fetchCustomers();
-  }, [pagination.current, pagination.pageSize, statusFilter]);
+  }, [pagination.current, pagination.pageSize, statusFilter, sortField, sortOrder]);
 
   // Handle delete customer
   const handleDelete = async () => {
@@ -125,12 +155,22 @@ const Customers = () => {
     fetchCustomers({ search: value });
   };
 
+  const handleTableChange = (paginationConfig, filters, sorter) => {
+    if (sorter?.field != null && sorter?.order != null) {
+      setSortField(sorter.field);
+      setSortOrder(sorter.order);
+      setPagination((prev) => ({ ...prev, current: 1 }));
+    }
+  };
+
   // Table columns
   const columns = [
     {
       title: 'Customer',
       key: 'customer',
+      dataIndex: 'name',
       sorter: true,
+      sortOrder: sortField === 'name' ? sortOrder : null,
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white">
@@ -165,6 +205,7 @@ const Customers = () => {
         <span className="text-gray-700">{order ?? 0}</span>
       ),
       sorter: true,
+      sortOrder: sortField === 'order' ? sortOrder : null,
     },
     {
       title: 'Status',
@@ -212,55 +253,20 @@ const Customers = () => {
         </span>
       ),
       sorter: true,
+      sortOrder: sortField === 'createdAt' ? sortOrder : null,
     },
     {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('customers', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/customers/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('customers', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedCustomer(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <CustomerRowActions
+          record={record}
+          onNavigate={(path) => navigate(path)}
+          onDeleteClick={(r) => { setSelectedCustomer(r); setIsDeleteModalOpen(true); }}
+        />
+      ),
     },
   ];
 
@@ -351,6 +357,7 @@ const Customers = () => {
             loading={loading}
             rowKey="_id"
             className="custom-table customers-table"
+            onChange={handleTableChange}
             pagination={{
               ...pagination,
               showSizeChanger: true,
@@ -366,7 +373,7 @@ const Customers = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('customers', 'update')) {

@@ -15,12 +15,37 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as companyUpdateService from '../services/companyUpdateService';
+import * as companyUpdateCategoryService from '../services/companyUpdateCategoryService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const CompanyUpdateRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'company-update',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('company-updates', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/company-updates/${record._id}`) });
+  }
+  if (hasPermission('company-updates', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" size="small" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 // Status color mapping
 const getStatusColor = (status) => {
@@ -52,9 +77,13 @@ const getStatusLabel = (status) => {
 
 const CompanyUpdates = () => {
   const [companyUpdates, setCompanyUpdates] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState(null);
+  const [sortField, setSortField] = useState('eventDate');
+  const [sortOrder, setSortOrder] = useState('descend');
   const [selectedUpdate, setSelectedUpdate] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
@@ -66,15 +95,35 @@ const CompanyUpdates = () => {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
 
+  // Load categories for filter
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const res = await companyUpdateCategoryService.getAllCompanyUpdateCategories({ limit: 500 });
+        if (res.success && res.data?.categories) setCategories(res.data.categories);
+        else if (res.success && res.data?.companyUpdateCategories) setCategories(res.data.companyUpdateCategories);
+        else if (res.success && Array.isArray(res.data)) setCategories(res.data);
+      } catch {
+        // ignore
+      }
+    };
+    loadCategories();
+  }, []);
+
   // Fetch company updates
   const fetchCompanyUpdates = async (params = {}) => {
     setLoading(true);
     try {
+      const sortBy = params.sortBy ?? sortField;
+      const sortOrderApi = (params.sortOrder ?? sortOrder) === 'descend' ? 'desc' : 'asc';
       const response = await companyUpdateService.getAllCompanyUpdates({
-        page: pagination.current,
-        limit: pagination.pageSize,
-        search: searchText,
-        status: statusFilter,
+        page: params.page ?? pagination.current,
+        limit: params.limit ?? pagination.pageSize,
+        search: params.search !== undefined ? params.search : searchText,
+        status: params.status !== undefined ? params.status : statusFilter,
+        category: params.category !== undefined ? params.category : categoryFilter,
+        sortBy: params.sortBy ?? sortBy,
+        sortOrder: params.sortOrder ?? sortOrderApi,
         ...params,
       });
 
@@ -101,7 +150,7 @@ const CompanyUpdates = () => {
 
   useEffect(() => {
     fetchCompanyUpdates();
-  }, [pagination.current, pagination.pageSize, statusFilter]);
+  }, [pagination.current, pagination.pageSize, statusFilter, categoryFilter, sortField, sortOrder]);
 
   // Handle delete company update
   const handleDelete = async () => {
@@ -125,12 +174,22 @@ const CompanyUpdates = () => {
     fetchCompanyUpdates({ search: value });
   };
 
+  const handleTableChange = (paginationConfig, filters, sorter) => {
+    if (sorter?.field != null && sorter?.order != null) {
+      setSortField(sorter.field);
+      setSortOrder(sorter.order);
+      setPagination((prev) => ({ ...prev, current: 1 }));
+    }
+  };
+
   // Table columns
   const columns = [
     {
       title: 'Company Update',
       key: 'update',
+      dataIndex: 'title',
       sorter: true,
+      sortOrder: sortField === 'title' ? sortOrder : null,
       width: 280,
       fixed: 'left',
       render: (_, record) => (
@@ -184,6 +243,7 @@ const CompanyUpdates = () => {
         </span>
       ),
       sorter: true,
+      sortOrder: sortField === 'eventDate' ? sortOrder : null,
     },
     {
       title: 'Status',
@@ -236,56 +296,20 @@ const CompanyUpdates = () => {
         </span>
       ),
       sorter: true,
+      sortOrder: sortField === 'createdAt' ? sortOrder : null,
     },
     {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
       width: 80,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('company-updates', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/company-updates/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('company-updates', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedUpdate(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-                size="small"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <CompanyUpdateRowActions
+          record={record}
+          onNavigate={navigate}
+          onDeleteClick={(r) => { setSelectedUpdate(r); setIsDeleteModalOpen(true); }}
+        />
+      ),
     },
   ];
 
@@ -342,6 +366,20 @@ const CompanyUpdates = () => {
             </div>
             <div className="flex gap-2 w-full md:w-auto">
               <Select
+                placeholder="Filter by Category"
+                allowClear
+                size="large"
+                style={{ width: 200 }}
+                value={categoryFilter}
+                onChange={(value) => {
+                  setCategoryFilter(value);
+                  setPagination((prev) => ({ ...prev, current: 1 }));
+                }}
+                suffixIcon={<FilterOutlined />}
+                optionFilterProp="label"
+                options={categories.map((c) => ({ value: c._id, label: c.name || c.slug }))}
+              />
+              <Select
                 placeholder="Filter by Status"
                 allowClear
                 size="large"
@@ -392,7 +430,8 @@ const CompanyUpdates = () => {
                   }));
                 },
               }}
-              scroll={{ x: 1100 }}
+              scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
+              onChange={handleTableChange}
               onRow={(record) => ({
                 onClick: () => {
                   if (hasPermission('company-updates', 'update')) {

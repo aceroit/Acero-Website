@@ -31,7 +31,7 @@ export default function Home() {
           </div>
         ) : (
           // Render sections dynamically
-          <SectionRenderer sections={sections} />
+          <SectionRenderer sections={sections} isHomePage />
         )}
       </main>
       <Footer />

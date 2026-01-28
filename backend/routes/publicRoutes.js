@@ -1,3 +1,11 @@
+/**
+ * Public API routes. No authentication required.
+ *
+ * Listed content contract: List and detail endpoints for branches, customers,
+ * certifications, company-updates, brochures, and company-update-categories
+ * return only records with status: 'published', featured: true, and isActive: true
+ * (where applicable). Models implement getPublished() with this contract.
+ */
 const express = require('express');
 const router = express.Router();
 const Page = require('../models/Page');
@@ -928,6 +936,24 @@ router.get('/certifications', async (req, res) => {
     } catch (error) {
         console.error('Error in public getCertifications:', error);
         return errorResponse(res, 500, 'Failed to retrieve certifications');
+    }
+});
+
+/**
+ * GET /api/public/company-updates/home - Get company updates for home page (showOnHomePage only, max 3)
+ * No authentication required. Must be defined before /company-updates so "home" is not parsed as slug.
+ */
+router.get('/company-updates/home', async (req, res) => {
+    try {
+        const companyUpdates = await CompanyUpdate.getHomePageCompanyUpdates();
+        res.set('Cache-Control', 'public, max-age=300');
+        return successResponse(res, 200, 'Home page company updates retrieved successfully', {
+            companyUpdates,
+            count: companyUpdates.length
+        });
+    } catch (error) {
+        console.error('Error in public getHomePageCompanyUpdates:', error);
+        return errorResponse(res, 500, 'Failed to retrieve home page company updates');
     }
 });
 

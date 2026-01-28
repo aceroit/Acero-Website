@@ -16,12 +16,36 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as brochureService from '../services/brochureService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const BrochureRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'brochure',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('brochures', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/brochures/${record._id}`) });
+  }
+  if (hasPermission('brochures', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 // Status color mapping
 const getStatusColor = (status) => {
@@ -56,6 +80,8 @@ const Brochures = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState(null);
+  const [sortField, setSortField] = useState('order');
+  const [sortOrder, setSortOrder] = useState('ascend');
   const [selectedBrochure, setSelectedBrochure] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
@@ -71,11 +97,15 @@ const Brochures = () => {
   const fetchBrochures = async (params = {}) => {
     setLoading(true);
     try {
+      const sortBy = params.sortBy ?? sortField;
+      const sortOrderApi = (params.sortOrder ?? sortOrder) === 'descend' ? 'desc' : 'asc';
       const response = await brochureService.getAllBrochures({
-        page: pagination.current,
-        limit: pagination.pageSize,
-        search: searchText,
-        status: statusFilter,
+        page: params.page ?? pagination.current,
+        limit: params.limit ?? pagination.pageSize,
+        search: params.search !== undefined ? params.search : searchText,
+        status: params.status !== undefined ? params.status : statusFilter,
+        sortBy: params.sortBy ?? sortBy,
+        sortOrder: params.sortOrder ?? sortOrderApi,
         ...params,
       });
 
@@ -102,7 +132,7 @@ const Brochures = () => {
 
   useEffect(() => {
     fetchBrochures();
-  }, [pagination.current, pagination.pageSize, statusFilter]);
+  }, [pagination.current, pagination.pageSize, statusFilter, sortField, sortOrder]);
 
   // Handle delete brochure
   const handleDelete = async () => {
@@ -126,12 +156,22 @@ const Brochures = () => {
     fetchBrochures({ search: value });
   };
 
+  const handleTableChange = (paginationConfig, filters, sorter) => {
+    if (sorter?.field != null && sorter?.order != null) {
+      setSortField(sorter.field);
+      setSortOrder(sorter.order);
+      setPagination((prev) => ({ ...prev, current: 1 }));
+    }
+  };
+
   // Table columns
   const columns = [
     {
       title: 'Brochure',
       key: 'brochure',
+      dataIndex: 'title',
       sorter: true,
+      sortOrder: sortField === 'title' ? sortOrder : null,
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <div className="w-16 h-20 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0 overflow-hidden">
@@ -181,9 +221,10 @@ const Brochures = () => {
       dataIndex: 'order',
       key: 'order',
       render: (order) => (
-        <span className="text-gray-600 font-medium">{order || 0}</span>
+        <span className="text-gray-600 font-medium">{order ?? 0}</span>
       ),
       sorter: true,
+      sortOrder: sortField === 'order' ? sortOrder : null,
       width: 80,
     },
     {
@@ -232,55 +273,20 @@ const Brochures = () => {
         </span>
       ),
       sorter: true,
+      sortOrder: sortField === 'createdAt' ? sortOrder : null,
     },
     {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('brochures', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/brochures/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('brochures', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedBrochure(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <BrochureRowActions
+          record={record}
+          onNavigate={navigate}
+          onDeleteClick={(r) => { setSelectedBrochure(r); setIsDeleteModalOpen(true); }}
+        />
+      ),
     },
   ];
 
@@ -386,7 +392,8 @@ const Brochures = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
+            onChange={handleTableChange}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('brochures', 'update')) {

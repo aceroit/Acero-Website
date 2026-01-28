@@ -53,6 +53,7 @@ const CompanyUpdateForm = ({
         category: initialValues.category?._id || initialValues.category,
         eventDate: eventDateValue,
         featured: initialValues.featured !== undefined ? initialValues.featured : false,
+        showOnHomePage: initialValues.showOnHomePage !== undefined ? initialValues.showOnHomePage : false,
         isActive: initialValues.isActive !== undefined ? initialValues.isActive : true,
         gallery: initialValues.gallery || [],
         linkedInPosts: initialValues.linkedInPosts || [],
@@ -158,6 +159,7 @@ const CompanyUpdateForm = ({
       metaKeywords: metaKeywords,
       linkedInPosts: linkedInPosts,
       featured: values.featured !== undefined ? values.featured : false,
+      showOnHomePage: values.showOnHomePage !== undefined ? values.showOnHomePage : false,
       isActive: values.isActive !== undefined ? values.isActive : true,
     };
     await onSubmit(cleanedValues);
@@ -170,6 +172,7 @@ const CompanyUpdateForm = ({
       onFinish={handleSubmit}
       initialValues={{
         featured: false,
+        showOnHomePage: false,
         isActive: true,
         gallery: [],
         linkedInPosts: [],
@@ -392,6 +395,15 @@ const CompanyUpdateForm = ({
             label="Featured"
             valuePropName="checked"
             tooltip="Featured updates are visible on the public website (must also be published)"
+          >
+            <Switch />
+          </Form.Item>
+
+          <Form.Item
+            name="showOnHomePage"
+            label="Show on home page"
+            valuePropName="checked"
+            tooltip="Show this update in the home page company updates block (max 3)"
           >
             <Switch />
           </Form.Item>

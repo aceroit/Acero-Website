@@ -5,6 +5,7 @@ import { useCompanyUpdates } from '@/hooks/use-company-updates'
 
 interface DynamicCompanyUpdatesSectionProps {
   sectionId: string
+  forHome?: boolean
   staticUpdates?: Array<{
     id: string
     title: string
@@ -20,17 +21,18 @@ interface DynamicCompanyUpdatesSectionProps {
 }
 
 /**
- * Dynamic Company Updates Section that fetches data from backend
+ * Dynamic Company Updates Section that fetches data from backend.
+ * When forHome is true, uses home endpoint (showOnHomePage only, max 3).
  */
 export function DynamicCompanyUpdatesSection({
   sectionId,
+  forHome = false,
   staticUpdates,
   title = '',
   subtitle,
   columns = 3,
 }: DynamicCompanyUpdatesSectionProps) {
-  // Fetch company updates from backend
-  const { companyUpdates, isLoading } = useCompanyUpdates()
+  const { companyUpdates, isLoading } = useCompanyUpdates({ forHome })
 
   // Transform backend data to match CompanyUpdate interface
   let updates: CompanyUpdateType[] = []

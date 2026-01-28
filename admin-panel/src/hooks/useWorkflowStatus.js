@@ -53,6 +53,12 @@ const useWorkflowStatus = ({ status, resourceType = 'page', createdBy = null }) 
       country: 'countries',
       region: 'regions',
       area: 'areas',
+      branch: 'branches',
+      customer: 'customers',
+      certification: 'certifications',
+      'company-update': 'company-updates',
+      'company-update-category': 'company-update-categories',
+      brochure: 'brochures',
     };
     return map[resourceType] ?? (resourceType ? `${resourceType}s` : 'pages');
   }, [resourceType]);

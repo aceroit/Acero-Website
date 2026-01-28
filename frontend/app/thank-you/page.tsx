@@ -1,42 +1,59 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { CheckCircle2 } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { useFormConfiguration } from "@/hooks/use-form-configuration"
+
+const DEFAULT_SECTION = {
+  thankYouTimeout: 5,
+  thankYouRedirectUrl: "/",
+}
+
+function doRedirect(redirectUrl: string, router: ReturnType<typeof useRouter>) {
+  if (redirectUrl.startsWith("http://") || redirectUrl.startsWith("https://")) {
+    window.location.href = redirectUrl
+  } else {
+    router.push(redirectUrl)
+  }
+}
 
 export default function ThankYouPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const from = searchParams.get("from") || "contact"
-  const [countdown, setCountdown] = useState(5)
+  const source = (searchParams.get("from") === "career" ? "career" : "contact") as "contact" | "career"
+  const { formConfiguration } = useFormConfiguration()
+
+  const section = useMemo(() => {
+    if (!formConfiguration) return DEFAULT_SECTION
+    const s = source === "career" ? formConfiguration.career : formConfiguration.contact
+    return s ?? DEFAULT_SECTION
+  }, [formConfiguration, source])
+
+  const [countdown, setCountdown] = useState(section.thankYouTimeout)
 
   useEffect(() => {
-    // Countdown timer
+    const timeout = section.thankYouTimeout
+    const redirectUrl = section.thankYouRedirectUrl
+    setCountdown(timeout)
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
-          // Redirect to previous page
-          if (window.history.length > 1) {
-            router.back()
-          } else {
-            // Fallback to home if no history
-            router.push("/")
-          }
+          doRedirect(redirectUrl, router)
           return 0
         }
         return prev - 1
       })
     }, 1000)
-
     return () => clearInterval(timer)
-  }, [router])
+  }, [section.thankYouTimeout, section.thankYouRedirectUrl, router])
 
   const getMessage = () => {
-    if (from === "career") {
+    if (source === "career") {
       return {
         title: "Application Submitted Successfully!",
         description:
@@ -109,13 +126,7 @@ export default function ThankYouPage() {
             className="mt-8"
           >
             <button
-              onClick={() => {
-                if (window.history.length > 1) {
-                  router.back()
-                } else {
-                  router.push("/")
-                }
-              }}
+              onClick={() => doRedirect(section.thankYouRedirectUrl, router)}
               className="text-sm text-steel-red hover:underline"
             >
               Click here if you are not redirected automatically

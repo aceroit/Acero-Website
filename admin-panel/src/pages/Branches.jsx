@@ -16,12 +16,36 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as branchService from '../services/branchService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const BranchRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'branch',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('branches', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/branches/${record._id}`) });
+  }
+  if (hasPermission('branches', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" size="small" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 // Status color mapping
 const getStatusColor = (status) => {
@@ -56,6 +80,8 @@ const Branches = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState(null);
+  const [sortField, setSortField] = useState('isHeadOffice');
+  const [sortOrder, setSortOrder] = useState('descend');
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
@@ -71,11 +97,15 @@ const Branches = () => {
   const fetchBranches = async (params = {}) => {
     setLoading(true);
     try {
+      const sortBy = params.sortBy ?? sortField;
+      const sortOrderApi = (params.sortOrder ?? sortOrder) === 'descend' ? 'desc' : 'asc';
       const response = await branchService.getAllBranches({
-        page: pagination.current,
-        limit: pagination.pageSize,
-        search: searchText,
-        status: statusFilter,
+        page: params.page ?? pagination.current,
+        limit: params.limit ?? pagination.pageSize,
+        search: params.search !== undefined ? params.search : searchText,
+        status: params.status !== undefined ? params.status : statusFilter,
+        sortBy: params.sortBy ?? sortBy,
+        sortOrder: params.sortOrder ?? sortOrderApi,
         ...params,
       });
 
@@ -102,7 +132,7 @@ const Branches = () => {
 
   useEffect(() => {
     fetchBranches();
-  }, [pagination.current, pagination.pageSize, statusFilter]);
+  }, [pagination.current, pagination.pageSize, statusFilter, sortField, sortOrder]);
 
   // Handle delete branch
   const handleDelete = async () => {
@@ -126,12 +156,22 @@ const Branches = () => {
     fetchBranches({ search: value });
   };
 
+  const handleTableChange = (paginationConfig, filters, sorter) => {
+    if (sorter?.field != null && sorter?.order != null) {
+      setSortField(sorter.field);
+      setSortOrder(sorter.order);
+      setPagination((prev) => ({ ...prev, current: 1 }));
+    }
+  };
+
   // Table columns
   const columns = [
     {
       title: 'Branch',
       key: 'branch',
+      dataIndex: 'branchName',
       sorter: true,
+      sortOrder: sortField === 'branchName' ? sortOrder : null,
       width: 240,
       fixed: 'left',
       render: (_, record) => (
@@ -268,56 +308,20 @@ const Branches = () => {
         </span>
       ),
       sorter: true,
+      sortOrder: sortField === 'createdAt' ? sortOrder : null,
     },
     {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
       width: 80,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('branches', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/branches/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('branches', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedBranch(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-                size="small"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <BranchRowActions
+          record={record}
+          onNavigate={(path) => navigate(path)}
+          onDeleteClick={(r) => { setSelectedBranch(r); setIsDeleteModalOpen(true); }}
+        />
+      ),
     },
   ];
 
@@ -409,6 +413,7 @@ const Branches = () => {
               loading={loading}
               rowKey="_id"
               className="custom-table branches-table w-full"
+              onChange={handleTableChange}
               pagination={{
                 ...pagination,
                 showSizeChanger: true,
@@ -424,7 +429,7 @@ const Branches = () => {
                   }));
                 },
               }}
-              scroll={{ x: 'max-content' }}
+              scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
               onRow={(record) => ({
                 onClick: () => {
                   if (hasPermission('branches', 'update')) {

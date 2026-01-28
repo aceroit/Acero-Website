@@ -62,6 +62,7 @@ const Sidebar = () => {
 
                 const resourcePath = resource.path || '';
                 if (superAdminOnlyPaths.includes(resourcePath) && !isSuperAdmin) return;
+                if (resourcePath === '/media-library' || (resource.slug && resource.slug === 'media-library')) return;
 
                 const resourceSlug = resource.slug || resource._id?.toString();
                 const hasAccess = isSuperAdmin ||

@@ -125,6 +125,17 @@ exports.getCompanyUpdateBySlug = async (req, res) => {
  */
 exports.createCompanyUpdate = async (req, res) => {
     try {
+        if (req.body.showOnHomePage === true) {
+            const count = await CompanyUpdate.countDocuments({
+                status: 'published',
+                showOnHomePage: true,
+                isActive: true
+            });
+            if (count >= 3) {
+                return errorResponse(res, 400, 'Already 3 company updates are shown on the home page. Remove \'Show on home page\' from one to add this one.');
+            }
+        }
+
         const companyUpdateData = {
             ...req.body,
             createdBy: req.user._id
@@ -166,6 +177,18 @@ exports.updateCompanyUpdate = async (req, res) => {
         const companyUpdate = await CompanyUpdate.findOne({ _id: id, isActive: true });
         if (!companyUpdate) {
             return errorResponse(res, 404, 'Company update not found');
+        }
+
+        if (updateData.showOnHomePage === true) {
+            const count = await CompanyUpdate.countDocuments({
+                status: 'published',
+                showOnHomePage: true,
+                isActive: true,
+                _id: { $ne: id }
+            });
+            if (count >= 3) {
+                return errorResponse(res, 400, 'Already 3 company updates are shown on the home page. Remove \'Show on home page\' from one to add this one.');
+            }
         }
 
         // Check if we're only updating status (allow this even for published company updates)

@@ -1,4 +1,5 @@
 import { apiGet } from '@/lib/api/client'
+import { API_ENDPOINTS } from '@/lib/api/endpoints'
 
 export interface CompanyUpdateResponse {
   success: boolean
@@ -71,6 +72,23 @@ export interface CompanyUpdate {
   publishedAt?: string
   createdAt: string
   updatedAt: string
+}
+
+/**
+ * Fetch company updates for home page (showOnHomePage only, max 3)
+ */
+export async function getHomePageCompanyUpdates(): Promise<CompanyUpdate[]> {
+  try {
+    const response = await apiGet<CompanyUpdateResponse>(API_ENDPOINTS.PUBLIC_COMPANY_UPDATES_HOME)
+    if (response.success && response.data) {
+      const updates = response.data.companyUpdates || []
+      return updates
+    }
+    return []
+  } catch (error) {
+    console.error('Error fetching home page company updates:', error)
+    throw error
+  }
 }
 
 /**

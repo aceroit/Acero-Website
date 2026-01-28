@@ -32,6 +32,7 @@ import { getIconComponent } from '@/lib/utils/icon-mapper'
 
 interface SectionRendererProps {
   sections: Section[]
+  isHomePage?: boolean
 }
 
 /**
@@ -39,7 +40,7 @@ interface SectionRendererProps {
  * Dynamically renders sections based on sectionTypeSlug
  * Maps backend section types to frontend components
  */
-export function SectionRenderer({ sections }: SectionRendererProps) {
+export function SectionRenderer({ sections, isHomePage = false }: SectionRendererProps) {
   return (
     <>
       {sections
@@ -169,11 +170,12 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
                 const subtitle = (content.subtitle as string) || undefined
                 const columns = (content.columns as 3 | 4) || 3
 
-                // Use DynamicCompanyUpdatesSection which fetches from backend
+                // Use DynamicCompanyUpdatesSection which fetches from backend. On home, use home endpoint (max 3).
                 return (
                   <DynamicCompanyUpdatesSection
                     key={section._id}
                     sectionId={section._id}
+                    forHome={isHomePage}
                     staticUpdates={updates}
                     title={title}
                     subtitle={subtitle}

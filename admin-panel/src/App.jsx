@@ -26,8 +26,6 @@ import CompanyUpdateCategories from "./pages/CompanyUpdateCategories";
 import CompanyUpdateCategoryEditor from "./pages/CompanyUpdateCategoryEditor";
 import Brochures from "./pages/Brochures";
 import BrochureEditor from "./pages/BrochureEditor";
-import MediaLibrary from "./pages/MediaLibrary";
-import MediaEditor from "./pages/MediaEditor";
 import BuildingTypes from "./pages/BuildingTypes";
 import BuildingTypeEditor from "./pages/BuildingTypeEditor";
 import Industries from "./pages/Industries";
@@ -357,30 +355,6 @@ function App() {
             element={
               <ProtectedRoute resource="brochures" action="update">
                 <BrochureEditor />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/media-library"
-            element={
-              <ProtectedRoute resource="media-library" action="read">
-                <MediaLibrary />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/media-library/new"
-            element={
-              <ProtectedRoute resource="media-library" action="create">
-                <MediaEditor />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/media-library/:id"
-            element={
-              <ProtectedRoute resource="media-library" action="update">
-                <MediaEditor />
               </ProtectedRoute>
             }
           />

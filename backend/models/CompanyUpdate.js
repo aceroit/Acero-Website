@@ -231,6 +231,11 @@ const companyUpdateSchema = new mongoose.Schema({
         default: false,
         index: true
     },
+    showOnHomePage: {
+        type: Boolean,
+        default: false,
+        index: true
+    },
     
     // Creator and Updater tracking
     createdBy: {
@@ -255,6 +260,7 @@ companyUpdateSchema.index({ slug: 1 }, { unique: true });
 companyUpdateSchema.index({ eventDate: -1, createdAt: -1 });
 // Compound index for public queries (status, featured, isActive)
 companyUpdateSchema.index({ status: 1, featured: 1, isActive: 1 });
+companyUpdateSchema.index({ status: 1, showOnHomePage: 1, isActive: 1 });
 companyUpdateSchema.index({ title: 'text', heading: 'text', description: 'text' }); // Text search index
 
 // Compound index for filtering
@@ -278,6 +284,19 @@ companyUpdateSchema.pre('save', async function() {
         }
     }
 });
+
+// Static method to get company updates shown on home page (max 3; showOnHomePage only)
+companyUpdateSchema.statics.getHomePageCompanyUpdates = async function() {
+    return await this.find({
+        status: 'published',
+        showOnHomePage: true,
+        isActive: true
+    })
+        .populate('category', 'name slug')
+        .sort({ eventDate: -1, createdAt: -1 })
+        .limit(3)
+        .lean();
+};
 
 // Static method to get published company updates
 companyUpdateSchema.statics.getPublished = async function(filters = {}) {
