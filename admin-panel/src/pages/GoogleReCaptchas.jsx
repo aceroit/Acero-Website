@@ -15,6 +15,7 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import { WorkflowStatusBadge } from '../components/workflow';
 import * as googleReCaptchaService from '../services/googleReCaptchaService';
 import { toast } from 'react-toastify';
@@ -22,6 +23,29 @@ import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const GoogleReCaptchaRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'google-recaptcha',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('google-recaptcha', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/website-configurations/recaptcha/${record._id}`) });
+  }
+  if (hasPermission('google-recaptcha', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" size="small" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 const GoogleReCaptchas = () => {
   const [configurations, setConfigurations] = useState([]);
@@ -186,41 +210,16 @@ const GoogleReCaptchas = () => {
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('google-recaptcha', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/website-configurations/recaptcha/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('google-recaptcha', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedConfig(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
-              <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <GoogleReCaptchaRowActions
+          record={record}
+          onNavigate={(path) => navigate(path)}
+          onDeleteClick={(r) => {
+            setSelectedConfig(r);
+            setIsDeleteModalOpen(true);
+          }}
+        />
+      ),
     },
   ];
 
@@ -334,7 +333,7 @@ const GoogleReCaptchas = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('google-recaptcha', 'update')) {

@@ -5,11 +5,16 @@ const Notification = require('../models/Notification');
 const User = require('../models/User');
 const FormConfiguration = require('../models/FormConfiguration');
 const Vacancy = require('../models/Vacancy');
+const SMTPSettings = require('../models/SMTPSettings');
 const { getAdminPanelUrl, getPublicSiteUrl } = require('../utils/urlHelper');
+
+const SMTP_CACHE_TTL_MS = 60000;
 
 class NotificationService {
     constructor() {
         this.transporter = null;
+        this._smtpCache = null;
+        this._smtpCacheExpiry = 0;
         this.initializeTransporter();
     }
 
@@ -27,6 +32,42 @@ class NotificationService {
         } catch (error) {
             console.error('Failed to initialize email transporter:', error);
         }
+    }
+
+    async getTransporterAndFrom() {
+        const now = Date.now();
+        if (this._smtpCache && this._smtpCacheExpiry > now) {
+            return this._smtpCache;
+        }
+        try {
+            const published = await SMTPSettings.getPublished();
+            if (published && published.host?.value && published.port?.value != null && published.username?.value && published.password?.value) {
+                const transport = nodemailer.createTransport({
+                    host: published.host.value,
+                    port: Number(published.port.value),
+                    secure: !!published.secure?.value,
+                    auth: {
+                        user: published.username.value,
+                        pass: published.password.value
+                    }
+                });
+                const fromEmail = published.fromEmail?.value || process.env.EMAIL_FROM || 'noreply@acero.com';
+                const fromName = published.fromName?.value || process.env.EMAIL_FROM_NAME || 'Acero CMS';
+                const from = `${fromName} <${fromEmail}>`;
+                const result = { transport, from };
+                this._smtpCache = result;
+                this._smtpCacheExpiry = now + SMTP_CACHE_TTL_MS;
+                return result;
+            }
+        } catch (err) {
+            console.error('Failed to load published SMTP config, using env fallback:', err.message);
+        }
+        this._smtpCache = null;
+        if (!this.transporter) {
+            this.initializeTransporter();
+        }
+        const from = `${process.env.EMAIL_FROM_NAME || 'Acero CMS'} <${process.env.EMAIL_FROM || 'noreply@acero.com'}>`;
+        return { transport: this.transporter, from };
     }
 
     async loadEmailTemplate(templateName) {
@@ -50,7 +91,8 @@ class NotificationService {
     }
 
     async sendEmail(to, subject, templateName, data) {
-        if (!this.transporter) {
+        const { transport, from } = await this.getTransporterAndFrom();
+        if (!transport) {
             console.warn('Email transporter not configured. Skipping email send.');
             return false;
         }
@@ -65,13 +107,13 @@ class NotificationService {
             const html = this.replacePlaceholders(template, data);
 
             const mailOptions = {
-                from: `${process.env.EMAIL_FROM_NAME || 'Acero CMS'} <${process.env.EMAIL_FROM || 'noreply@acero.com'}>`,
+                from: from || `${process.env.EMAIL_FROM_NAME || 'Acero CMS'} <${process.env.EMAIL_FROM || 'noreply@acero.com'}>`,
                 to,
                 subject,
                 html
             };
 
-            const info = await this.transporter.sendMail(mailOptions);
+            const info = await transport.sendMail(mailOptions);
             console.log('Email sent successfully:', info.messageId);
             return true;
         } catch (error) {

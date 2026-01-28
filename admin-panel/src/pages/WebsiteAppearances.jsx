@@ -15,6 +15,7 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import { WorkflowStatusBadge } from '../components/workflow';
 import * as websiteAppearanceService from '../services/websiteAppearanceService';
 import { toast } from 'react-toastify';
@@ -22,6 +23,29 @@ import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const WebsiteAppearanceRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'website-appearance',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('website-appearance', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/website-configurations/appearance/${record._id}`) });
+  }
+  if (hasPermission('website-appearance', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" size="small" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 const WebsiteAppearances = () => {
   const [appearances, setAppearances] = useState([]);
@@ -193,49 +217,16 @@ const WebsiteAppearances = () => {
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('website-appearance', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/website-configurations/appearance/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('website-appearance', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedAppearance(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <WebsiteAppearanceRowActions
+          record={record}
+          onNavigate={(path) => navigate(path)}
+          onDeleteClick={(r) => {
+            setSelectedAppearance(r);
+            setIsDeleteModalOpen(true);
+          }}
+        />
+      ),
     },
   ];
 
@@ -356,7 +347,7 @@ const WebsiteAppearances = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('website-appearance', 'update')) {

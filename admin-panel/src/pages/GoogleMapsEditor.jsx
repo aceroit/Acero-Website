@@ -45,7 +45,7 @@ const GoogleMapsEditor = () => {
         setMapsConfig(response.data.googleMaps);
         form.setFieldsValue({
           title: response.data.googleMaps.title,
-          featured: response.data.googleMaps.featured,
+          featured: response.data.googleMaps.featured === true || response.data.googleMaps.featured === 'true',
           apiKey: {
             value: response.data.googleMaps.apiKey?.value || '',
             isFieldActive: response.data.googleMaps.apiKey?.isFieldActive !== false
@@ -289,6 +289,23 @@ const GoogleMapsEditor = () => {
 
 // Google Maps Form Component
 const GoogleMapsForm = ({ form, initialValues, onSubmit, onCancel, loading, isEdit }) => {
+  useEffect(() => {
+    if (initialValues && Object.keys(initialValues).length > 0 && form) {
+      form.setFieldsValue({
+        title: initialValues.title || 'Google Maps',
+        featured: initialValues.featured === true || initialValues.featured === 'true',
+        apiKey: {
+          value: initialValues.apiKey?.value || '',
+          isFieldActive: initialValues.apiKey?.isFieldActive !== false
+        },
+        enabled: {
+          value: initialValues.enabled?.value !== false,
+          isFieldActive: initialValues.enabled?.isFieldActive !== false
+        }
+      });
+    }
+  }, [initialValues, form]);
+
   return (
     <Form
       form={form}
@@ -320,9 +337,8 @@ const GoogleMapsForm = ({ form, initialValues, onSubmit, onCancel, loading, isEd
         <Input placeholder="Google Maps" />
       </Form.Item>
 
-      <Form.Item name="featured" valuePropName="checked">
-        <Switch checkedChildren="Featured" unCheckedChildren="Not Featured" />
-        <span className="ml-2 text-sm text-gray-600">Mark as featured to publish</span>
+      <Form.Item name="featured" label="Featured" valuePropName="checked" tooltip="Mark as featured to publish (required for public site)">
+        <Switch />
       </Form.Item>
 
       <Divider>Maps Configuration</Divider>

@@ -15,6 +15,7 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import { WorkflowStatusBadge } from '../components/workflow';
 import * as smtpSettingsService from '../services/smtpSettingsService';
 import { toast } from 'react-toastify';
@@ -22,6 +23,29 @@ import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const SMTPSettingRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'smtp-settings',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('smtp-settings', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/website-configurations/smtp/${record._id}`) });
+  }
+  if (hasPermission('smtp-settings', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" size="small" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 const SMTPSettings = () => {
   const [settings, setSettings] = useState([]);
@@ -186,41 +210,16 @@ const SMTPSettings = () => {
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('smtp-settings', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/website-configurations/smtp/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('smtp-settings', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedSetting(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
-              <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <SMTPSettingRowActions
+          record={record}
+          onNavigate={(path) => navigate(path)}
+          onDeleteClick={(r) => {
+            setSelectedSetting(r);
+            setIsDeleteModalOpen(true);
+          }}
+        />
+      ),
     },
   ];
 
@@ -334,7 +333,7 @@ const SMTPSettings = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('smtp-settings', 'update')) {

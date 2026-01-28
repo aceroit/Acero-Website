@@ -403,6 +403,19 @@ const WebsiteAppearanceEditor = () => {
 
 // Website Appearance Form Component
 const WebsiteAppearanceForm = ({ form, initialValues, onSubmit, onCancel, loading, isEdit }) => {
+  useEffect(() => {
+    if (initialValues && Object.keys(initialValues).length > 0) {
+      form.setFieldsValue({
+        title: initialValues.title || 'Website Appearance',
+        featured: initialValues.featured === true || initialValues.featured === 'true',
+        ...(initialValues.colorPalette && { colorPalette: initialValues.colorPalette }),
+        ...(initialValues.typography && { typography: initialValues.typography }),
+        ...(initialValues.spacing && { spacing: initialValues.spacing }),
+        ...(initialValues.borderRadius && { borderRadius: initialValues.borderRadius })
+      });
+    }
+  }, [initialValues, form]);
+
   const renderColorField = (path, label, defaultValue) => (
     <div className="mb-4">
       <div className="flex items-center justify-between mb-2">
@@ -507,9 +520,13 @@ const WebsiteAppearanceForm = ({ form, initialValues, onSubmit, onCancel, loadin
         <Input placeholder="Website Appearance" />
       </Form.Item>
 
-      <Form.Item name="featured" valuePropName="checked">
-        <Switch checkedChildren="Featured" unCheckedChildren="Not Featured" />
-        <span className="ml-2 text-sm text-gray-600">Mark as featured to publish</span>
+      <Form.Item
+        name="featured"
+        label="Featured"
+        valuePropName="checked"
+        tooltip="Mark as featured to publish (required for public site)"
+      >
+        <Switch />
       </Form.Item>
 
       <Collapse

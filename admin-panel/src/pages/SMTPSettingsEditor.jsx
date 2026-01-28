@@ -45,7 +45,7 @@ const SMTPSettingsEditor = () => {
         setSmtpSettings(response.data.smtpSettings);
         form.setFieldsValue({
           title: response.data.smtpSettings.title,
-          featured: response.data.smtpSettings.featured,
+          featured: response.data.smtpSettings.featured === true || response.data.smtpSettings.featured === 'true',
           host: {
             value: response.data.smtpSettings.host?.value || '',
             isFieldActive: response.data.smtpSettings.host?.isFieldActive !== false
@@ -371,9 +371,8 @@ const SMTPSettingsForm = ({ form, initialValues, onSubmit, onCancel, loading, is
         <Input placeholder="SMTP Settings" />
       </Form.Item>
 
-      <Form.Item name="featured" valuePropName="checked">
-        <Switch checkedChildren="Featured" unCheckedChildren="Not Featured" />
-        <span className="ml-2 text-sm text-gray-600">Mark as featured to publish</span>
+      <Form.Item name="featured" label="Featured" valuePropName="checked" tooltip="Mark as featured to publish (required for public site)">
+        <Switch />
       </Form.Item>
 
       <Divider>SMTP Server Configuration</Divider>

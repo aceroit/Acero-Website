@@ -59,6 +59,12 @@ const useWorkflowStatus = ({ status, resourceType = 'page', createdBy = null }) 
       'company-update': 'company-updates',
       'company-update-category': 'company-update-categories',
       brochure: 'brochures',
+      'header-configuration': 'header-configurations',
+      'footer-configuration': 'footer-configurations',
+      'website-appearance': 'website-appearance',
+      'smtp-settings': 'smtp-settings',
+      'google-recaptcha': 'google-recaptcha',
+      'google-maps': 'google-maps',
     };
     return map[resourceType] ?? (resourceType ? `${resourceType}s` : 'pages');
   }, [resourceType]);

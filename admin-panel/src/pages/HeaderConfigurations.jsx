@@ -15,6 +15,7 @@ import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PermissionWrapper from '../components/common/PermissionWrapper';
 import { usePermissions } from '../contexts/PermissionContext';
+import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import { WorkflowStatusBadge } from '../components/workflow';
 import * as headerConfigurationService from '../services/headerConfigurationService';
 import { toast } from 'react-toastify';
@@ -22,6 +23,29 @@ import dayjs from 'dayjs';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const HeaderConfigurationRowActions = ({ record, onNavigate, onDeleteClick }) => {
+  const { hasPermission } = usePermissions();
+  const workflowStatus = useWorkflowStatus({
+    status: record?.status || 'draft',
+    resourceType: 'header-configuration',
+    createdBy: record?.createdBy?._id || record?.createdBy,
+  });
+  const menuItems = [];
+  if (hasPermission('header-configurations', 'update') && workflowStatus.canEdit.canEdit) {
+    menuItems.push({ key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => onNavigate(`/website-configurations/header/${record._id}`) });
+  }
+  if (hasPermission('header-configurations', 'delete') && workflowStatus.canDelete.canDelete) {
+    menuItems.push({ key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteClick(record) });
+  }
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+        <Button type="text" icon={<MoreOutlined />} className="hover:bg-gray-100" size="small" disabled={menuItems.length === 0} />
+      </Dropdown>
+    </div>
+  );
+};
 
 const HeaderConfigurations = () => {
   const [configurations, setConfigurations] = useState([]);
@@ -193,49 +217,16 @@ const HeaderConfigurations = () => {
       key: 'actions',
       fixed: 'right',
       width: 120,
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (hasPermission('header-configurations', 'update')) {
-          menuItems.push({
-            key: 'edit',
-            label: 'Edit',
-            icon: <EditOutlined />,
-            onClick: () => {
-              navigate(`/website-configurations/header/${record._id}`);
-            },
-          });
-        }
-
-        if (hasPermission('header-configurations', 'delete')) {
-          menuItems.push({
-            key: 'delete',
-            label: 'Delete',
-            icon: <DeleteOutlined />,
-            danger: true,
-            onClick: () => {
-              setSelectedConfig(record);
-              setIsDeleteModalOpen(true);
-            },
-          });
-        }
-
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Button
-                type="text"
-                icon={<MoreOutlined />}
-                className="hover:bg-gray-100"
-              />
-            </Dropdown>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <HeaderConfigurationRowActions
+          record={record}
+          onNavigate={(path) => navigate(path)}
+          onDeleteClick={(r) => {
+            setSelectedConfig(r);
+            setIsDeleteModalOpen(true);
+          }}
+        />
+      ),
     },
   ];
 
@@ -356,7 +347,7 @@ const HeaderConfigurations = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('header-configurations', 'update')) {

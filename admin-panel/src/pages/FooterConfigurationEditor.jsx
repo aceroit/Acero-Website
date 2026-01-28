@@ -359,6 +359,34 @@ const FooterConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
     if (initialValues.legalLinks) setLegalLinks(initialValues.legalLinks);
   }, [initialValues]);
 
+  useEffect(() => {
+    if (initialValues && Object.keys(initialValues).length > 0) {
+      form.setFieldsValue({
+        title: initialValues.title || 'Footer Configuration',
+        featured: initialValues.featured === true || initialValues.featured === 'true',
+        brandInfo: {
+          logo: {
+            imageUrl: initialValues.brandInfo?.logo?.imageUrl ?? '',
+            altText: initialValues.brandInfo?.logo?.altText ?? ''
+          },
+          description: initialValues.brandInfo?.description ?? '',
+          isFieldActive: initialValues.brandInfo?.isFieldActive !== false
+        },
+        contactInfo: {
+          phone: initialValues.contactInfo?.phone ?? '',
+          email: initialValues.contactInfo?.email ?? '',
+          address: initialValues.contactInfo?.address ?? '',
+          isFieldActive: initialValues.contactInfo?.isFieldActive !== false
+        },
+        copyright: {
+          text: initialValues.copyright?.text ?? '',
+          year: initialValues.copyright?.year ?? new Date().getFullYear(),
+          isFieldActive: initialValues.copyright?.isFieldActive !== false
+        }
+      });
+    }
+  }, [initialValues, form]);
+
   const handleFinish = (values) => {
     onSubmit({ ...values, socialLinks, quickLinks, productsLinks, mediaLinks, legalLinks });
   };
@@ -534,9 +562,13 @@ const FooterConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
         <Input placeholder="Footer Configuration" />
       </Form.Item>
 
-      <Form.Item name="featured" valuePropName="checked">
-        <Switch checkedChildren="Featured" unCheckedChildren="Not Featured" />
-        <span className="ml-2 text-sm text-gray-600">Mark as featured to publish</span>
+      <Form.Item
+        name="featured"
+        label="Featured"
+        valuePropName="checked"
+        tooltip="Mark as featured to publish (required for public site)"
+      >
+        <Switch />
       </Form.Item>
 
       <Divider>Brand Information</Divider>

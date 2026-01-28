@@ -46,7 +46,7 @@ const GoogleReCaptchaEditor = () => {
         setRecaptchaConfig(response.data.googleReCaptcha);
         form.setFieldsValue({
           title: response.data.googleReCaptcha.title,
-          featured: response.data.googleReCaptcha.featured,
+          featured: response.data.googleReCaptcha.featured === true || response.data.googleReCaptcha.featured === 'true',
           siteKey: {
             value: response.data.googleReCaptcha.siteKey?.value || '',
             isFieldActive: response.data.googleReCaptcha.siteKey?.isFieldActive !== false
@@ -306,6 +306,31 @@ const GoogleReCaptchaEditor = () => {
 
 // Google ReCaptcha Form Component
 const GoogleReCaptchaForm = ({ form, initialValues, onSubmit, onCancel, loading, isEdit }) => {
+  useEffect(() => {
+    if (initialValues && Object.keys(initialValues).length > 0 && form) {
+      form.setFieldsValue({
+        title: initialValues.title || 'Google ReCaptcha',
+        featured: initialValues.featured === true || initialValues.featured === 'true',
+        siteKey: {
+          value: initialValues.siteKey?.value || '',
+          isFieldActive: initialValues.siteKey?.isFieldActive !== false
+        },
+        secretKey: {
+          value: initialValues.secretKey?.value || '',
+          isFieldActive: initialValues.secretKey?.isFieldActive !== false
+        },
+        version: {
+          value: initialValues.version?.value || 'v3',
+          isFieldActive: initialValues.version?.isFieldActive !== false
+        },
+        enabled: {
+          value: initialValues.enabled?.value !== false,
+          isFieldActive: initialValues.enabled?.isFieldActive !== false
+        }
+      });
+    }
+  }, [initialValues, form]);
+
   return (
     <Form
       form={form}
@@ -345,9 +370,8 @@ const GoogleReCaptchaForm = ({ form, initialValues, onSubmit, onCancel, loading,
         <Input placeholder="Google ReCaptcha" />
       </Form.Item>
 
-      <Form.Item name="featured" valuePropName="checked">
-        <Switch checkedChildren="Featured" unCheckedChildren="Not Featured" />
-        <span className="ml-2 text-sm text-gray-600">Mark as featured to publish</span>
+      <Form.Item name="featured" label="Featured" valuePropName="checked" tooltip="Mark as featured to publish (required for public site)">
+        <Switch />
       </Form.Item>
 
       <Divider>ReCaptcha Configuration</Divider>

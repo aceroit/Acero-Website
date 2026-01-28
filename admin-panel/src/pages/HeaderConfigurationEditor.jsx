@@ -435,6 +435,33 @@ const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
     }
   }, [initialValues]);
 
+  useEffect(() => {
+    if (initialValues && Object.keys(initialValues).length > 0) {
+      form.setFieldsValue({
+        title: initialValues.title || 'Header Configuration',
+        featured: initialValues.featured === true || initialValues.featured === 'true',
+        logo: {
+          imageUrl: initialValues.logo?.imageUrl ?? '',
+          altText: initialValues.logo?.altText ?? '',
+          isFieldActive: initialValues.logo?.isFieldActive !== false
+        },
+        brandName: {
+          text: initialValues.brandName?.text ?? 'ACERO',
+          isFieldActive: initialValues.brandName?.isFieldActive !== false
+        },
+        themeToggle: {
+          enabled: initialValues.themeToggle?.enabled !== false,
+          isFieldActive: initialValues.themeToggle?.isFieldActive !== false
+        },
+        ctaButton: {
+          text: initialValues.ctaButton?.text ?? 'Get Quote',
+          href: initialValues.ctaButton?.href ?? '/contact-us',
+          isFieldActive: initialValues.ctaButton?.isFieldActive !== false
+        }
+      });
+    }
+  }, [initialValues, form]);
+
   const handleFinish = (values) => {
     onSubmit({ ...values, navigationLinks });
   };
@@ -521,9 +548,13 @@ const HeaderConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
         <Input placeholder="Header Configuration" />
       </Form.Item>
 
-      <Form.Item name="featured" valuePropName="checked">
-        <Switch checkedChildren="Featured" unCheckedChildren="Not Featured" />
-        <span className="ml-2 text-sm text-gray-600">Mark as featured to publish</span>
+      <Form.Item
+        name="featured"
+        label="Featured"
+        valuePropName="checked"
+        tooltip="Mark as featured to publish (required for public site)"
+      >
+        <Switch />
       </Form.Item>
 
       <Divider>Logo Settings</Divider>
