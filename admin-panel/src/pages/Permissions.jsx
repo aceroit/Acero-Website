@@ -4,14 +4,32 @@ import { Card, Tag, Spin } from 'antd';
 import { SafetyOutlined, InfoCircleOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import * as permissionService from '../services/permissionService';
+import * as roleService from '../services/roleService';
 import { formatRole, getRoleColor } from '../utils/roleHelpers';
-import { ROLES } from '../utils/constants';
 import { toast } from 'react-toastify';
 
 const Permissions = () => {
   const navigate = useNavigate();
   const [matrix, setMatrix] = useState(null);
+  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingRoles, setLoadingRoles] = useState(false);
+
+  // Fetch roles from API
+  const fetchRoles = async () => {
+    setLoadingRoles(true);
+    try {
+      const response = await roleService.getAllRoles({ includeInactive: false });
+      if (response.success) {
+        const rolesData = response.data.roles || response.data || [];
+        setRoles(Array.isArray(rolesData) ? rolesData : []);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to fetch roles');
+    } finally {
+      setLoadingRoles(false);
+    }
+  };
 
   // Fetch permissions matrix
   const fetchMatrix = async () => {
@@ -29,16 +47,24 @@ const Permissions = () => {
   };
 
   useEffect(() => {
+    fetchRoles();
     fetchMatrix();
   }, []);
 
   // Calculate permission stats for a role
   const getRoleStats = (role) => {
-    if (!matrix || !matrix.matrix || !matrix.matrix[role]) {
+    if (!matrix || !matrix.matrix) {
       return { resourceCount: 0, permissionCount: 0 };
     }
 
-    const roleMatrix = matrix.matrix[role];
+    // Try to find role in matrix by slug or _id
+    const roleKey = role.slug || role._id || role.name;
+    const roleMatrix = matrix.matrix[roleKey] || matrix.matrix[role._id] || matrix.matrix[role.slug];
+    
+    if (!roleMatrix) {
+      return { resourceCount: 0, permissionCount: 0 };
+    }
+
     const resources = Object.keys(roleMatrix);
     let permissionCount = 0;
 
@@ -55,14 +81,25 @@ const Permissions = () => {
     };
   };
 
-  // Get all available roles
-  const getAllRoles = () => {
-    return Object.values(ROLES);
+  // Handle role card click - navigate to role permissions
+  const handleRoleClick = (role) => {
+    // Use role._id or role.slug for navigation
+    const roleIdentifier = role._id || role.slug || role.name;
+    navigate(`/permissions/role/${roleIdentifier}`);
   };
 
-  // Handle role card click
-  const handleRoleClick = (role) => {
-    navigate(`/permissions/role/${role}`);
+  // Get role display color
+  const getRoleDisplayColor = (role) => {
+    if (role.color && role.color !== 'default') {
+      return role.color;
+    }
+    // Fallback to helper function
+    return getRoleColor(role.slug || role.name);
+  };
+
+  // Get role display name
+  const getRoleDisplayName = (role) => {
+    return role.name || formatRole(role.slug || role.name);
   };
 
   return (
@@ -106,19 +143,38 @@ const Permissions = () => {
               </div>
             }
           >
-            {loading ? (
+            {loadingRoles || loading ? (
               <div className="flex justify-center py-8">
                 <Spin size="large" />
               </div>
+            ) : roles.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No roles found. Please create roles first.
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {getAllRoles().map((role) => {
+                {roles.map((role) => {
                   const stats = getRoleStats(role);
-                  const roleColor = getRoleColor(role);
+                  const roleColor = getRoleDisplayColor(role);
+                  const roleName = getRoleDisplayName(role);
+                  
+                  // Color mapping for display
+                  const colorMap = {
+                    red: '#ef4444',
+                    blue: '#3b82f6',
+                    purple: '#a855f7',
+                    orange: '#f97316',
+                    green: '#22c55e',
+                    cyan: '#06b6d4',
+                    magenta: '#ec4899',
+                    gold: '#f59e0b',
+                    lime: '#84cc16',
+                    default: '#6b7280'
+                  };
                   
                   return (
                     <Card
-                      key={role}
+                      key={role._id || role.slug}
                       hoverable
                       onClick={() => handleRoleClick(role)}
                       className="cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-gray-400"
@@ -129,22 +185,17 @@ const Permissions = () => {
                           <div 
                             className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg"
                             style={{
-                              backgroundColor: roleColor === 'red' ? '#ef4444' :
-                                              roleColor === 'blue' ? '#3b82f6' :
-                                              roleColor === 'purple' ? '#a855f7' :
-                                              roleColor === 'orange' ? '#f97316' :
-                                              roleColor === 'green' ? '#22c55e' :
-                                              '#6b7280'
+                              backgroundColor: colorMap[roleColor] || colorMap.default
                             }}
                           >
-                            {formatRole(role).charAt(0)}
+                            {roleName.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 mb-0">
-                              {formatRole(role)}
+                              {roleName}
                             </h3>
                             <Tag color={roleColor} className="mt-1">
-                              {role}
+                              {role.slug || role.name}
                             </Tag>
                           </div>
                         </div>

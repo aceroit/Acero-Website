@@ -1,0 +1,293 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* 
+  Premium Steel Manufacturing - UAE
+  Color Palette:
+  - Primary Black (Background): #0B0D0E
+  - Primary White (Headings): #F7F7F7
+  - Steel Gray (Secondary Text): #2E2E2E
+  - Accent Red (CTA): #E10600
+*/
+
+:root {
+  /* Light mode - clean industrial aesthetic */
+  --background: #F7F7F7;
+  --foreground: #0B0D0E;
+  --card: #FFFFFF;
+  --card-foreground: #0B0D0E;
+  --popover: #FFFFFF;
+  --popover-foreground: #0B0D0E;
+  --primary: #E10600;
+  --primary-foreground: #F7F7F7;
+  --secondary: #E5E5E5;
+  --secondary-foreground: #0B0D0E;
+  --muted: #E5E5E5;
+  --muted-foreground: #6B7280;
+  --accent: #E10600;
+  --accent-foreground: #F7F7F7;
+  --destructive: #E10600;
+  --destructive-foreground: #F7F7F7;
+  --border: #CCCCCC;
+  --input: #E5E5E5;
+  --ring: #E10600;
+  --chart-1: #E10600;
+  --chart-2: #0B0D0E;
+  --chart-3: #6B7280;
+  --chart-4: #CCCCCC;
+  --chart-5: #E5E5E5;
+  --radius: 0.5rem;
+  --sidebar: #F7F7F7;
+  --sidebar-foreground: #0B0D0E;
+  --sidebar-primary: #E10600;
+  --sidebar-primary-foreground: #F7F7F7;
+  --sidebar-accent: #E5E5E5;
+  --sidebar-accent-foreground: #0B0D0E;
+  --sidebar-border: #CCCCCC;
+  --sidebar-ring: #E10600;
+  
+  /* Custom Steel Brand Colors - always available */
+  --steel-black: #0B0D0E;
+  --steel-white: #F7F7F7;
+  --steel-gray: #2E2E2E;
+  --steel-red: #E10600;
+  --steel-dark: #111315;
+  --steel-muted: #6B7280;
+}
+
+/* Dark mode - applied when .dark class is on html element */
+.dark,
+:root.dark {
+  --background: #0B0D0E;
+  --foreground: #F7F7F7;
+  --card: #111315;
+  --card-foreground: #F7F7F7;
+  --popover: #0B0D0E;
+  --popover-foreground: #F7F7F7;
+  --primary: #E10600;
+  --primary-foreground: #F7F7F7;
+  --secondary: #1A1D1F;
+  --secondary-foreground: #F7F7F7;
+  --muted: #1A1D1F;
+  --muted-foreground: #9CA3AF;
+  --accent: #E10600;
+  --accent-foreground: #F7F7F7;
+  --destructive: #E10600;
+  --destructive-foreground: #F7F7F7;
+  --border: #2E2E2E;
+  --input: #1A1D1F;
+  --ring: #E10600;
+  --chart-1: #E10600;
+  --chart-2: #F7F7F7;
+  --chart-3: #6B7280;
+  --chart-4: #2E2E2E;
+  --chart-5: #1A1D1F;
+  --sidebar: #0B0D0E;
+  --sidebar-foreground: #F7F7F7;
+  --sidebar-primary: #E10600;
+  --sidebar-primary-foreground: #F7F7F7;
+  --sidebar-accent: #1A1D1F;
+  --sidebar-accent-foreground: #F7F7F7;
+  --sidebar-border: #2E2E2E;
+  --sidebar-ring: #E10600;
+}
+
+@theme inline {
+  /* Inter for clean, modern typography */
+  --font-sans: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  
+  /* Core Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  
+  /* Steel Brand Colors */
+  --color-steel-black: var(--steel-black);
+  --color-steel-white: var(--steel-white);
+  --color-steel-gray: var(--steel-gray);
+  --color-steel-red: var(--steel-red);
+  --color-steel-dark: var(--steel-dark);
+  --color-steel-muted: var(--steel-muted);
+  
+  /* Border Radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Premium Typography Scale */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold tracking-tight text-foreground;
+  }
+  
+  h1 {
+    @apply text-5xl md:text-6xl lg:text-7xl font-extrabold;
+  }
+  
+  h2 {
+    @apply text-4xl md:text-5xl font-bold;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl font-bold;
+  }
+  
+  h4 {
+    @apply text-xl md:text-2xl font-semibold;
+  }
+  
+  p {
+    @apply leading-relaxed;
+  }
+  
+  /* Premium Smooth Transitions */
+  a, button {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  /* Custom Selection Color */
+  ::selection {
+    background-color: #E10600;
+    color: #F7F7F7;
+  }
+}
+
+/* Premium Animation Utilities */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-fade-in-left {
+  animation: fade-in-left 0.6s ease-out forwards;
+}
+
+.animate-fade-in-right {
+  animation: fade-in-right 0.6s ease-out forwards;
+}
+
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
+/* Infinite Scroll Animations */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% / 4));
+  }
+}
+
+.animate-scroll-slow {
+  animation: scroll-left 30s linear infinite;
+}
+
+.animate-scroll-medium {
+  animation: scroll-left 20s linear infinite;
+}
+
+.animate-scroll-fast {
+  animation: scroll-left 10s linear infinite;
+}
+
+.animation-paused {
+  animation-play-state: paused;
+}

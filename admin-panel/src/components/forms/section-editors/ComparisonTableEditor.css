@@ -1,0 +1,29 @@
+.comparison-table-editor {
+  width: 100%;
+}
+
+.comparison-table-editor .space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.comparison-table-editor .space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.comparison-table-editor .space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+.comparison-table-editor .factors-editor,
+.comparison-table-editor .systems-editor {
+  width: 100%;
+}
+
+.comparison-table-editor .ant-card {
+  border-radius: 8px;
+}
+
+.comparison-table-editor .ant-card-head-title {
+  padding: 0;
+}
+

@@ -1,0 +1,24 @@
+.image-modal-gallery-editor {
+  width: 100%;
+}
+
+.image-modal-gallery-editor .space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.image-modal-gallery-editor .space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.image-modal-gallery-editor .gallery-items-editor {
+  width: 100%;
+}
+
+.image-modal-gallery-editor .ant-card {
+  border-radius: 8px;
+}
+
+.image-modal-gallery-editor .ant-card-head-title {
+  padding: 0;
+}
+

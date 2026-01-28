@@ -1,0 +1,1224 @@
+{
+	"info": {
+		"_postman_id": "phase3-approval-workflow-v2",
+		"name": "Phase 3 - Approval Workflow v2 (Permission-Based)",
+		"description": "Comprehensive testing for Phase 3: Workflow State Machine, Content Versioning, Dashboard Analytics, Notifications, and Permission-Based Restrictions\n\n**Prerequisites:**\n- Phase 1 completed (users and tokens)\n- Phase 2 completed (pages and sections created)\n- Backend server running\n- Users with different roles and permissions configured\n\n**Test Coverage:**\n- Complete workflow lifecycle (draft → published)\n- State transition validation with changeSummary\n- Content versioning and comparison\n- Dashboard metrics and analytics\n- Notification system\n- Permission-based CRUD restrictions\n- Tree management restrictions\n- Section CRUD restrictions based on parent page status\n\n**Expected Runtime:** ~10 minutes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Content Workflow Lifecycle (Updated with changeSummary)",
+			"item": [
+				{
+					"name": "Create Draft Page for Workflow Testing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Workflow page created in draft status\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'draft');",
+									"    pm.environment.set('workflow_page_id', response.data._id);",
+									"    console.log('Workflow page ID:', response.data._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Workflow Test Page\",\n  \"slug\": \"workflow-test\",\n  \"metaTitle\": \"Testing Complete Workflow\",\n  \"metaDescription\": \"Page to test full approval workflow\",\n  \"showInMenu\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create a draft page to test workflow transitions."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Page for Review (draft → in_review) with changeSummary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to in_review\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'in_review');",
+									"});",
+									"",
+									"pm.test(\"Version created with changeSummary\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('currentVersion');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"changeSummary\": \"Initial submission - page ready for review\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "submit"]
+						},
+						"description": "Editor submits page for review with changeSummary. Status changes from draft to in_review."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Without changeSummary (should fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error message about changeSummary required\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message.toLowerCase()).to.include('change');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "submit"]
+						},
+						"description": "Try to submit without changeSummary. Should fail validation."
+					},
+					"response": []
+				},
+				{
+					"name": "Request Changes (Reviewer → changes_requested) with feedback",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to changes_requested\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'changes_requested');",
+									"});",
+									"",
+									"pm.test(\"Feedback captured\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('feedback');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"feedback\": \"Please add more detailed meta description and update the page title.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/request-changes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "request-changes"]
+						},
+						"description": "Reviewer requests changes. Status changes to changes_requested."
+					},
+					"response": []
+				},
+				{
+					"name": "Resubmit After Changes (changes_requested → in_review) with changeSummary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status back to in_review\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'in_review');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"changeSummary\": \"Updated per reviewer feedback - added detailed meta description and updated title\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "submit"]
+						},
+						"description": "Editor resubmits after making requested changes with changeSummary."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Reviewed (in_review → pending_approval)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to pending_approval\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'pending_approval');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comments\": \"Content looks good, ready for approval\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/review",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "review"]
+						},
+						"description": "Reviewer approves the changes, moving to pending_approval."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Content (pending_approval → pending_publish)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to pending_publish\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'pending_publish');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{approver_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comments\": \"Approved for publishing\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "approve"]
+						},
+						"description": "Approver approves content, moving to pending_publish."
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Content (pending_publish → published)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status changed to published\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.have.property('status', 'published');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Publishing to production\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "publish"]
+						},
+						"description": "Admin publishes the content, making it live."
+					},
+					"response": []
+				}
+			],
+			"description": "Test complete workflow lifecycle from draft to published with changeSummary support."
+		},
+		{
+			"name": "02 - Permission-Based Page CRUD Restrictions",
+			"item": [
+				{
+					"name": "Setup: Create Test Pages in Different Statuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"const title = response.data.title;",
+									"if (title.includes('Draft')) {",
+									"    pm.environment.set('test_page_draft_id', response.data._id);",
+									"} else if (title.includes('Review')) {",
+									"    pm.environment.set('test_page_in_review_id', response.data._id);",
+									"} else if (title.includes('Approval')) {",
+									"    pm.environment.set('test_page_pending_approval_id', response.data._id);",
+									"} else if (title.includes('Changes')) {",
+									"    pm.environment.set('test_page_changes_requested_id', response.data._id);",
+									"} else if (title.includes('Published')) {",
+									"    pm.environment.set('test_page_published_id', response.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Test Page - Draft\",\n  \"slug\": \"test-draft-{{$timestamp}}\",\n  \"metaTitle\": \"Draft Test Page\",\n  \"metaDescription\": \"Test page in draft status\",\n  \"showInMenu\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create test pages in different workflow statuses. Run this multiple times with different titles."
+					},
+					"response": []
+				},
+				{
+					"name": "Editor (No Permission) - Update Draft Page (Should Succeed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page updated successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Draft Page Title\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{test_page_draft_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{test_page_draft_id}}"]
+						},
+						"description": "Editor without update permission should be able to update draft page (creator privilege)."
+					},
+					"response": []
+				},
+				{
+					"name": "Editor (No Permission) - Update Page in Review (Should Fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Error message mentions status restriction\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    pm.expect(response.message.toLowerCase()).to.include('permission');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Trying to update page in review\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{test_page_in_review_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{test_page_in_review_id}}"]
+						},
+						"description": "Editor without update permission should NOT be able to update page in review status."
+					},
+					"response": []
+				},
+				{
+					"name": "Editor (With Permission) - Update Page in Review (Should Fail - Role Not Appropriate)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Error message mentions role hierarchy\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    const msg = response.message.toLowerCase();",
+									"    pm.expect(msg).to.satisfy(function(m) {",
+									"        return m.includes('role') || m.includes('reviewer') || m.includes('hierarchy');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_with_permission_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Trying to update with permission but wrong role\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{test_page_in_review_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{test_page_in_review_id}}"]
+						},
+						"description": "Editor with update permission should NOT be able to update page in review (role not appropriate - requires Reviewer+)."
+					},
+					"response": []
+				},
+				{
+					"name": "Reviewer (With Permission) - Update Page in Review (Should Succeed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page updated successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_with_permission_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated by Reviewer with Permission\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{test_page_in_review_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{test_page_in_review_id}}"]
+						},
+						"description": "Reviewer with update permission should be able to update page in review (has permission + appropriate role)."
+					},
+					"response": []
+				},
+				{
+					"name": "Admin - Update Published Page (Should Succeed - Bypass)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page updated successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated by Admin - Bypass All Restrictions\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{test_page_published_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{test_page_published_id}}"]
+						},
+						"description": "Admin should be able to update published page (bypasses all restrictions)."
+					},
+					"response": []
+				}
+			],
+			"description": "Test permission-based CRUD restrictions for pages based on workflow status and user permissions."
+		},
+		{
+			"name": "03 - Tree Management Restrictions",
+			"item": [
+				{
+					"name": "Setup: Create Page Hierarchy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"if (response.data.title.includes('Parent')) {",
+									"    pm.environment.set('tree_parent_page_id', response.data._id);",
+									"} else if (response.data.title.includes('Child')) {",
+									"    pm.environment.set('tree_child_page_id', response.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Tree Test - Parent Page\",\n  \"slug\": \"tree-parent-{{$timestamp}}\",\n  \"metaTitle\": \"Parent Page\",\n  \"metaDescription\": \"Parent page for tree testing\",\n  \"showInMenu\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages"]
+						},
+						"description": "Create parent and child pages for tree management testing."
+					},
+					"response": []
+				},
+				{
+					"name": "Editor (No Permission) - Move Draft Page (Should Succeed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page moved successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"parentId\": \"{{tree_parent_page_id}}\",\n  \"order\": 0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{test_page_draft_id}}/move",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{test_page_draft_id}}", "move"]
+						},
+						"description": "Editor without permission should be able to move draft page (creator privilege)."
+					},
+					"response": []
+				},
+				{
+					"name": "Editor (No Permission) - Move Page in Review (Should Fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Error message mentions status restriction\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    const msg = response.message.toLowerCase();",
+									"    pm.expect(msg).to.satisfy(function(m) {",
+									"        return m.includes('status') || m.includes('draft') || m.includes('permission');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"parentId\": \"{{tree_parent_page_id}}\",\n  \"order\": 0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{test_page_in_review_id}}/move",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{test_page_in_review_id}}", "move"]
+						},
+						"description": "Editor without permission should NOT be able to move page in review status."
+					},
+					"response": []
+				},
+				{
+					"name": "Reviewer (With Permission) - Move Page in Review (Should Succeed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Page moved successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_with_permission_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"parentId\": \"{{tree_parent_page_id}}\",\n  \"order\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pages/{{test_page_in_review_id}}/move",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pages", "{{test_page_in_review_id}}", "move"]
+						},
+						"description": "Reviewer with permission should be able to move page in review (has permission + appropriate role)."
+					},
+					"response": []
+				}
+			],
+			"description": "Test tree management restrictions (move/reorder) based on workflow status and user permissions."
+		},
+		{
+			"name": "04 - Section CRUD Restrictions",
+			"item": [
+				{
+					"name": "Editor (No Permission) - Create Section on Draft Page (Should Succeed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Section created successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"    if (response.data && response.data.section) {",
+									"        pm.environment.set('test_section_id', response.data.section._id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"text_block\",\n  \"content\": {\n    \"heading\": \"Test Section\",\n    \"content\": \"<p>Test content</p>\",\n    \"alignment\": \"center\"\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{test_page_draft_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{test_page_draft_id}}", "sections"]
+						},
+						"description": "Editor without permission should be able to create section on draft page (creator privilege)."
+					},
+					"response": []
+				},
+				{
+					"name": "Editor (No Permission) - Create Section on Page in Review (Should Fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Error message mentions parent page status\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', false);",
+									"    const msg = response.message.toLowerCase();",
+									"    pm.expect(msg).to.satisfy(function(m) {",
+									"        return m.includes('parent') || m.includes('status') || m.includes('draft');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"text_block\",\n  \"content\": {\n    \"heading\": \"Test Section\",\n    \"content\": \"<p>Test content</p>\",\n    \"alignment\": \"center\"\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{test_page_in_review_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{test_page_in_review_id}}", "sections"]
+						},
+						"description": "Editor without permission should NOT be able to create section on page in review."
+					},
+					"response": []
+				},
+				{
+					"name": "Reviewer (With Permission) - Create Section on Page in Review (Should Succeed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Section created successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reviewer_with_permission_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"text_block\",\n  \"content\": {\n    \"heading\": \"Section by Reviewer\",\n    \"content\": \"<p>Created by reviewer with permission</p>\",\n    \"alignment\": \"center\"\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{test_page_in_review_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{test_page_in_review_id}}", "sections"]
+						},
+						"description": "Reviewer with permission should be able to create section on page in review (has permission + appropriate role)."
+					},
+					"response": []
+				},
+				{
+					"name": "Editor (No Permission) - Update Section on Draft Page (Should Succeed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Section updated successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": {\n    \"heading\": \"Updated Section\",\n    \"content\": \"<p>Updated content</p>\",\n    \"alignment\": \"left\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/{{test_section_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "{{test_section_id}}"]
+						},
+						"description": "Editor without permission should be able to update section on draft page (creator privilege)."
+					},
+					"response": []
+				},
+				{
+					"name": "Admin - Create Section on Published Page (Should Succeed - Bypass)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Section created successfully\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sectionTypeSlug\": \"text_block\",\n  \"content\": {\n    \"heading\": \"Section by Admin\",\n    \"content\": \"<p>Created by admin - bypasses all restrictions</p>\",\n    \"alignment\": \"center\"\n  },\n  \"isVisible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sections/pages/{{test_page_published_id}}/sections",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sections", "pages", "{{test_page_published_id}}", "sections"]
+						},
+						"description": "Admin should be able to create section on published page (bypasses all restrictions)."
+					},
+					"response": []
+				}
+			],
+			"description": "Test section CRUD restrictions based on parent page status and user permissions."
+		},
+		{
+			"name": "05 - Version Management (with changeSummary)",
+			"item": [
+				{
+					"name": "Get Content Version History",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Version history returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"    pm.expect(response.data.length).to.be.at.least(1);",
+									"});",
+									"",
+									"pm.test(\"Version includes changeSummary\", function () {",
+									"    const response = pm.response.json();",
+									"    if (response.data.length > 0) {",
+									"        const version = response.data[0];",
+									"        pm.expect(version).to.have.property('changeSummary');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/workflow/page/{{workflow_page_id}}/versions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "workflow", "page", "{{workflow_page_id}}", "versions"]
+						},
+						"description": "Get version history for a page showing all changes over time with changeSummary."
+					},
+					"response": []
+				}
+			],
+			"description": "Test content versioning with changeSummary support."
+		},
+		{
+			"name": "06 - Notifications (with changeSummary)",
+			"item": [
+				{
+					"name": "Get All Notifications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Notifications returned\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Notifications include changeSummary\", function () {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.length > 0) {",
+									"        const notification = response.data[0];",
+									"        if (notification.metadata && notification.metadata.changeSummary) {",
+									"            console.log('Change summary found in notification');",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{editor_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications?page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all notifications for current user. Notifications should include changeSummary when available."
+					},
+					"response": []
+				}
+			],
+			"description": "Test notification system with changeSummary support."
+		}
+	]
+}

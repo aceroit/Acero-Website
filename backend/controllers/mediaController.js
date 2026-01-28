@@ -29,13 +29,15 @@ exports.uploadMedia = async (req, res) => {
             const files = Array.isArray(req.files.files) ? req.files.files : [req.files.files];
             
             const results = [];
+            const rawTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
             for (const file of files) {
                 const fileExt = file.name.split('.').pop().toLowerCase();
                 const videoTypes = (process.env.ALLOWED_VIDEO_TYPES || 'mp4,webm,mov').split(',');
-                
                 let media;
                 if (videoTypes.includes(fileExt)) {
                     media = await uploadService.uploadVideo(file, folder, options, req.user.id);
+                } else if (rawTypes.includes(fileExt)) {
+                    media = await uploadService.uploadRawFile(file, folder, options, req.user.id);
                 } else {
                     media = await uploadService.uploadImage(file, folder, options, req.user.id);
                 }
@@ -45,13 +47,15 @@ exports.uploadMedia = async (req, res) => {
         } else if (Array.isArray(req.files)) {
             // multer with multiple files
             const results = [];
+            const rawTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
             for (const file of req.files) {
                 const fileExt = file.originalname.split('.').pop().toLowerCase();
                 const videoTypes = (process.env.ALLOWED_VIDEO_TYPES || 'mp4,webm,mov').split(',');
-                
                 let media;
                 if (videoTypes.includes(fileExt)) {
                     media = await uploadService.uploadVideo(file, folder, options, req.user.id);
+                } else if (rawTypes.includes(fileExt)) {
+                    media = await uploadService.uploadRawFile(file, folder, options, req.user.id);
                 } else {
                     media = await uploadService.uploadImage(file, folder, options, req.user.id);
                 }
@@ -63,9 +67,12 @@ exports.uploadMedia = async (req, res) => {
             const file = req.files.file || req.files[Object.keys(req.files)[0]];
             const fileExt = (file.name || file.originalname).split('.').pop().toLowerCase();
             const videoTypes = (process.env.ALLOWED_VIDEO_TYPES || 'mp4,webm,mov').split(',');
-            
+            const rawTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
+
             if (videoTypes.includes(fileExt)) {
                 uploadedMedia = await uploadService.uploadVideo(file, folder, options, req.user.id);
+            } else if (rawTypes.includes(fileExt)) {
+                uploadedMedia = await uploadService.uploadRawFile(file, folder, options, req.user.id);
             } else {
                 uploadedMedia = await uploadService.uploadImage(file, folder, options, req.user.id);
             }

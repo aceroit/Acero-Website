@@ -1,0 +1,22 @@
+.hero-carousel-slides-editor {
+  width: 100%;
+}
+
+.hero-slide-item {
+  margin-bottom: 16px;
+}
+
+.hero-slide-item .ant-card {
+  transition: all 0.2s ease;
+}
+
+.hero-slide-item .ant-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.slides-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+

@@ -45,3 +45,33 @@ export const getRecentlyPublished = async () => {
   return response.data;
 };
 
+/**
+ * Get pending items awaiting user action
+ * @returns {Promise} - Response with pending items
+ */
+export const getPendingItems = async () => {
+  const response = await API.get('/dashboard/pending');
+  return response.data;
+};
+
+/**
+ * Get team activity feed
+ * @param {number} limit - Maximum number of activities to return
+ * @returns {Promise} - Response with team activities
+ */
+export const getTeamActivity = async (limit = 50) => {
+  const response = await API.get('/dashboard/team-activity', {
+    params: { limit }
+  });
+  return response.data;
+};
+
+/**
+ * Get workflow bottlenecks (admin only)
+ * @returns {Promise} - Response with bottleneck data
+ */
+export const getBottlenecks = async () => {
+  const response = await API.get('/dashboard/bottlenecks');
+  return response.data;
+};
+

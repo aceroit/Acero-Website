@@ -3,11 +3,34 @@ const router = express.Router();
 const workflowController = require('../controllers/workflowController');
 const { authenticate } = require('../middleware/auth');
 const { checkPermission } = require('../middleware/rbac');
+const { validateChangeSummary } = require('../utils/validators');
 
 // Middleware to validate resource parameter
 const validateResource = (req, res, next) => {
     const { resource } = req.params;
-    const validResources = ['page', 'section'];
+    const validResources = [
+        'page', 
+        'section', 
+        'project', 
+        'branch', 
+        'customer', 
+        'certification', 
+        'company-update', 
+        'company-update-category', 
+        'brochure',
+        'building-type',
+        'industry',
+        'country',
+        'region',
+        'area',
+        'header-configuration',
+        'footer-configuration',
+        'website-appearance',
+        'smtp-settings',
+        'google-recaptcha',
+        'google-maps',
+        'vacancy'
+    ];
     
     if (!validResources.includes(resource)) {
         return res.status(400).json({
@@ -27,6 +50,7 @@ router.use(authenticate);
 router.post(
     '/:resource/:id/submit',
     validateResource,
+    validateChangeSummary(true), // Require change summary for submit
     checkPermission('pages', 'update'), // Generic permission check
     workflowController.submitForReview
 );

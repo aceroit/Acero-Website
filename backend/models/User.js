@@ -28,10 +28,10 @@ const userSchema = new mongoose.Schema({
         trim: true
     },
     role: {
-        type: String,
-        required: true,
-        enum: ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer'],
-        default: 'viewer'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Role',
+        required: [true, 'Role is required'],
+        index: true
     },
     isActive: {
         type: Boolean,
@@ -75,12 +75,29 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 // Method to generate JWT token
-userSchema.methods.generateAuthToken = function () {
+// Note: Role should be populated before calling this method, or it will use role._id
+userSchema.methods.generateAuthToken = async function () {
+    // Get role slug/name for JWT
+    let roleValue = null;
+    
+    // If role is populated (object), use slug
+    if (this.role && typeof this.role === 'object' && this.role.slug) {
+        roleValue = this.role.slug;
+    } 
+    // If role is ObjectId, populate it first
+    else if (this.role) {
+        // Populate role if not already populated
+        if (!this.populated('role')) {
+            await this.populate('role', 'slug name');
+        }
+        roleValue = this.role?.slug || this.role?._id?.toString();
+    }
+    
     const token = jwt.sign(
         {
             id: this._id,
             email: this.email,
-            role: this.role,
+            role: roleValue,
             firstName: this.firstName,
             lastName: this.lastName
         },
@@ -99,6 +116,54 @@ userSchema.methods.getFullName = function () {
 userSchema.virtual('fullName').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
+
+// Virtual for role name (requires role to be populated)
+userSchema.virtual('roleName').get(function () {
+    if (this.role && typeof this.role === 'object') {
+        return this.role.name || this.role.slug;
+    }
+    return null;
+});
+
+// Virtual for role slug (requires role to be populated)
+userSchema.virtual('roleSlug').get(function () {
+    if (this.role && typeof this.role === 'object') {
+        return this.role.slug;
+    }
+    return null;
+});
+
+// Method to get role name/slug (async, populates if needed)
+userSchema.methods.getRoleName = async function () {
+    if (!this.role) {
+        return null;
+    }
+    
+    // If role is populated, return name
+    if (typeof this.role === 'object' && this.role.name) {
+        return this.role.name;
+    }
+    
+    // Otherwise, populate and return
+    await this.populate('role', 'name slug');
+    return this.role?.name || this.role?.slug || null;
+};
+
+// Method to get role slug (async, populates if needed)
+userSchema.methods.getRoleSlug = async function () {
+    if (!this.role) {
+        return null;
+    }
+    
+    // If role is populated, return slug
+    if (typeof this.role === 'object' && this.role.slug) {
+        return this.role.slug;
+    }
+    
+    // Otherwise, populate and return
+    await this.populate('role', 'slug');
+    return this.role?.slug || null;
+};
 
 // Ensure virtuals are included in JSON output
 userSchema.set('toJSON', {

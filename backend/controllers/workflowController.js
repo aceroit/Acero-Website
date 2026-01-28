@@ -1,9 +1,24 @@
 const Page = require('../models/Page');
 const Section = require('../models/Section');
+const Project = require('../models/Project');
+const Branch = require('../models/Branch');
+const Customer = require('../models/Customer');
+const Certification = require('../models/Certification');
+const CompanyUpdate = require('../models/CompanyUpdate');
+const CompanyUpdateCategory = require('../models/CompanyUpdateCategory');
+const Brochure = require('../models/Brochure');
+const HeaderConfiguration = require('../models/HeaderConfiguration');
+const FooterConfiguration = require('../models/FooterConfiguration');
+const WebsiteAppearance = require('../models/WebsiteAppearance');
+const SMTPSettings = require('../models/SMTPSettings');
+const GoogleReCaptcha = require('../models/GoogleReCaptcha');
+const GoogleMaps = require('../models/GoogleMaps');
 const ContentVersion = require('../models/ContentVersion');
 const ActivityLog = require('../models/ActivityLog');
 const User = require('../models/User');
+const Role = require('../models/Role');
 const notificationService = require('../services/notificationService');
+const headerPageSyncService = require('../services/headerPageSyncService');
 const {
     WORKFLOW_STATES,
     canTransition,
@@ -19,14 +34,90 @@ const { successResponse, errorResponse } = require('../utils/responseFormatter')
 function getModel(resource) {
     const models = {
         page: Page,
-        section: Section
+        section: Section,
+        project: Project,
+        branch: Branch,
+        customer: Customer,
+        certification: Certification,
+        'company-update': CompanyUpdate,
+        'company-update-category': CompanyUpdateCategory,
+        brochure: Brochure,
+        'building-type': require('../models/BuildingType'),
+        industry: require('../models/Industry'),
+        country: require('../models/Country'),
+        region: require('../models/Region'),
+        area: require('../models/Area'),
+        'header-configuration': HeaderConfiguration,
+        'footer-configuration': FooterConfiguration,
+        'website-appearance': WebsiteAppearance,
+        'smtp-settings': SMTPSettings,
+        'google-recaptcha': GoogleReCaptcha,
+        'google-maps': GoogleMaps,
+        vacancy: require('../models/Vacancy')
     };
     return models[resource];
 }
 
 // Get resource title
 function getResourceTitle(resource) {
-    return resource.title || resource.content?.title || 'Untitled';
+    // For pages, company updates, brochures, and vacancies, use title
+    if (resource.title) {
+        return resource.title;
+    }
+    
+    // Configuration modules fallback titles
+    if (resource.navigationLinks) {
+        return 'Header Configuration';
+    }
+    if (resource.brandInfo || resource.quickLinks) {
+        return 'Footer Configuration';
+    }
+    if (resource.colorPalette) {
+        return 'Website Appearance';
+    }
+    if (resource.host || resource.port || resource.username) {
+        return 'SMTP Settings';
+    }
+    if (resource.siteKey || resource.secretKey) {
+        return 'Google ReCaptcha';
+    }
+    if (resource.apiKey) {
+        return 'Google Maps';
+    }
+
+    // For projects, use jobNumber
+    if (resource.jobNumber) {
+        return resource.jobNumber;
+    }
+    
+    // For branches, use branchName
+    if (resource.branchName) {
+        return resource.branchName;
+    }
+    
+    // For customers, certifications, company update categories, building types, industries, countries, regions, and areas, use name
+    if (resource.name) {
+        return resource.name;
+    }
+    
+    // For sections, try to get title from content or use section type
+    if (resource.content) {
+        if (resource.content.title) {
+            return resource.content.title;
+        }
+        if (resource.content.heading) {
+            return resource.content.heading;
+        }
+        if (resource.content.text && resource.content.text.length > 0) {
+            // Use first 50 chars of text as title
+            return resource.content.text.substring(0, 50) + (resource.content.text.length > 50 ? '...' : '');
+        }
+    }
+    // If section, try to use sectionTypeSlug as fallback
+    if (resource.sectionTypeSlug) {
+        return `${resource.sectionTypeSlug.replace(/_/g, ' ')} section`;
+    }
+    return 'Untitled';
 }
 
 // Submit content for review (draft → in_review)
@@ -34,6 +125,15 @@ exports.submitForReview = async (req, res) => {
     try {
         const { resource, id } = req.params;
         const { changeSummary } = req.body || {};
+
+        // Require and validate change summary
+        if (!changeSummary || typeof changeSummary !== 'string' || changeSummary.trim().length === 0) {
+            return errorResponse(res, 400, 'Change summary is required and must be a non-empty string');
+        }
+
+        if (changeSummary.trim().length < 10) {
+            return errorResponse(res, 400, 'Change summary must be at least 10 characters long');
+        }
 
         const Model = getModel(resource);
         if (!Model) {
@@ -47,13 +147,14 @@ exports.submitForReview = async (req, res) => {
 
         // Check if user has permission to edit this resource
         if (!hasResourcePermission(req.user, item, 'edit')) {
-            return errorResponse(res, 403, 'You do not have permission to submit this content');
+            return errorResponse(res, 403, `You do not have permission to submit this ${resource}. Current status: ${item.status}. You need 'update' permission on ${resource}s to submit for review.`);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.IN_REVIEW, req.user.role);
+        // Validate transition (permission-based)
+        // Pass the resource item to check creator status
+        const validation = await canTransition(item.status, WORKFLOW_STATES.IN_REVIEW, req.user._id, resource, item);
         if (!validation.isValid) {
-            return errorResponse(res, 400, validation.message);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.IN_REVIEW}`);
         }
 
         // Update status
@@ -62,14 +163,26 @@ exports.submitForReview = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
-        // Create version
+        // If this is a page, update all its sections to in_review as well
+        if (resource === 'page') {
+            const Section = require('../models/Section');
+            await Section.updateMany(
+                { pageId: item._id, status: { $in: ['draft', 'changes_requested'] } },
+                { 
+                    status: WORKFLOW_STATES.IN_REVIEW,
+                    updatedBy: req.user._id
+                }
+            );
+        }
+
+        // Create version with change summary
         await ContentVersion.createVersion(
             resource,
             item._id,
             item.toObject(),
             req.user._id,
             WORKFLOW_STATES.IN_REVIEW,
-            changeSummary || 'Submitted for review'
+            changeSummary.trim()
         );
 
         // Log activity
@@ -86,8 +199,15 @@ exports.submitForReview = async (req, res) => {
         });
 
         // Get reviewers and send notifications
+        // First find Role documents by slug, then find Users with those roles
+        const Role = require('../models/Role');
+        const reviewerRoles = await Role.find({
+            slug: { $in: ['reviewer', 'approver', 'admin', 'super_admin'] }
+        }).select('_id');
+        
+        const reviewerRoleIds = reviewerRoles.map(r => r._id);
         const reviewers = await User.find({
-            role: { $in: ['reviewer', 'approver', 'admin', 'super_admin'] },
+            role: { $in: reviewerRoleIds },
             isActive: true
         }).select('_id');
 
@@ -96,7 +216,8 @@ exports.submitForReview = async (req, res) => {
             item._id,
             getResourceTitle(item),
             req.user,
-            reviewers.map(r => r._id)
+            reviewers.map(r => r._id),
+            changeSummary.trim()
         );
 
         return successResponse(
@@ -117,6 +238,16 @@ exports.markReviewed = async (req, res) => {
         const { resource, id } = req.params;
         const { feedback, changeSummary } = req.body || {};
 
+        // Validate change summary if provided
+        if (changeSummary !== undefined) {
+            if (typeof changeSummary !== 'string' || changeSummary.trim().length === 0) {
+                return errorResponse(res, 400, 'Change summary must be a non-empty string');
+            }
+            if (changeSummary.trim().length < 10) {
+                return errorResponse(res, 400, 'Change summary must be at least 10 characters long');
+            }
+        }
+
         const Model = getModel(resource);
         if (!Model) {
             return errorResponse(res, 400, 'Invalid resource type');
@@ -127,10 +258,10 @@ exports.markReviewed = async (req, res) => {
             return errorResponse(res, 404, `${resource} not found`);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.PENDING_APPROVAL, req.user.role);
+        // Validate transition (permission-based)
+        const validation = await canTransition(item.status, WORKFLOW_STATES.PENDING_APPROVAL, req.user._id, resource);
         if (!validation.isValid) {
-            return errorResponse(res, 400, validation.message);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.PENDING_APPROVAL}`);
         }
 
         // Update status
@@ -139,14 +270,26 @@ exports.markReviewed = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
-        // Create version
+        // If this is a page, update all its sections to pending_approval as well
+        // This ensures sections follow the page's approval workflow
+        if (resource === 'page') {
+            await Section.updateMany(
+                { pageId: item._id, status: { $in: ['in_review', 'pending_approval'] } },
+                { 
+                    status: WORKFLOW_STATES.PENDING_APPROVAL,
+                    updatedBy: req.user._id
+                }
+            );
+        }
+
+        // Create version with change summary
         await ContentVersion.createVersion(
             resource,
             item._id,
             item.toObject(),
             req.user._id,
             WORKFLOW_STATES.PENDING_APPROVAL,
-            changeSummary || 'Marked as reviewed and ready for approval'
+            changeSummary ? changeSummary.trim() : 'Marked as reviewed and ready for approval'
         );
 
         // Log activity
@@ -168,8 +311,38 @@ exports.markReviewed = async (req, res) => {
             item._id,
             getResourceTitle(item),
             req.user,
-            item.createdBy._id
+            item.createdBy._id,
+            changeSummary ? changeSummary.trim() : null
         );
+
+        // Notify approvers that content is ready for approval
+       
+        const approverRoles = await Role.find({
+            slug: { $in: ['approver', 'admin', 'super_admin'] }
+        }).select('_id');
+        
+        if (approverRoles.length > 0) {
+            const approverRoleIds = approverRoles.map(r => r._id);
+            const approvers = await User.find({
+                role: { $in: approverRoleIds },
+                isActive: true
+            }).select('_id email firstName lastName');
+
+            if (approvers.length > 0) {
+                await notificationService.notifyWorkflowPendingApproval(
+                    resource,
+                    item._id,
+                    getResourceTitle(item),
+                    req.user,
+                    approvers.map(a => a._id),
+                    changeSummary ? changeSummary.trim() : null
+                );
+            } else {
+                console.warn(`[WorkflowController] No active approvers found to notify for ${resource} ${item._id}`);
+            }
+        } else {
+            console.warn(`[WorkflowController] No approver roles found in system`);
+        }
 
         return successResponse(
             res,
@@ -195,6 +368,16 @@ exports.requestChanges = async (req, res) => {
             return errorResponse(res, 400, payloadValidation.errors.join(', '));
         }
 
+        // Validate change summary if provided
+        if (changeSummary !== undefined) {
+            if (typeof changeSummary !== 'string' || changeSummary.trim().length === 0) {
+                return errorResponse(res, 400, 'Change summary must be a non-empty string');
+            }
+            if (changeSummary.trim().length < 10) {
+                return errorResponse(res, 400, 'Change summary must be at least 10 characters long');
+            }
+        }
+
         const Model = getModel(resource);
         if (!Model) {
             return errorResponse(res, 400, 'Invalid resource type');
@@ -205,10 +388,10 @@ exports.requestChanges = async (req, res) => {
             return errorResponse(res, 404, `${resource} not found`);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.CHANGES_REQUESTED, req.user.role);
+        // Validate transition (permission-based)
+        const validation = await canTransition(item.status, WORKFLOW_STATES.CHANGES_REQUESTED, req.user._id, resource);
         if (!validation.isValid) {
-            return errorResponse(res, 400, validation.message);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.CHANGES_REQUESTED}`);
         }
 
         // Update status
@@ -217,14 +400,26 @@ exports.requestChanges = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
-        // Create version
+        // If this is a page, update all its sections to changes_requested as well
+        if (resource === 'page') {
+            const Section = require('../models/Section');
+            await Section.updateMany(
+                { pageId: item._id, status: { $in: ['in_review', 'pending_approval'] } },
+                { 
+                    status: WORKFLOW_STATES.CHANGES_REQUESTED,
+                    updatedBy: req.user._id
+                }
+            );
+        }
+
+        // Create version with change summary
         const version = await ContentVersion.createVersion(
             resource,
             item._id,
             item.toObject(),
             req.user._id,
             WORKFLOW_STATES.CHANGES_REQUESTED,
-            changeSummary || 'Changes requested'
+            changeSummary ? changeSummary.trim() : 'Changes requested'
         );
         
         // Store feedback in version
@@ -251,7 +446,8 @@ exports.requestChanges = async (req, res) => {
             getResourceTitle(item),
             req.user,
             item.createdBy._id,
-            feedback
+            feedback,
+            changeSummary ? changeSummary.trim() : null
         );
 
         return successResponse(
@@ -272,6 +468,16 @@ exports.approveContent = async (req, res) => {
         const { resource, id } = req.params;
         const { changeSummary } = req.body || {};
 
+        // Validate change summary if provided
+        if (changeSummary !== undefined) {
+            if (typeof changeSummary !== 'string' || changeSummary.trim().length === 0) {
+                return errorResponse(res, 400, 'Change summary must be a non-empty string');
+            }
+            if (changeSummary.trim().length < 10) {
+                return errorResponse(res, 400, 'Change summary must be at least 10 characters long');
+            }
+        }
+
         const Model = getModel(resource);
         if (!Model) {
             return errorResponse(res, 400, 'Invalid resource type');
@@ -282,10 +488,10 @@ exports.approveContent = async (req, res) => {
             return errorResponse(res, 404, `${resource} not found`);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.PENDING_PUBLISH, req.user.role);
+        // Validate transition (permission-based)
+        const validation = await canTransition(item.status, WORKFLOW_STATES.PENDING_PUBLISH, req.user._id, resource);
         if (!validation.isValid) {
-            return errorResponse(res, 400, validation.message);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.PENDING_PUBLISH}`);
         }
 
         // Update status
@@ -294,14 +500,26 @@ exports.approveContent = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
-        // Create version
+        // If this is a page, update all its sections to pending_publish as well
+        // This ensures sections follow the page's approval workflow
+        if (resource === 'page') {
+            await Section.updateMany(
+                { pageId: item._id, status: { $in: ['pending_approval', 'pending_publish'] } },
+                { 
+                    status: WORKFLOW_STATES.PENDING_PUBLISH,
+                    updatedBy: req.user._id
+                }
+            );
+        }
+
+        // Create version with change summary
         await ContentVersion.createVersion(
             resource,
             item._id,
             item.toObject(),
             req.user._id,
             WORKFLOW_STATES.PENDING_PUBLISH,
-            changeSummary || 'Content approved and ready for publishing'
+            changeSummary ? changeSummary.trim() : 'Content approved and ready for publishing'
         );
 
         // Log activity
@@ -318,13 +536,19 @@ exports.approveContent = async (req, res) => {
         });
 
         // Notify content creator
-        await notificationService.notifyWorkflowApproved(
-            resource,
-            item._id,
-            getResourceTitle(item),
-            req.user,
-            item.createdBy._id
-        );
+        try {
+            await notificationService.notifyWorkflowApproved(
+                resource,
+                item._id,
+                getResourceTitle(item),
+                req.user,
+                item.createdBy._id,
+                changeSummary ? changeSummary.trim() : null
+            );
+        } catch (error) {
+            console.error('Failed to send approved notification:', error);
+            // Don't fail the request if notification fails
+        }
 
         return successResponse(
             res,
@@ -350,6 +574,16 @@ exports.rejectContent = async (req, res) => {
             return errorResponse(res, 400, payloadValidation.errors.join(', '));
         }
 
+        // Validate change summary if provided
+        if (changeSummary !== undefined) {
+            if (typeof changeSummary !== 'string' || changeSummary.trim().length === 0) {
+                return errorResponse(res, 400, 'Change summary must be a non-empty string');
+            }
+            if (changeSummary.trim().length < 10) {
+                return errorResponse(res, 400, 'Change summary must be at least 10 characters long');
+            }
+        }
+
         const Model = getModel(resource);
         if (!Model) {
             return errorResponse(res, 400, 'Invalid resource type');
@@ -360,10 +594,10 @@ exports.rejectContent = async (req, res) => {
             return errorResponse(res, 404, `${resource} not found`);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.CHANGES_REQUESTED, req.user.role);
+        // Validate transition (permission-based)
+        const validation = await canTransition(item.status, WORKFLOW_STATES.CHANGES_REQUESTED, req.user._id, resource);
         if (!validation.isValid) {
-            return errorResponse(res, 400, validation.message);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.CHANGES_REQUESTED}`);
         }
 
         // Update status
@@ -372,14 +606,26 @@ exports.rejectContent = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
-        // Create version
+        // If this is a page, update all its sections to changes_requested as well
+        if (resource === 'page') {
+            const Section = require('../models/Section');
+            await Section.updateMany(
+                { pageId: item._id, status: { $in: ['pending_approval'] } },
+                { 
+                    status: WORKFLOW_STATES.CHANGES_REQUESTED,
+                    updatedBy: req.user._id
+                }
+            );
+        }
+
+        // Create version with change summary
         const version = await ContentVersion.createVersion(
             resource,
             item._id,
             item.toObject(),
             req.user._id,
             WORKFLOW_STATES.CHANGES_REQUESTED,
-            changeSummary || 'Content rejected'
+            changeSummary ? changeSummary.trim() : 'Content rejected'
         );
         
         version.feedback = feedback;
@@ -405,7 +651,8 @@ exports.rejectContent = async (req, res) => {
             getResourceTitle(item),
             req.user,
             item.createdBy._id,
-            feedback
+            feedback,
+            changeSummary ? changeSummary.trim() : null
         );
 
         return successResponse(
@@ -436,10 +683,10 @@ exports.publishContent = async (req, res) => {
             return errorResponse(res, 404, `${resource} not found`);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.PUBLISHED, req.user.role);
+        // Validate transition (permission-based)
+        const validation = await canTransition(item.status, WORKFLOW_STATES.PUBLISHED, req.user._id, resource);
         if (!validation.isValid) {
-            return errorResponse(res, 400, validation.message);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.PUBLISHED}`);
         }
 
         // Update status
@@ -448,6 +695,51 @@ exports.publishContent = async (req, res) => {
         item.publishedAt = new Date();
         item.updatedBy = req.user._id;
         await item.save();
+
+        // If this is a page, update all its sections to published as well
+        // This ensures sections follow the page's approval workflow
+        // Publish ALL sections regardless of their current status
+        if (resource === 'page') {
+            const Section = require('../models/Section');
+            const now = new Date();
+            
+            // Update all sections to published status
+            await Section.updateMany(
+                { pageId: item._id },
+                { 
+                    $set: {
+                        status: WORKFLOW_STATES.PUBLISHED,
+                        updatedBy: req.user._id,
+                        updatedAt: now
+                    }
+                }
+            );
+            
+            // Set publishedAt for sections that don't have it
+            await Section.updateMany(
+                { 
+                    pageId: item._id,
+                    publishedAt: null
+                },
+                { 
+                    $set: {
+                        publishedAt: now
+                    }
+                }
+            );
+            
+            await Section.updateMany(
+                { 
+                    pageId: item._id,
+                    publishedAt: { $exists: false }
+                },
+                { 
+                    $set: {
+                        publishedAt: now
+                    }
+                }
+            );
+        }
 
         // Create version
         const version = await ContentVersion.createVersion(
@@ -494,13 +786,49 @@ exports.publishContent = async (req, res) => {
         });
 
         // Notify all contributors
-        await notificationService.notifyWorkflowPublished(
-            resource,
-            item._id,
-            getResourceTitle(item),
-            req.user,
-            Array.from(contributors)
-        );
+        try {
+            await notificationService.notifyWorkflowPublished(
+                resource,
+                item._id,
+                getResourceTitle(item),
+                req.user,
+                Array.from(contributors),
+                changeSummary ? changeSummary.trim() : null
+            );
+        } catch (error) {
+            console.error('Failed to send published notification:', error);
+            // Don't fail the request if notification fails
+        }
+
+        // Also notify reviewers, admins, and super admins (excluding contributors to avoid duplicates)
+        const approverRoles = await Role.find({
+            slug: { $in: ['reviewer', 'admin', 'super_admin'] }
+        }).select('_id');
+        
+        if (approverRoles.length > 0) {
+            const approverRoleIds = approverRoles.map(r => r._id);
+            const allApprovers = await User.find({
+                role: { $in: approverRoleIds },
+                isActive: true
+            }).select('_id email firstName lastName');
+
+            // Filter out contributors to avoid duplicate notifications
+            const contributorIds = Array.from(contributors);
+            const approversToNotify = allApprovers.filter(
+                approver => !contributorIds.includes(approver._id.toString())
+            );
+
+            if (approversToNotify.length > 0) {
+                await notificationService.notifyWorkflowPublishedToAdmins(
+                    resource,
+                    item._id,
+                    getResourceTitle(item),
+                    req.user,
+                    approversToNotify.map(a => a._id),
+                    changeSummary ? changeSummary.trim() : null
+                );
+            }
+        }
 
         return successResponse(
             res,
@@ -530,10 +858,10 @@ exports.unpublishContent = async (req, res) => {
             return errorResponse(res, `${resource} not found`, 404);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.DRAFT, req.user.role);
+        // Validate transition (permission-based)
+        const validation = await canTransition(item.status, WORKFLOW_STATES.DRAFT, req.user._id, resource);
         if (!validation.isValid) {
-            return errorResponse(res, validation.message, 400);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.DRAFT}`);
         }
 
         // Update status
@@ -541,6 +869,17 @@ exports.unpublishContent = async (req, res) => {
         item.status = WORKFLOW_STATES.DRAFT;
         item.updatedBy = req.user._id;
         await item.save();
+
+        // If this is a page, update all its sections to draft as well
+        if (resource === 'page') {
+            await Section.updateMany(
+                { pageId: item._id, status: 'published' },
+                { 
+                    status: WORKFLOW_STATES.DRAFT,
+                    updatedBy: req.user._id
+                }
+            );
+        }
 
         // Create version
         await ContentVersion.createVersion(
@@ -565,11 +904,21 @@ exports.unpublishContent = async (req, res) => {
             metadata: { action: 'unpublish_content' }
         });
 
+        // If page was in header nav, tell frontend so user can be alerted to update header
+        let pageWasInHeader = false;
+        if (resource === 'page' && item.path) {
+            try {
+                pageWasInHeader = await headerPageSyncService.isPagePathInHeader(item.path);
+            } catch (e) {
+                // ignore
+            }
+        }
+
         return successResponse(
             res,
             200,
             'Content unpublished successfully',
-            { [resource]: item, message: 'Content unpublished' }
+            { [resource]: item, message: 'Content unpublished', pageWasInHeader }
         );
     } catch (error) {
         console.error('Unpublish content error:', error);
@@ -593,10 +942,10 @@ exports.archiveContent = async (req, res) => {
             return errorResponse(res, 404, `${resource} not found`);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.ARCHIVED, req.user.role);
+        // Validate transition (permission-based)
+        const validation = await canTransition(item.status, WORKFLOW_STATES.ARCHIVED, req.user._id, resource);
         if (!validation.isValid) {
-            return errorResponse(res, 400, validation.message);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.ARCHIVED}`);
         }
 
         // Update status
@@ -604,6 +953,18 @@ exports.archiveContent = async (req, res) => {
         item.status = WORKFLOW_STATES.ARCHIVED;
         item.updatedBy = req.user._id;
         await item.save();
+
+        // If this is a page, update all its sections to draft as well
+        // (sections don't have archived status, so they go to draft)
+        if (resource === 'page') {
+            await Section.updateMany(
+                { pageId: item._id, status: 'published' },
+                { 
+                    status: WORKFLOW_STATES.DRAFT,
+                    updatedBy: req.user._id
+                }
+            );
+        }
 
         // Create version
         await ContentVersion.createVersion(
@@ -656,10 +1017,10 @@ exports.restoreContent = async (req, res) => {
             return errorResponse(res, `${resource} not found`, 404);
         }
 
-        // Validate transition
-        const validation = canTransition(item.status, WORKFLOW_STATES.DRAFT, req.user.role);
+        // Validate transition (permission-based)
+        const validation = await canTransition(item.status, WORKFLOW_STATES.DRAFT, req.user._id, resource);
         if (!validation.isValid) {
-            return errorResponse(res, validation.message, 400);
+            return errorResponse(res, 400, `${validation.message}. Current status: ${item.status}, Target status: ${WORKFLOW_STATES.DRAFT}`);
         }
 
         // Update status
@@ -667,6 +1028,17 @@ exports.restoreContent = async (req, res) => {
         item.status = WORKFLOW_STATES.DRAFT;
         item.updatedBy = req.user._id;
         await item.save();
+
+        // If this is a page, update all its sections to draft as well
+        if (resource === 'page') {
+            await Section.updateMany(
+                { pageId: item._id },
+                { 
+                    status: WORKFLOW_STATES.DRAFT,
+                    updatedBy: req.user._id
+                }
+            );
+        }
 
         // Create version
         await ContentVersion.createVersion(
@@ -870,7 +1242,8 @@ exports.getAvailableActions = async (req, res) => {
             return errorResponse(res, 404, `${resource} not found`);
         }
 
-        const possibleStates = getNextPossibleStates(item.status, req.user.role);
+        // Pass the resource item to check creator status
+        const possibleStates = await getNextPossibleStates(item.status, req.user._id, resource, item);
 
         return successResponse(
             res,

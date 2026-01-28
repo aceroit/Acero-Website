@@ -41,7 +41,31 @@ const notificationSchema = new mongoose.Schema({
     resource: {
         type: String,
         required: [true, 'Resource type is required'],
-        enum: ['page', 'section', 'user', 'system'],
+        enum: [
+            'page', 
+            'section', 
+            'user', 
+            'system',
+            'project',
+            'branch',
+            'customer',
+            'certification',
+            'company-update',
+            'company-update-category',
+            'brochure',
+            'building-type',
+            'industry',
+            'country',
+            'region',
+            'area',
+            'header-configuration',
+            'footer-configuration',
+            'website-appearance',
+            'smtp-settings',
+            'google-recaptcha',
+            'google-maps',
+            'vacancy'
+        ],
         index: true
     },
     resourceId: {

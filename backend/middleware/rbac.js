@@ -1,6 +1,31 @@
 const Permission = require('../models/Permission');
+const Resource = require('../models/Resource');
+const mongoose = require('mongoose');
+
+/**
+ * Helper: Convert resource to ObjectId if it's a string (slug or path)
+ * @param {String|ObjectId} resource - Resource slug, path, or ObjectId
+ * @returns {ObjectId|null} - Resource ObjectId or null if not found
+ */
+const getResourceId = async (resource) => {
+    // If already an ObjectId, return it
+    if (mongoose.Types.ObjectId.isValid(resource) && resource.toString().length === 24) {
+        return new mongoose.Types.ObjectId(resource);
+    }
+    
+    // Try to find by slug or path
+    const resourceDoc = await Resource.findOne({ 
+        $or: [
+            { slug: resource },
+            { path: resource }
+        ]
+    }).select('_id');
+    
+    return resourceDoc ? resourceDoc._id : null;
+};
 
 // Middleware to check if user has permission for a specific action on a resource
+// Checks user-specific permissions first, then role permissions (merged)
 const checkPermission = (resource, action) => {
     return async (req, res, next) => {
         try {
@@ -12,31 +37,57 @@ const checkPermission = (resource, action) => {
                 });
             }
 
-            const userRole = req.user.role;
+            const userId = req.user._id;
+            // Get user with populated role to check super_admin
+            const User = require('../models/User');
+            const user = await User.findById(userId).populate('role', 'slug name');
+            const userRoleSlug = user?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
 
-            // Super admin has access to everything
-            if (userRole === 'super_admin') {
+            // Super admin has access to everything (check by slug)
+            if (userRoleSlug === 'super_admin') {
                 return next();
             }
 
-            // Check if permission exists for this role, resource, and action
-            const hasPermission = await Permission.hasPermission(userRole, resource, action);
+            // Get resource ID (supports slug, path, or ObjectId)
+            const resourceId = await getResourceId(resource);
+            if (!resourceId) {
+                return res.status(404).json({
+                    success: false,
+                    message: `Resource not found: ${resource}`
+                });
+            }
+
+            // Check user permissions (checks both user-specific and role permissions)
+            const hasPermission = await Permission.hasUserPermission(userId, resourceId, action);
 
             if (!hasPermission) {
                 return res.status(403).json({
                     success: false,
                     message: `Access denied. You don't have permission to ${action} ${resource}`,
-                    required: { resource, action, role: userRole }
+                    required: { resource, action, userId: userId.toString(), role: userRoleSlug || user?.role?._id?.toString() }
                 });
             }
 
-            // Get permission details to check conditions
-            const permission = await Permission.findOne({
-                role: userRole,
-                resource,
+            // Get effective permission details to check conditions
+            // First check user-specific permission, then role permission
+            let permission = await Permission.findOne({
+                userId: userId,
+                resource: resourceId,
                 actions: action,
                 isActive: true
             });
+
+            // If no user-specific permission, get role permission
+            // user.role is now ObjectId, use it directly
+            if (!permission && user.role) {
+                const roleId = user.role._id || user.role;
+                permission = await Permission.findOne({
+                    role: roleId,
+                    resource: resourceId,
+                    actions: action,
+                    isActive: true
+                });
+            }
 
             // Check conditions if they exist
             if (permission && permission.conditions) {
@@ -48,7 +99,7 @@ const checkPermission = (resource, action) => {
                     if (resourceData) {
                         const creatorId = resourceData.createdBy || resourceData.userId;
                         
-                        if (creatorId && creatorId.toString() !== req.user._id.toString()) {
+                        if (creatorId && creatorId.toString() !== userId.toString()) {
                             return res.status(403).json({
                                 success: false,
                                 message: 'Access denied. You can only access your own content.'
@@ -86,18 +137,26 @@ const checkAnyPermission = (permissions) => {
                 });
             }
 
-            const userRole = req.user.role;
+            const userId = req.user._id;
+            // Get user with populated role to check super_admin
+            const User = require('../models/User');
+            const user = await User.findById(userId).populate('role', 'slug name');
+            const userRoleSlug = user?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
 
-            // Super admin has access to everything
-            if (userRole === 'super_admin') {
+            // Super admin has access to everything (check by slug)
+            if (userRoleSlug === 'super_admin') {
                 return next();
             }
 
             // Check if user has at least one of the required permissions
             const permissionChecks = await Promise.all(
-                permissions.map(({ resource, action }) => 
-                    Permission.hasPermission(userRole, resource, action)
-                )
+                permissions.map(async ({ resource, action }) => {
+                    const resourceId = await getResourceId(resource);
+                    if (!resourceId) {
+                        return false;
+                    }
+                    return await Permission.hasUserPermission(userId, resourceId, action);
+                })
             );
 
             const hasAnyPermission = permissionChecks.some(result => result === true);
@@ -107,7 +166,8 @@ const checkAnyPermission = (permissions) => {
                     success: false,
                     message: 'Access denied. You don\'t have the required permissions.',
                     required: permissions,
-                    role: userRole
+                    userId: userId.toString(),
+                    role: userRoleSlug || user?.role?._id?.toString()
                 });
             }
 
@@ -136,18 +196,26 @@ const checkAllPermissions = (permissions) => {
                 });
             }
 
-            const userRole = req.user.role;
+            const userId = req.user._id;
+            // Get user with populated role to check super_admin
+            const User = require('../models/User');
+            const user = await User.findById(userId).populate('role', 'slug name');
+            const userRoleSlug = user?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
 
-            // Super admin has access to everything
-            if (userRole === 'super_admin') {
+            // Super admin has access to everything (check by slug)
+            if (userRoleSlug === 'super_admin') {
                 return next();
             }
 
             // Check if user has all required permissions
             const permissionChecks = await Promise.all(
-                permissions.map(({ resource, action }) => 
-                    Permission.hasPermission(userRole, resource, action)
-                )
+                permissions.map(async ({ resource, action }) => {
+                    const resourceId = await getResourceId(resource);
+                    if (!resourceId) {
+                        return false;
+                    }
+                    return await Permission.hasUserPermission(userId, resourceId, action);
+                })
             );
 
             const hasAllPermissions = permissionChecks.every(result => result === true);
@@ -159,7 +227,8 @@ const checkAllPermissions = (permissions) => {
                     success: false,
                     message: 'Access denied. You don\'t have all the required permissions.',
                     missing: failedPermissions,
-                    role: userRole
+                    userId: userId.toString(),
+                    role: userRoleSlug || user?.role?._id?.toString()
                 });
             }
 
@@ -176,7 +245,7 @@ const checkAllPermissions = (permissions) => {
     };
 };
 
-// Middleware to check workflow permissions
+// Middleware to check workflow permissions (permission-based)
 const checkWorkflowPermission = async (req, res, next) => {
     try {
         if (!req.user) {
@@ -186,35 +255,56 @@ const checkWorkflowPermission = async (req, res, next) => {
             });
         }
 
-        const userRole = req.user.role;
+        const userId = req.user._id;
         const { action } = req.body; // e.g., 'submit', 'review', 'approve', 'publish'
+        const { resource } = req.params || {}; // Resource type from route params
+
+        // Get user with populated role to check super_admin
+        const User = require('../models/User');
+        const user = await User.findById(userId).populate('role', 'slug name');
+        const userRoleSlug = user?.role?.slug || (typeof req.user.role === 'string' ? req.user.role : null);
 
         // Super admin can perform any workflow action
-        if (userRole === 'super_admin') {
+        if (userRoleSlug === 'super_admin') {
             return next();
         }
 
-        // Define workflow permissions
-        const workflowPermissions = {
-            submit: ['editor', 'reviewer', 'approver', 'admin'],
-            review: ['reviewer', 'approver', 'admin'],
-            approve: ['approver', 'admin'],
-            publish: ['admin'],
-            reject: ['reviewer', 'approver', 'admin']
+        // Map workflow actions to permission actions
+        const actionToPermissionMap = {
+            'submit': 'update', // Submit requires update permission
+            'review': 'review', // Review requires review permission
+            'approve': 'approve', // Approve requires approve permission
+            'publish': 'publish', // Publish requires publish permission
+            'reject': 'approve', // Reject requires approve permission (same as approve)
+            'request_changes': 'review' // Request changes requires review permission
         };
 
-        if (!workflowPermissions[action]) {
+        const requiredPermission = actionToPermissionMap[action];
+        if (!requiredPermission) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid workflow action'
+                message: `Invalid workflow action: ${action}`
             });
         }
 
-        if (!workflowPermissions[action].includes(userRole)) {
+        // Get workflow resource ID
+        const resourceType = resource || 'workflow';
+        const resourceId = await getResourceId(resourceType);
+        if (!resourceId) {
+            return res.status(404).json({
+                success: false,
+                message: `Workflow resource not found. Please create a 'workflow' resource.`
+            });
+        }
+
+        // Check if user has the required permission
+        const hasPermission = await Permission.hasUserPermission(userId, resourceId, requiredPermission);
+
+        if (!hasPermission) {
             return res.status(403).json({
                 success: false,
-                message: `Access denied. Your role (${userRole}) cannot perform ${action} action.`,
-                allowedRoles: workflowPermissions[action]
+                message: `Access denied. You don't have '${requiredPermission}' permission on workflow resource to perform ${action} action.`,
+                required: { resource: 'workflow', action: requiredPermission }
             });
         }
 
@@ -230,34 +320,39 @@ const checkWorkflowPermission = async (req, res, next) => {
     }
 };
 
-// Helper function to get user's all permissions (not middleware)
+// Helper function to get user's effective permissions (merged: role + user overrides)
 const getUserPermissions = async (userId) => {
     try {
         const User = require('../models/User');
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('role', 'name slug description level color');
         
         if (!user) {
             throw new Error('User not found');
         }
 
-        // Super admin has all permissions
-        if (user.role === 'super_admin') {
+        // Get user's role slug
+        const userRoleSlug = user?.role?.slug || (typeof user.role === 'string' ? user.role : null);
+
+        // Super admin has all permissions (check by slug)
+        if (userRoleSlug === 'super_admin') {
             return {
-                role: 'super_admin',
+                role: user.role || { slug: 'super_admin', name: 'Super Admin' },
                 hasAllPermissions: true,
                 permissions: []
             };
         }
 
-        const permissions = await Permission.getRolePermissions(user.role);
+        // Get effective permissions (merged: role + user overrides)
+        const effectivePermissions = await Permission.getEffectivePermissions(userId);
         
         return {
-            role: user.role,
+            role: user.role || null,
             hasAllPermissions: false,
-            permissions: permissions.map(p => ({
+            permissions: effectivePermissions.map(p => ({
                 resource: p.resource,
                 actions: p.actions,
-                conditions: p.conditions
+                conditions: p.conditions,
+                source: p.source // 'role' or 'user'
             }))
         };
 
@@ -273,15 +368,31 @@ const canAccessPage = async (userId, pageId) => {
         const User = require('../models/User');
         const Page = require('../models/Page');
         
-        const user = await User.findById(userId);
-        const page = await Page.findById(pageId);
+        const user = await User.findById(userId).populate('role', 'slug _id');
+        const page = await Page.findById(pageId).populate('permissions.allowedRoles', '_id slug');
         
         if (!user || !page) {
             return false;
         }
 
-        // Super admin can access everything
-        if (user.role === 'super_admin') {
+        // Get user's role ID (handles both ObjectId and populated Role object)
+        let userRoleId = null;
+        let userRoleSlug = null;
+        
+        if (user.role) {
+            if (typeof user.role === 'object' && user.role._id) {
+                userRoleId = user.role._id.toString();
+                userRoleSlug = user.role.slug;
+            } else if (typeof user.role === 'object' && user.role.toString) {
+                userRoleId = user.role.toString();
+            } else if (typeof user.role === 'string') {
+                // Fallback for string role (during migration)
+                userRoleSlug = user.role;
+            }
+        }
+
+        // Super admin can access everything (check by slug)
+        if (userRoleSlug === 'super_admin' || (typeof user.role === 'string' && user.role === 'super_admin')) {
             return true;
         }
 
@@ -289,28 +400,60 @@ const canAccessPage = async (userId, pageId) => {
         if (page.permissions) {
             // Check if user is in allowed users list (highest priority)
             if (page.permissions.allowedUsers && page.permissions.allowedUsers.length > 0) {
-                if (page.permissions.allowedUsers.some(id => id.toString() === userId.toString())) {
+                if (page.permissions.allowedUsers.some(id => {
+                    const allowedId = id._id ? id._id.toString() : id.toString();
+                    return allowedId === userId.toString();
+                })) {
                     return true;
                 }
             }
 
             // Check if user is in restricted users list
             if (page.permissions.restrictedUsers && page.permissions.restrictedUsers.length > 0) {
-                if (page.permissions.restrictedUsers.some(id => id.toString() === userId.toString())) {
+                if (page.permissions.restrictedUsers.some(id => {
+                    const restrictedId = id._id ? id._id.toString() : id.toString();
+                    return restrictedId === userId.toString();
+                })) {
                     return false;
                 }
             }
 
-            // Check if user's role is in allowed roles
+            // Check if user's role is in allowed roles (compare ObjectIds)
             if (page.permissions.allowedRoles && page.permissions.allowedRoles.length > 0) {
-                if (!page.permissions.allowedRoles.includes(user.role)) {
+                if (userRoleId) {
+                    const isAllowed = page.permissions.allowedRoles.some(allowedRole => {
+                        const allowedRoleId = allowedRole._id ? allowedRole._id.toString() : allowedRole.toString();
+                        return allowedRoleId === userRoleId;
+                    });
+                    if (!isAllowed) {
+                        return false;
+                    }
+                } else if (userRoleSlug) {
+                    // Fallback: Check by slug if role is populated
+                    const isAllowed = page.permissions.allowedRoles.some(allowedRole => {
+                        if (allowedRole.slug) {
+                            return allowedRole.slug === userRoleSlug;
+                        }
+                        return false;
+                    });
+                    if (!isAllowed) {
+                        return false;
+                    }
+                } else {
+                    // No valid role to check
                     return false;
                 }
             }
         }
 
-        // Default to checking general permissions
-        return await Permission.hasPermission(user.role, 'pages', 'read');
+        // Default to checking general permissions (using user permissions - merged)
+        // Get resource ID for 'pages'
+        const resourceId = await getResourceId('pages');
+        if (!resourceId) {
+            return false;
+        }
+        
+        return await Permission.hasUserPermission(userId, resourceId, 'read');
 
     } catch (error) {
         console.error('Can access page check error:', error);

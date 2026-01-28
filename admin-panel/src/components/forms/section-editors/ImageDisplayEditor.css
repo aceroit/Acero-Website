@@ -1,0 +1,12 @@
+.image-display-editor {
+  width: 100%;
+}
+
+.image-display-editor .space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.image-display-editor .ant-card {
+  border-radius: 8px;
+}
+

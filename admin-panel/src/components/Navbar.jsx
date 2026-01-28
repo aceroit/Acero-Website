@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    BellOutlined,
     UserOutlined,
     LogoutOutlined,
     MenuFoldOutlined,
@@ -11,6 +10,7 @@ import {
 import { Tooltip } from "antd";
 import { useAuth } from "../contexts/AuthContext";
 import { formatRole, getUserFullName } from "../utils/roleHelpers";
+import NotificationDropdown from "./NotificationDropdown";
 
 const Navbar = ({ sidebarOpen, toggleSidebar }) => {
     const [open, setOpen] = useState(false);
@@ -60,13 +60,8 @@ const Navbar = ({ sidebarOpen, toggleSidebar }) => {
 
             {/* RIGHT */}
             <div className="flex items-center gap-4 relative">
-                {/* Notification */}
-                <Tooltip title="Notification" placement="left">
-                    <button className="relative p-2 rounded hover:bg-gray-100 transition text-gray-400 hover:text-gray-600 cursor-pointer">
-                        <BellOutlined className="text-gray-500 text-lg" />
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                    </button>
-                </Tooltip>
+                {/* Notification Dropdown */}
+                <NotificationDropdown />
 
                 {/* Profile */}
                 <div className="relative flex items-center gap-2" ref={dropdownRef}>

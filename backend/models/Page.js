@@ -9,10 +9,9 @@ const pageSchema = new mongoose.Schema({
     slug: {
         type: String,
         required: [true, 'Page slug is required'],
-        unique: true,
         lowercase: true,
-        trim: true,
-        index: true
+        trim: true
+        // Note: Unique constraint is enforced via partial index (see below) to allow inactive pages to reuse slugs
     },
     parentId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -83,8 +82,8 @@ const pageSchema = new mongoose.Schema({
     // Page-level permissions (optional override)
     permissions: {
         allowedRoles: [{
-            type: String,
-            enum: ['super_admin', 'admin', 'approver', 'reviewer', 'editor', 'viewer']
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Role'
         }],
         restrictedUsers: [{
             type: mongoose.Schema.Types.ObjectId,
@@ -104,6 +103,12 @@ const pageSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         default: null
+    },
+    
+    // Sync tracking field
+    lastSyncedToHeader: {
+        type: Date,
+        default: null
     }
 }, {
     timestamps: true
@@ -112,6 +117,16 @@ const pageSchema = new mongoose.Schema({
 // Compound indexes
 pageSchema.index({ parentId: 1, order: 1 });
 pageSchema.index({ status: 1, isActive: 1 });
+
+// Partial unique index on slug - only enforces uniqueness for active pages
+// This allows inactive pages to reuse slugs, but prevents duplicate slugs among active pages
+pageSchema.index(
+    { slug: 1 },
+    { 
+        unique: true,
+        partialFilterExpression: { isActive: true }
+    }
+);
 
 // Pre-save middleware to generate path and calculate level
 pageSchema.pre('save', async function() {

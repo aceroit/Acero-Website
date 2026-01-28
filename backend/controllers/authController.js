@@ -23,13 +23,14 @@ const register = async (req, res) => {
             });
         }
 
-        // Create new user
+        // Note: role should be ObjectId or slug - will be handled in userController
+        // For now, we'll accept it as-is (migration will handle conversion)
         const user = new User({
             email,
             password,
             firstName,
             lastName,
-            role: role || 'viewer', // Default to viewer if not specified
+            role: role, // Should be Role ObjectId or slug (will be resolved in userController)
             createdBy: req.user?._id || null // If called by authenticated user
         });
 
@@ -48,8 +49,11 @@ const register = async (req, res) => {
             });
         }
 
+        // Populate role before generating token
+        await user.populate('role', 'slug name');
+        
         // Generate token
-        const token = user.generateAuthToken();
+        const token = await user.generateAuthToken();
 
         // Return user without password
         const userResponse = user.toJSON();
@@ -77,6 +81,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log('Login request received:', email, password);
 
         // Validate input
         if (!email || !password) {
@@ -89,17 +94,26 @@ const login = async (req, res) => {
         console.log('Attempting login for:', email);
 
         // Find user and include password field
-        const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+        const user = await User.findOne({ email: email.toLowerCase() }).select('+password').populate('role', 'slug name');
 
         if (!user) {
+            console.log('Login failed: User not found for email:', email);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
             });
         }
 
+        console.log('User found:', {
+            email: user.email,
+            isActive: user.isActive,
+            hasRole: !!user.role,
+            roleSlug: user.role?.slug || user.role
+        });
+
         // Check if user is active
         if (!user.isActive) {
+            console.log('Login failed: User account is inactive');
             return res.status(403).json({
                 success: false,
                 message: 'Your account has been deactivated. Please contact administrator.'
@@ -110,27 +124,38 @@ const login = async (req, res) => {
         const isPasswordCorrect = await user.comparePassword(password);
 
         if (!isPasswordCorrect) {
+            console.log('Login failed: Incorrect password for email:', email);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
             });
         }
 
+        console.log('Password verified successfully for user:', user.email);
+
         // Update last login
         user.lastLogin = new Date();
         await user.save();
 
-        // Log activity
-        await ActivityLog.logActivity({
-            userId: user._id,
-            action: 'login',
-            resource: 'auth',
-            ipAddress: req.ip,
-            userAgent: req.get('user-agent')
-        });
+        // Log activity (non-blocking - don't fail login if logging fails)
+        try {
+            await ActivityLog.logActivity({
+                userId: user._id,
+                action: 'login',
+                resource: 'auth',
+                ipAddress: req.ip,
+                userAgent: req.get('user-agent')
+            });
+        } catch (logError) {
+            console.error('Failed to log login activity:', logError);
+            // Continue with login even if logging fails
+        }
 
+        // Populate role before generating token
+        await user.populate('role', 'slug name');
+        
         // Generate token
-        const token = user.generateAuthToken();
+        const token = await user.generateAuthToken();
 
         // Return user without password
         const userResponse = user.toJSON();
@@ -189,6 +214,7 @@ const getMe = async (req, res) => {
         // req.user is set by auth middleware
         const user = await User.findById(req.user._id)
             .select('-password')
+            .populate('role', 'name slug description level color isSystem isActive')
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
@@ -236,8 +262,11 @@ const refreshToken = async (req, res) => {
             });
         }
 
+        // Populate role before generating token
+        await user.populate('role', 'slug name');
+        
         // Generate new token
-        const token = user.generateAuthToken();
+        const token = await user.generateAuthToken();
 
         res.status(200).json({
             success: true,

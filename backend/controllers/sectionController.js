@@ -4,6 +4,7 @@ const ContentVersion = require('../models/ContentVersion');
 const ActivityLog = require('../models/ActivityLog');
 const sectionValidator = require('../services/sectionValidator');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
+const { canCreateSection, canEditContent, canDeleteContent, canModifyTree } = require('../utils/workflowStatusValidator');
 
 /**
  * Get all sections for a specific page
@@ -83,6 +84,13 @@ exports.createSection = async (req, res) => {
             return errorResponse(res, 404, 'Page not found');
         }
 
+        // Validate workflow status and permissions using workflowStatusValidator
+        // This checks both permission AND role hierarchy for the parent page's current status
+        const createValidation = await canCreateSection(req.user, page);
+        if (!createValidation.canCreate) {
+            return errorResponse(res, 403, createValidation.reason || 'You do not have permission to create sections on this page');
+        }
+
         // Validate section content against section type
         const validation = await sectionValidator.validateSectionContent(
             sectionTypeSlug, 
@@ -153,16 +161,62 @@ exports.updateSection = async (req, res) => {
             changeLog
         } = req.body;
 
-        const section = await Section.findById(id);
+        const section = await Section.findById(id).populate('pageId', 'status createdBy');
         if (!section) {
             return errorResponse(res, 404, 'Section not found');
+        }
+
+        // Check if parent page exists
+        if (!section.pageId) {
+            return errorResponse(res, 404, 'Parent page not found');
         }
 
         // Check if we're only updating status (allow this even for published sections)
         const isOnlyStatusUpdate = Object.keys(req.body).length === 1 && req.body.hasOwnProperty('status');
         
+        // IMPORTANT: Block ALL section updates (including visibility, content, etc.) when section is in restricted status
+        // UNLESS: user is Admin/Super Admin OR user has permission + appropriate role
+        // OR: this is a status-only update (workflow transition)
+        const restrictedSectionStatuses = ['in_review', 'pending_approval', 'pending_publish'];
+        
+        if (restrictedSectionStatuses.includes(section.status) && !isOnlyStatusUpdate) {
+            // Check if user can edit content in this section status
+            const sectionEditValidation = await canEditContent(req.user, section, 'sections', 'update');
+            if (!sectionEditValidation.canEdit) {
+                return errorResponse(res, 403, `Cannot edit section. Section is in '${section.status}' status. ${sectionEditValidation.reason || 'You do not have permission to edit sections in this status.'}`);
+            }
+        }
+        
+        // IMPORTANT: If parent page is in_review, pending_approval, or pending_publish, block all section edits
+        // UNLESS: user is Admin/Super Admin OR user has permission + appropriate role for parent page status
+        // OR: this is a status-only update (workflow transition) - allows sections to have individual workflow
+        // EXCEPTION: If parent page is in draft or changes_requested, sections can have their own workflow independently
+        const parentPageStatus = section.pageId.status;
+        const restrictedParentStatuses = ['in_review', 'pending_approval', 'pending_publish'];
+        
+        // Allow sections to have individual workflow when parent page is in draft or changes_requested
+        const allowIndividualWorkflow = ['draft', 'changes_requested'].includes(parentPageStatus);
+        
+        if (restrictedParentStatuses.includes(parentPageStatus) && !isOnlyStatusUpdate && !allowIndividualWorkflow) {
+            // Check if user can edit content in parent page status
+            const parentPageEditValidation = await canEditContent(req.user, section.pageId, 'pages', 'update');
+            if (!parentPageEditValidation.canEdit) {
+                return errorResponse(res, 403, `Cannot edit section. Parent page is in '${parentPageStatus}' status. ${parentPageEditValidation.reason || 'You do not have permission to edit sections when parent page is in this status.'}`);
+            }
+        }
+        
+        // Validate workflow status and permissions using workflowStatusValidator
+        // This checks both permission AND role hierarchy for the current status
+        // Only check this if we haven't already blocked above
+        if (!restrictedSectionStatuses.includes(section.status) || isOnlyStatusUpdate) {
+            const editValidation = await canEditContent(req.user, section, 'sections', 'update');
+            if (!editValidation.canEdit) {
+                return errorResponse(res, 403, editValidation.reason || 'You do not have permission to edit this section');
+            }
+        }
+        
         // Prevent editing published content directly - must unpublish first
-        // Exception: allow status-only updates
+        // Exception: allow status-only updates (but still checked by workflow validator above)
         if (section.status === 'published' && !isOnlyStatusUpdate) {
             return errorResponse(res, 400, 'Cannot edit published content. Please unpublish first or use workflow actions.');
         }
@@ -266,6 +320,13 @@ exports.deleteSection = async (req, res) => {
             return errorResponse(res, 404, 'Section not found');
         }
 
+        // Validate workflow status and permissions using workflowStatusValidator
+        // This checks both permission AND role hierarchy for the current status
+        const deleteValidation = await canDeleteContent(req.user, section, 'section');
+        if (!deleteValidation.canDelete) {
+            return errorResponse(res, 403, deleteValidation.reason || 'You do not have permission to delete this section');
+        }
+
         const pageId = section.pageId;
         const deletedOrder = section.order;
 
@@ -294,6 +355,62 @@ exports.reorderSections = async (req, res) => {
 
         if (!Array.isArray(sectionOrders) || sectionOrders.length === 0) {
             return errorResponse(res, 400, 'sectionOrders array is required');
+        }
+
+        // Fetch all sections being reordered to validate workflow status
+        const sectionIds = sectionOrders.map(item => item.sectionId || item._id || item.id);
+        const sectionsToReorder = await Section.find({ _id: { $in: sectionIds } })
+            .populate('pageId', 'status title');
+
+        if (sectionsToReorder.length !== sectionIds.length) {
+            return errorResponse(res, 404, 'One or more sections not found');
+        }
+
+        // All sections should belong to the same page
+        const pageIds = [...new Set(sectionsToReorder.map(s => {
+            const pageId = s.pageId._id || s.pageId;
+            return pageId ? pageId.toString() : null;
+        }).filter(Boolean))];
+        
+        if (pageIds.length > 1) {
+            return errorResponse(res, 400, 'All sections must belong to the same page');
+        }
+
+        if (pageIds.length === 0) {
+            return errorResponse(res, 404, 'Parent page not found for sections');
+        }
+
+        // Fetch the parent page with all necessary fields for validation
+        const parentPage = await Page.findById(pageIds[0]);
+        if (!parentPage) {
+            return errorResponse(res, 404, 'Parent page not found');
+        }
+
+        // Validate parent page workflow status and permissions
+        const pageValidation = await canModifyTree(req.user, parentPage, 'page');
+        if (!pageValidation.canModify) {
+            return errorResponse(res, 403, `Cannot reorder sections: ${pageValidation.reason || 'Parent page restrictions apply'}`);
+        }
+
+        // Validate each section can be edited
+        const blockedSections = [];
+        for (const section of sectionsToReorder) {
+            const sectionValidation = await canEditContent(req.user, section, 'sections', 'update');
+            if (!sectionValidation.canEdit) {
+                blockedSections.push({
+                    sectionId: section._id,
+                    reason: sectionValidation.reason
+                });
+            }
+        }
+
+        if (blockedSections.length > 0) {
+            return errorResponse(
+                res,
+                403,
+                `${blockedSections.length} section(s) cannot be reordered`,
+                { blockedSections }
+            );
         }
 
         await Section.reorderSections(null, sectionOrders);
@@ -348,14 +465,54 @@ exports.duplicateSection = async (req, res) => {
 
 /**
  * Toggle section visibility
+ * IMPORTANT: This should go through the same permission checks as updateSection
  */
 exports.toggleVisibility = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const section = await Section.findById(id);
+        const section = await Section.findById(id).populate('pageId', 'status createdBy');
         if (!section) {
             return errorResponse(res, 404, 'Section not found');
+        }
+
+        // Check if parent page exists
+        if (!section.pageId) {
+            return errorResponse(res, 404, 'Parent page not found');
+        }
+
+        // IMPORTANT: Block visibility toggle when section is in restricted status
+        // UNLESS: user is Admin/Super Admin OR user has permission + appropriate role
+        const restrictedSectionStatuses = ['in_review', 'pending_approval', 'pending_publish'];
+        
+        if (restrictedSectionStatuses.includes(section.status)) {
+            // Check if user can edit content in this section status
+            const sectionEditValidation = await canEditContent(req.user, section, 'sections', 'update');
+            if (!sectionEditValidation.canEdit) {
+                return errorResponse(res, 403, `Cannot toggle section visibility. Section is in '${section.status}' status. ${sectionEditValidation.reason || 'You do not have permission to edit sections in this status.'}`);
+            }
+        }
+        
+        // IMPORTANT: If parent page is in_review, pending_approval, or pending_publish, block visibility toggle
+        // UNLESS: user is Admin/Super Admin OR user has permission + appropriate role for parent page status
+        // EXCEPTION: If parent page is in draft or changes_requested, sections can have their own workflow independently
+        const parentPageStatus = section.pageId.status;
+        const restrictedParentStatuses = ['in_review', 'pending_approval', 'pending_publish'];
+        const allowIndividualWorkflow = ['draft', 'changes_requested'].includes(parentPageStatus);
+        
+        if (restrictedParentStatuses.includes(parentPageStatus) && !allowIndividualWorkflow) {
+            // Check if user can edit content in parent page status
+            const parentPageEditValidation = await canEditContent(req.user, section.pageId, 'pages', 'update');
+            if (!parentPageEditValidation.canEdit) {
+                return errorResponse(res, 403, `Cannot toggle section visibility. Parent page is in '${parentPageStatus}' status. ${parentPageEditValidation.reason || 'You do not have permission to edit sections when parent page is in this status.'}`);
+            }
+        }
+        
+        // Validate workflow status and permissions using workflowStatusValidator
+        // This checks both permission AND role hierarchy for the current status
+        const editValidation = await canEditContent(req.user, section, 'sections', 'update');
+        if (!editValidation.canEdit) {
+            return errorResponse(res, 403, editValidation.reason || 'You do not have permission to toggle section visibility');
         }
 
         section.isVisible = !section.isVisible;

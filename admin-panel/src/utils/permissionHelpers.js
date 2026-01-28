@@ -1,7 +1,7 @@
 /**
  * Check if permissions array includes a specific permission
  * @param {Array} permissions - Array of permission objects
- * @param {string} resource - Resource name
+ * @param {string} resource - Resource name (slug or ID)
  * @param {string} action - Action name
  * @returns {boolean} - True if permission exists
  */
@@ -10,14 +10,29 @@ export const checkPermission = (permissions, resource, action) => {
     return false;
   }
 
-  return permissions.some(
-    (perm) =>
-      perm.resource === resource &&
+  return permissions.some((perm) => {
+    // Handle both old format (string) and new format (object with slug/_id)
+    let resourceMatch = false;
+    
+    if (typeof perm.resource === 'string') {
+      // Old format: resource is a string
+      resourceMatch = perm.resource === resource;
+    } else if (perm.resource && typeof perm.resource === 'object') {
+      // New format: resource is an object with slug or _id
+      resourceMatch = 
+        perm.resource.slug === resource ||
+        perm.resource._id?.toString() === resource ||
+        perm.resource.path === resource;
+    }
+
+    return (
+      resourceMatch &&
       perm.actions &&
       Array.isArray(perm.actions) &&
       perm.actions.includes(action) &&
       perm.isActive !== false
   );
+  });
 };
 
 /**
@@ -59,7 +74,7 @@ export const filterByPermission = (items, permissions) => {
 /**
  * Get all permissions for a specific resource
  * @param {Array} permissions - Array of permission objects
- * @param {string} resource - Resource name
+ * @param {string} resource - Resource name (slug or ID)
  * @returns {Object|null} - Permission object for resource or null
  */
 export const getResourcePermissions = (permissions, resource) => {
@@ -67,7 +82,18 @@ export const getResourcePermissions = (permissions, resource) => {
     return null;
   }
 
-  return permissions.find((perm) => perm.resource === resource) || null;
+  return permissions.find((perm) => {
+    if (typeof perm.resource === 'string') {
+      return perm.resource === resource;
+    } else if (perm.resource && typeof perm.resource === 'object') {
+      return (
+        perm.resource.slug === resource ||
+        perm.resource._id?.toString() === resource ||
+        perm.resource.path === resource
+      );
+    }
+    return false;
+  }) || null;
 };
 
 /**

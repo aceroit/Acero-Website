@@ -77,6 +77,33 @@ const mediaSchema = new mongoose.Schema({
         default: ''
         // For accessibility
     },
+    // YouTube-specific fields (for YouTube links stored as Media entries)
+    youtubeUrl: {
+        type: String,
+        trim: true,
+        default: null,
+        validate: {
+            validator: function(v) {
+                if (!v) return true; // Optional field
+                // Validate YouTube URL format
+                return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/.test(v);
+            },
+            message: 'Invalid YouTube URL format'
+        }
+    },
+    youtubeId: {
+        type: String,
+        trim: true,
+        default: null,
+        index: true
+        // Extracted YouTube video ID
+    },
+    youtubeThumbnail: {
+        type: String,
+        trim: true,
+        default: null
+        // Custom thumbnail URL or YouTube's default thumbnail
+    },
     uploadedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

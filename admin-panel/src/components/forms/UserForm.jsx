@@ -1,8 +1,9 @@
-import { Form, Input, Select, Button } from 'antd';
-import { useEffect } from 'react';
-import { ROLES, ROLE_DISPLAY_NAMES } from '../../utils/constants';
-import { getManageableRoles, formatRole } from '../../utils/roleHelpers';
+import { Form, Input, Select, Button, Spin } from 'antd';
+import { useEffect, useState } from 'react';
+import { getRoleDisplayName, getRoleSlug } from '../../utils/roleHelpers';
 import { useAuth } from '../../contexts/AuthContext';
+import * as roleService from '../../services/roleService';
+import { toast } from 'react-toastify';
 
 const { Option } = Select;
 
@@ -27,21 +28,56 @@ const UserForm = ({
 }) => {
   const [form] = Form.useForm();
   const { user: currentUser } = useAuth();
+  const [roles, setRoles] = useState([]);
+  const [loadingRoles, setLoadingRoles] = useState(true);
 
   useEffect(() => {
     if (initialValues) {
-      form.setFieldsValue(initialValues);
+      // If initialValues has role as object, convert to _id for form
+      const formValues = { ...initialValues };
+      if (formValues.role && typeof formValues.role === 'object' && formValues.role._id) {
+        formValues.role = formValues.role._id;
+      }
+      form.setFieldsValue(formValues);
     }
   }, [initialValues, form]);
 
+  // Fetch roles from API
+  useEffect(() => {
+    const fetchRoles = async () => {
+      setLoadingRoles(true);
+      try {
+        const response = await roleService.getActiveRoles(true); // Include system roles
+        if (response.success) {
+          const rolesData = response.data.roles || response.data || [];
+          let availableRoles = Array.isArray(rolesData) ? rolesData : [];
+          
+          // Filter roles based on current user's permissions
+          // Super admin can assign any role
+          // For now, show all active roles (can be enhanced with permission checks)
+          if (currentUser?.role?.slug === 'super_admin' || currentUser?.role === 'super_admin') {
+            setRoles(availableRoles);
+          } else {
+            // For non-super-admin, filter based on role level
+            // This is a simplified version - can be enhanced
+            setRoles(availableRoles.filter(role => role.isActive));
+          }
+        }
+      } catch (error) {
+        toast.error('Failed to fetch roles');
+        console.error('Error fetching roles:', error);
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+
+    fetchRoles();
+  }, [currentUser]);
+
   const handleSubmit = async (values) => {
+    // Ensure role is sent as ObjectId (backend expects ObjectId or slug)
     await onSubmit(values);
   };
-
-  // Get roles that current user can manage
-  const manageableRoles = currentUser
-    ? getManageableRoles(currentUser.role)
-    : Object.values(ROLES);
 
   return (
     <Form
@@ -101,10 +137,16 @@ const UserForm = ({
         label="Role"
         rules={[{ required: true, message: 'Please select a role' }]}
       >
-        <Select placeholder="Select role" size="large" disabled={isEdit && currentUser?.role !== 'super_admin'}>
-          {manageableRoles.map((role) => (
-            <Option key={role} value={role}>
-              {formatRole(role)}
+        <Select 
+          placeholder={loadingRoles ? "Loading roles..." : "Select role"} 
+          size="large" 
+          disabled={isEdit && (currentUser?.role?.slug !== 'super_admin' && currentUser?.role !== 'super_admin')}
+          loading={loadingRoles}
+          notFoundContent={loadingRoles ? <Spin size="small" /> : "No roles available"}
+        >
+          {roles.map((role) => (
+            <Option key={role._id} value={role._id}>
+              {getRoleDisplayName(role)}
             </Option>
           ))}
         </Select>

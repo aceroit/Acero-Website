@@ -300,6 +300,48 @@ exports.validateWorkflowAction = [
     exports.validate
 ];
 
+/**
+ * Validate change summary for workflow actions
+ * Requires changeSummary to be present, a non-empty string, and at least 10 characters
+ * @param {Boolean} required - Whether changeSummary is required (default: true)
+ * @param {Number} minLength - Minimum length (default: 10)
+ * @param {Number} maxLength - Maximum length (default: 2000)
+ * @returns {Array} Express-validator middleware array
+ */
+exports.validateChangeSummary = (required = true, minLength = 10, maxLength = 2000) => {
+    if (required) {
+        return [
+            body('changeSummary')
+                .trim()
+                .notEmpty().withMessage('Change summary is required')
+                .isString().withMessage('Change summary must be a string')
+                .isLength({ min: minLength }).withMessage(`Change summary must be at least ${minLength} characters long`)
+                .isLength({ max: maxLength }).withMessage(`Change summary must not exceed ${maxLength} characters`),
+            exports.validate
+        ];
+    } else {
+        return [
+            body('changeSummary')
+                .optional()
+                .trim()
+                .isString().withMessage('Change summary must be a string')
+                .custom((value) => {
+                    if (value && value.trim().length > 0 && value.trim().length < minLength) {
+                        throw new Error(`Change summary must be at least ${minLength} characters long`);
+                    }
+                    return true;
+                })
+                .custom((value) => {
+                    if (value && value.trim().length > maxLength) {
+                        throw new Error(`Change summary must not exceed ${maxLength} characters`);
+                    }
+                    return true;
+                }),
+            exports.validate
+        ];
+    }
+};
+
 // ========== Media Validators ==========
 
 exports.validateMediaUpload = [
