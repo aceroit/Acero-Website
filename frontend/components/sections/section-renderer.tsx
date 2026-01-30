@@ -16,6 +16,7 @@ import { PremiumVideoSection } from '@/components/sections/premium-video-section
 import { ImageGallerySection } from '@/components/sections/image-gallery-section'
 import { FeaturesSection } from '@/components/sections/features-section'
 import { ProductCardSection } from '@/components/sections/product-card-section'
+import { ProductsGridSection } from '@/components/sections/products-grid-section'
 import { ImageModalGallery } from '@/components/sections/image-modal-gallery'
 import { TabbedComparisonSection } from '@/components/sections/tabbed-comparison-section'
 import { FlipCardSection } from '@/components/sections/flip-card-section'
@@ -113,7 +114,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               }
 
               case 'infinite_carousel': {
-                const items = (content.items as Array<{ image: string; alt: string }>) || []
+                const items = (content.items as Array<{ image: string; alt: string; link?: string }>) || []
                 const title = (content.title as string) || undefined
                 const speed = (content.speed as 'slow' | 'medium' | 'fast') || 'medium'
                 const direction = (content.direction as 'left' | 'right') || 'left'
@@ -278,6 +279,19 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     imageAlt={imageAlt}
                     cta={cta || { label: 'Learn More', href: '#' }}
                     layout={layout}
+                  />
+                )
+              }
+
+              case 'products_grid': {
+                const title = (content.title as string) || undefined
+                const subtitle = (content.subtitle as string) || undefined
+
+                return (
+                  <ProductsGridSection
+                    key={section._id}
+                    title={title}
+                    subtitle={subtitle}
                   />
                 )
               }

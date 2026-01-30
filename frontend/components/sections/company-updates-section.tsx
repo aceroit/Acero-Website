@@ -1,11 +1,13 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Calendar, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 export interface CompanyUpdate {
   id: string
@@ -43,6 +45,8 @@ export function CompanyUpdatesSection({
 }: CompanyUpdatesSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   const gridCols =
     columns === 4
@@ -52,9 +56,9 @@ export function CompanyUpdatesSection({
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto", spacing.containerMaxWidth, "px-6 lg:px-8")}>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -73,7 +77,7 @@ export function CompanyUpdatesSection({
         </motion.div>
 
         {/* Updates Grid */}
-        <div className={cn("grid gap-6 md:gap-8", gridCols)}>
+        <div className={cn("grid", spacing.gridGap, gridCols)}>
           {updates.map((update, index) => (
             <motion.div
               key={update.id}
@@ -93,7 +97,7 @@ export function CompanyUpdatesSection({
 
 function UpdateCard({ update }: { update: CompanyUpdate }) {
   const cardContent = (
-    <div className="group relative flex h-full min-h-[400px] flex-col overflow-hidden border border-border bg-card transition-all hover:border-steel-red/50 hover:shadow-lg cursor-pointer">
+    <div className="group relative flex h-full min-h-[400px] flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50 hover:shadow-lg cursor-pointer">
       {/* Image */}
       <div className="relative aspect-[4/3] shrink-0 overflow-hidden bg-secondary">
         <Image

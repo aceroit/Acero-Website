@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { CheckCircle2 } from "lucide-react"
@@ -21,7 +21,7 @@ function doRedirect(redirectUrl: string, router: ReturnType<typeof useRouter>) {
   }
 }
 
-export default function ThankYouPage() {
+function ThankYouContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const source = (searchParams.get("from") === "career" ? "career" : "contact") as "contact" | "career"
@@ -139,3 +139,18 @@ export default function ThankYouPage() {
   )
 }
 
+export default function ThankYouPage() {
+  return (
+    <Suspense fallback={
+      <>
+        <Header />
+        <main className="flex min-h-screen items-center justify-center bg-background">
+          <div className="text-muted-foreground">Loading...</div>
+        </main>
+        <Footer />
+      </>
+    }>
+      <ThankYouContent />
+    </Suspense>
+  )
+}

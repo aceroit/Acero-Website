@@ -2,7 +2,10 @@
 
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
+import { cn } from "@/lib/utils"
 
 const products = [
   {
@@ -38,14 +41,16 @@ const products = [
 export function ProductsSection() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   return (
     <section
       id="products"
       ref={ref}
-      className="border-t border-border px-6 py-24"
+      className={cn("border-t border-border", spacing.sectionPadding, "px-6")}
     >
-      <div className="mx-auto max-w-7xl">
+      <div className={cn("mx-auto", spacing.containerMaxWidth)}>
         {/* Header */}
         <div className="mb-16 text-center">
           <motion.p
@@ -76,7 +81,7 @@ export function ProductsSection() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className={cn("grid", spacing.gridGap, "md:grid-cols-2 lg:grid-cols-4")}>
           {products.map((product, index) => (
             <motion.div
               key={product.title}

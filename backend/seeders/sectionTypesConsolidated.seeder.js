@@ -21,6 +21,7 @@ const ALLOWED_SLUGS = [
     'statistics',
     'infinite_carousel',
     'projects_grid',
+    'products_grid',
     'company_updates',
     'hero_image',
     'premium_video',

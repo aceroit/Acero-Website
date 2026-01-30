@@ -1,8 +1,10 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useState, useMemo } from "react"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface Stat {
   value: string
@@ -78,20 +80,22 @@ export function StatsDisplay({
 }: StatsDisplayProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   const gridCols = columns === 4 ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-3"
 
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto", spacing.containerMaxWidth, "px-6 lg:px-8")}>
         <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.6 }}
-          className={cn("grid gap-8 md:gap-12", gridCols)}
+          className={cn("grid", spacing.gridGap, gridCols)}
         >
           {stats.map((stat, index) => (
             <motion.div
@@ -99,22 +103,33 @@ export function StatsDisplay({
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="text-center"
             >
-              {stat.icon && (
-                <div className="mb-4 flex justify-center">{stat.icon}</div>
-              )}
-              <div className="mb-2">
-                <p className="text-5xl font-bold text-foreground md:text-6xl">
-                  <AnimatedCounter value={stat.value} isInView={isInView} />
-                </p>
+              {/* Premium Luxury Card with Glassmorphism */}
+              <div className="relative h-full overflow-hidden rounded-xl border border-steel-red/20 bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-md p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:from-steel-dark/80 dark:via-steel-dark/60 dark:to-steel-dark/40 dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                {/* Content */}
+                <div className="relative z-10 text-center">
+                  {stat.icon && (
+                    <div className="mb-4 flex justify-center">
+                      <div className="rounded-full bg-gradient-to-br from-steel-red/10 to-steel-red/5 p-3">
+                        {stat.icon}
+                      </div>
+                    </div>
+                  )}
+                  <div className="mb-3">
+                    <p className="bg-gradient-to-br from-foreground via-foreground to-steel-red bg-clip-text text-4xl font-extrabold text-transparent md:text-5xl">
+                      <AnimatedCounter value={stat.value} isInView={isInView} />
+                    </p>
+                  </div>
+                  <p className="mb-1 text-base font-bold uppercase tracking-[0.15em] text-foreground">
+                    {stat.label}
+                  </p>
+                  {stat.sublabel && (
+                    <p className="text-xs font-medium text-muted-foreground/80">
+                      {stat.sublabel}
+                    </p>
+                  )}
+                </div>
               </div>
-              <p className="mb-1 text-lg font-semibold uppercase tracking-wider text-foreground">
-                {stat.label}
-              </p>
-              {stat.sublabel && (
-                <p className="text-sm text-muted-foreground">{stat.sublabel}</p>
-              )}
             </motion.div>
           ))}
         </motion.div>

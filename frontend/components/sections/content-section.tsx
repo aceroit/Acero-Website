@@ -2,11 +2,13 @@
 
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
-import { useRef, useState, useLayoutEffect } from "react"
+import { useRef, useState, useLayoutEffect, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface ContentSectionProps {
   title: string
@@ -36,6 +38,9 @@ export function ContentSection({
   variant = "default",
   className,
 }: ContentSectionProps) {
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+  
   // Merge single image + images array: initial image first, then array, all shown in vertical stack when 2+
   const allImages: Array<{ url: string; imageAlt?: string }> = [
     ...(image ? [{ url: image, imageAlt: imageAlt ?? title }] : []),
@@ -142,11 +147,8 @@ export function ContentSection({
         alt={alt}
         fill
         loading="lazy"
-        className={cn(
-          "transition-transform duration-300",
-          imageFit === "cover" ? "object-cover" : "object-contain"
-        )}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         quality={85}
       />
     )
@@ -156,17 +158,22 @@ export function ContentSection({
     <section
       ref={ref}
       className={cn(
-        "border-t border-border py-24 md:py-32",
+        "border-t border-border",
+        spacing.sectionPadding,
         getVariantClasses(),
         className
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto", spacing.containerMaxWidth, "px-6 lg:px-8")}>
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className={cn("grid gap-12 md:gap-16", getLayoutClasses())}
+          className={cn(
+            layout === "text-only" ? "block" : "grid",
+            spacing.gridGap,
+            getLayoutClasses()
+          )}
         >
           {/* Image(s) — vertical stack when 2+ images, single full-height when 1 */}
           {showVerticalStack && (
@@ -196,10 +203,10 @@ export function ContentSection({
             <motion.div
               variants={itemVariants}
               className={cn(
-                "relative overflow-hidden rounded-lg",
+                "group relative aspect-[4/3] w-full overflow-hidden rounded-lg",
                 layout === "image-center"
-                  ? "aspect-[4/3] w-full max-w-2xl lg:max-w-full mx-auto lg:mx-0 self-center"
-                  : "aspect-[4/3] lg:aspect-auto self-center lg:self-stretch min-h-[280px] lg:min-h-0",
+                  ? "mx-auto lg:mx-0 self-center"
+                  : "self-center lg:self-stretch",
                 getImageOrder()
               )}
             >

@@ -20,7 +20,7 @@ export function HeroImageSection({
   return (
     <section
       className={cn(
-        "relative h-[60vh] w-full overflow-hidden md:h-[70vh]",
+        "relative mt-20 h-[calc(100vh-5rem)] w-full overflow-hidden",
         className
       )}
     >

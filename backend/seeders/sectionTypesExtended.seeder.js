@@ -465,6 +465,39 @@ const extendedSectionTypes = [
         thumbnailUrl: null
     },
     {
+        name: 'Products Grid',
+        slug: 'products_grid',
+        description: 'Products grid section with 4 horizontal cards matching projects card design. Displays PEB, Conventional Steel, Racking Systems, and Porta Cabins.',
+        icon: '📦',
+        category: 'Content',
+        isSystem: true,
+        fields: [
+            {
+                name: 'title',
+                type: 'text',
+                label: 'Section Title',
+                placeholder: 'e.g., Our Products',
+                required: false,
+                validation: {
+                    maxLength: 200
+                },
+                order: 0
+            },
+            {
+                name: 'subtitle',
+                type: 'textarea',
+                label: 'Subtitle',
+                required: false,
+                validation: {
+                    maxLength: 300
+                },
+                order: 1
+            }
+        ],
+        previewComponent: 'ProductsGridSection',
+        thumbnailUrl: null
+    },
+    {
         name: 'Image Modal Gallery',
         slug: 'image_modal_gallery',
         description: 'Image gallery with modal functionality for viewing larger images. Used for product types, project galleries, etc.',

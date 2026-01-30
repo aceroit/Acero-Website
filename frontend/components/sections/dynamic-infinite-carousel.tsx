@@ -7,7 +7,7 @@ import { useCustomers } from '@/hooks/use-customers'
 interface DynamicInfiniteCarouselProps {
   sectionId: string
   title?: string
-  staticItems?: Array<{ image: string; alt: string }>
+  staticItems?: Array<{ image: string; alt: string; link?: string }>
   speed?: 'slow' | 'medium' | 'fast'
   direction?: 'left' | 'right'
   pauseOnHover?: boolean
@@ -51,7 +51,7 @@ export function DynamicInfiniteCarousel({
   const { customers, isLoading: customerLoading } = useCustomers()
 
   // Determine which data to use
-  let items: Array<{ image: string; alt: string }> = []
+  let items: Array<{ image: string; alt: string; link?: string }> = []
   let isLoading = false
   let finalItemClassName = itemClassName
 
@@ -61,9 +61,10 @@ export function DynamicInfiniteCarousel({
     items = certificates.map((cert) => ({
       image: cert.certificationImage?.url || '',
       alt: cert.name,
+      link: cert.link || undefined,
     })).filter((item) => item.image) // Filter out items without images
 
-    // Larger cert logos so they’re clearly visible in the carousel (from master API)
+    // Larger cert logos so they're clearly visible in the carousel (from master API)
     // Always use substantial cert logo size (~100–120px height); ignore section itemClassName
     finalItemClassName =
       'h-[100px] w-[140px] shrink-0 md:h-[120px] md:w-[170px] lg:h-[120px] lg:w-[180px]'
@@ -73,6 +74,7 @@ export function DynamicInfiniteCarousel({
     items = customers.map((customer) => ({
       image: customer.customerImage?.url || '',
       alt: customer.name,
+      // Customers don't have link field in the model
     })).filter((item) => item.image) // Filter out items without images
 
     // Large customer logos from master – ~2–3× bigger than before
@@ -86,10 +88,8 @@ export function DynamicInfiniteCarousel({
     finalItemClassName = itemClassName || 'h-20 w-32 md:h-24 md:w-40'
   }
 
-  // Determine background class
+  // Determine background class - always use page background, no gray for customers
   const bgClass = sectionClasses.includes('bg-muted') 
-    ? 'bg-muted/30' 
-    : title === 'Our Customers' 
     ? 'bg-muted/30' 
     : 'bg-background'
 
