@@ -9,6 +9,7 @@ import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
+import { InlineAnimatedSvg } from "@/components/sections/inline-animated-svg"
 
 interface ContentSectionProps {
   title: string
@@ -20,6 +21,8 @@ interface ContentSectionProps {
   image?: string
   imageAlt?: string
   images?: Array<{ url: string; imageAlt?: string }>
+  /** When set, render this local SVG inline (so animations run) instead of backend image. Used e.g. for "Reliability, Excellence, Trust" on Who we are. */
+  inlineSvgPath?: string
   layout?: "image-left" | "image-right" | "image-center" | "text-only" | "split"
   imageFit?: "contain" | "cover"
   variant?: "default" | "accent" | "muted"
@@ -33,6 +36,7 @@ export function ContentSection({
   image,
   imageAlt,
   images,
+  inlineSvgPath,
   layout = "image-right",
   imageFit = "contain",
   variant = "default",
@@ -40,14 +44,18 @@ export function ContentSection({
 }: ContentSectionProps) {
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
-  
-  // Merge single image + images array: initial image first, then array, all shown in vertical stack when 2+
-  const allImages: Array<{ url: string; imageAlt?: string }> = [
-    ...(image ? [{ url: image, imageAlt: imageAlt ?? title }] : []),
-    ...(images ?? []),
-  ].filter((i) => i?.url)
+
+  // When inlineSvgPath is set, we show the local animated SVG instead of backend image(s)
+  const showInlineSvg = Boolean(inlineSvgPath) && layout !== "text-only"
+  // Merge single image + images array when not using inline SVG
+  const allImages: Array<{ url: string; imageAlt?: string }> = showInlineSvg
+    ? []
+    : [
+        ...(image ? [{ url: image, imageAlt: imageAlt ?? title }] : []),
+        ...(images ?? []),
+      ].filter((i) => i?.url)
   const showVerticalStack = allImages.length > 1 && layout !== "text-only"
-  const showSingleImage = allImages.length === 1 && layout !== "text-only"
+  const showSingleImage = (allImages.length === 1 || showInlineSvg) && layout !== "text-only"
   const ref = useRef(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [contentHeight, setContentHeight] = useState<number | null>(null)
@@ -203,14 +211,23 @@ export function ContentSection({
             <motion.div
               variants={itemVariants}
               className={cn(
-                "group relative aspect-[4/3] w-full overflow-hidden rounded-lg",
+                "group relative w-full overflow-hidden rounded-lg",
+                "aspect-[4/3]", // same as product card image size
                 layout === "image-center"
                   ? "mx-auto lg:mx-0 self-center"
                   : "self-center lg:self-stretch",
                 getImageOrder()
               )}
             >
-              {renderMedia(allImages[0], allImages[0].imageAlt || title)}
+              {showInlineSvg && inlineSvgPath ? (
+                <InlineAnimatedSvg
+                  src={inlineSvgPath}
+                  alt={title}
+                  className="absolute inset-0 h-full w-full"
+                />
+              ) : (
+                renderMedia(allImages[0], allImages[0].imageAlt || title)
+              )}
             </motion.div>
           )}
 

@@ -83,6 +83,11 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const layout = (content.layout as 'image-left' | 'image-right' | 'image-center' | 'text-only' | 'split') || 'image-right'
                 const imageFit = (content.imageFit as 'contain' | 'cover') || 'contain'
                 const variant = (content.variant as 'default' | 'accent' | 'muted') || 'default'
+                // Who we are "Reliability, Excellence, Trust" section: use local animated SVG so CSS animations run
+                const inlineSvgPath =
+                  title.trim() === 'Reliability, Excellence, Trust'
+                    ? '/svgs/Reliability.svg'
+                    : undefined
 
                 return (
                   <ContentSection
@@ -93,6 +98,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     image={image}
                     imageAlt={imageAlt}
                     images={images}
+                    inlineSvgPath={inlineSvgPath}
                     layout={layout}
                     imageFit={imageFit}
                     variant={variant}
@@ -196,6 +202,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     image={image}
                     title={title}
                     overlay={overlay}
+                    fullHeight={isHomePage}
                   />
                 )
               }

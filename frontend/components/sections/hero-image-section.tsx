@@ -8,6 +8,8 @@ interface HeroImageSectionProps {
   image: string
   title: string
   overlay?: boolean
+  /** When false (inner pages e.g. Who We Are), hero uses 75% height below header. When true (home), full height. */
+  fullHeight?: boolean
   className?: string
 }
 
@@ -15,12 +17,14 @@ export function HeroImageSection({
   image,
   title,
   overlay = true,
+  fullHeight = false,
   className,
 }: HeroImageSectionProps) {
   return (
     <section
       className={cn(
-        "relative mt-20 h-[calc(100vh-5rem)] w-full overflow-hidden",
+        "relative mt-20 w-full overflow-hidden",
+        fullHeight ? "h-[calc(100vh-5rem)]" : "h-[calc((100vh-5rem)*0.75)]",
         className
       )}
     >
