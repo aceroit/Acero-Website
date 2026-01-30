@@ -1,4 +1,4 @@
-import { Card, Button, Input, Form } from 'antd';
+import { Card, Button, Input, Form, Select } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import './ApplicationCardsEditor.css';
 
@@ -167,21 +167,23 @@ const ApplicationCardsEditor = ({ value = {}, onChange, form }) => {
           <Form.Item
             name={['content', 'columns']}
             label="Number of Columns"
-            tooltip="How many columns to display applications in"
+            tooltip="How many columns to display applications in (2–6). Use 6 for Application of PEB."
             initialValue={4}
-            getValueFromEvent={(value) => {
-              return typeof value === 'number' ? value : parseInt(value);
-            }}
             normalize={(value) => {
-              return typeof value === 'number' ? value : parseInt(value) || 4;
+              const n = typeof value === 'number' ? value : parseInt(value, 10);
+              return (n >= 2 && n <= 6) ? n : 4;
             }}
           >
-            <Input
-              type="number"
-              placeholder="e.g., 4"
+            <Select
               size="large"
-              min={2}
-              max={6}
+              placeholder="Select columns"
+              options={[
+                { value: 2, label: '2 columns' },
+                { value: 3, label: '3 columns' },
+                { value: 4, label: '4 columns' },
+                { value: 5, label: '5 columns' },
+                { value: 6, label: '6 columns' },
+              ]}
             />
           </Form.Item>
         </Card>

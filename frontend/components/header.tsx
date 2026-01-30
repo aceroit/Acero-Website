@@ -138,7 +138,7 @@ export function Header() {
           : "bg-background/80 backdrop-blur-sm"
       }`}
     >
-      <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4 lg:px-8 xl:px-12">
+      <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
           {logo && !isLoading ? (

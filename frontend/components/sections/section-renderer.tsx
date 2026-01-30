@@ -24,6 +24,7 @@ import { AdvantagesGridSection } from '@/components/sections/advantages-grid-sec
 import { ApplicationCardsSection } from '@/components/sections/application-cards-section'
 import { CircularAdvantagesSection } from '@/components/sections/circular-advantages-section'
 import { WhyAceroSvgSection } from '@/components/sections/why-acero-svg-section'
+import { PebAdvantageSvgSection } from '@/components/sections/peb-advantage-svg-section'
 import { CertificatesGridSection } from '@/components/sections/certificates-grid-section'
 import { VideoCardsSection } from '@/components/sections/video-cards-section'
 import { ImageDisplaySection } from '@/components/sections/image-display-section'
@@ -31,6 +32,8 @@ import { HoverCardSection } from '@/components/sections/hover-card-section'
 import { ComparisonTableSection } from '@/components/sections/comparison-table-section'
 import { CtaSection } from '@/components/sections/cta-section'
 import { getIconComponent } from '@/lib/utils/icon-mapper'
+import { getPebApplicationSvgPath } from '@/utils/peb-application-svg'
+import { getPortaCabinImagePath } from '@/utils/porta-cabin-icons'
 
 interface SectionRendererProps {
   sections: Section[]
@@ -339,13 +342,14 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const tabs = (content.tabs as Array<{
                   id: string
                   label: string
-                  legend: Array<{ value: string; color: string; label: string }>
+                  legend: Array<{ value?: string; color: string; label?: string }>
                   data: Array<{
                     criteria: string
-                    preEngineered: { value: string; label: string }
-                    conventionalSteel: { value: string; label: string }
-                    reinforcedConcrete: { value: string; label: string }
+                    preEngineered: string | { value: string; label: string }
+                    conventionalSteel: string | { value: string; label: string }
+                    reinforcedConcrete: string | { value: string; label: string }
                   }>
+                  textBelowTable?: string
                 }>) || []
 
                 type TabbedTabs = ComponentProps<typeof TabbedComparisonSection>['tabs']
@@ -391,11 +395,21 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 }>) || []
                 const columns = (content.columns as 2 | 3 | 4) || 4
 
-                const advantages = advantagesData.map((advantage) => ({
-                  id: advantage.id,
-                  title: advantage.title,
-                  icon: getIconComponent(advantage.icon),
-                }))
+                const advantages = advantagesData.map((advantage) => {
+                  // Resolve Porta Cabin image by title first (e.g. "Cost Saving"), then by icon name
+                  const iconImageUrl =
+                    getPortaCabinImagePath(advantage.title) ??
+                    getPortaCabinImagePath(
+                      typeof advantage.icon === 'string' ? advantage.icon : ''
+                    ) ??
+                    undefined
+                  return {
+                    id: advantage.id,
+                    title: advantage.title,
+                    icon: getIconComponent(advantage.icon),
+                    iconImageUrl,
+                  }
+                })
 
                 return (
                   <AdvantagesGridSection
@@ -417,11 +431,12 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   icon?: string
                 }>) || []
 
-                // Transform applications: convert icon name strings to React components
+                // Transform applications: icon component + optional PEB application SVG (local SVGs override icon)
                 const applications = applicationsData.map((application) => ({
                   id: application.id,
                   name: application.name,
                   icon: getIconComponent(application.icon),
+                  svgPath: getPebApplicationSvgPath(application.name),
                 }))
 
                 return (
@@ -473,17 +488,9 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 )
               }
 
-              case 'peb_advantage_svg': {
-                const svgUrl = (content.svgUrl as string)?.trim() || '/svgs/peb-advantage.svg'
-                return (
-                  <div key={section._id} className="w-full overflow-hidden bg-background">
-                    <img
-                      src={svgUrl}
-                      alt="Advantages of PEB"
-                      className="w-full h-auto max-w-5xl mx-auto block"
-                    />
-                  </div>
-                )
+              case 'peb_advantage_svg':
+              case 'peb-advantage-svg': {
+                return <PebAdvantageSvgSection key={section._id} />
               }
 
               case 'certificates_grid': {
