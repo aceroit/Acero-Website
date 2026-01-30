@@ -23,6 +23,7 @@ import { FlipCardSection } from '@/components/sections/flip-card-section'
 import { AdvantagesGridSection } from '@/components/sections/advantages-grid-section'
 import { ApplicationCardsSection } from '@/components/sections/application-cards-section'
 import { CircularAdvantagesSection } from '@/components/sections/circular-advantages-section'
+import { WhyAceroSvgSection } from '@/components/sections/why-acero-svg-section'
 import { CertificatesGridSection } from '@/components/sections/certificates-grid-section'
 import { VideoCardsSection } from '@/components/sections/video-cards-section'
 import { ImageDisplaySection } from '@/components/sections/image-display-section'
@@ -34,6 +35,11 @@ import { getIconComponent } from '@/lib/utils/icon-mapper'
 interface SectionRendererProps {
   sections: Section[]
   isHomePage?: boolean
+}
+
+/** Match "Why Acero" section by title (flexible: "Why Acero?", "Why Acero - ...", etc.) */
+function isWhyAceroTitle(title: string): boolean {
+  return (title || '').trim().toLowerCase().includes('why acero')
 }
 
 /**
@@ -245,6 +251,10 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
               case 'features_grid': {
                 const title = (content.title as string) || ''
+                // Why Acero: show animated SVG (desktop + mobile) instead of feature cards
+                if (isWhyAceroTitle(title)) {
+                  return <WhyAceroSvgSection key={section._id} />
+                }
                 const featuresData = (content.features as Array<{
                   icon?: string
                   title: string
@@ -252,7 +262,6 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 }>) || []
                 const columns = (content.columns as 3 | 4) || 3
 
-                // Transform features: convert icon name strings to React components
                 const features = featuresData.map((feature) => ({
                   icon: getIconComponent(feature.icon),
                   title: feature.title,
@@ -370,7 +379,11 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               }
 
               case 'advantages_grid': {
-                const title = (content.title as string) || undefined
+                const title = (content.title as string) || ''
+                // Why Acero: show animated SVG instead of advantage cards
+                if (isWhyAceroTitle(title)) {
+                  return <WhyAceroSvgSection key={section._id} />
+                }
                 const advantagesData = (content.advantages as Array<{
                   id: string
                   title: string
@@ -378,7 +391,6 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 }>) || []
                 const columns = (content.columns as 2 | 3 | 4) || 4
 
-                // Transform advantages: convert icon name strings to React components
                 const advantages = advantagesData.map((advantage) => ({
                   id: advantage.id,
                   title: advantage.title,
@@ -388,7 +400,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 return (
                   <AdvantagesGridSection
                     key={section._id}
-                    title={title}
+                    title={title || undefined}
                     advantages={advantages}
                     columns={columns}
                   />
@@ -423,8 +435,17 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 )
               }
 
+              case 'why_acero_svg': {
+                return <WhyAceroSvgSection key={section._id} />
+              }
+
               case 'circular_advantages': {
                 const title = (content.title as string) || ''
+                // Why Acero: show animated SVG (desktop + mobile) instead of info cards
+                if (isWhyAceroTitle(title)) {
+                  return <WhyAceroSvgSection key={section._id} />
+                }
+
                 const centerText = (content.centerText as string) || 'ACERO'
                 const advantagesData = (content.advantages as Array<{
                   id: string
@@ -434,7 +455,6 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   position: number
                 }>) || []
 
-                // Transform advantages: convert icon name strings to React components
                 const advantages = advantagesData.map((advantage) => ({
                   id: advantage.id,
                   title: advantage.title,

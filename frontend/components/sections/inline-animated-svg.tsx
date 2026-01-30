@@ -90,7 +90,7 @@ export function InlineAnimatedSvg({ src, alt, className }: InlineAnimatedSvgProp
 
   return (
     <div
-      className={cn("inline-flex w-full items-center justify-center [&_svg]:max-h-full [&_svg]:w-full [&_svg]:object-contain", className)}
+      className={cn("flex w-full items-center justify-center [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:block [&_svg]:mx-auto", className)}
       dangerouslySetInnerHTML={{ __html: svgContent }}
       role="img"
       aria-label={alt ?? undefined}
