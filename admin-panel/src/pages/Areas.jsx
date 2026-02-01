@@ -186,25 +186,9 @@ const Areas = () => {
               )}
             </div>
             <span className="text-xs text-gray-500 truncate">
-              {record.region?.country?.name || 'Unknown Country'} → {record.region?.name || 'Unknown Region'} • Code: {record.code}
+              Code: {record.code}
             </span>
           </div>
-        </div>
-      ),
-    },
-    {
-      title: 'Region',
-      key: 'region',
-      render: (_, record) => (
-        <div className="flex flex-col">
-          <Tag className="px-2 py-1 mb-1">
-            {record.region?.name || 'Unknown'}
-          </Tag>
-          {record.region?.country && (
-            <span className="text-xs text-gray-500">
-              {record.region.country.name}
-            </span>
-          )}
         </div>
       ),
     },

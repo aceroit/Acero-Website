@@ -125,52 +125,28 @@ const Projects = () => {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
 
-  // Load reference options
+  // Load reference options (country, region, area are independent)
   useEffect(() => {
     const load = async () => {
       try {
-        const [ind, cnt, bt] = await Promise.all([
+        const [ind, cnt, bt, reg, area] = await Promise.all([
           referenceService.getIndustries(),
           referenceService.getCountries(),
           referenceService.getBuildingTypes(),
+          referenceService.getRegions(),
+          referenceService.getAreas(),
         ]);
         if (ind?.success && ind?.data?.industries) setIndustries(ind.data.industries);
         if (cnt?.success && cnt?.data?.countries) setCountries(cnt.data.countries);
         if (bt?.success && bt?.data?.buildingTypes) setBuildingTypes(bt.data.buildingTypes);
+        if (reg?.success && reg?.data?.regions) setRegions(reg.data.regions);
+        if (area?.success && area?.data?.areas) setAreas(area.data.areas);
       } catch (e) {
         console.error('Failed to load reference options', e);
       }
     };
     load();
   }, []);
-
-  useEffect(() => {
-    if (!countryFilter) {
-      setRegions([]);
-      setAreas([]);
-      setRegionFilter(null);
-      setAreaFilter(null);
-      return;
-    }
-    referenceService.getRegions(countryFilter).then((res) => {
-      if (res?.success && res?.data?.regions) setRegions(res.data.regions);
-    });
-    setRegionFilter(null);
-    setAreaFilter(null);
-    setAreas([]);
-  }, [countryFilter]);
-
-  useEffect(() => {
-    if (!regionFilter) {
-      setAreas([]);
-      setAreaFilter(null);
-      return;
-    }
-    referenceService.getAreas(regionFilter).then((res) => {
-      if (res?.success && res?.data?.areas) setAreas(res.data.areas);
-    });
-    setAreaFilter(null);
-  }, [regionFilter]);
 
   // Fetch projects
   const fetchProjects = async (params = {}) => {

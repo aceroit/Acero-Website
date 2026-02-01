@@ -186,19 +186,10 @@ const Regions = () => {
               )}
             </div>
             <span className="text-xs text-gray-500 truncate">
-              {record.country?.name || 'Unknown Country'} • Code: {record.code}
+              Code: {record.code}
             </span>
           </div>
         </div>
-      ),
-    },
-    {
-      title: 'Country',
-      key: 'country',
-      render: (_, record) => (
-        <Tag className="px-2 py-1">
-          {record.country?.name || 'Unknown'}
-        </Tag>
       ),
     },
     {
