@@ -22,33 +22,41 @@ export function PremiumVideoSection({
   className,
 }: PremiumVideoSectionProps) {
   const ref = useRef(null)
-  // Use continuous intersection observer to monitor visibility
-  const isInView = useInView(ref, { once: false, margin: "-50px" })
+  // Stabilize in-view: require 25% visible so we don't flicker at scroll boundary (was causing iframe reload storm and lag)
+  const isInView = useInView(ref, { once: false, amount: 0.25, margin: "-50px" })
+  // Animate in once only – avoids re-running animations when scrolling past, which caused jank
+  const hasAnimated = useInView(ref, { once: true, amount: 0.2 })
   const [isLoaded, setIsLoaded] = useState(false)
   const [iframeKey, setIframeKey] = useState(0)
+  const hasTriggeredLoad = useRef(false)
+  // Freeze URL after first load so scrolling past doesn't change src (which would reload iframe and cause lag)
+  const [frozenEmbedUrl, setFrozenEmbedUrl] = useState<string | null>(null)
 
-  // Build YouTube embed URL with parameters to hide UI elements
-  // Only autoplay when video is in view and autoplay prop is true
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?${new URLSearchParams({
-    autoplay: (autoplay && isInView) ? "1" : "0",
-    mute: muted ? "1" : "0",
-    loop: loop ? "1" : "0",
-    controls: "0",
-    modestbranding: "1",
-    rel: "0",
-    showinfo: "0",
-    playlist: loop ? videoId : undefined, // Required for loop to work with single video
-  })
-    .toString()
-    .replace(/&undefined/g, "")}`
+  const buildEmbedUrl = (withAutoplay: boolean) => {
+    const params: Record<string, string> = {
+      autoplay: withAutoplay ? "1" : "0",
+      mute: muted ? "1" : "0",
+      loop: loop ? "1" : "0",
+      controls: "0",
+      modestbranding: "1",
+      rel: "0",
+      showinfo: "0",
+    }
+    if (loop) params.playlist = videoId
+    return `https://www.youtube.com/embed/${videoId}?${new URLSearchParams(params).toString()}`
+  }
 
-  // Force iframe reload when visibility changes to apply new autoplay setting
+  const embedUrl = frozenEmbedUrl ?? buildEmbedUrl(autoplay && isInView)
+
+  // Load iframe once when first entering view; freeze URL so it never changes (prevents reload on scroll)
   useEffect(() => {
-    if (isInView && autoplay) {
+    if (isInView && autoplay && !hasTriggeredLoad.current) {
+      hasTriggeredLoad.current = true
+      setFrozenEmbedUrl(buildEmbedUrl(true))
       setIframeKey((prev) => prev + 1)
       setIsLoaded(false)
     }
-  }, [isInView, autoplay])
+  }, [isInView, autoplay, videoId, muted, loop])
 
   return (
     <section
@@ -59,7 +67,7 @@ export function PremiumVideoSection({
         {title && (
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6 }}
             className="mb-12 text-center text-4xl font-bold tracking-tight text-foreground md:text-5xl"
           >
@@ -69,7 +77,7 @@ export function PremiumVideoSection({
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative overflow-hidden rounded-lg border border-border shadow-2xl"
         >

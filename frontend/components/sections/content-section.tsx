@@ -2,11 +2,14 @@
 
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
-import { useRef, useState, useLayoutEffect } from "react"
+import { useRef, useState, useLayoutEffect, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
+import { InlineAnimatedSvg } from "@/components/sections/inline-animated-svg"
 
 interface ContentSectionProps {
   title: string
@@ -18,6 +21,8 @@ interface ContentSectionProps {
   image?: string
   imageAlt?: string
   images?: Array<{ url: string; imageAlt?: string }>
+  /** When set, render this local SVG inline (so animations run) instead of backend image. Used e.g. for "Reliability, Excellence, Trust" on Who we are. */
+  inlineSvgPath?: string
   layout?: "image-left" | "image-right" | "image-center" | "text-only" | "split"
   imageFit?: "contain" | "cover"
   variant?: "default" | "accent" | "muted"
@@ -31,18 +36,26 @@ export function ContentSection({
   image,
   imageAlt,
   images,
+  inlineSvgPath,
   layout = "image-right",
   imageFit = "contain",
   variant = "default",
   className,
 }: ContentSectionProps) {
-  // Merge single image + images array: initial image first, then array, all shown in vertical stack when 2+
-  const allImages: Array<{ url: string; imageAlt?: string }> = [
-    ...(image ? [{ url: image, imageAlt: imageAlt ?? title }] : []),
-    ...(images ?? []),
-  ].filter((i) => i?.url)
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+
+  // When inlineSvgPath is set, we show the local animated SVG instead of backend image(s)
+  const showInlineSvg = Boolean(inlineSvgPath) && layout !== "text-only"
+  // Merge single image + images array when not using inline SVG
+  const allImages: Array<{ url: string; imageAlt?: string }> = showInlineSvg
+    ? []
+    : [
+        ...(image ? [{ url: image, imageAlt: imageAlt ?? title }] : []),
+        ...(images ?? []),
+      ].filter((i) => i?.url)
   const showVerticalStack = allImages.length > 1 && layout !== "text-only"
-  const showSingleImage = allImages.length === 1 && layout !== "text-only"
+  const showSingleImage = (allImages.length === 1 || showInlineSvg) && layout !== "text-only"
   const ref = useRef(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [contentHeight, setContentHeight] = useState<number | null>(null)
@@ -136,17 +149,15 @@ export function ContentSection({
         />
       )
     }
+    const fitClass = imageFit === "cover" ? "object-cover" : "object-contain"
     return (
       <Image
         src={img.url}
         alt={alt}
         fill
         loading="lazy"
-        className={cn(
-          "transition-transform duration-300",
-          imageFit === "cover" ? "object-cover" : "object-contain"
-        )}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+        className={cn(fitClass, "transition-transform duration-500 group-hover:scale-105")}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         quality={85}
       />
     )
@@ -156,17 +167,22 @@ export function ContentSection({
     <section
       ref={ref}
       className={cn(
-        "border-t border-border py-24 md:py-32",
+        "border-t border-border",
+        spacing.sectionPadding,
         getVariantClasses(),
         className
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto", spacing.containerMaxWidth, "px-6 lg:px-8")}>
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className={cn("grid gap-12 md:gap-16", getLayoutClasses())}
+          className={cn(
+            layout === "text-only" ? "block" : "grid",
+            spacing.gridGap,
+            getLayoutClasses()
+          )}
         >
           {/* Image(s) — vertical stack when 2+ images, single full-height when 1 */}
           {showVerticalStack && (
@@ -196,14 +212,23 @@ export function ContentSection({
             <motion.div
               variants={itemVariants}
               className={cn(
-                "relative overflow-hidden rounded-lg",
+                "group relative w-full overflow-hidden rounded-lg",
+                "aspect-[4/3]", // same as product card image size
                 layout === "image-center"
-                  ? "aspect-[4/3] w-full max-w-2xl lg:max-w-full mx-auto lg:mx-0 self-center"
-                  : "aspect-[4/3] lg:aspect-auto self-center lg:self-stretch min-h-[280px] lg:min-h-0",
+                  ? "mx-auto lg:mx-0 self-center"
+                  : "self-center lg:self-stretch",
                 getImageOrder()
               )}
             >
-              {renderMedia(allImages[0], allImages[0].imageAlt || title)}
+              {showInlineSvg && inlineSvgPath ? (
+                <InlineAnimatedSvg
+                  src={inlineSvgPath}
+                  alt={title}
+                  className="absolute inset-0 h-full w-full"
+                />
+              ) : (
+                renderMedia(allImages[0], allImages[0].imageAlt || title)
+              )}
             </motion.div>
           )}
 

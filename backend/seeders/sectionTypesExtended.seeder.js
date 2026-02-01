@@ -465,6 +465,39 @@ const extendedSectionTypes = [
         thumbnailUrl: null
     },
     {
+        name: 'Products Grid',
+        slug: 'products_grid',
+        description: 'Products grid section with 4 horizontal cards matching projects card design. Displays PEB, Conventional Steel, Racking Systems, and Porta Cabins.',
+        icon: '📦',
+        category: 'Content',
+        isSystem: true,
+        fields: [
+            {
+                name: 'title',
+                type: 'text',
+                label: 'Section Title',
+                placeholder: 'e.g., Our Products',
+                required: false,
+                validation: {
+                    maxLength: 200
+                },
+                order: 0
+            },
+            {
+                name: 'subtitle',
+                type: 'textarea',
+                label: 'Subtitle',
+                required: false,
+                validation: {
+                    maxLength: 300
+                },
+                order: 1
+            }
+        ],
+        previewComponent: 'ProductsGridSection',
+        thumbnailUrl: null
+    },
+    {
         name: 'Image Modal Gallery',
         slug: 'image_modal_gallery',
         description: 'Image gallery with modal functionality for viewing larger images. Used for product types, project galleries, etc.',
@@ -763,7 +796,7 @@ const extendedSectionTypes = [
                 name: 'images',
                 type: 'json',
                 label: 'Gallery Images',
-                helpText: 'Array: [{"src": "url", "alt": "Alt text"}]',
+                helpText: 'Array: [{"src": "url", "alt": "Alt text", "name": "Optional label below image"}]',
                 required: true,
                 validation: {
                     minItems: 1
@@ -781,6 +814,19 @@ const extendedSectionTypes = [
                     max: 6
                 },
                 order: 3
+            },
+            {
+                name: 'imageOrientation',
+                type: 'select',
+                label: 'Display Orientation',
+                helpText: 'Horizontal = more columns (e.g. 3 cols, 2 rows). Vertical = fewer columns (e.g. 2 cols).',
+                required: false,
+                defaultValue: 'horizontal',
+                options: [
+                    { label: 'Horizontal (2 rows × 3 columns)', value: 'horizontal' },
+                    { label: 'Vertical (3 rows × 2 columns)', value: 'vertical' }
+                ],
+                order: 4
             }
         ],
         previewComponent: 'ImageGallerySection',

@@ -23,6 +23,7 @@ import ImageModalGalleryEditor from './section-editors/ImageModalGalleryEditor';
 import ApplicationCardsEditor from './section-editors/ApplicationCardsEditor';
 import CircularAdvantagesEditor from './section-editors/CircularAdvantagesEditor';
 import ImageDisplayEditor from './section-editors/ImageDisplayEditor';
+import PebAdvantageSvgEditor from './section-editors/PebAdvantageSvgEditor';
 import FlipCardEditor from './section-editors/FlipCardEditor';
 import ComparisonTableEditor from './section-editors/ComparisonTableEditor';
 import TabbedComparisonEditor from './section-editors/TabbedComparisonEditor';
@@ -836,6 +837,21 @@ const DynamicSectionForm = ({
   if (sectionType.slug === 'image_display') {
     return (
       <ImageDisplayEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
+  // Special handling for peb_advantage_svg - Advantages of PEB section
+  if (sectionType.slug === 'peb_advantage_svg') {
+    return (
+      <PebAdvantageSvgEditor
         value={initialContent}
         onChange={(newContent) => {
           form.setFieldsValue({

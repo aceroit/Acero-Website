@@ -1,9 +1,11 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface ImageDisplaySectionProps {
   image: string
@@ -22,13 +24,15 @@ export function ImageDisplaySection({
 }: ImageDisplaySectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto", spacing.containerMaxWidth, "px-6 lg:px-8")}>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -42,9 +46,9 @@ export function ImageDisplaySection({
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative overflow-hidden rounded-lg border border-border shadow-2xl"
+          className="relative overflow-hidden rounded-lg"
         >
-          <div className="relative aspect-[16/9] w-full bg-secondary">
+          <div className="relative aspect-[16/9] w-full bg-transparent">
             <Image
               src={image}
               alt={imageAlt}

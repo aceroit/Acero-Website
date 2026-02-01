@@ -2,12 +2,15 @@
 
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 interface Application {
   id: string
   name: string
   icon: React.ReactNode
+  /** When set (e.g. PEB application SVGs), show this image instead of icon */
+  svgPath?: string | null
 }
 
 interface ApplicationCardsSectionProps {
@@ -28,11 +31,10 @@ export function ApplicationCardsSection({
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
-  // Generate grid classes based on columns prop or calculate optimal columns
+  // Generate grid classes based on columns prop (admin allows 2–6)
   const getGridClasses = () => {
     if (columns) {
-      // Use provided columns (max 4 as per admin panel)
-      const cols = Math.min(Math.max(columns, 2), 4)
+      const cols = Math.min(Math.max(columns, 2), 6)
       switch (cols) {
         case 2:
           return "grid-cols-2 sm:grid-cols-2 md:grid-cols-2"
@@ -40,23 +42,23 @@ export function ApplicationCardsSection({
           return "grid-cols-2 sm:grid-cols-3 md:grid-cols-3"
         case 4:
           return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+        case 5:
+          return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+        case 6:
+          return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
         default:
           return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
       }
     }
-    
-    // Calculate optimal columns based on application count
+
     const count = applications.length
     if (count <= 4) {
       return "grid-cols-2 sm:grid-cols-2 md:grid-cols-4"
-    } else if (count <= 6) {
-      return "grid-cols-2 sm:grid-cols-3 md:grid-cols-3"
-    } else if (count <= 8) {
-      return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
-    } else {
-      // For more than 8, use 4 columns max
-      return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
     }
+    if (count <= 6) {
+      return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+    }
+    return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
   }
 
   return (
@@ -95,10 +97,22 @@ export function ApplicationCardsSection({
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.05 }}
             >
-              <div className="group flex h-full flex-col items-center justify-center border border-border bg-card p-4 text-center transition-all hover:border-steel-red/50 hover:bg-card/50 md:p-6">
-                {/* Icon */}
-                <div className="mb-3 flex h-12 w-12 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 md:h-14 md:w-14">
-                  {application.icon}
+              <div className="group flex h-full flex-col items-center justify-center rounded-lg border border-border bg-card p-4 text-center transition-all hover:border-steel-red/50 hover:bg-card/50 md:p-6">
+                {/* Icon or PEB application SVG */}
+                <div className="mb-3 flex h-12 w-12 shrink-0 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 md:h-14 md:w-14">
+                  {application.svgPath ? (
+                    <div className="relative h-full w-full">
+                      <Image
+                        src={application.svgPath}
+                        alt={application.name}
+                        fill
+                        className="object-contain"
+                        sizes="56px"
+                      />
+                    </div>
+                  ) : (
+                    application.icon
+                  )}
                 </div>
                 {/* Name */}
                 <h4 className="text-sm font-medium text-foreground md:text-base">
