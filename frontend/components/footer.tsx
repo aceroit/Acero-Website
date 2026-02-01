@@ -29,9 +29,7 @@ const defaultFooterLinks = {
   ],
 }
 
-const defaultBrandDescription =
-  "Leading steel manufacturing company in the UAE. Delivering premium quality steel products with industrial excellence and modern innovation."
-
+const defaultBrandDescription = ""
 const defaultContactInfo = {
   phone: "+971 4 893 1000",
   email: "info@acero.ae",
@@ -165,15 +163,23 @@ export function Footer() {
                 <Image
                   src={brandInfo.logo.imageUrl}
                   alt={brandInfo.logo.altText || "Acero Logo"}
-                  width={120}
-                  height={120}
-                  className="h-16 w-auto object-contain"
+                  width={48}
+                  height={48}
+                  className="h-12 w-auto object-contain"
+                  style={{ maxHeight: '48px' }}
                 />
               ) : (
-              <div className="relative flex h-16 w-16 items-center justify-center">
-                <div className="absolute h-full w-full rotate-45 border-2 border-[#E10600]" />
-                <span className="text-lg font-bold text-foreground">A</span>
-              </div>
+                <>
+                  {/* Static logo fallback */}
+                  <Image
+                    src="/Logo/Logo.png"
+                    alt="Acero Logo"
+                    width={48}
+                    height={48}
+                    className="h-12 w-auto object-contain"
+                    style={{ maxHeight: '48px' }}
+                  />
+                </>
               )}
             </Link>
             {brandInfo.description && (
@@ -256,8 +262,8 @@ export function Footer() {
               </div>
             )}
 
-            {/* Social Links */}
-            {socialLinks.length > 0 && (
+            {/* Social Links - Moved to bottom bar */}
+            {/* {socialLinks.length > 0 && (
             <div className="mt-8 flex gap-3">
               {socialLinks.map((social) => (
                 <a
@@ -270,7 +276,7 @@ export function Footer() {
                 </a>
               ))}
             </div>
-            )}
+            )} */}
           </div>
 
           {/* Quick Links */}
@@ -334,19 +340,37 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
           <p className="text-sm text-muted-foreground">{copyright}</p>
-          {legalLinks.length > 0 && (
-          <div className="flex gap-6">
-              {legalLinks.map((link) => (
-            <Link
-                  key={link.href}
-                  href={link.href}
-              className="text-sm text-muted-foreground transition-colors hover:text-[#E10600]"
-            >
-                  {link.label}
-            </Link>
-              ))}
+          <div className="flex items-center gap-6">
+            {/* Social Links - Moved here from brand column */}
+            {socialLinks.length > 0 && (
+              <div className="flex gap-3">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.platform}
+                    href={social.href}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-all hover:border-[#E10600] hover:text-[#E10600] hover:bg-[#E10600]/10"
+                    aria-label={social.label}
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+            )}
+            {/* Privacy Policy and Terms of Service - Commented out for now */}
+            {/* {legalLinks.length > 0 && (
+              <div className="flex gap-6">
+                {legalLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-sm text-muted-foreground transition-colors hover:text-[#E10600]"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )} */}
           </div>
-          )}
         </div>
       </div>
     </footer>

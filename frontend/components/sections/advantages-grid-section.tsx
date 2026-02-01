@@ -8,6 +8,8 @@ interface Advantage {
   id: string
   title: string
   icon: React.ReactNode
+  /** When set (e.g. Porta Cabin images), show this image instead of icon */
+  iconImageUrl?: string
 }
 
 interface AdvantagesGridSectionProps {
@@ -60,9 +62,18 @@ export function AdvantagesGridSection({
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
               <div className="group flex h-full flex-col items-center justify-center border border-border bg-card p-8 text-center transition-all hover:border-steel-red/50 hover:bg-card/50">
-                {/* Icon */}
+                {/* Icon: image from public/portaCabin when iconImageUrl set, else Lucide icon */}
                 <div className="mb-4 flex h-16 w-16 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 md:h-20 md:w-20">
-                  {advantage.icon}
+                  {advantage.iconImageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={advantage.iconImageUrl}
+                      alt=""
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    advantage.icon
+                  )}
                 </div>
                 {/* Title */}
                 <h4 className="text-lg font-semibold text-foreground md:text-xl">

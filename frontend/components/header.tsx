@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
 import { useHeader } from "@/hooks/use-header"
+import { cn } from "@/lib/utils"
 
 // Default fallback values
 const defaultNavLinks = [
@@ -137,28 +138,21 @@ export function Header() {
           : "bg-background/80 backdrop-blur-sm"
       }`}
     >
-      <nav className="mx-auto flex max-w-[95rem] items-center justify-between px-6 py-4 lg:px-8 xl:px-12">
+      <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
-          {logo ? (
+          {logo && !isLoading ? (
             <Image
               src={logo.imageUrl}
               alt={logo.altText}
               width={48}
               height={48}
               className="h-12 w-auto object-contain"
-              style={{ maxHeight: '48px' }}
             />
           ) : (
-            <div className="relative flex h-12 w-12 items-center justify-center">
-            <div className="absolute h-full w-full rotate-45 border-2 border-[#E10600]" />
-              <span className="text-xl font-bold text-foreground">A</span>
-          </div>
-          )}
-          {showBrandName && (
-          <span className="text-xl font-bold tracking-tight text-foreground">
+            <span className="text-xl font-bold tracking-tight text-foreground">
               {brandName}
-          </span>
+            </span>
           )}
         </Link>
 
@@ -267,7 +261,7 @@ export function Header() {
           {/* CTA Button */}
           <Link
             href={ctaButton.href}
-            className="hidden bg-[#E10600] px-6 py-2.5 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-[#E10600]/90 sm:block"
+            className="hidden bg-[#B61F24] px-6 py-2.5 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-[#B61F24]/90 sm:block"
           >
             {ctaButton.text}
           </Link>
@@ -365,7 +359,7 @@ export function Header() {
                 <Link
                   href={ctaButton.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block bg-[#E10600] px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider text-white"
+                  className="block bg-[#B61F24] px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider text-white"
                 >
                   {ctaButton.text}
                 </Link>

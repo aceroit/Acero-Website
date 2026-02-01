@@ -16,12 +16,15 @@ import { PremiumVideoSection } from '@/components/sections/premium-video-section
 import { ImageGallerySection } from '@/components/sections/image-gallery-section'
 import { FeaturesSection } from '@/components/sections/features-section'
 import { ProductCardSection } from '@/components/sections/product-card-section'
+import { ProductsGridSection } from '@/components/sections/products-grid-section'
 import { ImageModalGallery } from '@/components/sections/image-modal-gallery'
 import { TabbedComparisonSection } from '@/components/sections/tabbed-comparison-section'
 import { FlipCardSection } from '@/components/sections/flip-card-section'
 import { AdvantagesGridSection } from '@/components/sections/advantages-grid-section'
 import { ApplicationCardsSection } from '@/components/sections/application-cards-section'
 import { CircularAdvantagesSection } from '@/components/sections/circular-advantages-section'
+import { WhyAceroSvgSection } from '@/components/sections/why-acero-svg-section'
+import { PebAdvantageSvgSection } from '@/components/sections/peb-advantage-svg-section'
 import { CertificatesGridSection } from '@/components/sections/certificates-grid-section'
 import { VideoCardsSection } from '@/components/sections/video-cards-section'
 import { ImageDisplaySection } from '@/components/sections/image-display-section'
@@ -29,10 +32,17 @@ import { HoverCardSection } from '@/components/sections/hover-card-section'
 import { ComparisonTableSection } from '@/components/sections/comparison-table-section'
 import { CtaSection } from '@/components/sections/cta-section'
 import { getIconComponent } from '@/lib/utils/icon-mapper'
+import { getPebApplicationSvgPath } from '@/utils/peb-application-svg'
+import { getPortaCabinImagePath } from '@/utils/porta-cabin-icons'
 
 interface SectionRendererProps {
   sections: Section[]
   isHomePage?: boolean
+}
+
+/** Match "Why Acero" section by title (flexible: "Why Acero?", "Why Acero - ...", etc.) */
+function isWhyAceroTitle(title: string): boolean {
+  return (title || '').trim().toLowerCase().includes('why acero')
 }
 
 /**
@@ -82,6 +92,11 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const layout = (content.layout as 'image-left' | 'image-right' | 'image-center' | 'text-only' | 'split') || 'image-right'
                 const imageFit = (content.imageFit as 'contain' | 'cover') || 'contain'
                 const variant = (content.variant as 'default' | 'accent' | 'muted') || 'default'
+                // Who we are "Reliability, Excellence, Trust" section: use local animated SVG so CSS animations run
+                const inlineSvgPath =
+                  title.trim() === 'Reliability, Excellence, Trust'
+                    ? '/svgs/Reliability.svg'
+                    : undefined
 
                 return (
                   <ContentSection
@@ -92,6 +107,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     image={image}
                     imageAlt={imageAlt}
                     images={images}
+                    inlineSvgPath={inlineSvgPath}
                     layout={layout}
                     imageFit={imageFit}
                     variant={variant}
@@ -113,7 +129,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               }
 
               case 'infinite_carousel': {
-                const items = (content.items as Array<{ image: string; alt: string }>) || []
+                const items = (content.items as Array<{ image: string; alt: string; link?: string }>) || []
                 const title = (content.title as string) || undefined
                 const speed = (content.speed as 'slow' | 'medium' | 'fast') || 'medium'
                 const direction = (content.direction as 'left' | 'right') || 'left'
@@ -195,6 +211,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     image={image}
                     title={title}
                     overlay={overlay}
+                    fullHeight={isHomePage}
                   />
                 )
               }
@@ -221,8 +238,14 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               case 'image_gallery': {
                 const title = (content.title as string) || ''
                 const paragraph = (content.paragraph as string) || ''
-                const images = (content.images as Array<{ src: string; alt: string }>) || []
+                const images = (content.images as Array<{
+                  src: string
+                  alt: string
+                  name?: string
+                }>) || []
                 const columns = (content.columns as 2 | 3 | 6) || 3
+                const imageOrientation =
+                  (content.imageOrientation as 'horizontal' | 'vertical') || 'horizontal'
 
                 return (
                   <ImageGallerySection
@@ -231,12 +254,17 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     paragraph={paragraph}
                     images={images}
                     columns={columns}
+                    imageOrientation={imageOrientation}
                   />
                 )
               }
 
               case 'features_grid': {
                 const title = (content.title as string) || ''
+                // Why Acero: show animated SVG (desktop + mobile) instead of feature cards
+                if (isWhyAceroTitle(title)) {
+                  return <WhyAceroSvgSection key={section._id} />
+                }
                 const featuresData = (content.features as Array<{
                   icon?: string
                   title: string
@@ -244,7 +272,6 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 }>) || []
                 const columns = (content.columns as 3 | 4) || 3
 
-                // Transform features: convert icon name strings to React components
                 const features = featuresData.map((feature) => ({
                   icon: getIconComponent(feature.icon),
                   title: feature.title,
@@ -282,6 +309,19 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 )
               }
 
+              case 'products_grid': {
+                const title = (content.title as string) || undefined
+                const subtitle = (content.subtitle as string) || undefined
+
+                return (
+                  <ProductsGridSection
+                    key={section._id}
+                    title={title}
+                    subtitle={subtitle}
+                  />
+                )
+              }
+
               case 'image_modal_gallery': {
                 const title = (content.title as string) || undefined
                 const items = (content.items as Array<{
@@ -309,13 +349,14 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const tabs = (content.tabs as Array<{
                   id: string
                   label: string
-                  legend: Array<{ value: string; color: string; label: string }>
+                  legend: Array<{ value?: string; color: string; label?: string }>
                   data: Array<{
                     criteria: string
-                    preEngineered: { value: string; label: string }
-                    conventionalSteel: { value: string; label: string }
-                    reinforcedConcrete: { value: string; label: string }
+                    preEngineered: string | { value: string; label: string }
+                    conventionalSteel: string | { value: string; label: string }
+                    reinforcedConcrete: string | { value: string; label: string }
                   }>
+                  textBelowTable?: string
                 }>) || []
 
                 type TabbedTabs = ComponentProps<typeof TabbedComparisonSection>['tabs']
@@ -349,7 +390,11 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               }
 
               case 'advantages_grid': {
-                const title = (content.title as string) || undefined
+                const title = (content.title as string) || ''
+                // Why Acero: show animated SVG instead of advantage cards
+                if (isWhyAceroTitle(title)) {
+                  return <WhyAceroSvgSection key={section._id} />
+                }
                 const advantagesData = (content.advantages as Array<{
                   id: string
                   title: string
@@ -357,17 +402,26 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 }>) || []
                 const columns = (content.columns as 2 | 3 | 4) || 4
 
-                // Transform advantages: convert icon name strings to React components
-                const advantages = advantagesData.map((advantage) => ({
-                  id: advantage.id,
-                  title: advantage.title,
-                  icon: getIconComponent(advantage.icon),
-                }))
+                const advantages = advantagesData.map((advantage) => {
+                  // Resolve Porta Cabin image by title first (e.g. "Cost Saving"), then by icon name
+                  const iconImageUrl =
+                    getPortaCabinImagePath(advantage.title) ??
+                    getPortaCabinImagePath(
+                      typeof advantage.icon === 'string' ? advantage.icon : ''
+                    ) ??
+                    undefined
+                  return {
+                    id: advantage.id,
+                    title: advantage.title,
+                    icon: getIconComponent(advantage.icon),
+                    iconImageUrl,
+                  }
+                })
 
                 return (
                   <AdvantagesGridSection
                     key={section._id}
-                    title={title}
+                    title={title || undefined}
                     advantages={advantages}
                     columns={columns}
                   />
@@ -384,11 +438,12 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   icon?: string
                 }>) || []
 
-                // Transform applications: convert icon name strings to React components
+                // Transform applications: icon component + optional PEB application SVG (local SVGs override icon)
                 const applications = applicationsData.map((application) => ({
                   id: application.id,
                   name: application.name,
                   icon: getIconComponent(application.icon),
+                  svgPath: getPebApplicationSvgPath(application.name),
                 }))
 
                 return (
@@ -402,8 +457,17 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 )
               }
 
+              case 'why_acero_svg': {
+                return <WhyAceroSvgSection key={section._id} />
+              }
+
               case 'circular_advantages': {
                 const title = (content.title as string) || ''
+                // Why Acero: show animated SVG (desktop + mobile) instead of info cards
+                if (isWhyAceroTitle(title)) {
+                  return <WhyAceroSvgSection key={section._id} />
+                }
+
                 const centerText = (content.centerText as string) || 'ACERO'
                 const advantagesData = (content.advantages as Array<{
                   id: string
@@ -413,7 +477,6 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   position: number
                 }>) || []
 
-                // Transform advantages: convert icon name strings to React components
                 const advantages = advantagesData.map((advantage) => ({
                   id: advantage.id,
                   title: advantage.title,
@@ -432,17 +495,9 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 )
               }
 
-              case 'peb_advantage_svg': {
-                const svgUrl = (content.svgUrl as string)?.trim() || '/svgs/peb-advantage.svg'
-                return (
-                  <div key={section._id} className="w-full overflow-hidden bg-background">
-                    <img
-                      src={svgUrl}
-                      alt="Advantages of PEB"
-                      className="w-full h-auto max-w-5xl mx-auto block"
-                    />
-                  </div>
-                )
+              case 'peb_advantage_svg':
+              case 'peb-advantage-svg': {
+                return <PebAdvantageSvgSection key={section._id} />
               }
 
               case 'certificates_grid': {

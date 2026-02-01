@@ -5,6 +5,29 @@ import './TabbedComparisonEditor.css';
 
 const { TextArea } = Input;
 
+/** Convert legacy { value, label } or { color } to string so we never store object in color-class fields */
+function toColorClassString(val) {
+  if (val == null) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object') return val.value ?? val.color ?? '';
+  return '';
+}
+
+/**
+ * Input that displays a string; normalizes legacy object values so we don't show "[object Object]".
+ * Use for Pre-Engineered / Conventional Steel / Reinforced Concrete color class fields.
+ */
+function ColorClassInput({ value, onChange, ...rest }) {
+  const str = toColorClassString(value);
+  return (
+    <Input
+      {...rest}
+      value={str}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+}
+
 /**
  * Tabbed Comparison Editor Component
  * Custom editor for tabbed comparison sections with complex nested structure
@@ -65,7 +88,8 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                           id: '',
                           label: '',
                           legend: [],
-                          data: []
+                          data: [],
+                          textBelowTable: ''
                         })}
                         size="large"
                         style={{
@@ -130,13 +154,13 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                               />
                             </Form.Item>
 
-                            {/* Legend */}
+                            {/* Legend: Color Class only (value and label removed) */}
                             <div>
                               <label className="block text-sm font-semibold text-gray-700 mb-2">
                                 Legend <span className="text-red-500">*</span>
                               </label>
                               <p className="text-xs text-gray-500 mb-4">
-                                Add legend items that define the rating values and their colors.
+                                Add legend items with Tailwind colour class (e.g. bg-green-500). Used for legend dots and table cells.
                               </p>
                               <Form.List name={[tabField.name, 'legend']} initialValue={[]}>
                                 {(legendFields, { add: addLegend, remove: removeLegend }) => {
@@ -148,7 +172,7 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                           <Button
                                             type="dashed"
                                             icon={<PlusOutlined />}
-                                            onClick={() => addLegend({ value: '', color: '', label: '' })}
+                                            onClick={() => addLegend({ color: '' })}
                                             size="small"
                                           >
                                             Add Legend Item
@@ -178,44 +202,18 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                                 </div>
                                               }
                                             >
-                                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                <Form.Item
-                                                  {...legendField}
-                                                  name={[legendField.name, 'value']}
-                                                  label="Value"
-                                                  rules={[{ required: true, message: 'Value is required' }]}
-                                                >
-                                                  <Input
-                                                    placeholder="e.g., good"
-                                                    size="small"
-                                                    maxLength={50}
-                                                  />
-                                                </Form.Item>
-                                                <Form.Item
-                                                  {...legendField}
-                                                  name={[legendField.name, 'color']}
-                                                  label="Color Class"
-                                                  rules={[{ required: true, message: 'Color is required' }]}
-                                                >
-                                                  <Input
-                                                    placeholder="e.g., bg-green-500"
-                                                    size="small"
-                                                    maxLength={50}
-                                                  />
-                                                </Form.Item>
-                                                <Form.Item
-                                                  {...legendField}
-                                                  name={[legendField.name, 'label']}
-                                                  label="Label"
-                                                  rules={[{ required: true, message: 'Label is required' }]}
-                                                >
-                                                  <Input
-                                                    placeholder="e.g., Good"
-                                                    size="small"
-                                                    maxLength={50}
-                                                  />
-                                                </Form.Item>
-                                              </div>
+                                              <Form.Item
+                                                {...legendField}
+                                                name={[legendField.name, 'color']}
+                                                label="Color Class"
+                                                rules={[{ required: true, message: 'Color class is required' }]}
+                                              >
+                                                <Input
+                                                  placeholder="e.g., bg-green-500"
+                                                  size="small"
+                                                  maxLength={50}
+                                                />
+                                              </Form.Item>
                                             </Card>
                                           ))}
                                         </div>
@@ -224,7 +222,7 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                         <Button
                                           type="dashed"
                                           icon={<PlusOutlined />}
-                                          onClick={() => addLegend({ value: '', color: '', label: '' })}
+                                          onClick={() => addLegend({ color: '' })}
                                           block
                                           size="small"
                                           className="mt-2"
@@ -237,6 +235,22 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                 }}
                               </Form.List>
                             </div>
+
+                            {/* Text below table for this tab */}
+                            <Form.Item
+                              {...tabField}
+                              name={[tabField.name, 'textBelowTable']}
+                              label="Text below table"
+                              tooltip="Optional text shown below the comparison table when this tab is active"
+                            >
+                              <TextArea
+                                placeholder="e.g., Summary or notes for this tab"
+                                rows={3}
+                                size="large"
+                                maxLength={500}
+                                showCount
+                              />
+                            </Form.Item>
 
                             {/* Data */}
                             <div>
@@ -258,9 +272,9 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                             icon={<PlusOutlined />}
                                             onClick={() => addData({
                                               criteria: '',
-                                              preEngineered: { value: '', label: '' },
-                                              conventionalSteel: { value: '', label: '' },
-                                              reinforcedConcrete: { value: '', label: '' }
+                                              preEngineered: '',
+                                              conventionalSteel: '',
+                                              reinforcedConcrete: ''
                                             })}
                                             size="small"
                                           >
@@ -306,89 +320,50 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                                   />
                                                 </Form.Item>
 
-                                                {/* Pre-Engineered */}
-                                                <div className="grid grid-cols-2 gap-2">
-                                                  <Form.Item
-                                                    {...dataField}
-                                                    name={[dataField.name, 'preEngineered', 'value']}
-                                                    label="Pre-Engineered Value"
-                                                    rules={[{ required: true, message: 'Value is required' }]}
-                                                  >
-                                                    <Input
-                                                      placeholder="e.g., good"
-                                                      size="small"
-                                                      maxLength={50}
-                                                    />
-                                                  </Form.Item>
-                                                  <Form.Item
-                                                    {...dataField}
-                                                    name={[dataField.name, 'preEngineered', 'label']}
-                                                    label="Pre-Engineered Label"
-                                                    rules={[{ required: true, message: 'Label is required' }]}
-                                                  >
-                                                    <Input
-                                                      placeholder="e.g., Good"
-                                                      size="small"
-                                                      maxLength={50}
-                                                    />
-                                                  </Form.Item>
-                                                </div>
+                                                {/* Pre-Engineered: colour class only (normalize legacy object to string) */}
+                                                <Form.Item
+                                                  {...dataField}
+                                                  name={[dataField.name, 'preEngineered']}
+                                                  label="Pre-Engineered (Color Class)"
+                                                  normalize={toColorClassString}
+                                                  rules={[{ required: true, message: 'Color class is required' }]}
+                                                >
+                                                  <ColorClassInput
+                                                    placeholder="e.g., bg-green-500"
+                                                    size="small"
+                                                    maxLength={50}
+                                                  />
+                                                </Form.Item>
 
-                                                {/* Conventional Steel */}
-                                                <div className="grid grid-cols-2 gap-2">
-                                                  <Form.Item
-                                                    {...dataField}
-                                                    name={[dataField.name, 'conventionalSteel', 'value']}
-                                                    label="Conventional Steel Value"
-                                                    rules={[{ required: true, message: 'Value is required' }]}
-                                                  >
-                                                    <Input
-                                                      placeholder="e.g., average"
-                                                      size="small"
-                                                      maxLength={50}
-                                                    />
-                                                  </Form.Item>
-                                                  <Form.Item
-                                                    {...dataField}
-                                                    name={[dataField.name, 'conventionalSteel', 'label']}
-                                                    label="Conventional Steel Label"
-                                                    rules={[{ required: true, message: 'Label is required' }]}
-                                                  >
-                                                    <Input
-                                                      placeholder="e.g., Average"
-                                                      size="small"
-                                                      maxLength={50}
-                                                    />
-                                                  </Form.Item>
-                                                </div>
+                                                {/* Conventional Steel: colour class only */}
+                                                <Form.Item
+                                                  {...dataField}
+                                                  name={[dataField.name, 'conventionalSteel']}
+                                                  label="Conventional Steel (Color Class)"
+                                                  normalize={toColorClassString}
+                                                  rules={[{ required: true, message: 'Color class is required' }]}
+                                                >
+                                                  <ColorClassInput
+                                                    placeholder="e.g., bg-yellow-500"
+                                                    size="small"
+                                                    maxLength={50}
+                                                  />
+                                                </Form.Item>
 
-                                                {/* Reinforced Concrete */}
-                                                <div className="grid grid-cols-2 gap-2">
-                                                  <Form.Item
-                                                    {...dataField}
-                                                    name={[dataField.name, 'reinforcedConcrete', 'value']}
-                                                    label="Reinforced Concrete Value"
-                                                    rules={[{ required: true, message: 'Value is required' }]}
-                                                  >
-                                                    <Input
-                                                      placeholder="e.g., average"
-                                                      size="small"
-                                                      maxLength={50}
-                                                    />
-                                                  </Form.Item>
-                                                  <Form.Item
-                                                    {...dataField}
-                                                    name={[dataField.name, 'reinforcedConcrete', 'label']}
-                                                    label="Reinforced Concrete Label"
-                                                    rules={[{ required: true, message: 'Label is required' }]}
-                                                  >
-                                                    <Input
-                                                      placeholder="e.g., Average"
-                                                      size="small"
-                                                      maxLength={50}
-                                                    />
-                                                  </Form.Item>
-                                                </div>
+                                                {/* Reinforced Concrete: colour class only */}
+                                                <Form.Item
+                                                  {...dataField}
+                                                  name={[dataField.name, 'reinforcedConcrete']}
+                                                  label="Reinforced Concrete (Color Class)"
+                                                  normalize={toColorClassString}
+                                                  rules={[{ required: true, message: 'Color class is required' }]}
+                                                >
+                                                  <ColorClassInput
+                                                    placeholder="e.g., bg-red-500"
+                                                    size="small"
+                                                    maxLength={50}
+                                                  />
+                                                </Form.Item>
                                               </div>
                                             </Card>
                                           ))}
@@ -400,9 +375,9 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                           icon={<PlusOutlined />}
                                           onClick={() => addData({
                                             criteria: '',
-                                            preEngineered: { value: '', label: '' },
-                                            conventionalSteel: { value: '', label: '' },
-                                            reinforcedConcrete: { value: '', label: '' }
+                                            preEngineered: '',
+                                            conventionalSteel: '',
+                                            reinforcedConcrete: ''
                                           })}
                                           block
                                           size="small"
@@ -430,7 +405,8 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                         id: '',
                         label: '',
                         legend: [],
-                        data: []
+                        data: [],
+                        textBelowTable: ''
                       })}
                       block
                       size="large"

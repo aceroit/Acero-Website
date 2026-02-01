@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 interface InfiniteCarouselItem {
@@ -9,6 +10,7 @@ interface InfiniteCarouselItem {
   alt: string
   width?: number
   height?: number
+  link?: string
 }
 
 interface InfiniteCarouselProps {
@@ -61,28 +63,42 @@ export function InfiniteCarousel({
             isPaused && "animation-paused"
           )}
         >
-          {duplicatedItems.map((item, index) => (
-            <div
-              key={`${item.alt}-${index}`}
-              className={cn(
-                "flex shrink-0 items-center justify-center",
-                itemClassName || "h-20 w-32 md:h-24 md:w-40"
-              )}
-            >
-              {/* No grey tint – keep images original (no grayscale) */}
-              <div className="relative h-full w-full">
-                <Image
-                  src={item.image}
-                  alt={item.alt}
-                  fill
-                  loading="lazy"
-                  className="object-contain"
-                  sizes="(max-width: 768px) 256px, (max-width: 1024px) 320px, 384px"
-                  quality={90}
-                />
+          {duplicatedItems.map((item, index) => {
+            const itemContent = (
+              <div
+                className={cn(
+                  "flex shrink-0 items-center justify-center",
+                  itemClassName || "h-20 w-32 md:h-24 md:w-40",
+                  item.link && "cursor-pointer transition-opacity hover:opacity-80"
+                )}
+              >
+                {/* No grey tint – keep images original (no grayscale) */}
+                <div className="relative h-full w-full">
+                  <Image
+                    src={item.image}
+                    alt={item.alt}
+                    fill
+                    loading="lazy"
+                    className="object-contain"
+                    sizes="(max-width: 768px) 256px, (max-width: 1024px) 320px, 384px"
+                    quality={90}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            )
+
+            return (
+              <div key={`${item.alt}-${index}`}>
+                {item.link ? (
+                  <Link href={item.link} className="block">
+                    {itemContent}
+                  </Link>
+                ) : (
+                  itemContent
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

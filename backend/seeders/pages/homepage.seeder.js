@@ -150,9 +150,18 @@ const seedHomepage = async () => {
                 },
             },
             {
-                // Section 4: Quality Certifications
-                sectionTypeSlug: 'infinite_carousel',
+                // Section 4: Products Grid
+                sectionTypeSlug: 'products_grid',
                 order: 3,
+                content: {
+                    title: null, // No title needed - component handles it
+                    subtitle: null,
+                },
+            },
+            {
+                // Section 5: Quality Certifications
+                sectionTypeSlug: 'infinite_carousel',
+                order: 4,
                 content: {
                     title: 'Our Quality Certifications',
                     items: [
@@ -170,9 +179,9 @@ const seedHomepage = async () => {
                 },
             },
             {
-                // Section 5: Our Projects
+                // Section 6: Our Projects
                 sectionTypeSlug: 'projects_grid',
-                order: 4,
+                order: 5,
                 content: {
                     title: 'Our Projects',
                     subtitle: 'Showcasing our expertise through successful steel building projects',
@@ -205,9 +214,9 @@ const seedHomepage = async () => {
                 },
             },
             {
-                // Section 6: Our Customers
+                // Section 7: Our Customers
                 sectionTypeSlug: 'infinite_carousel',
-                order: 5,
+                order: 6,
                 content: {
                     title: 'Our Customers',
                     items: [
@@ -225,9 +234,9 @@ const seedHomepage = async () => {
                 },
             },
             {
-                // Section 7: Company Updates
+                // Section 8: Company Updates
                 sectionTypeSlug: 'company_updates',
-                order: 6,
+                order: 7,
                 content: {
                     title: 'Company Updates',
                     subtitle: 'Stay updated with our latest news and announcements',

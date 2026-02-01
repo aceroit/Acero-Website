@@ -53,7 +53,7 @@ export function HeroCarousel({
 
   return (
     <section
-      className={cn("relative h-screen w-full overflow-hidden", className)}
+      className={cn("relative mt-20 h-[calc(100vh-5rem)] w-full overflow-hidden", className)}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Prevent layout shift when dropdown/select opens (Windows scrollbar) */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* 
   Premium Steel Manufacturing - UAE
   Color Palette:
