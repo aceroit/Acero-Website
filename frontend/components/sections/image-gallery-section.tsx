@@ -1,15 +1,21 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useMemo } from "react"
+import { useRef, useMemo, useState } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 interface GalleryImage {
   src: string
   alt: string
+  name?: string
 }
 
 interface ImageGallerySectionProps {
@@ -17,6 +23,8 @@ interface ImageGallerySectionProps {
   paragraph: string
   images: GalleryImage[]
   columns?: 2 | 3 | 6
+  /** Horizontal = 3 columns (2 rows). Vertical = 2 columns (more rows). */
+  imageOrientation?: "horizontal" | "vertical"
   className?: string
 }
 
@@ -30,16 +38,25 @@ export function ImageGallerySection({
   paragraph,
   images,
   columns = 3,
+  imageOrientation = "horizontal",
   className,
 }: ImageGallerySectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+  const [previewImage, setPreviewImage] = useState<GalleryImage | null>(null)
+  const showPreview = imageOrientation === "horizontal"
 
-  // Right column is always 2 columns (3 rows) for the 3x2 card grid from the design
-  const gridCols = "grid-cols-2"
+  // Horizontal = 3 columns (2 rows). Vertical = 2 columns (more rows).
+  const gridCols =
+    imageOrientation === "horizontal" ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2"
   const gridGap = spacing.gridGap || "gap-6"
+  // Horizontal: larger cards with aspect ratio. Vertical: original compact card (same as before our changes).
+  const imageContainerClass =
+    imageOrientation === "horizontal"
+      ? "aspect-[4/3] min-h-[180px]"
+      : "h-12 w-full"
 
   return (
     <section
@@ -72,7 +89,7 @@ export function ImageGallerySection({
             </p>
           </motion.div>
 
-          {/* Right column: 3x2 grid of image cards */}
+          {/* Right column: grid of image cards with optional name below */}
           <div
             className={cn(
               "grid",
@@ -86,12 +103,27 @@ export function ImageGallerySection({
                 initial={{ opacity: 0, y: 24 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
+                role={showPreview ? "button" : undefined}
+                tabIndex={showPreview ? 0 : undefined}
+                onClick={showPreview ? () => setPreviewImage(image) : undefined}
+                onKeyDown={
+                  showPreview
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault()
+                          setPreviewImage(image)
+                        }
+                      }
+                    : undefined
+                }
                 className={cn(
                   "relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm",
-                  "transition-all duration-300 hover:border-steel-red/30 hover:shadow-md"
+                  "transition-all duration-300 hover:border-steel-red/30 hover:shadow-md",
+                  "flex flex-col",
+                  showPreview && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-steel-red focus:ring-offset-2"
                 )}
               >
-                <div className="relative h-12 w-full">
+                <div className={cn("relative w-full", imageContainerClass)}>
                   <Image
                     src={image.src}
                     alt={image.alt}
@@ -102,11 +134,50 @@ export function ImageGallerySection({
                     quality={85}
                   />
                 </div>
+                {image.name?.trim() && (
+                  <p className="mt-3 text-center text-sm font-medium text-foreground">
+                    {image.name}
+                  </p>
+                )}
               </motion.div>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Large preview modal – only for horizontal orientation */}
+      <Dialog
+        open={!!previewImage}
+        onOpenChange={(open) => !open && setPreviewImage(null)}
+      >
+        <DialogContent
+          className="max-w-6xl w-[98vw] max-h-[98vh] p-2 sm:p-4 flex flex-col"
+          showCloseButton={true}
+        >
+          {previewImage && (
+            <>
+              <DialogTitle className="sr-only">
+                {previewImage.name || previewImage.alt}
+              </DialogTitle>
+              <div className="relative w-full flex-1 min-h-[70vh] max-h-[90vh] bg-card rounded-lg overflow-hidden">
+                <Image
+                  src={previewImage.src}
+                  alt={previewImage.alt}
+                  fill
+                  className="object-contain"
+                  sizes="95vw"
+                  quality={95}
+                />
+              </div>
+              {previewImage.name?.trim() && (
+                <p className="text-center text-sm font-medium text-foreground mt-2">
+                  {previewImage.name}
+                </p>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }

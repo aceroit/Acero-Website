@@ -238,8 +238,14 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               case 'image_gallery': {
                 const title = (content.title as string) || ''
                 const paragraph = (content.paragraph as string) || ''
-                const images = (content.images as Array<{ src: string; alt: string }>) || []
+                const images = (content.images as Array<{
+                  src: string
+                  alt: string
+                  name?: string
+                }>) || []
                 const columns = (content.columns as 2 | 3 | 6) || 3
+                const imageOrientation =
+                  (content.imageOrientation as 'horizontal' | 'vertical') || 'horizontal'
 
                 return (
                   <ImageGallerySection
@@ -248,6 +254,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     paragraph={paragraph}
                     images={images}
                     columns={columns}
+                    imageOrientation={imageOrientation}
                   />
                 )
               }

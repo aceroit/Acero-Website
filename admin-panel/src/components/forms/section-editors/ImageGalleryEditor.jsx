@@ -60,7 +60,7 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
                       <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => add({ src: '', alt: '' })}
+                        onClick={() => add({ src: '', alt: '', name: '' })}
                         size="large"
                         style={{
                           backgroundColor: '#1f2937',
@@ -132,6 +132,20 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
                                 maxLength={200}
                               />
                             </Form.Item>
+
+                            {/* Name (optional label below image) */}
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'name']}
+                              label="Name (optional)"
+                              tooltip="Label shown below the image (e.g. ISO 9001, QHSE Policy)"
+                            >
+                              <Input
+                                placeholder="e.g., ISO 9001, EN 1090-1"
+                                size="large"
+                                maxLength={120}
+                              />
+                            </Form.Item>
                           </div>
                         </Card>
                       ))}
@@ -142,7 +156,7 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
                     <Button
                       type="dashed"
                       icon={<PlusOutlined />}
-                      onClick={() => add({ src: '', alt: '' })}
+                      onClick={() => add({ src: '', alt: '', name: '' })}
                       block
                       size="large"
                       className="mt-4"
@@ -159,6 +173,17 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
         {/* Display Settings */}
         <Card className="border border-gray-200 shadow-sm bg-white">
           <h3 className="text-sm font-semibold text-gray-700 mb-4">Display Settings</h3>
+          <Form.Item
+            name={['content', 'imageOrientation']}
+            label="Display Orientation"
+            tooltip="Horizontal = 3 columns (2 rows). Vertical = 2 columns (more rows)."
+            initialValue="horizontal"
+          >
+            <Select size="large" placeholder="Select orientation">
+              <Option value="horizontal">Horizontal (2 rows × 3 columns)</Option>
+              <Option value="vertical">Vertical (3 rows × 2 columns)</Option>
+            </Select>
+          </Form.Item>
           <Form.Item
             name={['content', 'columns']}
             label="Number of Columns"

@@ -796,7 +796,7 @@ const extendedSectionTypes = [
                 name: 'images',
                 type: 'json',
                 label: 'Gallery Images',
-                helpText: 'Array: [{"src": "url", "alt": "Alt text"}]',
+                helpText: 'Array: [{"src": "url", "alt": "Alt text", "name": "Optional label below image"}]',
                 required: true,
                 validation: {
                     minItems: 1
@@ -814,6 +814,19 @@ const extendedSectionTypes = [
                     max: 6
                 },
                 order: 3
+            },
+            {
+                name: 'imageOrientation',
+                type: 'select',
+                label: 'Display Orientation',
+                helpText: 'Horizontal = more columns (e.g. 3 cols, 2 rows). Vertical = fewer columns (e.g. 2 cols).',
+                required: false,
+                defaultValue: 'horizontal',
+                options: [
+                    { label: 'Horizontal (2 rows × 3 columns)', value: 'horizontal' },
+                    { label: 'Vertical (3 rows × 2 columns)', value: 'vertical' }
+                ],
+                order: 4
             }
         ],
         previewComponent: 'ImageGallerySection',

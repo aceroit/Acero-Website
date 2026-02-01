@@ -124,9 +124,10 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
     if (!formData.educationLevel) {
       newErrors.educationLevel = "Please select education level"
     }
-    if (!formData.hasEngineeringDegree) {
-      newErrors.hasEngineeringDegree = "Please select an option"
-    }
+    // Engineering degree commented out for now
+    // if (!formData.hasEngineeringDegree) {
+    //   newErrors.hasEngineeringDegree = "Please select an option"
+    // }
     if (formData.languages.length === 0) {
       newErrors.languages = "Please select at least one language"
     }
@@ -175,7 +176,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         country: formData.country.trim(),
         experienceLevel: formData.experienceLevel,
         educationLevel: formData.educationLevel,
-        hasEngineeringDegree: formData.hasEngineeringDegree as 'yes' | 'no',
+        hasEngineeringDegree: (formData.hasEngineeringDegree || 'no') as 'yes' | 'no',
         languages: formData.languages,
         coverLetter: formData.coverLetter.trim(),
         cvFile: cvFileData,
@@ -358,212 +359,159 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         </div>
       </motion.div>
 
-      {/* Section 2: Job Details */}
+      {/* Section 2: Job Details, Experience & Education (one card) */}
       <motion.div
         variants={sectionVariants}
         className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
       >
-        {/* Premium gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        
         <div className="relative z-10 space-y-6">
           <div className="mb-8 flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
               2
             </div>
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-              Job Details
+              Job Details, Experience & Education
             </h2>
           </div>
-        <div className="space-y-2">
-          <Label htmlFor="vacancyId" className="text-sm font-medium text-foreground">
-            Current Vacancies Applied For <span className="text-destructive">*</span>
-          </Label>
-          <Select
-            value={formData.vacancyId}
-            onValueChange={(value) => setFormData({ ...formData, vacancyId: value })}
-            disabled={vacanciesLoading}
-          >
-            <SelectTrigger
-              id="vacancyId"
-              className={cn("h-12", errors.vacancyId && "border-destructive")}
-            >
-              <SelectValue placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"} />
-            </SelectTrigger>
-            <SelectContent>
-              {vacancies.length === 0 && !vacanciesLoading ? (
-                <SelectItem value="no-vacancies" disabled>
-                  No vacancies available
-                </SelectItem>
-              ) : (
-                vacancies.map((vacancy) => (
-                <SelectItem key={vacancy._id} value={vacancy._id}>
-                  {vacancy.title} - {vacancy.department}
-                </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
-          {errors.vacancyId && (
-            <p className="text-xs text-destructive">{errors.vacancyId}</p>
-          )}
-        </div>
-        </div>
-      </motion.div>
-
-      {/* Section 3 & 4: Experience & Education - Two Column Layout */}
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Section 3: Experience */}
-        <motion.div
-          variants={sectionVariants}
-          className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
-        >
-          {/* Premium gradient overlay on hover */}
-          <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-          
-          <div className="relative z-10 space-y-6">
-            <div className="mb-8 flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-                3
-              </div>
-              <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-                Experience
-              </h2>
-            </div>
-        <div className="space-y-2">
-          <Label
-            htmlFor="experienceLevel"
-            className="text-sm font-medium text-foreground"
-          >
-            Experience Level <span className="text-destructive">*</span>
-          </Label>
-          <Select
-            value={formData.experienceLevel}
-            onValueChange={(value) =>
-              setFormData({ ...formData, experienceLevel: value })
-            }
-          >
-            <SelectTrigger
-              id="experienceLevel"
-              className={cn("h-12", errors.experienceLevel && "border-destructive")}
-            >
-              <SelectValue placeholder="Select experience level" />
-            </SelectTrigger>
-            <SelectContent>
-              {experienceLevels.map((level) => (
-                <SelectItem key={level.value} value={level.value}>
-                  {level.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.experienceLevel && (
-            <p className="text-xs text-destructive">{errors.experienceLevel}</p>
-          )}
-        </div>
-          </div>
-      </motion.div>
-
-        {/* Section 4: Education */}
-        <motion.div
-          variants={sectionVariants}
-          className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
-        >
-          {/* Premium gradient overlay on hover */}
-          <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-          
-          <div className="relative z-10 space-y-6">
-            <div className="mb-8 flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-                4
-              </div>
-              <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-                Education
-              </h2>
-            </div>
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label
-              htmlFor="educationLevel"
-              className="text-sm font-medium text-foreground"
-            >
-              Level of Education <span className="text-destructive">*</span>
-            </Label>
-            <Select
-              value={formData.educationLevel}
-              onValueChange={(value) =>
-                setFormData({ ...formData, educationLevel: value })
-              }
-            >
-              <SelectTrigger
-                id="educationLevel"
-                className={cn("h-12", errors.educationLevel && "border-destructive")}
+          <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
+            {/* Job Details */}
+            <div className="space-y-2">
+              <Label htmlFor="vacancyId" className="text-sm font-medium text-foreground">
+                Current Vacancies Applied For <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={formData.vacancyId}
+                onValueChange={(value) => setFormData({ ...formData, vacancyId: value })}
+                disabled={vacanciesLoading}
               >
-                <SelectValue placeholder="Select education level" />
-              </SelectTrigger>
-              <SelectContent>
-                {educationLevels.map((level) => (
-                  <SelectItem key={level.value} value={level.value}>
-                    {level.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.educationLevel && (
-              <p className="text-xs text-destructive">{errors.educationLevel}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">
-              Engineering Degree <span className="text-destructive">*</span>
-            </Label>
-            <RadioGroup
-              value={formData.hasEngineeringDegree}
-              onValueChange={(value) =>
-                setFormData({ ...formData, hasEngineeringDegree: value })
-              }
-              className="flex flex-row gap-6"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="yes" id="engineering-yes" />
-                <Label
-                  htmlFor="engineering-yes"
-                  className="cursor-pointer text-sm font-normal text-foreground"
+                <SelectTrigger
+                  id="vacancyId"
+                  className={cn("h-12 w-full", errors.vacancyId && "border-destructive")}
                 >
-                  Yes
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="no" id="engineering-no" />
-                <Label
-                  htmlFor="engineering-no"
-                  className="cursor-pointer text-sm font-normal text-foreground"
+                  <SelectValue placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {vacancies.length === 0 && !vacanciesLoading ? (
+                    <SelectItem value="no-vacancies" disabled>
+                      No vacancies available
+                    </SelectItem>
+                  ) : (
+                    vacancies.map((vacancy) => (
+                      <SelectItem key={vacancy._id} value={vacancy._id}>
+                        {vacancy.title} - {vacancy.department}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              {errors.vacancyId && (
+                <p className="text-xs text-destructive">{errors.vacancyId}</p>
+              )}
+            </div>
+            {/* Experience */}
+            <div className="space-y-2">
+              <Label htmlFor="experienceLevel" className="text-sm font-medium text-foreground">
+                Experience Level <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={formData.experienceLevel}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, experienceLevel: value })
+                }
+              >
+                <SelectTrigger
+                  id="experienceLevel"
+                  className={cn("h-12 w-full", errors.experienceLevel && "border-destructive")}
                 >
-                  No
+                  <SelectValue placeholder="Select experience level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {experienceLevels.map((level) => (
+                    <SelectItem key={level.value} value={level.value}>
+                      {level.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.experienceLevel && (
+                <p className="text-xs text-destructive">{errors.experienceLevel}</p>
+              )}
+            </div>
+            {/* Education */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="educationLevel" className="text-sm font-medium text-foreground">
+                  Level of Education <span className="text-destructive">*</span>
                 </Label>
+                <Select
+                  value={formData.educationLevel}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, educationLevel: value })
+                  }
+                >
+                  <SelectTrigger
+                    id="educationLevel"
+                    className={cn("h-12 w-full", errors.educationLevel && "border-destructive")}
+                  >
+                    <SelectValue placeholder="Select education level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {educationLevels.map((level) => (
+                      <SelectItem key={level.value} value={level.value}>
+                        {level.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.educationLevel && (
+                  <p className="text-xs text-destructive">{errors.educationLevel}</p>
+                )}
               </div>
-            </RadioGroup>
-            {errors.hasEngineeringDegree && (
-              <p className="text-xs text-destructive">{errors.hasEngineeringDegree}</p>
-            )}
+              {/* Engineering Degree – commented out for now */}
+              {/* <div className="space-y-2">
+                <Label className="text-sm font-medium text-foreground">
+                  Engineering Degree <span className="text-destructive">*</span>
+                </Label>
+                <RadioGroup
+                  value={formData.hasEngineeringDegree}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, hasEngineeringDegree: value })
+                  }
+                  className="flex flex-row gap-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="yes" id="engineering-yes" />
+                    <Label htmlFor="engineering-yes" className="cursor-pointer text-sm font-normal text-foreground">
+                      Yes
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="no" id="engineering-no" />
+                    <Label htmlFor="engineering-no" className="cursor-pointer text-sm font-normal text-foreground">
+                      No
+                    </Label>
+                  </div>
+                </RadioGroup>
+                {errors.hasEngineeringDegree && (
+                  <p className="text-xs text-destructive">{errors.hasEngineeringDegree}</p>
+                )}
+              </div> */}
+            </div>
           </div>
         </div>
-          </div>
       </motion.div>
-      </div>
 
-      {/* Section 5: Languages */}
+      {/* Section 3: Languages */}
       <motion.div
         variants={sectionVariants}
         className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
       >
-        {/* Premium gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        
         <div className="relative z-10 space-y-6">
           <div className="mb-8 flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-              5
+              3
             </div>
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               Languages
@@ -598,18 +546,16 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         </div>
       </motion.div>
 
-      {/* Section 6: Cover Letter */}
+      {/* Section 4: Cover Letter */}
       <motion.div
         variants={sectionVariants}
         className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
       >
-        {/* Premium gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        
         <div className="relative z-10 space-y-6">
           <div className="mb-8 flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-              6
+              4
             </div>
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               Cover Letter
@@ -639,18 +585,16 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         </div>
       </motion.div>
 
-      {/* Section 7: CV Upload */}
+      {/* Section 5: CV Upload */}
       <motion.div
         variants={sectionVariants}
         className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
       >
-        {/* Premium gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        
         <div className="relative z-10 space-y-6">
           <div className="mb-8 flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-              7
+              5
             </div>
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               CV Upload
@@ -672,7 +616,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         </div>
       </motion.div>
 
-      {/* Section 8: Submission */}
+      {/* Section 6: Submission */}
       <motion.div
         variants={sectionVariants}
         className="flex justify-center pt-8"
