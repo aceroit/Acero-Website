@@ -1,0 +1,3221 @@
+{
+  "industries": [
+    {
+      "name": "Industrial",
+      "slug": "industrial",
+      "image": "https://acero.ae/public/uploads/all/lzRge2kfBa051xiEjFQCacv0FTs1oavAIFHsZNtV.png",
+      "projects": [
+        {
+          "jobNumber": "NG-A0878",
+          "buildingType": "Chemical Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/uUw5JmR1ITF71SANb5ppulZnhjMFiR1YMac2aRyF.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/uUw5JmR1ITF71SANb5ppulZnhjMFiR1YMac2aRyF.png",
+            "https://acero.ae/public/uploads/all/Wil0KRF7mDjQVhbanFxyxQfZ0oGnOToGNlkj6zU3.png",
+            "https://acero.ae/public/uploads/all/ejKG1ClbiCDb0S3Cpps7TNd2V1cGsYksAvkeozYh.png",
+            "https://acero.ae/public/uploads/all/q2JRhtW8ksTXLC7emWh5YD4VztiYELaDpFTLx1kS.png",
+            "https://acero.ae/public/uploads/all/LNv6ga83GsDkWhm3K7TVVYOp81M7eKTSsj20NHvw.png"
+          ],
+          "url": "https://acero.ae/projects/chemical-warehouse-ng-a0878"
+        },
+        {
+          "jobNumber": "AR-A0779",
+          "buildingType": "Ceramics Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/jKX6bOF7FJLPRA016Xqde3wdzbyuw7kMdSWSbqr5.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/l0rCak5qwaSp86EzL0G6CrtPzvqyVDQrxfYnkK78.png",
+            "https://acero.ae/public/uploads/all/g9A1DY0Od8brPrAGhKPqQjfbgYRuiQTxnItg8MSI.png",
+            "https://acero.ae/public/uploads/all/jKX6bOF7FJLPRA016Xqde3wdzbyuw7kMdSWSbqr5.png"
+          ],
+          "url": "https://acero.ae/projects/ceramics-warehouse-ar-a0779"
+        },
+        {
+          "jobNumber": "DZ-A0176",
+          "buildingType": "Skid Pump Shed",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/zDy8VfOncytHYFelOPnrmpDCr6WPIHahN9i4x2Yu.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/zDy8VfOncytHYFelOPnrmpDCr6WPIHahN9i4x2Yu.png",
+            "https://acero.ae/public/uploads/all/94rz2X8Tlv24mGe6pctoXQXKkPrsfXQAUsQkcUj5.png"
+          ],
+          "url": "https://acero.ae/projects/skid-pump-shed-dz-a0176"
+        },
+        {
+          "jobNumber": "MA-A1025",
+          "buildingType": "Aluminium and Copper Recycling Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/xP7H8sywDsdjaLyvhRjALPgNciCKpKo2Z7zQXAIb.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/GO7J6IVGsfXsL40NPYwhU4RApilMoNhogwEVJF4W.png",
+            "https://acero.ae/public/uploads/all/h5MlQD9tO5WH71Fyrw2oYWrBYdu23RtDBZujHa1A.png",
+            "https://acero.ae/public/uploads/all/xP7H8sywDsdjaLyvhRjALPgNciCKpKo2Z7zQXAIb.png",
+            "https://acero.ae/public/uploads/all/06h1CaLRrEZR5BIQW8QICqaYijxWiq4qQJH2VvvL.png",
+            "https://acero.ae/public/uploads/all/bzDi6Ak5BvI94JRINGLQhE0sOL8xz8gQ2ICbGGXf.png",
+            "https://acero.ae/public/uploads/all/abWWLIbqJdqoiFVswNAxA5VHDFoDH7eb7Cg1MuIu.png"
+          ],
+          "url": "https://acero.ae/projects/aluminium-and-cooper-recycling-plant-ma-a1025"
+        },
+        {
+          "jobNumber": "OM-A0552",
+          "buildingType": "Calcium Carbonate Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/mtTQ8dX1MAkNbCdzHlapg3XZfSylsLpgNOurooRZ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Irpc8zyzgnl8CkhXBFZui2oqapFB7NHnRqbIR2OL.png",
+            "https://acero.ae/public/uploads/all/mtTQ8dX1MAkNbCdzHlapg3XZfSylsLpgNOurooRZ.png"
+          ],
+          "url": "https://acero.ae/projects/calcium-carbonate-plant-om-a0552"
+        },
+        {
+          "jobNumber": "AE-A0607",
+          "buildingType": "Valve Manufacturing Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/aMvmC7c5CO4YfVLpM1Qn21o0xD6CLdeFfKPatrD3.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/aMvmC7c5CO4YfVLpM1Qn21o0xD6CLdeFfKPatrD3.png",
+            "https://acero.ae/public/uploads/all/z9i1W1ovmejEHZGvKY35yZak51kbeKTOsSWfoBFd.png"
+          ],
+          "url": "https://acero.ae/projects/valve-manufacturing-factory-ae-a0607"
+        },
+        {
+          "jobNumber": "MU-A0529",
+          "buildingType": "Steel Mill",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/oqeq4EhzGwdDlPCiijT6QmZwlVeMRrKGz8mSvjeh.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/BDdm19YJ2FiUH5WOqnzR26FgPoYmrxSnRa011sqD.png",
+            "https://acero.ae/public/uploads/all/oqeq4EhzGwdDlPCiijT6QmZwlVeMRrKGz8mSvjeh.png"
+          ],
+          "url": "https://acero.ae/projects/steel-mill-mu-a0529"
+        },
+        {
+          "jobNumber": "ET-A0903",
+          "buildingType": "Aluminum Extrusion Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/ZHelc1Ff5veLCUX08fvoOGXo7R3rcb6LSu19uBxm.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/ZHelc1Ff5veLCUX08fvoOGXo7R3rcb6LSu19uBxm.png"
+          ],
+          "url": "https://acero.ae/projects/aluminum-extrusion-plant-et-a0903"
+        },
+        {
+          "jobNumber": "CI-A0133",
+          "buildingType": "Steel Mill",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/ZJD7PHv7xL59OmsDDEsUx2dcT63h0M9p7lQO4VFU.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/ZJD7PHv7xL59OmsDDEsUx2dcT63h0M9p7lQO4VFU.png"
+          ],
+          "url": "https://acero.ae/projects/steel-mill-ci-a0133"
+        },
+        {
+          "jobNumber": "TZ-A0820",
+          "buildingType": "Detonator Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/fAnsHBF91k5i0RUCLvkGJTQeMxZsXfsnqQXwlXSF.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/XoWc8MlcmNGAbopf7Cp8zG3YiWwqUR1gctt1GsXN.png",
+            "https://acero.ae/public/uploads/all/iT3mIk6zSeJrrxbVk2c6ZJUoMR7QQeUzjRkkfgws.png",
+            "https://acero.ae/public/uploads/all/6Gbro2ahJuEhNZdWs5EAQOvJxC9LhHWIDRoVX2Ic.png",
+            "https://acero.ae/public/uploads/all/FUElaKMe3Nssi3a3sTa5WgTEyDzAtiR8BKqMpy9t.png",
+            "https://acero.ae/public/uploads/all/HhyfIO8zJ0wyS8wzwTlbp93cXiLhfvb8mr2Jyuup.png",
+            "https://acero.ae/public/uploads/all/fAnsHBF91k5i0RUCLvkGJTQeMxZsXfsnqQXwlXSF.png"
+          ],
+          "url": "https://acero.ae/projects/detonator-factory-tz-a0820"
+        },
+        {
+          "jobNumber": "CG-A0180",
+          "buildingType": "Cement Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/fLZIx6YDvtxA5v1xSFlxnVl9Qf3JOuhmYCsn8Hc7.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/neCyKXJyLRA0uREGFEON0a1DilO8595He0LbuWpn.png",
+            "https://acero.ae/public/uploads/all/fLZIx6YDvtxA5v1xSFlxnVl9Qf3JOuhmYCsn8Hc7.png",
+            "https://acero.ae/public/uploads/all/x40pGrdsHa72wRxU6UDmJCbpnU18wnJrTWN5Wpjr.png",
+            "https://acero.ae/public/uploads/all/I4E391OAbPbFSJ0i3o00j6c6804ww3a5bYWPAPdc.png",
+            "https://acero.ae/public/uploads/all/WyCbH1DQpD7xssEMCIqrpbUhL9EHW2Q6Y4MGD8bV.png"
+          ],
+          "url": "https://acero.ae/projects/cement-plant-cg-a0180"
+        },
+        {
+          "jobNumber": "MU-A0401",
+          "buildingType": "Soap and Detergent Storage Building",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/5cyWsmtMjQKGqvUS5uC5c5cEZ762bwuGiEVNevkP.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/DyENtCiyYPc04KRlZZ6MpAgo7txWJUeiLb1SeNeR.png",
+            "https://acero.ae/public/uploads/all/5cyWsmtMjQKGqvUS5uC5c5cEZ762bwuGiEVNevkP.png"
+          ],
+          "url": "https://acero.ae/projects/soap-detergent-storage-building-mu-a0401"
+        },
+        {
+          "jobNumber": "ZM-A0248",
+          "buildingType": "Warehouse for Mining Operations",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/tPkBd2KfPt81zd69o7xBigMA06w6MpGUvUvdQwGD.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/ZbkfIt5GAR6LkAdU9wEjHNG6i9TySokPlOjHzJ4G.png",
+            "https://acero.ae/public/uploads/all/9uSRuMSrLluaCwdD6KrArYeIZ0m0fRbx7WxLRi70.png",
+            "https://acero.ae/public/uploads/all/xZKf7VavQioCcKoeEpe2kjfah1IZ6iaYGlD06YSa.png",
+            "https://acero.ae/public/uploads/all/tPkBd2KfPt81zd69o7xBigMA06w6MpGUvUvdQwGD.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-for-mining-operations-zm-a0248"
+        },
+        {
+          "jobNumber": "QA-A0608",
+          "buildingType": "Machinery And Heavy Equipment Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/4apiMuIia43IITfwQOeTcZQITOZ7IDvQVyrJTWSP.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Z0Ty8zHxZiVsPyGlCZ281jtdW5Cu3qPJsvjEtrdP.png",
+            "https://acero.ae/public/uploads/all/4apiMuIia43IITfwQOeTcZQITOZ7IDvQVyrJTWSP.png",
+            "https://acero.ae/public/uploads/all/EjNZEfBSSk9CL44YZObZxKyorofatK7lGMLdwv31.png",
+            "https://acero.ae/public/uploads/all/ZMhFGoAB5vhJ331OXQNFduZuwE4jERGVtOcUlMbd.png"
+          ],
+          "url": "https://acero.ae/projects/machinery-and-heavy-equipment-warehouse-qa-a0608"
+        },
+        {
+          "jobNumber": "AE-A0501",
+          "buildingType": "Chemical Tanks Storage",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/4DaTrLHFjB2t3zetva82JIaoOhoRmbWZAvEu779z.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/4DaTrLHFjB2t3zetva82JIaoOhoRmbWZAvEu779z.png",
+            "https://acero.ae/public/uploads/all/WLa0K5aoBSxTBOSRUCyi96bq8LEDYvKeoBd5iFuf.png",
+            "https://acero.ae/public/uploads/all/tqdGDYpGJPZO7CNPQe3BABl1gDaC5YHG201WQY0G.png"
+          ],
+          "url": "https://acero.ae/projects/chemical-tanks-storage-ae-a0501"
+        },
+        {
+          "jobNumber": "KE-A0300",
+          "buildingType": "Mining Equipment Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/gGp4202CA8qxvFWwu4YTkw0Ge508TTuLttHASMrL.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/bkvALeePvMtidgT2umhA7Kz9HYJv1e0V7xFNIllE.png",
+            "https://acero.ae/public/uploads/all/4OTU9ApIJ8JXiQGOShEk8Mr0ZUtnWB8SEdwwC7el.png",
+            "https://acero.ae/public/uploads/all/gGp4202CA8qxvFWwu4YTkw0Ge508TTuLttHASMrL.png",
+            "https://acero.ae/public/uploads/all/IiE7MPd30aChgTesM64zDLDKyZFKPb3VcBij9dku.png",
+            "https://acero.ae/public/uploads/all/I20J4h2dWNIWxI5dznGMxZlPilp6buAOIYRZZBjK.png"
+          ],
+          "url": "https://acero.ae/projects/mining-equipment-workshop-ke-a0300"
+        },
+        {
+          "jobNumber": "IQ-A0400",
+          "buildingType": "Ores Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/K1Zex87BLUoqNj3FFbcGKRV4ZwMsVktYsVERwddi.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/gE9EvPnSD4EVNEKISMRJkDmaQHjXhPm7qur6y1Yo.png",
+            "https://acero.ae/public/uploads/all/ssVbXC2JQcEtekT1ZIJctJlv3vXV9ycqFsyIL8bd.png",
+            "https://acero.ae/public/uploads/all/jMbppZf2xsoeWdS4tZISrwIfBJXI45hzJBcnn7FY.png",
+            "https://acero.ae/public/uploads/all/K1Zex87BLUoqNj3FFbcGKRV4ZwMsVktYsVERwddi.png",
+            "https://acero.ae/public/uploads/all/yG4bYvh75qHGWwpmO9CCkjgfTNNtb1fuLNIjHnVA.png"
+          ],
+          "url": "https://acero.ae/projects/ores-factory-iq-a0400"
+        },
+        {
+          "jobNumber": "ET-A0182",
+          "buildingType": "Aluminum Extrusion Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/JCCULnrcpPUxIhnplgJf5bneeIDJU6M1Mt1pUQxu.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/ty7MaIggh9fFuaN5U4RJwiVcwxEaUXdDFjQok2On.png",
+            "https://acero.ae/public/uploads/all/sUKOGZPAhQAVd443LYftJhhwyz2N81asEeWwrxpx.png",
+            "https://acero.ae/public/uploads/all/dlkUuUyNiMIiR0gstKQ0wvmEKwa0ia40WAk8ASe9.png",
+            "https://acero.ae/public/uploads/all/iaHmxyVAFyW6oKSXUS4DJ6NgSztYt48KTlF3WETh.png",
+            "https://acero.ae/public/uploads/all/JCCULnrcpPUxIhnplgJf5bneeIDJU6M1Mt1pUQxu.png",
+            "https://acero.ae/public/uploads/all/28UVWN9xVIk09OUOCuLWy589F2url9d8VLaXOek9.png",
+            "https://acero.ae/public/uploads/all/kCxbHHPG6pQVLWo9jAZEVQPXMJ3Pi2W3VrH4NtSI.png",
+            "https://acero.ae/public/uploads/all/43FsFApBc3u0OcbdSThtzkrzJXckCwShNyCyatyl.png",
+            "https://acero.ae/public/uploads/all/lBl8vCw1NMP4UzFsDeTHPJlSjyKvNGs6zxjDMMyu.png",
+            "https://acero.ae/public/uploads/all/8ulT6VhJhJW2lEQjs018SOKTpNT65CEthHglQtFm.png",
+            "https://acero.ae/public/uploads/all/g3uLdP1hXolT1MoYQ5XykRoBkplQZvEmwJ43NN8J.png",
+            "https://acero.ae/public/uploads/all/t9h66jIyAWeWmat98Fl4L0cg9NlJfq8ZvK90QIPe.png",
+            "https://acero.ae/public/uploads/all/l4iOrbP839Uus3mE4K5PiV3aOLNqhKzGwcRX8rxl.png",
+            "https://acero.ae/public/uploads/all/cMYo7pTKIlGPhIK1K4rj0KlbZNmpmOduZEHx5TBw.png",
+            "https://acero.ae/public/uploads/all/wMY8ysVRn79XCvTIFHi4wya1PFwAM6vOXp884Ygs.png"
+          ],
+          "url": "https://acero.ae/projects/aluminum-extrusion-plant-et-a0182"
+        },
+        {
+          "jobNumber": "OM-A0107",
+          "buildingType": "Ferro Alloy Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/QGgemmpqUdXz2eJ8qyekTaaOcXFXs2bpTsyxXbrk.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/QGgemmpqUdXz2eJ8qyekTaaOcXFXs2bpTsyxXbrk.png"
+          ],
+          "url": "https://acero.ae/projects/ferro-alloy-plant-om-a0107"
+        },
+        {
+          "jobNumber": "ET-A0190",
+          "buildingType": "Bar Mill",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/v6H6RPkCJJHlEruuYPyqjUT8YGvBXqYAFI2XoN1h.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/VzKpRqgHk90njYjAoovWkhxW0g88Qa0Oo4dHSuEc.png",
+            "https://acero.ae/public/uploads/all/JL4DFXsADpQBZapfLaLpah9IAdqSzJDnNRuJp0Qr.png",
+            "https://acero.ae/public/uploads/all/v6H6RPkCJJHlEruuYPyqjUT8YGvBXqYAFI2XoN1h.png"
+          ],
+          "url": "https://acero.ae/projects/bar-mill-et-a0190"
+        },
+        {
+          "jobNumber": "AE-A0185",
+          "buildingType": "Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/v8LOQWlBUbcMjfUg9Ka4fQINw8LPRcnPItE612Jv.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/v8LOQWlBUbcMjfUg9Ka4fQINw8LPRcnPItE612Jv.png",
+            "https://acero.ae/public/uploads/all/jVstVAmX4Sb9ayBn5Q8vqiy092rzmw4dySxygm3G.png",
+            "https://acero.ae/public/uploads/all/USd0Q7WwrtWfxneSqTMj4EzDwzQ2y1QszkwLKMET.png"
+          ],
+          "url": "https://acero.ae/projects/workshop-ae-a0185"
+        },
+        {
+          "jobNumber": "GH-A0186",
+          "buildingType": "Chemical Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/lzRge2kfBa051xiEjFQCacv0FTs1oavAIFHsZNtV.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/0fSZ8KLetg5lsgFAT0VjdoaOaSIamCQ2ijzI4jlU.png",
+            "https://acero.ae/public/uploads/all/AbxCuWS2O8dSf6HUrMH4oPWeGJlvzscn8LckFVVr.png",
+            "https://acero.ae/public/uploads/all/86NCvpKn0TaEyusViESHg7jq648lCeUsd6MfDQIq.png",
+            "https://acero.ae/public/uploads/all/lzRge2kfBa051xiEjFQCacv0FTs1oavAIFHsZNtV.png",
+            "https://acero.ae/public/uploads/all/eQgjk8Elt0QodAimNkCPu5w4RZCd6bf9yKScZQbr.png"
+          ],
+          "url": "https://acero.ae/projects/chemical-warehouse-gh-a0186"
+        },
+        {
+          "jobNumber": "MZ-A0560",
+          "buildingType": "Precision Mechanical Machining Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/kepMDxPhZ6irUYbtnNgLb4Ajq8S4Gp7qjKePkzop.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/HdjLTl2si6ur0eoXLtKoONw5wvJKMZqOXHolMaXG.png",
+            "https://acero.ae/public/uploads/all/xmxEePdK6UAQOky49gtb2GPxnXJO6tYVKRrBedKk.png",
+            "https://acero.ae/public/uploads/all/US5qYSvQB8iwPBllU3qA9iTqlyGk0O2CxzghpeHl.png",
+            "https://acero.ae/public/uploads/all/0Vn5ypNZ86jFWOuexy4Qer8qqelGOxWIp6INRBaM.png",
+            "https://acero.ae/public/uploads/all/kepMDxPhZ6irUYbtnNgLb4Ajq8S4Gp7qjKePkzop.png",
+            "https://acero.ae/public/uploads/all/LGR7sVfIK2VTG6Ap0Ib7tX97JZJzCmXS3FbKYCMZ.png",
+            "https://acero.ae/public/uploads/all/M0EztglmCdp7SBTJG8ZhADSNy0nkkW4GhQS5EHfm.png"
+          ],
+          "url": "https://acero.ae/projects/precision-mechanical-machining-workshop-mz-a0560"
+        },
+        {
+          "jobNumber": "AE-A0237",
+          "buildingType": "Industrial Shed",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/jmiRKTxJ4BHTCy4OjqL4ACSfK7oLPfpRrRTA6vDD.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/4W4Yv7mlFbJzmLw5QOUykAN552kCsTDItb4p0mNd.png",
+            "https://acero.ae/public/uploads/all/AKkyWyRTVyKyZm5zYoQhvFYvJKTxv9aRSoCxoUWz.png",
+            "https://acero.ae/public/uploads/all/jmiRKTxJ4BHTCy4OjqL4ACSfK7oLPfpRrRTA6vDD.png"
+          ],
+          "url": "https://acero.ae/projects/industrial-shed-ae-a0237"
+        },
+        {
+          "jobNumber": "GE-A0570",
+          "buildingType": "Electric Pump House",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/snibPrHK6p9HXd6x2zvNmNQUMKtFekxUi7WdHIvB.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/WeOMbL0mlbSZcFDYrd0ZoVpJBE1zlSPoFGnN379l.png",
+            "https://acero.ae/public/uploads/all/AslK6S5tp0vLfYYBj1VFjUyJsOBgNNXC0csw0Oyl.png",
+            "https://acero.ae/public/uploads/all/iEzSMJRUbXq13tC3Hd9uwDUBZkmloWlussIraX88.png",
+            "https://acero.ae/public/uploads/all/snibPrHK6p9HXd6x2zvNmNQUMKtFekxUi7WdHIvB.png"
+          ],
+          "url": "https://acero.ae/projects/electric-pump-house-ge-a0570"
+        }
+      ]
+    },
+    {
+      "name": "Manufacturing",
+      "slug": "manufacturing",
+      "image": "https://acero.ae/public/uploads/all/dlkUuUyNiMIiR0gstKQ0wvmEKwa0ia40WAk8ASe9.png",
+      "projects": [
+        {
+          "jobNumber": "AE-A1003",
+          "buildingType": "Sand Blasting Building",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/3gyaVSNgd9yBJGvTAu9QQil3TvTRJbXFuC3iOyjE.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/boRIwQK1Z9eLUCsb9Dk1p5UcIXOdSf9cadd45xqz.png",
+            "https://acero.ae/public/uploads/all/yehpG25UJTCF4gzgaPEV5NkQvX9qL47ChCFk0vnx.png",
+            "https://acero.ae/public/uploads/all/3gyaVSNgd9yBJGvTAu9QQil3TvTRJbXFuC3iOyjE.png"
+          ],
+          "url": "https://acero.ae/projects/sand-blasting-building-ae-a1003"
+        },
+        {
+          "jobNumber": "SN-A0306",
+          "buildingType": "Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/iVBosxBmPian6XWX04Pn0tiKSmxaTb7Gpy9Hf1dK.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/MiproQDziYCxa10vn74w1LfSfHMmGP3PPzXRzdAZ.png",
+            "https://acero.ae/public/uploads/all/0JrDwNw1sJGd4BxQpN0oGS9KUgFrTFr5SUigF42r.png",
+            "https://acero.ae/public/uploads/all/iVBosxBmPian6XWX04Pn0tiKSmxaTb7Gpy9Hf1dK.png",
+            "https://acero.ae/public/uploads/all/W9o37wsrcloOnYPqCewkQHLjJW3oSvUHl8DiZEWu.png"
+          ],
+          "url": "https://acero.ae/projects/factory-sn-a0306"
+        },
+        {
+          "jobNumber": "ET-A0564",
+          "buildingType": "Cork and Can Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/OukpOdqWiOe7Nwz2v5gZqwAGBKZNW4e81Ot6tuhQ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/jiXgvcGNGT6k7EHV2cz56UJscJ0051ReAo6GoAXI.png",
+            "https://acero.ae/public/uploads/all/Fly3h3RiVhdEP2IzyUq0GUoAtY3ZnNAhgrbWvAZM.png",
+            "https://acero.ae/public/uploads/all/OukpOdqWiOe7Nwz2v5gZqwAGBKZNW4e81Ot6tuhQ.png"
+          ],
+          "url": "https://acero.ae/projects/cork-and-can-factory-et-a0564"
+        },
+        {
+          "jobNumber": "CI-A0131",
+          "buildingType": "Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/1WAEArP1og5AXulTd3yCKOmARXVbAD5qVQVcUZwv.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/1WAEArP1og5AXulTd3yCKOmARXVbAD5qVQVcUZwv.png",
+            "https://acero.ae/public/uploads/all/iYpZExjH3ytywrhCRvgrpXoM5EGRR3Sq2tKPgB9g.png"
+          ],
+          "url": "https://acero.ae/projects/factory-ci-a0131"
+        },
+        {
+          "jobNumber": "MA-A0756",
+          "buildingType": "Manufacturing Facility",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/XeC62HsgiGF2PU5AAHqaMaA1KXxDoTxM0swwIwzt.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/XeC62HsgiGF2PU5AAHqaMaA1KXxDoTxM0swwIwzt.png",
+            "https://acero.ae/public/uploads/all/fWJQS8rzUu1PvImEqsit7oQQ8r8qCq4hn304H38B.png"
+          ],
+          "url": "https://acero.ae/projects/manufacturing-facility-ma-a0756"
+        },
+        {
+          "jobNumber": "ET-A0526",
+          "buildingType": "Factory and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/2fBhd3MptqWVKQGpdyGMSSObBLcv3MflWbWdKRDZ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/2fBhd3MptqWVKQGpdyGMSSObBLcv3MflWbWdKRDZ.png",
+            "https://acero.ae/public/uploads/all/NZ4vmkuisDldFwiJp2S5JOpL2x1ssD3tNcnr2S7Z.png"
+          ],
+          "url": "https://acero.ae/projects/factory-and-warehouse-et-a0526"
+        },
+        {
+          "jobNumber": "IN-A0297",
+          "buildingType": "Heavy Engineering Manufacturing Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/j1pxeqBmlMXoEvTi5Dr54Lr9cHlUihw8Za2xv3Q1.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/j1pxeqBmlMXoEvTi5Dr54Lr9cHlUihw8Za2xv3Q1.png",
+            "https://acero.ae/public/uploads/all/BHq4ZO1vG2DIIa5VQJyVP7FzpdEa0v3Pu4bDWd0C.png",
+            "https://acero.ae/public/uploads/all/HqGDk5ZWdFE0Va0Mp6W6BF92l2BYBoTbwEU4lY5V.png",
+            "https://acero.ae/public/uploads/all/AwLaVbgHhe4G7fkAzdVQ84G5oL2wVwyEUexls648.png"
+          ],
+          "url": "https://acero.ae/projects/heavy-engineering-manufacturing-factory-in-a0297"
+        },
+        {
+          "jobNumber": "LK-A0687",
+          "buildingType": "Sand Drying Processing Facility",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/bLyNxxOjvlsqyTRXKhXhl4cr0XIqoqJlOHMirIZa.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/2V8XAImCDYNXrV8ab0KACdZwEzJy3dg9NK3jyjyG.png",
+            "https://acero.ae/public/uploads/all/bLyNxxOjvlsqyTRXKhXhl4cr0XIqoqJlOHMirIZa.png",
+            "https://acero.ae/public/uploads/all/eeuE4dycl8hDF0M0IFIGmUOtfPz0ayS9w5goHtra.png",
+            "https://acero.ae/public/uploads/all/DqO0Fzvw6Z8ziOmC5MC4dC7zSkP0OjS8cRpzr7OG.png"
+          ],
+          "url": "https://acero.ae/projects/sand-drying-processing-facility-lk-a0687"
+        },
+        {
+          "jobNumber": "ET-A0203",
+          "buildingType": "Mineral Processing Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/ADnCrbvuoIkCmb0SPvALJF2fsxmQbAMKzYbV6bbn.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/UijXAu93FryiI8KMO7OGIFzzwbijfapCQYM1qUQp.png",
+            "https://acero.ae/public/uploads/all/ADnCrbvuoIkCmb0SPvALJF2fsxmQbAMKzYbV6bbn.png"
+          ],
+          "url": "https://acero.ae/projects/mineral-processing-plant-et-a0203"
+        },
+        {
+          "jobNumber": "TZ-A0333",
+          "buildingType": "Fiber Threads Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/2bpr2xWK4H79O85hvJ6aYAuxP0h7ofTmVjQrvAuV.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/2bpr2xWK4H79O85hvJ6aYAuxP0h7ofTmVjQrvAuV.png",
+            "https://acero.ae/public/uploads/all/N2NHSmY2XE67duz84vl0LikuXCEvG9EEzd9MWqgj.png"
+          ],
+          "url": "https://acero.ae/projects/fiber-threads-factory-tz-a0333"
+        },
+        {
+          "jobNumber": "TZ-A0415",
+          "buildingType": "Pipe Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/xj3EJOueoJzVe01Y8NWKsytpayvvO5oVoCMP13Bd.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/xj3EJOueoJzVe01Y8NWKsytpayvvO5oVoCMP13Bd.png",
+            "https://acero.ae/public/uploads/all/Tpbt8RwUTCT2AWhgMehzq9DGJNbsaLYUVA9CTKIe.png",
+            "https://acero.ae/public/uploads/all/Ygo41FU0snvi52Inh5RxqYUokHZJIgYHV5Xxlbl4.png",
+            "https://acero.ae/public/uploads/all/02mwUvzeu822NU91fxEoqy9fycZuwyQVf4qc0bcY.png"
+          ],
+          "url": "https://acero.ae/projects/pipe-factory-tz-a0415"
+        },
+        {
+          "jobNumber": "TG-A0284",
+          "buildingType": "Garment Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/UPEpboQulmgbRed5r2LQs6oVoSLgjl3sunwGb1ZC.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/2Qg3QnI69ipIBfDIBJtklkrff31TcsAa1JINZSYN.png",
+            "https://acero.ae/public/uploads/all/THl99o24SXfmlsmlzPYuyvAhBg1s2aHUxLJDc4Lu.png",
+            "https://acero.ae/public/uploads/all/UPEpboQulmgbRed5r2LQs6oVoSLgjl3sunwGb1ZC.png",
+            "https://acero.ae/public/uploads/all/htfJIgTlud5HxFI8gJB7PRv1mbgIDeDUoS0s3MkA.png",
+            "https://acero.ae/public/uploads/all/DBTf9Y6vbi1Is8oWGTuKaHf8pE3vCob26plQIklh.png"
+          ],
+          "url": "https://acero.ae/projects/garment-factory-tg-a0284"
+        },
+        {
+          "jobNumber": "MA-A0516",
+          "buildingType": "Packing House",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/4Uvaj66ZKGlumlb9ZYOrNNMH5X7ddsT8qkiJrQR9.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/6w5cAZdsOwyCtSglk48L7rxNAu8nDDTAtHED3vi6.png",
+            "https://acero.ae/public/uploads/all/5Ypqaf5Cj2iH1jxTd4UXQM00OgUdulye3U5Qw4zJ.png",
+            "https://acero.ae/public/uploads/all/gGuqtK593061eC4XAvsz7B6oz2NSknZfboYQAKpb.png",
+            "https://acero.ae/public/uploads/all/4Uvaj66ZKGlumlb9ZYOrNNMH5X7ddsT8qkiJrQR9.png",
+            "https://acero.ae/public/uploads/all/DEeyY0x7L3BfOWiaJLhRipZ67VuFe7Ll9mYPrMV3.png",
+            "https://acero.ae/public/uploads/all/eCbIERmGXrpnwWkUBqxTcZJJCKcTRLimqPFJOWj7.png"
+          ],
+          "url": "https://acero.ae/projects/packing-house-ma-a0516"
+        },
+        {
+          "jobNumber": "MA-A0512",
+          "buildingType": "Packaging Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/a4uOqsUfB269Nb3RnqxfEgRyIPLcH145CyeK4dr1.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/a4uOqsUfB269Nb3RnqxfEgRyIPLcH145CyeK4dr1.png",
+            "https://acero.ae/public/uploads/all/YGuqWu3yRfU5IU2zqW7FoUHOwWYfGqXAghssFBbK.png",
+            "https://acero.ae/public/uploads/all/M9C3jndzDg5kXdfke4wPlVXXHSXtGlkAg5XRdXh5.png",
+            "https://acero.ae/public/uploads/all/FnQS6RJEjp5f3aUOiFlzkkIOS5BtTyzPxxbnUg1g.png"
+          ],
+          "url": "https://acero.ae/projects/packaging-factory-ma-a0512"
+        },
+        {
+          "jobNumber": "IN-A0535",
+          "buildingType": "Kitchen Equipment Manufacturing Facility",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/OqPbXbaEUuRhtvOp7DA7tCwRxDhhYDiM2hNXjkSS.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/OqPbXbaEUuRhtvOp7DA7tCwRxDhhYDiM2hNXjkSS.png"
+          ],
+          "url": "https://acero.ae/projects/kitchen-equipment-manufacturing-facility-in-a0535"
+        },
+        {
+          "jobNumber": "BJ-A0147",
+          "buildingType": "Textile Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/s60iCPN5JYkaU4vbcFZTilzbXXwHqbNlnij7ErFi.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/s60iCPN5JYkaU4vbcFZTilzbXXwHqbNlnij7ErFi.png",
+            "https://acero.ae/public/uploads/all/RrGoK1j1FlICr2D3HWfQRpeRXcvygGgQXwzS38NC.png"
+          ],
+          "url": "https://acero.ae/projects/textile-factory-bj-a0147"
+        },
+        {
+          "jobNumber": "CI-A0337",
+          "buildingType": "Blending Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/hWNCfAA3oPKWpBZ12SYXFSLzNSOlUBcxXfDeLyY4.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/WCc9SZCINAAXMBOzrb6UG20vFAEAQTyGqplU7MKk.png",
+            "https://acero.ae/public/uploads/all/KIaXQNNcovqDzKMiL8UH66bHCZGnvmetctC1xEZg.png",
+            "https://acero.ae/public/uploads/all/hWNCfAA3oPKWpBZ12SYXFSLzNSOlUBcxXfDeLyY4.png"
+          ],
+          "url": "https://acero.ae/projects/blending-plant-ci-a0337"
+        },
+        {
+          "jobNumber": "AE-A0543",
+          "buildingType": "Factory, Warehouse and Office",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/PKDmZdL4ePEKD3dhWlb8Hj016hASH8rjOQ53aUHP.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/PKDmZdL4ePEKD3dhWlb8Hj016hASH8rjOQ53aUHP.png",
+            "https://acero.ae/public/uploads/all/jpZssnV2gihktbySiAKlSoWn8kRXHBYyGcLLRBDe.png"
+          ],
+          "url": "https://acero.ae/projects/factory-warehouse-and-office-ae-a0543"
+        },
+        {
+          "jobNumber": "AE-A0219",
+          "buildingType": "Dewatering & Pump Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Gk4r3VMQM43xd8ep8riFovu2b50fQPY08fogSHDJ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Gk4r3VMQM43xd8ep8riFovu2b50fQPY08fogSHDJ.png",
+            "https://acero.ae/public/uploads/all/kcwixJJxv4UM8XWcQ9LPwVOapfkfwnouvgZnXmGi.png",
+            "https://acero.ae/public/uploads/all/xhy8NnHODFq5qFonuqeKoBiTxaThfnp8FkOSayup.png"
+          ],
+          "url": "https://acero.ae/projects/dewatering-pump-factory-ae-a0219"
+        },
+        {
+          "jobNumber": "SN-A0336",
+          "buildingType": "Blending Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/6RR4drg0SxSW08wNyQqXyU2Ecx1T77XqUF1WcKr9.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/qqglN5pAMraONaOdvM7NMjOCCf59mp4Me7IttXjG.png",
+            "https://acero.ae/public/uploads/all/6RR4drg0SxSW08wNyQqXyU2Ecx1T77XqUF1WcKr9.png"
+          ],
+          "url": "https://acero.ae/projects/blending-plant-sn-a0336"
+        },
+        {
+          "jobNumber": "MA-A0200",
+          "buildingType": "Pharmaceutical Production Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/uUqIirf6EYxyABNo1NKgOoO2WoISPUSPckU2A0Xn.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/ed4pXDIVmQI42gzeHF2ZWwZmsl8JxrwZkU8vr18G.png",
+            "https://acero.ae/public/uploads/all/uUqIirf6EYxyABNo1NKgOoO2WoISPUSPckU2A0Xn.png"
+          ],
+          "url": "https://acero.ae/projects/cooper-pharmaceutical-production-plant-ma-a0200"
+        },
+        {
+          "jobNumber": "SA-A0428",
+          "buildingType": "Float Glass Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/4NKgEIFT2i1AFactErdBhi7abac5mnmtXE42UV48.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/4NKgEIFT2i1AFactErdBhi7abac5mnmtXE42UV48.png"
+          ],
+          "url": "https://acero.ae/projects/float-glass-factory-sa-a0428"
+        },
+        {
+          "jobNumber": "SN-A0229",
+          "buildingType": "Blending Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/axB0RodOvp1SKoNDD3v30v3uvZ6OJyIVS5WoS9qX.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/5HWdyFxto2dTHwjedgFnfrFpVrBGxcAQp0j618Zb.png",
+            "https://acero.ae/public/uploads/all/uHeSZTuzQPhIOHVRF3qFXTTgUuHyy2ppfPhgJiga.png",
+            "https://acero.ae/public/uploads/all/axB0RodOvp1SKoNDD3v30v3uvZ6OJyIVS5WoS9qX.png"
+          ],
+          "url": "https://acero.ae/projects/blending-plant-sn-a0229"
+        },
+        {
+          "jobNumber": "GE-A0102",
+          "buildingType": "Wood Processing Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/RRMUdRv2BF3E0IvXjp6ibjNNPyeb8D2ie4QHDLyr.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/RRMUdRv2BF3E0IvXjp6ibjNNPyeb8D2ie4QHDLyr.png",
+            "https://acero.ae/public/uploads/all/XNakPPjt6FVjzYsfmDqrT8FEIMTPMm9qfTIBOAxL.png"
+          ],
+          "url": "https://acero.ae/projects/wood-processing-factory-ge-a0102"
+        }
+      ]
+    },
+    {
+      "name": "Sports and Leisure",
+      "slug": "sports-and-leisure",
+      "image": "https://acero.ae/public/uploads/all/RT0wlaETyv8ON0EClCumVdfxXFLJtLPzC5IRr5tg.png",
+      "projects": [
+        {
+          "jobNumber": "GN-A0389",
+          "buildingType": "Gym",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/L2IKhVtEfBFucXqxVlcirOLiWeMIOzuJrHnMLBr8.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/dDnpmNo0VZKNRSa4SKQdamCIsSXu5iCqnQuYKL9J.png",
+            "https://acero.ae/public/uploads/all/VfmCa48JqJcLUY4Im5QaHAB002WwfrfAkIKUTpkE.png",
+            "https://acero.ae/public/uploads/all/L2IKhVtEfBFucXqxVlcirOLiWeMIOzuJrHnMLBr8.png"
+          ],
+          "url": "https://acero.ae/projects/gym-gn-a0389"
+        },
+        {
+          "jobNumber": "RW-A0270",
+          "buildingType": "Sports Hall",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/HfvOgTOFspf0JL4zJq4obUvpDNf8wm6CxpDXtYAS.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/HfvOgTOFspf0JL4zJq4obUvpDNf8wm6CxpDXtYAS.png",
+            "https://acero.ae/public/uploads/all/VRIbQWuzBICu3Zn4znHR95WH9faxMu1teGI8G9bd.png",
+            "https://acero.ae/public/uploads/all/5mECeg0lGK55ZjKIkKn3GouJvLxYOEAe5AiJPfBS.png"
+          ],
+          "url": "https://acero.ae/projects/sports-hall-rw-a0270"
+        },
+        {
+          "jobNumber": "CI-A0431",
+          "buildingType": "Club House",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/WVWmKaaBUbXDeZV88dnYcSuEAzdgn2aNPEdYHF2b.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/WpY8JkFVrdMIn0BQMMUdpkbMRikeckbpHWl8OCTG.png",
+            "https://acero.ae/public/uploads/all/RtHNX17FBIV74AJWucLgUdXdAzulCNyD9a0MNRid.png",
+            "https://acero.ae/public/uploads/all/Pauigq8A2jWr0I1zNk8rbtw3aueopAW4OBFD6xSZ.png",
+            "https://acero.ae/public/uploads/all/GTJsaEJsDUEhtylRWCGd3tYdUnDbV8By4ezzH8dc.png",
+            "https://acero.ae/public/uploads/all/WVWmKaaBUbXDeZV88dnYcSuEAzdgn2aNPEdYHF2b.png",
+            "https://acero.ae/public/uploads/all/mP9qcSet3LSfCSgsXzeiyLwdMoFbfzVFJRHQ096N.png",
+            "https://acero.ae/public/uploads/all/fCEOdwB98d7efpr06meGeM0emw3HNm7etBJll8rj.png"
+          ],
+          "url": "https://acero.ae/projects/club-house-ci-a0431"
+        },
+        {
+          "jobNumber": "SC-A0882",
+          "buildingType": "Paddle Court",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/RT0wlaETyv8ON0EClCumVdfxXFLJtLPzC5IRr5tg.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/RT0wlaETyv8ON0EClCumVdfxXFLJtLPzC5IRr5tg.png",
+            "https://acero.ae/public/uploads/all/axXlDfAPPqh3jCUlZqDp0gfg1WuTKfM6i2AhGaun.png",
+            "https://acero.ae/public/uploads/all/lYkz3SHjp2zoAwvzI9tAaVrHCAKGIWoDbcLjYMdC.png",
+            "https://acero.ae/public/uploads/all/A1i3TXeZHZU90PsKeCl7n45fHLIDnDZFe6Ktcgw6.png"
+          ],
+          "url": "https://acero.ae/projects/paddle-court-sc-a0882"
+        },
+        {
+          "jobNumber": "AE-A0500",
+          "buildingType": "Sports Facility",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/iadVFF81kdOQVNUS7uuDgzMbFQbbe92KzIRNp6cz.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/mAuVRDRjs2hzBAHXdfTVGDZrvRGJULyepdBg1fii.png",
+            "https://acero.ae/public/uploads/all/4k4P4TnKpANihaNTFClIqniT5tDsOTKOqkzNaNPg.png",
+            "https://acero.ae/public/uploads/all/iadVFF81kdOQVNUS7uuDgzMbFQbbe92KzIRNp6cz.png"
+          ],
+          "url": "https://acero.ae/projects/sports-facility-ae-a0500"
+        }
+      ]
+    },
+    {
+      "name": "Warehousing",
+      "slug": "warehousing",
+      "image": "https://acero.ae/public/uploads/all/FtdDijP0s2E4dKHMfdr4prNbJXa7BX0EnmV6JPtV.png",
+      "projects": [
+        {
+          "jobNumber": "MG-A1070",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/eT5W3Y4BSSz6RJIGXVlDAytbAEbw4TtAvS9PAnRq.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/okKCH37jNgwTqI5V8w3ELVutkZWSUWp7AVoT4zTy.png",
+            "https://acero.ae/public/uploads/all/eT5W3Y4BSSz6RJIGXVlDAytbAEbw4TtAvS9PAnRq.png",
+            "https://acero.ae/public/uploads/all/geIMmxmPpbVayY9XYwiGyIYTNEmcbsXKVk7mf2v3.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-mg-a1070"
+        },
+        {
+          "jobNumber": "GH-A0938",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/z8IAWDHdtIRW1i4cRNVVsau5Q5NIdozy1RpYxyn2.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/sNyjUueQMLecUpGQaZPBAJdTvWyl5bApL4fJ7FQF.png",
+            "https://acero.ae/public/uploads/all/z8IAWDHdtIRW1i4cRNVVsau5Q5NIdozy1RpYxyn2.png",
+            "https://acero.ae/public/uploads/all/HVkQtVbNukFKNz2EecEcLUVag5S2S463sGer2Usa.png",
+            "https://acero.ae/public/uploads/all/MHnPX2s9tQvQyMVw7lc42g8tw1CggQOMN5Jp3eeC.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-gh-a0938"
+        },
+        {
+          "jobNumber": "LR-A0980",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/9Ycu0KXrNHdO2dWBLuAapdSTtYo1WfDQoZvgUjaL.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/XzU4p3CQxuCcQbrRkNEV38P4KfuyHKBK5o4kubnb.png",
+            "https://acero.ae/public/uploads/all/AbQLHIoqia5tkEXvQxV11uxXgxHYQkAUU6trgLQq.png",
+            "https://acero.ae/public/uploads/all/3Cv2DmkEzAyEPBFlp1wU8TOu1N2P1vRAgee5H5Uo.png",
+            "https://acero.ae/public/uploads/all/9Ycu0KXrNHdO2dWBLuAapdSTtYo1WfDQoZvgUjaL.png",
+            "https://acero.ae/public/uploads/all/wT4KqQKlTREF9YGmroJqMgDVdE3xK1ckfeNaDlCt.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-lr-a0980"
+        },
+        {
+          "jobNumber": "DJ-A0901",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/lWgJcT21rL8bOzx2W54ezGxcWNwSQyHDxWx8eXYp.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/lWgJcT21rL8bOzx2W54ezGxcWNwSQyHDxWx8eXYp.png",
+            "https://acero.ae/public/uploads/all/vV8qsDvfpSd9LDRWAYF7jaNgMzRGmRhFi5KSE2bh.png",
+            "https://acero.ae/public/uploads/all/tqxQnLdVcxJzKNeS3Gh62XybNtGANCOH0HoKd599.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-dj-a0901"
+        },
+        {
+          "jobNumber": "TM-A0505",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/dv0uGgMfmbJ06ncXkzuYopOkQG4gv3lpbKh1l8SQ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/24mrKEOcCdqUJ292msXnGm5R84XSf9PyWCHXqUGv.png",
+            "https://acero.ae/public/uploads/all/AqrOTSeM1yNNOJJgw7wxbCikgSXd6ACugCdQUUYg.png",
+            "https://acero.ae/public/uploads/all/dv0uGgMfmbJ06ncXkzuYopOkQG4gv3lpbKh1l8SQ.png",
+            "https://acero.ae/public/uploads/all/DHGdQboBlX2zwu7HV7QXbHDFs26xpRyksG5Mi2yk.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-tm-a0505"
+        },
+        {
+          "jobNumber": "SN-A0977",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/q0mE6cMxwckYEqJO4SainPkr9W3UtDczEhgz3JNq.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/h5yDDK23mW59MRdg2Rn5dhWOzMrDrbW7cwzvv734.png",
+            "https://acero.ae/public/uploads/all/q0mE6cMxwckYEqJO4SainPkr9W3UtDczEhgz3JNq.png",
+            "https://acero.ae/public/uploads/all/59cg2jydHPMPAEp1u0TxWIG6LV89j8njxwWIqLXz.png",
+            "https://acero.ae/public/uploads/all/vwaOaTccG8F2IohmjfjDCWJ9ppsFA2Q4wZVumMo4.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0977"
+        },
+        {
+          "jobNumber": "AE-A0861",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/bNrotOZUJv6kCUA7cU2GFI1Lt0xbCcUtAt2h0tTF.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/8LeD6Pif48edhpUcpKBqla4YBh52DlAa9eaLMk4r.png",
+            "https://acero.ae/public/uploads/all/EtrS7cNaa768Sc2T2xZDswK8EmcdxnO2FnLzpRMh.png",
+            "https://acero.ae/public/uploads/all/YBEyNaEMu0XAQbXF17TFWilwnupnGEoAMiVjCCRV.png",
+            "https://acero.ae/public/uploads/all/bNrotOZUJv6kCUA7cU2GFI1Lt0xbCcUtAt2h0tTF.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0861"
+        },
+        {
+          "jobNumber": "MZ-A1043",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/sJOJANNRpQd3z9UlUEESKghZFZmQVZrgQdpTWuIv.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/byiIrn9Vms19YGXL7PqAlx0uyXY72fO1wFtfIzRl.png",
+            "https://acero.ae/public/uploads/all/1K0xeahF8F0feweG6MPfqsCDmVHqYKBufacH1FSc.png",
+            "https://acero.ae/public/uploads/all/sJOJANNRpQd3z9UlUEESKghZFZmQVZrgQdpTWuIv.png",
+            "https://acero.ae/public/uploads/all/v4jOsI3uct6939lIoqYANkWx6TbERd2u4CenUK0K.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-mz-a1043"
+        },
+        {
+          "jobNumber": "CI-A0960",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/rSiMLoIfyvK29w0pBV1Ucdj1TEO6w5HztMEyiRkx.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/wphq4CO5O1mEbrMRjRjhZXWduj5HUpOnEuhtDSuS.png",
+            "https://acero.ae/public/uploads/all/rSiMLoIfyvK29w0pBV1Ucdj1TEO6w5HztMEyiRkx.png",
+            "https://acero.ae/public/uploads/all/a84CLPvVitjofwqAyBk0seOO4OrHneED7VmF826F.png",
+            "https://acero.ae/public/uploads/all/YBC6ScftBIJTgPi1sDUPX8HP7gejfEiK5VUhpyET.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ci-a0960"
+        },
+        {
+          "jobNumber": "TZ-A0877",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/XJuEHRjnfw4YUSCvQ5tWCeHWMBWyyYn2Z4LaAigA.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Kssi6Y8uqCVhgAC5qkr88uySBAFLC8SDWFEV7qAw.png",
+            "https://acero.ae/public/uploads/all/yApJyFc2qNiBc0gXVIJ2fPL27r7Ro6Yllh9S7Wl6.png",
+            "https://acero.ae/public/uploads/all/TsY3QpmhuxGtKOODk1hbk3QFQQIkQXaC9xArzvde.png",
+            "https://acero.ae/public/uploads/all/YPYHDI9nlB4NTRELbBMTFx56BhLZyYCULf4HQTBL.png",
+            "https://acero.ae/public/uploads/all/GSIe8ikwy2B1OSidfBXYkMZaTo2rKN0gKWyPtN7o.png",
+            "https://acero.ae/public/uploads/all/XJuEHRjnfw4YUSCvQ5tWCeHWMBWyyYn2Z4LaAigA.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-tz-a0877"
+        },
+        {
+          "jobNumber": "AE-A0600",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/w8Mu83vUxVtisXqzP55OP1k27ojOAJXfEaS7fbPZ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/cEeX2yION1bUGPI1qb7n1kqVOXaOSecM6lEMfZJN.png",
+            "https://acero.ae/public/uploads/all/w8Mu83vUxVtisXqzP55OP1k27ojOAJXfEaS7fbPZ.png",
+            "https://acero.ae/public/uploads/all/yIvCfkEyNAGqCZpLX5uJambMX8TDWXiM5GwcoVhv.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0600"
+        },
+        {
+          "jobNumber": "SN-A0151",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Kj23zO35SL660iXXMkZvbejKdgbI1OboiAMhMNas.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/AicWUEm4mwjx8psj75G9e6s0KLbrJD5ASExb5P87.png",
+            "https://acero.ae/public/uploads/all/7cac8f6cSdZfdGsodRBl3dN7zPJdxmkZuStTAA5b.png",
+            "https://acero.ae/public/uploads/all/SkC36Us2Bs62SxvhwiP0Ysyj3hJMNdb3QilvgGhv.png",
+            "https://acero.ae/public/uploads/all/2w0nsyyJWrWKtNkdq9ik7uKfwOF77C0R35x4h4gn.png",
+            "https://acero.ae/public/uploads/all/MC71eZ5p6I2k5bpLDeP85r3iRoVzQrPyTQ2pqO3m.png",
+            "https://acero.ae/public/uploads/all/SoNIvnCEuWmsNKw3ccp95tt9vsAN3MBjGYlvD8ky.png",
+            "https://acero.ae/public/uploads/all/JuI4HwYrb5ApQQWkoIC7S4HEge6Y943gKSUufuDi.png",
+            "https://acero.ae/public/uploads/all/D44hvLP7cJt0yDXyEUvbKx2Omv8hZpn6Tek6DUbD.png",
+            "https://acero.ae/public/uploads/all/Kj23zO35SL660iXXMkZvbejKdgbI1OboiAMhMNas.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0151"
+        },
+        {
+          "jobNumber": "GH-A0942",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/GatTxkLxvG72nqclx40arUS3A5mquLG1wGvSLnfs.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/mVQReyiHjAskWcZhheejj8QXVK8TYuOu8JoUHJbW.png",
+            "https://acero.ae/public/uploads/all/549GqZDS2lMvGjiulWyQfJAFwY9dg1I0EZtSGc59.png",
+            "https://acero.ae/public/uploads/all/t4LvS94y1IlOSzQ7yRbLzmx6KX0A4l9LbbG1mB8X.png",
+            "https://acero.ae/public/uploads/all/a7jk3vvkB748kyKZARd0WB2LSTUynAiN0y5a1u4n.png",
+            "https://acero.ae/public/uploads/all/J3sVtjznQgfZewK9xqrvaEHyjUdkcwMjQrGyA9zs.png",
+            "https://acero.ae/public/uploads/all/HJwWgm3cOK6aP1JcvH4XfzYz63AqAzxaaiYEZ4w7.png",
+            "https://acero.ae/public/uploads/all/GatTxkLxvG72nqclx40arUS3A5mquLG1wGvSLnfs.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-gh-a0942"
+        },
+        {
+          "jobNumber": "SN-A0224",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/6oPt9Q7IN1PGx6UzlCLV3qjL82prpqSdTR0RoT4z.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/6oPt9Q7IN1PGx6UzlCLV3qjL82prpqSdTR0RoT4z.png",
+            "https://acero.ae/public/uploads/all/8tIYh9Rp5AEUB5Fsd2VLaNZe9IFe8F20i40TGyHB.png",
+            "https://acero.ae/public/uploads/all/B4NzwGOuchVXKb2Mip0cVpAOQVq3yaAYgamqCr2a.png",
+            "https://acero.ae/public/uploads/all/Zvh9QHGpOExVgyca6RUNdkmO9l9Eree0RtG3ZAYn.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0224"
+        },
+        {
+          "jobNumber": "SN-A0256",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/A6yhPABovbN7ZVxmat5SOhcZLvL9nMsXiSuuktX2.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/A6yhPABovbN7ZVxmat5SOhcZLvL9nMsXiSuuktX2.png",
+            "https://acero.ae/public/uploads/all/tD0KI2OWXBwFTfqsZ5Sn9pDuIDOJ07It7w0mjfsN.png",
+            "https://acero.ae/public/uploads/all/Gasf09TFgPRbc9NXOvghRYaHzOsx12Sjz706tKvU.png",
+            "https://acero.ae/public/uploads/all/DhJN2nOs4Or3US0dW8V4ImNLqcPjLJ8ZRxmfTnrk.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0256"
+        },
+        {
+          "jobNumber": "SN-A0145",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/YVjzyn0x5R8LmN82Ey8U6vHk5FKtgWecXUnQhj4X.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/YVjzyn0x5R8LmN82Ey8U6vHk5FKtgWecXUnQhj4X.png",
+            "https://acero.ae/public/uploads/all/neTtMy69CfOMTC2JtCA7AlDkUOEfVgDGdtc6Hc27.png",
+            "https://acero.ae/public/uploads/all/cibOsxpm4zwcBrfoZBGsMdJBVEp22QwkfLry40yI.png",
+            "https://acero.ae/public/uploads/all/6zNHCfjcj1TMVdrFueJn6kE1CxiFuFobloSDgzWW.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0145"
+        },
+        {
+          "jobNumber": "SC-A0221",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/W5bEXZ8PFUwehW4EjnKUZLQS6iCnupshzydtiJtU.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/W5bEXZ8PFUwehW4EjnKUZLQS6iCnupshzydtiJtU.png",
+            "https://acero.ae/public/uploads/all/Lr9SjMWX6fs5E9dXVvSKuqg4JibOGfYS4jWWaDWP.png",
+            "https://acero.ae/public/uploads/all/5GP2jSX15WnuzgJdTLBiLjpSkkzVDWZOX576wwGa.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sc-a0221"
+        },
+        {
+          "jobNumber": "SN-A0315",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/L8QcjdiF6pVK6fQUdcV1YAKyBIe04clPijbyUakm.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Ca5gNLNzPbUoert0FwXmc8a1oWqr0rKUiU2Vc2A5.png",
+            "https://acero.ae/public/uploads/all/L8QcjdiF6pVK6fQUdcV1YAKyBIe04clPijbyUakm.png",
+            "https://acero.ae/public/uploads/all/WaRkl4rzv74xWBFEoRICIQXyqIIIejsp5Aigt6Il.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0315"
+        },
+        {
+          "jobNumber": "KW-A0452",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/pmP0JvFd2E4au3g4A2UdSQhnrLBbT00MHeHtIJbB.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/uxPaprEWtNDCV8YBym5xhL5GNO28bOqD5MgmOHtx.png",
+            "https://acero.ae/public/uploads/all/GRiSEJLDKQxGh2hwbv8IQls9CpF7s4CXejpGia5J.png",
+            "https://acero.ae/public/uploads/all/pmP0JvFd2E4au3g4A2UdSQhnrLBbT00MHeHtIJbB.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-kw-a0452"
+        },
+        {
+          "jobNumber": "CV-A0511",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/pIa9Lw9rOnxBG24FI1sngHAGsie3g6FclRF8hgsp.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/mT9bp3OadoMalSRbEVW8h5Ms341XLIxusfSoHk4l.png",
+            "https://acero.ae/public/uploads/all/wDweVs6dChexJhPgv2FUaw6kmeTzTQXN0bAphuA1.png",
+            "https://acero.ae/public/uploads/all/pIa9Lw9rOnxBG24FI1sngHAGsie3g6FclRF8hgsp.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-cv-a0511"
+        },
+        {
+          "jobNumber": "ET-A0129",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/26hHc90RinQPP8ETnC2U0PPQkSWcwA7iXNaotesg.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/26hHc90RinQPP8ETnC2U0PPQkSWcwA7iXNaotesg.png",
+            "https://acero.ae/public/uploads/all/SdqA330kajzgzzQmSwul3ek77hIvVq95S9QklcNd.png",
+            "https://acero.ae/public/uploads/all/N6an8L5r5TxU8pIT9O32kcRC2qigLUtWo1p90nQY.png",
+            "https://acero.ae/public/uploads/all/A530aYPqFKh8DMu9R8SksiM4pocw37dAsWHrwgmh.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-et-a0129"
+        },
+        {
+          "jobNumber": "SN-A0503",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Xhvj1y6RRecsnbn09ElsJYY6lm6HnBZE2aaztv9z.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/T7EYhTt7fn4cf113d7PXKbtVMfc80KVsaJy9wZKp.png",
+            "https://acero.ae/public/uploads/all/Xhvj1y6RRecsnbn09ElsJYY6lm6HnBZE2aaztv9z.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0503"
+        },
+        {
+          "jobNumber": "DZ-A0843",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/PCq4XeQbfG1Yd0VXhSkrLlE9zZHlmGvhxJLhVihc.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Zh5IYyz8Xw6GS6V0DGQpf0qD5a6N431kf0tnKXPd.png",
+            "https://acero.ae/public/uploads/all/PCq4XeQbfG1Yd0VXhSkrLlE9zZHlmGvhxJLhVihc.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-dz-a0843"
+        },
+        {
+          "jobNumber": "GE-A0385",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/OIm3T1LISzxbAf1slimEueDSPSNNgsQusH3INR7i.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/OIm3T1LISzxbAf1slimEueDSPSNNgsQusH3INR7i.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ge-a0385"
+        },
+        {
+          "jobNumber": "TG-A0699",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/XQYZ6PBWvYjT1aV8ded4Fe3giZgeib6F3CP34lNp.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/3xvuM75V7irSuVvD0ulwTaYfY4ywMrCzLva5bFn3.png",
+            "https://acero.ae/public/uploads/all/XQYZ6PBWvYjT1aV8ded4Fe3giZgeib6F3CP34lNp.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-tg-a0699"
+        },
+        {
+          "jobNumber": "AE-A0285",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/80paJzh58zdGfRnnzHazZ739XMpnqTZM4O2wHsO3.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/80paJzh58zdGfRnnzHazZ739XMpnqTZM4O2wHsO3.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0285"
+        },
+        {
+          "jobNumber": "CZ-A0701",
+          "buildingType": "Building Material Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/6gOswLJe11z2cv8vbxhX7YenkEAbKKdUAolENZio.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/6gOswLJe11z2cv8vbxhX7YenkEAbKKdUAolENZio.png"
+          ],
+          "url": "https://acero.ae/projects/building-material-warehouse-cz-a0701"
+        },
+        {
+          "jobNumber": "AE-A0375",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/oK4VBwY6J0zGZ7ub465EwdWXzrvGqUiAvk2ra4V8.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/LIfh6R0jTtMELhBBUB19vQVyBfYOgP2k9F35UH9n.png",
+            "https://acero.ae/public/uploads/all/oK4VBwY6J0zGZ7ub465EwdWXzrvGqUiAvk2ra4V8.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0375"
+        },
+        {
+          "jobNumber": "AE-A0715",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/TmESWt9IHsXeOMs8ohjSbN90lDdSYrDHPXuZfnaI.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/EcSfuEurmKYXJJd2HWJtdXCd3MsSnBS1QlMofifE.png",
+            "https://acero.ae/public/uploads/all/TmESWt9IHsXeOMs8ohjSbN90lDdSYrDHPXuZfnaI.png",
+            "https://acero.ae/public/uploads/all/xS6LUFBqEI0wkMtAciJ4vc4vj8mMyM4LqsCExIbc.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0715"
+        },
+        {
+          "jobNumber": "AE-A0796",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/4jee1WIYQbCYOiIjZFk8Q820r2iXsPYaOitHdHrS.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/jQm1WHF7XCJWlDTluSZqX6QGW5FUmeBRa3BDlo7V.png",
+            "https://acero.ae/public/uploads/all/4jee1WIYQbCYOiIjZFk8Q820r2iXsPYaOitHdHrS.png",
+            "https://acero.ae/public/uploads/all/xRMGNVHVowqiNZJ4Lqgjs5LseJ8pR4qAlNeOKHRx.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0796"
+        },
+        {
+          "jobNumber": "DZ-A0263",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/iaOA8GLpigFrgAu4KNJ66Uvbcfp0MsZRGZcYLLyz.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/1aLMyC2bSh2iqmewfK3QlYuPWySevDcGAzNXc3Qn.png",
+            "https://acero.ae/public/uploads/all/iaOA8GLpigFrgAu4KNJ66Uvbcfp0MsZRGZcYLLyz.png",
+            "https://acero.ae/public/uploads/all/vEutqdDAm3evFi5lAucMqpUxrRbZDshdwnOzmDht.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-dz-a0263"
+        },
+        {
+          "jobNumber": "MG-A0935",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/T3peRWomnxLx9MEUYKcswgVbyfuqJ8p3FrqJCwas.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/1Wmf8mLvVZn9vvkspjeRwLhMxcBSYt4UWxZE1KbT.png",
+            "https://acero.ae/public/uploads/all/T3peRWomnxLx9MEUYKcswgVbyfuqJ8p3FrqJCwas.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-mg-a0935"
+        },
+        {
+          "jobNumber": "CI-A0179",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/zmYKF18EjRboohAiksoAFbWSUSHp8Zd58uGlFqBp.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/zmYKF18EjRboohAiksoAFbWSUSHp8Zd58uGlFqBp.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ci-a0179"
+        },
+        {
+          "jobNumber": "CI-A0251",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/FtdDijP0s2E4dKHMfdr4prNbJXa7BX0EnmV6JPtV.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/FtdDijP0s2E4dKHMfdr4prNbJXa7BX0EnmV6JPtV.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ci-a0251"
+        },
+        {
+          "jobNumber": "ET-A0902",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/P857jaMLB91odwgKshxZPE60BtW5qLWQgUlKI9iG.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/P857jaMLB91odwgKshxZPE60BtW5qLWQgUlKI9iG.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-et-a0902"
+        },
+        {
+          "jobNumber": "GE-A0419",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/5uIjGycG0R5pFulM14rDTApSCAIhUQjtrKDpLDou.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/VOGPG1QYnUIbxUBcuvWcMLxLh9qnynjgjAs3lNKa.png",
+            "https://acero.ae/public/uploads/all/cGLfRVpVyNtR1NhmYIsTfpuYO3Qt7ZZC9sRI7lAQ.png",
+            "https://acero.ae/public/uploads/all/5uIjGycG0R5pFulM14rDTApSCAIhUQjtrKDpLDou.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ge-a0419"
+        },
+        {
+          "jobNumber": "RW-A0354",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/UN1GBPGs3MJsNCa9aKktE4TC1RCMXKUCGfMg0Kr7.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/dL4eJny13KeGjQM11G2v0euuUSFWQbBEml3u9Hgd.png",
+            "https://acero.ae/public/uploads/all/8LPDSPvmUyiL4aZr4rOpECswN76cvIRWmtWdKoyK.png",
+            "https://acero.ae/public/uploads/all/UN1GBPGs3MJsNCa9aKktE4TC1RCMXKUCGfMg0Kr7.png",
+            "https://acero.ae/public/uploads/all/YQViFNRgVas2Jied2TFujoSo3FKF4RRscbl6EJCt.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-rw-a0354"
+        },
+        {
+          "jobNumber": "SA-A0279",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/ZG3qN32pAVUp1FrhGv5zy7ht68QzzkRNHldhMTag.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/rBdNZEB51ZgPsrTZh3Ue9Tb3GCDK07qi1DO7EzTf.png",
+            "https://acero.ae/public/uploads/all/OTTidZQ5q83CDdZZvEQ79K4si6nemIl8gsUpSoIU.png",
+            "https://acero.ae/public/uploads/all/ZG3qN32pAVUp1FrhGv5zy7ht68QzzkRNHldhMTag.png",
+            "https://acero.ae/public/uploads/all/LAxiNreLHST4SE6EawbizzjLrrigN6ApqUoqioML.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sa-a0279"
+        },
+        {
+          "jobNumber": "SN-A0126",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/bsbtehHMCP6uvxrT15uPHfkwnveusaIZQLPMMjbN.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/3GUubMzA0PZ6W1VZy1FrXuGgJm9s6Xqd5vDPeiGl.png",
+            "https://acero.ae/public/uploads/all/94igzkVEHbU7Bl05NFfge1tnuWrW9KMLnyblEIT2.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0126"
+        },
+        {
+          "jobNumber": "AE-A0524",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Ar8U10AwrzHUuAALkzOliuh7AG4fw2M7yXN302HC.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/BHaQXFicTq02rr4kagukkCiKsTNmv4e4Hy3zKBF5.png",
+            "https://acero.ae/public/uploads/all/Ar8U10AwrzHUuAALkzOliuh7AG4fw2M7yXN302HC.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0524"
+        },
+        {
+          "jobNumber": "AE-A0342",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/COSyFT0wBWw55xNHz1NOXhvpR2fC26hcjvxU7wOC.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/nBoJmGwQ5yJRAakfgS4JVaZsj6aEjVmaf5yI8i4c.png",
+            "https://acero.ae/public/uploads/all/COSyFT0wBWw55xNHz1NOXhvpR2fC26hcjvxU7wOC.png",
+            "https://acero.ae/public/uploads/all/RVO2OPjXyFtRlSkkcQQpdx8IN2ZAliwJgo74tWOE.png",
+            "https://acero.ae/public/uploads/all/U3TN6ARO7nSpemV9067WNDcSWkRtlFKb05FF4kDQ.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0342"
+        },
+        {
+          "jobNumber": "DJ-A0749",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/S5ZE7RdAvFkBnap63NXkzJ3pJStWkTc8IQBv8zjC.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/eYfHUIrQvyESHB98OW7q2inw8gd7kRp3LOQpAAjT.png",
+            "https://acero.ae/public/uploads/all/8zHfpOjvvrtVBWgfzjIUnUSRokASJZaxOsinBJNY.png",
+            "https://acero.ae/public/uploads/all/S5ZE7RdAvFkBnap63NXkzJ3pJStWkTc8IQBv8zjC.png",
+            "https://acero.ae/public/uploads/all/vF2XoKbRo12HHAhzPfwa2GzzcmgussVhdSWSuonl.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-dj-a0749"
+        },
+        {
+          "jobNumber": "SN-A0164",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/txxXvFTHRazn8YgsDs72R1kvB1J4hrUOiEePdKzf.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/txxXvFTHRazn8YgsDs72R1kvB1J4hrUOiEePdKzf.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-sn-a0164"
+        },
+        {
+          "jobNumber": "CZ-A0206",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/syyYs2bRGbY8qr6sLg6LBkSH6h4avBXTWtvsfCM8.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/syyYs2bRGbY8qr6sLg6LBkSH6h4avBXTWtvsfCM8.png",
+            "https://acero.ae/public/uploads/all/Z8rqiDPQuPGrnnEbIQMaHLhkO8cmf6I13kL30SjC.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-cz-a0206"
+        },
+        {
+          "jobNumber": "AE-A0208",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/q49djeSzelW1x4Fir94F9P96oDOYIseXydOhYnFw.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/s2U9Y64MPS7cdQABOPZNWfjRKMUu1pRcljJptXym.png",
+            "https://acero.ae/public/uploads/all/StMzRYU5s9xeuAqpGsmsTK8mIGC478rCS2pe0eG2.png",
+            "https://acero.ae/public/uploads/all/q49djeSzelW1x4Fir94F9P96oDOYIseXydOhYnFw.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-ae-a0208"
+        },
+        {
+          "jobNumber": "AE-A0491",
+          "buildingType": "Storage Shed",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/WcDeBMg8ZkAPRFZ8p9N6nWdftMtJaeirt4tjq0Hx.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/UOCsUzxTPBBo4wchwcfunigOgjVNN2TYUdguisUE.png",
+            "https://acero.ae/public/uploads/all/WcDeBMg8ZkAPRFZ8p9N6nWdftMtJaeirt4tjq0Hx.png"
+          ],
+          "url": "https://acero.ae/projects/storage-shed-ae-a0491"
+        },
+        {
+          "jobNumber": "GW-A0135",
+          "buildingType": "Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/UVqc4I9VN9JTQijxnnJCJ0YPf2Kh6d5z5ASiCitP.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/UVqc4I9VN9JTQijxnnJCJ0YPf2Kh6d5z5ASiCitP.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-gw-a0135"
+        }
+      ]
+    },
+    {
+      "name": "Workshops",
+      "slug": "workshops",
+      "image": "https://acero.ae/public/uploads/all/fvrsSowCI1KxEAuKMkmdHVXiubXoste3bc2tg0dQ.png",
+      "projects": [
+        {
+          "jobNumber": "UZ-A0312",
+          "buildingType": "Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/XmxqrnFln5QBM833LIjSnbpjYyuu8MdJYMqxoJh5.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/XmxqrnFln5QBM833LIjSnbpjYyuu8MdJYMqxoJh5.png",
+            "https://acero.ae/public/uploads/all/gF105yWMCVo6lCHzgfpTwQ1UDbrvPGtUSUGHvt2v.png",
+            "https://acero.ae/public/uploads/all/pJ5Jc8XiMAhkl7UQXsldrZwaIDT2JmbwY9jiWpKq.png",
+            "https://acero.ae/public/uploads/all/f8J2ehgBA0NVQAU7chhNKvgD8YkzE7ZFvpj0Z9AZ.png"
+          ],
+          "url": "https://acero.ae/projects/workshop-uz-a0312"
+        },
+        {
+          "jobNumber": "QA-A0282",
+          "buildingType": "Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/eyus027eM7wDcFwtdAdWFJn39BB7aMiU8e3MgmXi.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/eyus027eM7wDcFwtdAdWFJn39BB7aMiU8e3MgmXi.png",
+            "https://acero.ae/public/uploads/all/94AqJoHgkO0FjEyv0NE7uuCmccz3r5nUQa9Hopd5.png"
+          ],
+          "url": "https://acero.ae/projects/workshop-qa-a0282"
+        },
+        {
+          "jobNumber": "AE-A0122",
+          "buildingType": "Garage for Fire Trucks",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/V7kuRIM2IzCkWsLuHNrogJFgVrjiZeS6YjFIztHV.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/V7kuRIM2IzCkWsLuHNrogJFgVrjiZeS6YjFIztHV.png",
+            "https://acero.ae/public/uploads/all/OkNhkFtelfcubla53yUGeKWrlwrfpj6WyT9jFUeC.png",
+            "https://acero.ae/public/uploads/all/KmFwJCHKIWaObwc60FB84hAHkQbdk3Mfc1tg27Zv.png",
+            "https://acero.ae/public/uploads/all/NaHqoka8SnpfEwS38uEKOIJIDptcY11TOJ7ueg0r.png"
+          ],
+          "url": "https://acero.ae/projects/garage-for-fire-trucks-ae-a0122"
+        },
+        {
+          "jobNumber": "ZM-A0430",
+          "buildingType": "Automotive Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/u7MpnzMyQS0wHyWFsIfySXFLGxIfUxuTmZhyleMs.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/8eKjSQFm5OfcVC4VMy2gizG3yUkg9jDme8zMRSOI.png",
+            "https://acero.ae/public/uploads/all/lDmQMdCqPi8CVfQPweNxpsG44uCQTOWvUzDjtVj4.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-workshop-zm-a0430"
+        },
+        {
+          "jobNumber": "GE-A0441",
+          "buildingType": "Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/RAwUlGnipEjsnb6RMU7qPIzBwEWehGTaohegvLzR.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/MDplbhzggg3Cl8SbnNiuLitiEObYWOucHaNoW70J.png",
+            "https://acero.ae/public/uploads/all/RAwUlGnipEjsnb6RMU7qPIzBwEWehGTaohegvLzR.png",
+            "https://acero.ae/public/uploads/all/lYmYaUJyvZtSRAwWRkCD8E3aiyonDqoc0CctaQEc.png"
+          ],
+          "url": "https://acero.ae/projects/workshop-ge-a0441"
+        },
+        {
+          "jobNumber": "OM-A0114",
+          "buildingType": "Furniture Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/A0We5izn0gChG6V2yO4q0wddynlKWE2wmHpssZWP.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/A0We5izn0gChG6V2yO4q0wddynlKWE2wmHpssZWP.png"
+          ],
+          "url": "https://acero.ae/projects/furniture-workshop-om-a0114"
+        },
+        {
+          "jobNumber": "OM-A0218",
+          "buildingType": "Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/fmSlEzipgFKzMPptP25Vf8wIYaoI07zbfZTBgCe4.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/fmSlEzipgFKzMPptP25Vf8wIYaoI07zbfZTBgCe4.png"
+          ],
+          "url": "https://acero.ae/projects/workshop-om-a0218"
+        }
+      ]
+    },
+    {
+      "name": "Auto Dealership",
+      "slug": "auto-dealership",
+      "image": "https://acero.ae/public/uploads/all/zRa5alCRbhRHEuZ6QSKIRIR81vbACSN8HimQjg2I.png",
+      "projects": [
+        {
+          "jobNumber": "SN-A0150",
+          "buildingType": "Automotive Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/GdSXf7CmbzwrbB462UwV4fotifKlRe3QxEtq1Umh.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/xqH2AlDEoYMsTE9McH7eKkZQcKW0D4FWnThO4ahf.png",
+            "https://acero.ae/public/uploads/all/GdSXf7CmbzwrbB462UwV4fotifKlRe3QxEtq1Umh.png",
+            "https://acero.ae/public/uploads/all/us5qElyQpYR3JeCYQanwLBZQwhpvBywSc2nWD5b9.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-workshop-sn-a0150"
+        },
+        {
+          "jobNumber": "IQ-A0929",
+          "buildingType": "Automotive Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/adgut3w888NOz5qC18hCSI4HFFm5nQslr0ypAq65.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Q0M2tPZtDv4fldLdShoXKSwRvDrA4H029rGGaLz8.png",
+            "https://acero.ae/public/uploads/all/rW4JqCUAqj3Seb5k7pDlXk8j9lfTJGblyfmQoEG7.png",
+            "https://acero.ae/public/uploads/all/adgut3w888NOz5qC18hCSI4HFFm5nQslr0ypAq65.png",
+            "https://acero.ae/public/uploads/all/No5FWEn3UP3pJGAZwev5PKV9wDMLiOBkCs0RgfDq.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-showroom-iq-a0929"
+        },
+        {
+          "jobNumber": "GE-A0928",
+          "buildingType": "Automotive Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/BkV6WybU675lFZhyivjBGhoIAK7uRIr1HVmw5rmh.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/G7JMwX7KsLldmMmP7KAbsVp435FGZhnOALLF6Btk.png",
+            "https://acero.ae/public/uploads/all/BkV6WybU675lFZhyivjBGhoIAK7uRIr1HVmw5rmh.png",
+            "https://acero.ae/public/uploads/all/OGJTds1yc0hrIzXb9JxaY0czK1lSuCH5X90TxGmB.png",
+            "https://acero.ae/public/uploads/all/PFUVh4AH49QwKN62YeMPL1nesrHWkFb0T8MXogBT.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-showroom-ge-a0928"
+        },
+        {
+          "jobNumber": "GE-A0421",
+          "buildingType": "Truck Service Center",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/LuODWdvyFY3HAEf40PzqICiuRHJmLpuYNYMFRIRY.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/k4p6pBWiJyc1O6HEa9vLOLTIn3pA9GU6tGxUKhCt.png",
+            "https://acero.ae/public/uploads/all/LuODWdvyFY3HAEf40PzqICiuRHJmLpuYNYMFRIRY.png"
+          ],
+          "url": "https://acero.ae/projects/truck-service-center-ge-a0421"
+        },
+        {
+          "jobNumber": "AE-A0211",
+          "buildingType": "Forklift Showroom and Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/OGq8Hj4ta1GMmeRLjal1GIYzAK7xoHE9uO3Hdvxe.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/ne7bOVkB4Twvy69usAl5dy52474v1QySKzxVqYRr.png",
+            "https://acero.ae/public/uploads/all/HcSgcMthol4fhlJUCLvplpMe4eBfg97j1WvbltaI.png",
+            "https://acero.ae/public/uploads/all/OGq8Hj4ta1GMmeRLjal1GIYzAK7xoHE9uO3Hdvxe.png"
+          ],
+          "url": "https://acero.ae/projects/forklift-showroom-and-workshop-ae-a0211"
+        },
+        {
+          "jobNumber": "GE-A0832",
+          "buildingType": "Automotive Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/kaGoehJHb7kjrvhRiUxRz9hXBkoIrkQ5cA75a61A.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/amMzte3XFbU9rDu7fDeZ3Noprb38MBhPEHlnVwSp.png",
+            "https://acero.ae/public/uploads/all/xvPMApHqf4Rl0hAk6dVkLrb35K2IHgCHfh0elqW5.png",
+            "https://acero.ae/public/uploads/all/Nbu6LiitNuJoQbOsct8FVeprlVdnHQ7spyBmOeEt.png",
+            "https://acero.ae/public/uploads/all/kaGoehJHb7kjrvhRiUxRz9hXBkoIrkQ5cA75a61A.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-showroom-ge-a0832"
+        },
+        {
+          "jobNumber": "GE-A0795",
+          "buildingType": "Automotive Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/zRa5alCRbhRHEuZ6QSKIRIR81vbACSN8HimQjg2I.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/zRa5alCRbhRHEuZ6QSKIRIR81vbACSN8HimQjg2I.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-showroom-ge-a0795"
+        },
+        {
+          "jobNumber": "IQ-A0304",
+          "buildingType": "Automotive Cars Showroom and Service Centre",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/EteoyzIOY4UnXw66J7jWSFttE4fL3j7AY31L6mns.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/DTgIU8qNUaw7YC6zKIjSX6TRAa1czBytkVguXI0F.png",
+            "https://acero.ae/public/uploads/all/Cvxx88D9R8TyHb3Ahw28f441avSWZucYVSJrfb18.png",
+            "https://acero.ae/public/uploads/all/c7Qdl5mpHAlpXiavKVBJ58s0UpS0mP9Khk6hYoKc.png",
+            "https://acero.ae/public/uploads/all/CpgiLda2Fm7Mxzxglr2GOQbgV6qbHg87JsrSCnwo.png",
+            "https://acero.ae/public/uploads/all/EteoyzIOY4UnXw66J7jWSFttE4fL3j7AY31L6mns.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-cars-showroom-and-service-centre-iq-a0304"
+        },
+        {
+          "jobNumber": "SC-A0574",
+          "buildingType": "Automotive Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/bJWIsfB9oGVUtW1gdSPuewXldZgkfyn1ZCs2182B.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/XXZILMLPWVyk56apgh7lH9Q0BFOHJWiY8MdWWzoE.png",
+            "https://acero.ae/public/uploads/all/bJWIsfB9oGVUtW1gdSPuewXldZgkfyn1ZCs2182B.png",
+            "https://acero.ae/public/uploads/all/NMPwi6lIu0XWvixDihwmPFfJGj8lC4H11pAf7SW0.png",
+            "https://acero.ae/public/uploads/all/QdYVmg8yDcaYQN5SHNLzK34Q2YmOGQNilPAfjQSI.png",
+            "https://acero.ae/public/uploads/all/vgIeP0moeTw95cNl1Xo2jAEb25xG85UG2c8I1rxg.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-showroom-sc-a0574"
+        },
+        {
+          "jobNumber": "SN-A0444",
+          "buildingType": "Automotive Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/JxqAjBvZDgHETwmJfIDdYKqeHaiUbhdiaSOunRYD.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/6F7jwz0qqir1aadYxn90ptfLM8OrIJPrX8aQScRF.png",
+            "https://acero.ae/public/uploads/all/aaRk3wueSTY16UUAfCFtGwBqNm4AE2rjClQDIn5q.png",
+            "https://acero.ae/public/uploads/all/oIZK3Fr4ip46eJEJDEkXbzPApxtNLqhOfN5KE6dQ.png",
+            "https://acero.ae/public/uploads/all/JxqAjBvZDgHETwmJfIDdYKqeHaiUbhdiaSOunRYD.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-showroom-sn-a0444"
+        },
+        {
+          "jobNumber": "GE-A0116",
+          "buildingType": "Automotive Workshop",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/tX2BB3luXAGAkeSQsmvt8EQ1ZvUjjp1ySRhBvp6V.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/nTmyxvjDDMlmzImo6bKOUXdUiR1DzhQxS52S0OhY.png",
+            "https://acero.ae/public/uploads/all/dciDW02fZe23glhwAhK5YqdlI3MBw86tI6wU6QbA.png",
+            "https://acero.ae/public/uploads/all/CagQDycDpGBYW0kdGpUFZSvCnSRK4CalQu0pUNJw.png",
+            "https://acero.ae/public/uploads/all/X6M4gximnm1YbJXGONHjixFPC9YPnjoV9ZqBIOLf.png",
+            "https://acero.ae/public/uploads/all/tX2BB3luXAGAkeSQsmvt8EQ1ZvUjjp1ySRhBvp6V.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-workshop-ge-a0116"
+        },
+        {
+          "jobNumber": "GE-A0214",
+          "buildingType": "Automotive Cars Showroom and Service Centre",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/wHSZjBgVrj3Ss2FgFXoy5cQPBCQXb0soRmWT7FOQ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/JnOd0pKSlmkSCF8cGsLj7SlJgSFUw3OXn1yBzfTT.png",
+            "https://acero.ae/public/uploads/all/wHSZjBgVrj3Ss2FgFXoy5cQPBCQXb0soRmWT7FOQ.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-cars-showroom-and-service-centre-ge-a0214"
+        },
+        {
+          "jobNumber": "GE-A0563",
+          "buildingType": "Automotive Cars Showroom and Service Centre",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/tnkXlqpLbnCJzCifPPZCoxoXJ8PLvOpc8QTP0jqs.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/IpK1Pt7BXjhoVmCIM8ve82xT4tkNmh0UFiPam44A.png",
+            "https://acero.ae/public/uploads/all/NflPenowNoTTfGBlnivG2GPSflZKJViEv4N9YGZf.png",
+            "https://acero.ae/public/uploads/all/tnkXlqpLbnCJzCifPPZCoxoXJ8PLvOpc8QTP0jqs.png",
+            "https://acero.ae/public/uploads/all/uTBJ5lwMimxkdQHV3npX79u2YomlKiVrSbB2awvM.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-cars-showroom-and-service-centre-ge-a0563"
+        }
+      ]
+    },
+    {
+      "name": "Food And Beverage",
+      "slug": "food-and-beverage",
+      "image": "https://acero.ae/public/uploads/all/6bpUl1eKUnP2YtfdbhugvwXrnJ4OQMin26EmIeGx.png",
+      "projects": [
+        {
+          "jobNumber": "CM-A1000",
+          "buildingType": "Brewery Building",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/wXESVzJeceGaJ5gvxly5GixjCJ7tEufiJ7c2NpUz.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/BZKAJ8nV84OXZXjtcPGxpA54EdABXtDvFVrIdmva.png",
+            "https://acero.ae/public/uploads/all/wXESVzJeceGaJ5gvxly5GixjCJ7tEufiJ7c2NpUz.png",
+            "https://acero.ae/public/uploads/all/zNNkKEObf3cXxv7i2MorS9f38zWv54JyN6IthZP7.png",
+            "https://acero.ae/public/uploads/all/m4A5qR0YRyWkTn9GrhfOBPb8jultgLuyHaaGESgE.png"
+          ],
+          "url": "https://acero.ae/projects/brewery-building-cm-a1000"
+        },
+        {
+          "jobNumber": "GH-A0855",
+          "buildingType": "Beverage Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/YE5jXz2IdfSNqtr3GhqbykKmzmAg7K4nEs33aCO7.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/fuGqO3iJhT1Id32TWmVCJwGJ9rQY05jX26b8PIGE.png",
+            "https://acero.ae/public/uploads/all/LL1J7yA4fgLcQ1A8Pp9GBQHAYXGoGN3Z3NWZDXDA.png",
+            "https://acero.ae/public/uploads/all/xakj2y9HaOsurtku5tNMlk7wW67bAfCrQqT7mCWG.png",
+            "https://acero.ae/public/uploads/all/eB1Kom0ragnOmBA24mCJ2kK7OipQwhbrp8XKWp9K.png",
+            "https://acero.ae/public/uploads/all/h6odzr58PQVwqJoMXGpOEx9nVzV9qzHc5dZu2JeZ.png",
+            "https://acero.ae/public/uploads/all/dQQkqrhTRJXjvbxAKJI2vcCRz9sXixWUYQxyo1RV.png",
+            "https://acero.ae/public/uploads/all/PZoBJV9gPeVj3uhswJArqoNcpiJo97QiKbp0AfqB.png",
+            "https://acero.ae/public/uploads/all/XqynN1uRoc0d1RYeJ5QsW2lDwwD31BydIDqu5UGp.png",
+            "https://acero.ae/public/uploads/all/fHwZqRVKoJQihUvTT6PGO8hYhyHcUEzXVRtvRbTA.png",
+            "https://acero.ae/public/uploads/all/vDfs6kyiXUCwIgZ6XoNEOFzhOwVINmsQ4KNspLXT.png",
+            "https://acero.ae/public/uploads/all/YE5jXz2IdfSNqtr3GhqbykKmzmAg7K4nEs33aCO7.png",
+            "https://acero.ae/public/uploads/all/EdFPdb8qVICHTJESSV0OucfzDDABu1BEnG4xVvJD.png"
+          ],
+          "url": "https://acero.ae/projects/beverage-factory-gh-a0855"
+        },
+        {
+          "jobNumber": "GE-A0303",
+          "buildingType": "Natural Spring Mineral Water Bottling Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/6bpUl1eKUnP2YtfdbhugvwXrnJ4OQMin26EmIeGx.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/6bpUl1eKUnP2YtfdbhugvwXrnJ4OQMin26EmIeGx.png",
+            "https://acero.ae/public/uploads/all/beCQxOnrO1AFELc6xmCbBrrN8t5edKfqietSosTJ.png",
+            "https://acero.ae/public/uploads/all/udyxbmerjLKllOtIirHYQUZJieHCubHfV34Pg3CS.png",
+            "https://acero.ae/public/uploads/all/PcVwGil0Fq4pCVcl0hVvDEVSAP6DgApVaj5LI9Hq.png",
+            "https://acero.ae/public/uploads/all/ztB7U28Yr0lWt93WsD887RCpNip6hcbQBrOQ0eZ2.png",
+            "https://acero.ae/public/uploads/all/yEe36F9ZGnL7e9q8BR2KQJTNDCwqngVMxNwp5baz.png",
+            "https://acero.ae/public/uploads/all/D506rNYseNq9yEmjo00d5oXb0rU6AdcByFUh3E8Q.png",
+            "https://acero.ae/public/uploads/all/BhXNxW7hYXuAYobC1vKN1MwDRZtNydG4iYnSRAoa.png"
+          ],
+          "url": "https://acero.ae/projects/natural-spring-mineral-water-bottling-factory-ge-a0303"
+        },
+        {
+          "jobNumber": "CI-A0616",
+          "buildingType": "Beverage Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/rtfdMHpGvOc8VIDS3xqBK5jjXUFfylGOA9m78cJb.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/bbuA0k4KBo9iqfF8rVWYrhs3mUVczOZcJ5nOAySO.png",
+            "https://acero.ae/public/uploads/all/wHjrYVtLlTTTv4ByoZ02dtm9WWiZLGqOzXtWVVId.png",
+            "https://acero.ae/public/uploads/all/rtfdMHpGvOc8VIDS3xqBK5jjXUFfylGOA9m78cJb.png",
+            "https://acero.ae/public/uploads/all/SmdKKlB3o9XKvj5E8K2KqJllO6e1p7l0FO7tjJY4.png"
+          ],
+          "url": "https://acero.ae/projects/beverage-factory-ci-a0616"
+        },
+        {
+          "jobNumber": "CI-A0579",
+          "buildingType": "Palm Oil Factory and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Y9nZYK4Xj6ouYOL4gvJqz5SPY6GoInKNaiHeercO.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/HpwWkPQK9oVfzLjWNbaJTf3zYpaSWSUtqzr9dU1z.png",
+            "https://acero.ae/public/uploads/all/Y9nZYK4Xj6ouYOL4gvJqz5SPY6GoInKNaiHeercO.png",
+            "https://acero.ae/public/uploads/all/F29EN28Uz8ZOYPlpbRYX9fZ9rIUXXBIKwx5ZyJab.png"
+          ],
+          "url": "https://acero.ae/projects/palm-oil-factory-and-warehouse-ci-a0579"
+        },
+        {
+          "jobNumber": "ET-A0328",
+          "buildingType": "Coffee Processing Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/3t1te4I9I6tvJozyDlz4GdZn29SA8G0tpMSGrHGC.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/3t1te4I9I6tvJozyDlz4GdZn29SA8G0tpMSGrHGC.png",
+            "https://acero.ae/public/uploads/all/j5zQce2j7Le2AIULpZMdASvnjf5hzB65L9KHiqNw.png",
+            "https://acero.ae/public/uploads/all/ioF6FhF1GQOdqD4SEELkmH9CPo12ynTZMaGReMsA.png"
+          ],
+          "url": "https://acero.ae/projects/coffee-processing-plant-et-a0328"
+        },
+        {
+          "jobNumber": "GE-A0536",
+          "buildingType": "Walnut Processing Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/LZLw8mIAbOTuAzbzCzexGXfJFaHZlyNsDLsMMxWb.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/KetZDUWnO85vj5Gh3CpS2a4qkFwuPlJ0r2bTpzsT.png",
+            "https://acero.ae/public/uploads/all/kuVTRjg2vaSyusz5dnghTMcsnXURGoXVLMMjsxiK.png",
+            "https://acero.ae/public/uploads/all/LZLw8mIAbOTuAzbzCzexGXfJFaHZlyNsDLsMMxWb.png"
+          ],
+          "url": "https://acero.ae/projects/walnut-processing-factory-ge-a0536"
+        },
+        {
+          "jobNumber": "TZ-A0650",
+          "buildingType": "Beverage Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/0nAytA3zwQxwS8tUUv5szcseRxoPWAHoJYuB8OCw.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/hjGnlaRK2w1KJhJk8QwdUfWXFfLPD4NHjxlj3smg.png",
+            "https://acero.ae/public/uploads/all/5a3nvYZcsDd9gG0o7DKoTAT1rk7RCPivR6Jk5aJo.png",
+            "https://acero.ae/public/uploads/all/yfrhxxHWyabCMGYNTRZvgEbnNdt4IUb8Hqs9wARu.png",
+            "https://acero.ae/public/uploads/all/DTD1Ea9JkY4KljbTL4g4toBXx6v7s1k8i1bFNKg5.png",
+            "https://acero.ae/public/uploads/all/0nAytA3zwQxwS8tUUv5szcseRxoPWAHoJYuB8OCw.png",
+            "https://acero.ae/public/uploads/all/4Hu7KzvJNkj4bABbAtYoABJ8kvkgN7HMs6kqZyKS.png",
+            "https://acero.ae/public/uploads/all/L0zIVYauZ8N5yxrYhPgixuwMhy5KTat5R9l9umIq.png"
+          ],
+          "url": "https://acero.ae/projects/beverage-factory-tz-a0650"
+        },
+        {
+          "jobNumber": "OM-A0189",
+          "buildingType": "Fish Processing Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/A66C8OQ2Hn3n3JsLlZ6NijXL3jhrQlm78zjnhXdi.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/A66C8OQ2Hn3n3JsLlZ6NijXL3jhrQlm78zjnhXdi.png",
+            "https://acero.ae/public/uploads/all/XlNtKiCpWIH10IIFXSUB9Hx2w0CoysOACvHbjcVn.png"
+          ],
+          "url": "https://acero.ae/projects/fish-processing-plant-om-a0189"
+        },
+        {
+          "jobNumber": "BF-A0395",
+          "buildingType": "Factory and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/eyVo27Ox2U6yQvld1zYiXDANijCDBHbEtIU2mvUn.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/eyVo27Ox2U6yQvld1zYiXDANijCDBHbEtIU2mvUn.png",
+            "https://acero.ae/public/uploads/all/m9dIbtBIRH8ylsMc77VD6ZRCAMPfW1937kmclQhs.png"
+          ],
+          "url": "https://acero.ae/projects/factory-and-warehouse-bf-a0395"
+        },
+        {
+          "jobNumber": "MA-A0508",
+          "buildingType": "Cold Store",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/LQAL56ELk36vs8aa3cTU56FLkf9xbyevke1FM8GN.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/19e7t9YPIy3Q5hK2Q6XeX4U34bki85V99Yocelnk.png",
+            "https://acero.ae/public/uploads/all/FveH0oiFS5uzRInY2i4v86mEsB2CRhL5Y1QhXJGY.png",
+            "https://acero.ae/public/uploads/all/8hy4AO4UZILUv0YJ7AEahklLpDQexWYaKBsrURj6.png",
+            "https://acero.ae/public/uploads/all/gq64wx7TYG059UXePVMNhUpcppOYG6StWriGdOB3.png",
+            "https://acero.ae/public/uploads/all/LQAL56ELk36vs8aa3cTU56FLkf9xbyevke1FM8GN.png",
+            "https://acero.ae/public/uploads/all/W0AUi4IwFwK9QNcKzNySYltix1JTRuitT9D0botL.png"
+          ],
+          "url": "https://acero.ae/projects/cold-store-ma-a0508"
+        },
+        {
+          "jobNumber": "GE-A0561",
+          "buildingType": "Beverage Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Uutc7fIn8f4zV6nffgQGXyHhcI8vGcRc9FA19r3h.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png"
+          ],
+          "url": "https://acero.ae/projects/beverage-factory-ge-a0561"
+        },
+        {
+          "jobNumber": "CI-A0197",
+          "buildingType": "Bottling Factory and Warehouse for Soft Drinks",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/lBuWURFjbXx9Wnr8SZqaoSoRhsgqx8WLknw5Q8Oj.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/QqlX9LiDRZxoxm3rmnZfx2VbCuE1bu8QVwBT2srv.png",
+            "https://acero.ae/public/uploads/all/lBuWURFjbXx9Wnr8SZqaoSoRhsgqx8WLknw5Q8Oj.png"
+          ],
+          "url": "https://acero.ae/projects/bottling-factory-and-warehouse-for-soft-drinks-ci-a0197"
+        },
+        {
+          "jobNumber": "KE-A0628",
+          "buildingType": "Avocado Processing Facility and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/bdfSIBJlnI4kx7HiNeMcHEgFsu5XXp2SS8H4EUs0.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/IJNvJYLTq5oG49ZwRWVrDaa412colghqzamFbFvh.png",
+            "https://acero.ae/public/uploads/all/bdfSIBJlnI4kx7HiNeMcHEgFsu5XXp2SS8H4EUs0.png",
+            "https://acero.ae/public/uploads/all/GcLv4YdiE3m59dEpW66Mz1lDevDOdGTm2GkAZucd.png",
+            "https://acero.ae/public/uploads/all/dzoSiMkab3fYnkCPCQKfbXfsW52YUlwHh9FV23I5.png"
+          ],
+          "url": "https://acero.ae/projects/avocado-processingfacility-and-warehouse-ke-a0628"
+        }
+      ]
+    },
+    {
+      "name": "Logistics Centers",
+      "slug": "logistics-centers",
+      "image": "https://acero.ae/public/uploads/all/Nhfxmh5v1PhGSf4hFuj1pB1XfHt5ZI0nM5Axc5Oj.png",
+      "projects": [
+        {
+          "jobNumber": "IN-A0674",
+          "buildingType": "Office Building and Logistics Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/VcWU191CiG33LzLfQNtEoHqSf1QDAGuW8uNNxalV.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/VcWU191CiG33LzLfQNtEoHqSf1QDAGuW8uNNxalV.png",
+            "https://acero.ae/public/uploads/all/FP77z0HLeeZOOY57UOBSPVh41Fi9f7P1dngAPKky.png",
+            "https://acero.ae/public/uploads/all/rFCo0NfG3TEX82GwzOTfkMbysHYMiGN3ODwvZVmo.png"
+          ],
+          "url": "https://acero.ae/projects/office-building-and-logistics-warehouse-in-a0674"
+        },
+        {
+          "jobNumber": "TZ-A0220",
+          "buildingType": "Logistics Facility",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/GSEFu9cIQ7e8lKjyTtmt3Uym7tpTEc7FP9hgqwt8.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/K0QFCCqmyPmuOBM83bpssftdwiXRoEJfF0vFsB4E.png",
+            "https://acero.ae/public/uploads/all/SvEZLZ2anGoR8wt4odTsuojkSJULluIvEOrJLUe6.png",
+            "https://acero.ae/public/uploads/all/GSEFu9cIQ7e8lKjyTtmt3Uym7tpTEc7FP9hgqwt8.png"
+          ],
+          "url": "https://acero.ae/projects/logistics-facility-tz-a0220"
+        },
+        {
+          "jobNumber": "QA-A0448",
+          "buildingType": "Automotive Logistic Hub",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/kl3y7iVZqfGo2Z0kiy7gPmDpIMvOmd4vhSgdKyex.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Jl31hNnOt3W5mDR85CrR6AkOAcg0j66wd007J6UQ.png",
+            "https://acero.ae/public/uploads/all/kl3y7iVZqfGo2Z0kiy7gPmDpIMvOmd4vhSgdKyex.png",
+            "https://acero.ae/public/uploads/all/5FWO87mfL4v123rS4ClpnYRFfsWF4QSAzuaiLaWi.png",
+            "https://acero.ae/public/uploads/all/1eblSK0cvVr2a3xzOsQATpMuPyatUjEqTsJTFQSY.png",
+            "https://acero.ae/public/uploads/all/kNtKgRhzxG3y4yIbrYsjAeTvv4oPoY6muJSAcpxT.png"
+          ],
+          "url": "https://acero.ae/projects/automotive-logistic-hub-qa-a0448"
+        },
+        {
+          "jobNumber": "SL-A0231",
+          "buildingType": "Logistics Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Hf3u6UD5KFkByZsWv5b7yq2rIdqFj8gAvE9SvrSA.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/XtFKH4hKS0PUMkQEzcuNcnNiJVYaU0iHBelLrvRN.png",
+            "https://acero.ae/public/uploads/all/TxlFYLrGSzQOd8uAb68YKhNAwJ8C9P2jZykDz96u.png",
+            "https://acero.ae/public/uploads/all/Hf3u6UD5KFkByZsWv5b7yq2rIdqFj8gAvE9SvrSA.png"
+          ],
+          "url": "https://acero.ae/projects/logistics-warehouse-sl-a0231"
+        },
+        {
+          "jobNumber": "SN-A0286",
+          "buildingType": "Logistics Facility",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/5ZXdkEiTEK5VgdYCCdOH3Gfb0ySxrB60lpjl8nt1.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/W4OCtNK7h2apLnYIlybKv8oXc3kvm4d7wtys7FA9.png",
+            "https://acero.ae/public/uploads/all/oq7gJPgclgeHfLYwrgg0lfLHKiopqOaOIAnewdS2.png",
+            "https://acero.ae/public/uploads/all/5ZXdkEiTEK5VgdYCCdOH3Gfb0ySxrB60lpjl8nt1.png"
+          ],
+          "url": "https://acero.ae/projects/logistics-facility-sn-a0286"
+        },
+        {
+          "jobNumber": "CI-A0252",
+          "buildingType": "Logistics Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/DDQmRuixIgcht1XKSeuVDxzlUKqkAzvwq5eod6GB.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/DDQmRuixIgcht1XKSeuVDxzlUKqkAzvwq5eod6GB.png",
+            "https://acero.ae/public/uploads/all/wxdLvq2IwK9LyfGMTowZnTykn7P6iVVudXAjABKj.png",
+            "https://acero.ae/public/uploads/all/7X9dDEeDxqwfivk9TQhjfXu0XgMc4nO1DtLTJyT3.png"
+          ],
+          "url": "https://acero.ae/projects/logistics-warehouse-ci-a0252"
+        },
+        {
+          "jobNumber": "MR-A0372",
+          "buildingType": "Port Logistics Center",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Tc1Tag5iU9rdON907Iwm4qo8FMTwGm6exvKcweRf.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/FW4P5jJWBa4jovFhwHwHfF7382hpYCMMgxxklyl1.png",
+            "https://acero.ae/public/uploads/all/Tc1Tag5iU9rdON907Iwm4qo8FMTwGm6exvKcweRf.png"
+          ],
+          "url": "https://acero.ae/projects/port-logistics-center-mr-a0372"
+        },
+        {
+          "jobNumber": "SN-A0103",
+          "buildingType": "Logistics Facility",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/vS9QgJ076YPcZYFviiqHmGk40hLrqz0BCznyQJF1.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/ZJBFdOvKJpspcNWD6jEzSFNbYSw3Ga0m46vvimlm.png",
+            "https://acero.ae/public/uploads/all/ZGbwBmzMUiusWrI8e1K6VYB5HD85jZNLoYYFokYm.png",
+            "https://acero.ae/public/uploads/all/vS9QgJ076YPcZYFviiqHmGk40hLrqz0BCznyQJF1.png",
+            "https://acero.ae/public/uploads/all/7UEWZxjtw6BZ4aaH7VzpKPB54wyZuvGWBAsBKjIG.png"
+          ],
+          "url": "https://acero.ae/projects/logistics-facility-sn-a0103"
+        }
+      ]
+    },
+    {
+      "name": "Retail and Commercial",
+      "slug": "retail-and-commercial",
+      "image": "https://acero.ae/public/uploads/all/4I3rg4BAguUmg7RbZBjAlQsiZfTJvgj22EKdeQXS.png",
+      "projects": [
+        {
+          "jobNumber": "GE-A0403",
+          "buildingType": "Office Building and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/JgqOtR9v5gHDSCiNJG1YVxPrQaZ9Av4YLRlcUDmL.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/ayANp3fczEMvsaVBC40vKc2egGVVNLoV4weqYQZe.png",
+            "https://acero.ae/public/uploads/all/JgqOtR9v5gHDSCiNJG1YVxPrQaZ9Av4YLRlcUDmL.png"
+          ],
+          "url": "https://acero.ae/projects/office-building-and-warehouse-ge-a0403"
+        },
+        {
+          "jobNumber": "AE-A0424",
+          "buildingType": "Office Building and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/GGI6PhcN1yaTwJ32mgjuTA2dOxM7iGaoJwOCL5qV.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/emLlOMsuzNe3avI130D1rXdEBrwkzmEqKq6kupZs.png",
+            "https://acero.ae/public/uploads/all/GGI6PhcN1yaTwJ32mgjuTA2dOxM7iGaoJwOCL5qV.png"
+          ],
+          "url": "https://acero.ae/projects/office-building-and-warehouse-ae-a0424"
+        },
+        {
+          "jobNumber": "NG-A0863",
+          "buildingType": "Hypermarket",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/qFgsP3F4Lt23snFM6mXf2r9PO3v3ytmF8p0Lg1bQ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/wbE9XZpRrT3A7I3oTKDkJjW8SIvbJoDFYbjWgtyB.png",
+            "https://acero.ae/public/uploads/all/2YMzctFNqIlKwgFRg2aYmSHso2Zffp3N9mgkNFu0.png",
+            "https://acero.ae/public/uploads/all/EMP0TqCvYGVJ6E9XMcwtEzdeZbmsThyWBR4dgvVq.png",
+            "https://acero.ae/public/uploads/all/Sfzu7EuCO2dXzbxUu9aTfaGntWUdRZqzaGnLFMow.png"
+          ],
+          "url": "https://acero.ae/projects/hypermarket-ng-a0863"
+        },
+        {
+          "jobNumber": "AE-A0225",
+          "buildingType": "Office Building and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/tjBdTAtROEYlvCVrP1bfA2a4yTv4b5nzr9pR57bO.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/sAz4pr7cqifVGZu4wcEUTlkUPD3YjCbzA9UgKQSx.png",
+            "https://acero.ae/public/uploads/all/tjBdTAtROEYlvCVrP1bfA2a4yTv4b5nzr9pR57bO.png",
+            "https://acero.ae/public/uploads/all/umPDMZh5xlPmUbyJRj7fdcza6UU9rDBk0cfj9hGi.png"
+          ],
+          "url": "https://acero.ae/projects/office-building-and-warehouse-ae-a0225"
+        },
+        {
+          "jobNumber": "SN-A0149",
+          "buildingType": "Cosmetics Products Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/UE115LLKgdB4ugvIN4OSiSqltVlcu2YRtRWWRduW.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/UE115LLKgdB4ugvIN4OSiSqltVlcu2YRtRWWRduW.png",
+            "https://acero.ae/public/uploads/all/pSmFfueIP4nndAc2iN0rKSq6HYra9mET7i4Wgh7F.png"
+          ],
+          "url": "https://acero.ae/projects/cosmetics-products-warehouse-sn-a0149"
+        },
+        {
+          "jobNumber": "CI-A0233",
+          "buildingType": "Electronic Products Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/QRE3JfctMPohR9w47cnPKzFiTl9FekDePpGclrOD.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/jeXXzMiIGMwLEZ9cEVAPxmiFZD6TULnpQH0Aq7r9.png",
+            "https://acero.ae/public/uploads/all/QRE3JfctMPohR9w47cnPKzFiTl9FekDePpGclrOD.png"
+          ],
+          "url": "https://acero.ae/projects/electronic-products-warehouse-ci-a0233"
+        },
+        {
+          "jobNumber": "AE-A0637",
+          "buildingType": "Retail Distribution Center",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/6XHcWbhxEba4oN5FRyO5bURAKgWPWskywrCKXQwE.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/6XHcWbhxEba4oN5FRyO5bURAKgWPWskywrCKXQwE.png",
+            "https://acero.ae/public/uploads/all/ZzSB5IJakmj5CcB2YiQUxV36cPeKadalkvcU8tNx.png"
+          ],
+          "url": "https://acero.ae/projects/retail-distribution-center-ae-a0637"
+        },
+        {
+          "jobNumber": "OM-A0128",
+          "buildingType": "Mall",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/lewV7k5lNkbRB0V3uU1XZ2bYrSAondMVebeNRTS8.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/KM3gUzU5BvfiBnhJLz14OcfRts4IwNVfFG8MGulI.png",
+            "https://acero.ae/public/uploads/all/ykRbBTMUsMHdOtSYcsNxbV5sCQh184eUVa4wFBdA.png",
+            "https://acero.ae/public/uploads/all/lewV7k5lNkbRB0V3uU1XZ2bYrSAondMVebeNRTS8.png",
+            "https://acero.ae/public/uploads/all/MMQ4RyN0cG5qLmxiM0u2E5GmdZlR2Hywt2Z3epBr.png"
+          ],
+          "url": "https://acero.ae/projects/mall-om-a0128"
+        },
+        {
+          "jobNumber": "AE-A0709",
+          "buildingType": "Office Building and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/aB9FSSFu4woc7w8fzN6H9B38c1RU5NbkVGnR34Kt.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/QuPBTH009hOoRAioD6SkxRV4SA8KarskeFGUJBrt.png",
+            "https://acero.ae/public/uploads/all/aB9FSSFu4woc7w8fzN6H9B38c1RU5NbkVGnR34Kt.png"
+          ],
+          "url": "https://acero.ae/projects/office-building-and-warehouse-ae-a0709"
+        },
+        {
+          "jobNumber": "TZ-A0184",
+          "buildingType": "Porta Cabins",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/t7GH3tILPo74vulqIQDsqMKOvZMbVy7FIJKF71do.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/dNNTAjGDGntZK1lc4DCJtIfN7hnd6nT8Lg2vIaea.png",
+            "https://acero.ae/public/uploads/all/t7GH3tILPo74vulqIQDsqMKOvZMbVy7FIJKF71do.png"
+          ],
+          "url": "https://acero.ae/projects/porta-cabins-tz-a0184"
+        },
+        {
+          "jobNumber": "IN-A0517",
+          "buildingType": "Building Materials Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/6ln4flkLPi2VGP6hzBUqwmXS7sFJdFQhrND43xCq.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/6ln4flkLPi2VGP6hzBUqwmXS7sFJdFQhrND43xCq.png",
+            "https://acero.ae/public/uploads/all/h4hjuhREEGKGTPQEYm2uUv7fBW7pO2RQOy5GReFv.png"
+          ],
+          "url": "https://acero.ae/projects/building-materials-showroom-in-a0517"
+        },
+        {
+          "jobNumber": "TG-A0527",
+          "buildingType": "Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/7lYuDmHcluS4FyQ5BdjTsNrIWKyL3mU3yTRlicP4.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/6e6XcCnE2dj8hr2zQCGUAaoiYnO7lWETEYfRSUQ1.png",
+            "https://acero.ae/public/uploads/all/6HwtNXDoWFMW0owcDglCGXscT1xHAUQRnlaOsrQs.png",
+            "https://acero.ae/public/uploads/all/7lYuDmHcluS4FyQ5BdjTsNrIWKyL3mU3yTRlicP4.png"
+          ],
+          "url": "https://acero.ae/projects/showroom-tg-a0527"
+        },
+        {
+          "jobNumber": "BJ-A0249",
+          "buildingType": "Central Market",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/NubELayyWcXHHGtEu2HPOPCDsQAx4CSXNViGFRmk.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/O3Uvv46iYUxscljM2gthX1A6xptG5TdayUxmwvwn.png",
+            "https://acero.ae/public/uploads/all/ZWR2owrQBuTJBz4W2IVd2ewiHtB0bUDZNXy3tAgW.png",
+            "https://acero.ae/public/uploads/all/96EU5M4LayCQ3ebZEdo6C8TZiJfEfITvfK63d2Zp.png",
+            "https://acero.ae/public/uploads/all/dPZJyiQud67zKVI5RW8W23Q0MPZx1zsL0etSABhG.png",
+            "https://acero.ae/public/uploads/all/WHyJdELMu7OdS9JEM9A6lfs0JSABtQiouaRwro7w.png",
+            "https://acero.ae/public/uploads/all/heLHNLGgkMsZ2E1J77X2MFPTObS8dadtlbba4eDu.png",
+            "https://acero.ae/public/uploads/all/HO4IpxyEDKgFnN9KlSRW9KqH1L2XHKNUmilckD5S.png",
+            "https://acero.ae/public/uploads/all/kXaLXB9FtUObLuCi269OKeXYhiuo5bJeFtYL9Ms3.png",
+            "https://acero.ae/public/uploads/all/axqRhYOVUSjWFlJVpxLUoBcA0UgrPNhOgiIVAfYR.png",
+            "https://acero.ae/public/uploads/all/xuHtIb9BzKex6DYgBCCC4rfWKJC34pMgZE9bUFro.png",
+            "https://acero.ae/public/uploads/all/4I3rg4BAguUmg7RbZBjAlQsiZfTJvgj22EKdeQXS.png",
+            "https://acero.ae/public/uploads/all/wS9aHY4xTIAXxX6X8TdZ2MKzacE1IvA5UvEHomKT.png"
+          ],
+          "url": "https://acero.ae/projects/central-market-bj-a0249"
+        },
+        {
+          "jobNumber": "GH-A0384",
+          "buildingType": "Showroom",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/RtsoDsJxr5zH7plFCblQjCccxU5NXWF0ME0OVezJ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/RtsoDsJxr5zH7plFCblQjCccxU5NXWF0ME0OVezJ.png",
+            "https://acero.ae/public/uploads/all/ydGd3VEbDLP7XEx1AswuzuwjnA0k7JKNWLVUvb6C.png"
+          ],
+          "url": "https://acero.ae/projects/showroom-gh-a0384"
+        },
+        {
+          "jobNumber": "JO-A0685",
+          "buildingType": "Multi-Purpose Hall",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Nw1Ny8VEGhU9O5x9wgcXq6cRtXwLeGmILwWMaMCP.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Nw1Ny8VEGhU9O5x9wgcXq6cRtXwLeGmILwWMaMCP.png",
+            "https://acero.ae/public/uploads/all/1vLnnlHj2PJufpl0qCWPpnYSIgBq5kFhjqS8qq8L.png",
+            "https://acero.ae/public/uploads/all/SeqlPkI2U5km8mm3jK6MiqWXcSSKjGPKbGz0SiTr.png"
+          ],
+          "url": "https://acero.ae/projects/multi-purpose-hall-jo-a0685"
+        },
+        {
+          "jobNumber": "SO-A0449",
+          "buildingType": "Mall",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/3zutKdbzih5PoB1cb1iJgq49t60FAkusnHbYXMTG.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/sg9OVl5y2PNA39rUybMQrIvdmqZe8TZPrPU61U6r.png",
+            "https://acero.ae/public/uploads/all/Whdjicc6i0LDO3RCNRZgS4tbj2bmI68wbSpPnesn.png",
+            "https://acero.ae/public/uploads/all/tq79X0lC7bzfjNShNXQUwzMFbitTsqwnmIxpcpV9.png",
+            "https://acero.ae/public/uploads/all/3zutKdbzih5PoB1cb1iJgq49t60FAkusnHbYXMTG.png",
+            "https://acero.ae/public/uploads/all/qDv0WeHP7xGNGi2CHAoRtSu3lL1sEjPIsUiePpUn.png"
+          ],
+          "url": "https://acero.ae/projects/mall-so-a0449"
+        },
+        {
+          "jobNumber": "GE-A0654",
+          "buildingType": "Food Court",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/lFQgo0vEX0CEPJqMGzPkga8Z0rJonfSp1HXP8MxZ.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/nEu29uOFKSWiPdOjEkPyqcFN43f3G1sSs7Q8VYS6.png",
+            "https://acero.ae/public/uploads/all/lFQgo0vEX0CEPJqMGzPkga8Z0rJonfSp1HXP8MxZ.png",
+            "https://acero.ae/public/uploads/all/TCZyPxW9dKu3nKmHEtlumJf54kR7u5hCzwC0GSWY.png"
+          ],
+          "url": "https://acero.ae/projects/food-court-ge-a0654"
+        },
+        {
+          "jobNumber": "GE-A0240",
+          "buildingType": "Restaurant and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/3WlQyZBJS5ryoXssjM7nPgmT1pKBJICOTYFso6gb.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/sEghsg3vJC1DjucrRpzg6rfutAUB7PyBf6V0KcnX.png"
+          ],
+          "url": "https://acero.ae/projects/restaurant-and-warehouse-ge-a0240"
+        },
+        {
+          "jobNumber": "GE-A0106",
+          "buildingType": "Showroom and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/BEc3KIP3t0TN5tgdEbLCUxnzeLgccYun0AXigFrF.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/wW8xPYU0gQ93E2pxDyXB20hKrq1QQnR9McxwwUuM.png",
+            "https://acero.ae/public/uploads/all/BEc3KIP3t0TN5tgdEbLCUxnzeLgccYun0AXigFrF.png"
+          ],
+          "url": "https://acero.ae/projects/showroom-and-warehouse-ge-a0106"
+        }
+      ]
+    },
+    {
+      "name": "Agriculture",
+      "slug": "agriculture",
+      "image": "https://acero.ae/public/uploads/all/uxjyosNybW0otnfEWW4ElmCLoaSwCc5ZUYCpT7Aj.png",
+      "projects": [
+        {
+          "jobNumber": "TZ-A0759",
+          "buildingType": "Agri-Products Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/CaNa0U3129yHFxdLX1PT9aKx24DCx0AK1iZtJCb9.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/CaNa0U3129yHFxdLX1PT9aKx24DCx0AK1iZtJCb9.png",
+            "https://acero.ae/public/uploads/all/cRva6sc844g4KIKGUegzQ75id8xyZE8b6TMM9qzE.png",
+            "https://acero.ae/public/uploads/all/Mxs3VhTivOW6t3AmDaocvtb3WVXEsCFAe4YXwVmj.png"
+          ],
+          "url": "https://acero.ae/projects/agri-products-warehouse-tz-a0759"
+        },
+        {
+          "jobNumber": "OM-A0112",
+          "buildingType": "Chicken Rendering Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/I5cVMkCL7KCNF2f8806MzzRuiIzGxKRdos7FlFxg.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/I5cVMkCL7KCNF2f8806MzzRuiIzGxKRdos7FlFxg.png",
+            "https://acero.ae/public/uploads/all/BbjvQSxUaPwgHtoDCqgBzJoQIy59fVygSYOGLyfw.png"
+          ],
+          "url": "https://acero.ae/projects/chicken-rendering-factory-om-a0112"
+        },
+        {
+          "jobNumber": "ET-A0233",
+          "buildingType": "Animal Food Processing Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Epc8kW7TqmARgpa14nwEnpPzwxNEgHXCuQemCImj.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/bk0sTCF4c3mLdlWCNkocMNvuaNIatHUp9OXK9BIz.png",
+            "https://acero.ae/public/uploads/all/zEX4XaY90Yc5SMA8WUYCBhSVVJJUd3g6Ci1AEfLQ.png",
+            "https://acero.ae/public/uploads/all/ixw5ovNopNv3YLzxUdtXol7dOjcRCT4NxC8FVkMY.png",
+            "https://acero.ae/public/uploads/all/Epc8kW7TqmARgpa14nwEnpPzwxNEgHXCuQemCImj.png"
+          ],
+          "url": "https://acero.ae/projects/animal-food-processing-plant-et-a0233"
+        },
+        {
+          "jobNumber": "NZ-A0169",
+          "buildingType": "Barn",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/MMkoPpkR41jkA3zuAtpD0tRTsnhc48tkre5VHHnd.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/9iDIlg7T43CCEUP0MT04aWxqKjBWheVGZApyOm68.png",
+            "https://acero.ae/public/uploads/all/ZmnyMuJtmC5s0iFRN1nGtxxjpE6HtUFzJZd1B0yY.png",
+            "https://acero.ae/public/uploads/all/MMkoPpkR41jkA3zuAtpD0tRTsnhc48tkre5VHHnd.png",
+            "https://acero.ae/public/uploads/all/QUARpIKwxnwySGR8Alm5i7JzvgmvXzjqtSlet7nq.png"
+          ],
+          "url": "https://acero.ae/projects/barn-nz-a0169"
+        },
+        {
+          "jobNumber": "AE-A0309",
+          "buildingType": "Feed Mill Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/GhZtGWARtTHaCOo8lDp5RsklGgpS9qi1t0DV2Oxw.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Lz8dOkbdQ5l6C0IoMCo1AlWxowUHbRacWApTSx99.png",
+            "https://acero.ae/public/uploads/all/KMSRgx0Xu2vRvMYKBcIpxN7TOMLTwUacP6PztrzR.png",
+            "https://acero.ae/public/uploads/all/GhZtGWARtTHaCOo8lDp5RsklGgpS9qi1t0DV2Oxw.png",
+            "https://acero.ae/public/uploads/all/8ZaUfodXjI2bf7MFLmZwjQ1zJxqJFXOCF4lfnI9P.png"
+          ],
+          "url": "https://acero.ae/projects/feed-mill-factory-ae-a0309"
+        },
+        {
+          "jobNumber": "CI-A0746",
+          "buildingType": "Slaughterhouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/kJHTETJusXKhFxNoZWLkYEyA0IXJRO0kEY5ry8Ry.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/RYcNbQTAqS82yYdsqRnetyqDIGyWlWixDPfC4hLf.png",
+            "https://acero.ae/public/uploads/all/TGDfeIpDD1i1c6p0oyX7juDRIYb13aK9zSBuPnNX.png",
+            "https://acero.ae/public/uploads/all/0TuH2CHiZtOaN0D4j44fganIhr56RrhjHkLuvBjP.png",
+            "https://acero.ae/public/uploads/all/SjhsrFIuo8H5kWsNPn1pm6d41loWfi8NscdeKhcS.png",
+            "https://acero.ae/public/uploads/all/liMxfZK8MES8WeOV1VCLRsr5eQwwIngrIMs7mHui.png",
+            "https://acero.ae/public/uploads/all/kJHTETJusXKhFxNoZWLkYEyA0IXJRO0kEY5ry8Ry.png"
+          ],
+          "url": "https://acero.ae/projects/slaughterhouse-ci-a0746"
+        },
+        {
+          "jobNumber": "DZ-A0160",
+          "buildingType": "Fish Food Factory",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/CByxLGvRPkk7l6Jegtrnttq0Pkp3q0IlvccXaMcj.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/CByxLGvRPkk7l6Jegtrnttq0Pkp3q0IlvccXaMcj.png",
+            "https://acero.ae/public/uploads/all/yG52eodnPntVwDTImrqaCdRa5T3JDcbuJacTLt4m.png",
+            "https://acero.ae/public/uploads/all/hwlZQwgJA73EgwsyDcMsKFnR8XDRGPDFsuYNRNye.png"
+          ],
+          "url": "https://acero.ae/projects/fish-food-factory-dz-a0160"
+        },
+        {
+          "jobNumber": "GE-A0142",
+          "buildingType": "Animal Food Processing Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/nK01KkBctNNRVVrb5aLkrvOzmdjb2Khps7vp0Lo2.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/nK01KkBctNNRVVrb5aLkrvOzmdjb2Khps7vp0Lo2.png",
+            "https://acero.ae/public/uploads/all/LD6oy2O12UVsjMRDlUEy9yKU4DY3RTsLeLaOccjr.png",
+            "https://acero.ae/public/uploads/all/1wUwMNRvAoTydruiNOJ1e00u18U8R38cTl967RtV.png"
+          ],
+          "url": "https://acero.ae/projects/animal-food-processing-plant-ge-a0142"
+        },
+        {
+          "jobNumber": "SC-A0753",
+          "buildingType": "Abattoir For Poultry",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/LLmNUmXfxJUI3mVdR7R5gX7BPXRfiCHwCblz8b6D.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/luJJV9w7tKRnI2zuumH6aVPLfCXZoIjHjmmTo7tF.png",
+            "https://acero.ae/public/uploads/all/xtd4DSsF5oeKsnBvcBQijAvE93949ROTM1viRzHw.png",
+            "https://acero.ae/public/uploads/all/syn6ECiL6Y0MqLYgtFV0bnSxvMa8uAzySNu3QyEP.png",
+            "https://acero.ae/public/uploads/all/LLmNUmXfxJUI3mVdR7R5gX7BPXRfiCHwCblz8b6D.png"
+          ],
+          "url": "https://acero.ae/projects/abattoir-for-poultry-sc-a0753"
+        },
+        {
+          "jobNumber": "NZ-A0168",
+          "buildingType": "Barn",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/WAfJSvQTMjtzi1FeEdRlJj0NlIHLae0NsSe1dx2b.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/jXC73Bhi6ZylEJD8kf7C5V7Un9Ob2lmBqDbkrH77.png",
+            "https://acero.ae/public/uploads/all/4cMh95O6h8GH4fJB8L4r5fZTCblWefCyexEeCvi1.png",
+            "https://acero.ae/public/uploads/all/2jjgWGp10xgjxgUttCjiYkKKHkIQFHluX0qoKHq6.png",
+            "https://acero.ae/public/uploads/all/WAfJSvQTMjtzi1FeEdRlJj0NlIHLae0NsSe1dx2b.png"
+          ],
+          "url": "https://acero.ae/projects/barn-nz-a0168"
+        },
+        {
+          "jobNumber": "NZ-A0170",
+          "buildingType": "Agri-Products Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/M5dUfenql7NwXvlb9HzPhEOB6eDCxwLxVeJ6yovp.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/9foEP6aAwu869110HohDPy71mlnxVvjgQFaT2oOL.png",
+            "https://acero.ae/public/uploads/all/M5dUfenql7NwXvlb9HzPhEOB6eDCxwLxVeJ6yovp.png",
+            "https://acero.ae/public/uploads/all/XpWHUuVfDtQvCfIrYw5qsEd0TzElLXLh2og7Cj8E.png",
+            "https://acero.ae/public/uploads/all/LLij7adMYIAqjEPkhCzF5ChaPheYxrGemDyomAan.png",
+            "https://acero.ae/public/uploads/all/YXYXa5YZP9iizWuZIlfwsDvkxm28IBi8PsKop86w.png"
+          ],
+          "url": "https://acero.ae/projects/agri-products-warehouse-nz-a0170"
+        }
+      ]
+    },
+    {
+      "name": "Aviation",
+      "slug": "aviation",
+      "image": "https://acero.ae/public/uploads/all/SzGxU1HpzAhsiKCcmxJuAFU5NVvhmmJXk5PMIh1Z.png",
+      "projects": [
+        {
+          "jobNumber": "SD-A0545",
+          "buildingType": "Aircraft Hangar",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/Yge43OR5mUjwGUtzvEodK1v7AHsN34h0CNcL7gbb.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/Yge43OR5mUjwGUtzvEodK1v7AHsN34h0CNcL7gbb.png",
+            "https://acero.ae/public/uploads/all/bfxln0LIcus9EulbPKephfu8drTfuqXKdfjp2YVq.png",
+            "https://acero.ae/public/uploads/all/wLgeihGcmTNw1DC7P8BJ7VRMcEdh6m4cvja3lxex.png",
+            "https://acero.ae/public/uploads/all/PpKBlho8Jbnta3vziWQ1SxgPZAQSu7jg5VwxuL9l.png"
+          ],
+          "url": "https://acero.ae/projects/aircraft-hangar-sd-a0545"
+        },
+        {
+          "jobNumber": "AM-A0120",
+          "buildingType": "Airport Terminal",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/SzGxU1HpzAhsiKCcmxJuAFU5NVvhmmJXk5PMIh1Z.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/SzGxU1HpzAhsiKCcmxJuAFU5NVvhmmJXk5PMIh1Z.png"
+          ],
+          "url": "https://acero.ae/projects/airport-terminal-am-a0120"
+        }
+      ]
+    },
+    {
+      "name": "Education",
+      "slug": "education",
+      "image": "https://acero.ae/public/uploads/all/XmqMod0g5YCPctxuHBSDht1PT28sGCyJY4UlKi9V.png",
+      "projects": [
+        {
+          "jobNumber": "SL-A0555",
+          "buildingType": "Innovation Center",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/XmqMod0g5YCPctxuHBSDht1PT28sGCyJY4UlKi9V.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/keTCRmnoRoH59acEjm0AgDL5xIvDOsziO1gbbexX.png",
+            "https://acero.ae/public/uploads/all/ZhZ1HP4uED4JewTjKppFPsDq3Ne9qfkUi6Gk5Ylo.png",
+            "https://acero.ae/public/uploads/all/bbMV9zOKupx6mm3YVy6ZhqH9vlI3erA7jRiCoJOi.png",
+            "https://acero.ae/public/uploads/all/XmqMod0g5YCPctxuHBSDht1PT28sGCyJY4UlKi9V.png",
+            "https://acero.ae/public/uploads/all/PwZ9nR3LHARwVdnk5rHRX0SsiivC3fPXEmI5drni.png"
+          ],
+          "url": "https://acero.ae/projects/innovation-center-sl-a0555"
+        },
+        {
+          "jobNumber": "AE-A0253",
+          "buildingType": "School",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/82exbZUXtX0cuawT8AvRPGyQbZcBu5gG7pDe5mcr.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/UsjkBCfLfNa3iK3OwDtWNAqNJzzHQM12UQ2FVTLf.png",
+            "https://acero.ae/public/uploads/all/82exbZUXtX0cuawT8AvRPGyQbZcBu5gG7pDe5mcr.png"
+          ],
+          "url": "https://acero.ae/projects/school-ae-a0253"
+        },
+        {
+          "jobNumber": "AE-A0359",
+          "buildingType": "School",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/sV65JXzhItmUUDIhLBzkG5vWkgrI5ZDNbug2Stzt.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/sV65JXzhItmUUDIhLBzkG5vWkgrI5ZDNbug2Stzt.png"
+          ],
+          "url": "https://acero.ae/projects/school-ae-a0359"
+        }
+      ]
+    },
+    {
+      "name": "Hospitality and Leisure",
+      "slug": "hospitality-and-leisure",
+      "image": "https://acero.ae/public/uploads/all/EBRlbYBCabARI68fDFrX2fOgRb3zQmFWTf1QL2NO.png",
+      "projects": [
+        {
+          "jobNumber": "CG-A0912",
+          "buildingType": "Warehouse for Resort",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/dPK6iTPMqSalYda8lj6xE1r79hiSly7TfGaEggM9.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/yJ7k2UIoBpl2VWB7Bl8Vyj1HgXItdiME10LqS4fk.png",
+            "https://acero.ae/public/uploads/all/LJ0PAuffIy5qeqTMwy94imd5mlf4cJ7dWDJ5y6FF.png",
+            "https://acero.ae/public/uploads/all/En2IwXkJA4OEaSzShCmTqncLrEGrWp33QyQHnhKJ.png",
+            "https://acero.ae/public/uploads/all/dPK6iTPMqSalYda8lj6xE1r79hiSly7TfGaEggM9.png",
+            "https://acero.ae/public/uploads/all/LEEtqiVBxfnVOh0N6lQA0pp5OpZIRiqhrnb1cSnd.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-for-resort-cg-a0912"
+        },
+        {
+          "jobNumber": "AM-A0108",
+          "buildingType": "Hotel",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/vDw1oR3lyOjgUSNh5YdZ1NjMEqV2TOwbOlPzP2ax.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/vDw1oR3lyOjgUSNh5YdZ1NjMEqV2TOwbOlPzP2ax.png",
+            "https://acero.ae/public/uploads/all/EBRlbYBCabARI68fDFrX2fOgRb3zQmFWTf1QL2NO.png"
+          ],
+          "url": "https://acero.ae/projects/hotel-am-a0108"
+        }
+      ]
+    },
+    {
+      "name": "Infrastructure and Utility",
+      "slug": "infrastructure-and-utility",
+      "image": "https://acero.ae/public/uploads/all/LdAoSkCRNSGXWrLJfJhM7EisK5CHXQwWvJFQWU00.png",
+      "projects": [
+        {
+          "jobNumber": "SO-A0955",
+          "buildingType": "Power Plant",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/LdA9uGf2Hjwwu8NWeVaFllTLvCwMtt5gDJTm3XVU.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/LdA9uGf2Hjwwu8NWeVaFllTLvCwMtt5gDJTm3XVU.png",
+            "https://acero.ae/public/uploads/all/hrBdwsGsG1zEQXHNfkPCnvkDqPphEIp1En6r3ETr.png",
+            "https://acero.ae/public/uploads/all/5eqFcZRetawXvKjpfUkv50mi4KvJn5fSJFhWSirU.png",
+            "https://acero.ae/public/uploads/all/aynrbagRhvgGwMpHBPZZqbiQ6tL31vRDrFoL1dUu.png"
+          ],
+          "url": "https://acero.ae/projects/power-plant-so-a0955"
+        },
+        {
+          "jobNumber": "AZ-A0922",
+          "buildingType": "Cargo Terminal",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/azlNPtqcLo0szfQVZXBHGzcbqr5VABFZLYDe3w4u.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/azlNPtqcLo0szfQVZXBHGzcbqr5VABFZLYDe3w4u.png",
+            "https://acero.ae/public/uploads/all/i40uw45zCz37UCrEHMIgu6iH3547WPVj2aMlPA4L.png",
+            "https://acero.ae/public/uploads/all/8l7PFlfgGPkTyNQgFY54ZyiJy6hdw5vgtg6cCxGN.png"
+          ],
+          "url": "https://acero.ae/projects/cargo-terminal-az-a0922"
+        },
+        {
+          "jobNumber": "OM-A0836",
+          "buildingType": "Teleferic Station",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/bEUkiSVP8eDZVGayn6BQQATIqlBMXghYEBX7sq9w.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/haSU92lTlOVOZtnCc6RjPJ5o7XTkds8eNaz4RrHG.png",
+            "https://acero.ae/public/uploads/all/gyLoaO8LYI86I5p3kffD9qPKCTQdNH6KPsSjie92.png",
+            "https://acero.ae/public/uploads/all/1NbwB0K5YRfq08MylqSIjNA7NoInXYn7aFbOa2CP.png",
+            "https://acero.ae/public/uploads/all/bEUkiSVP8eDZVGayn6BQQATIqlBMXghYEBX7sq9w.png"
+          ],
+          "url": "https://acero.ae/projects/teleferic-station-om-a0836"
+        },
+        {
+          "jobNumber": "CI-A0250",
+          "buildingType": "Warehouse for Petrol Station",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/B1AVWRT9uF2pWIdOUK3SaAz1o2MsxzXEZTtn8GHt.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/B1AVWRT9uF2pWIdOUK3SaAz1o2MsxzXEZTtn8GHt.png",
+            "https://acero.ae/public/uploads/all/g0WQSbDRMibpUfUD2XGJYaPSBAZqfpBdKZsdG6xT.png"
+          ],
+          "url": "https://acero.ae/projects/warehouse-for-petrol-station-ci-a0250"
+        },
+        {
+          "jobNumber": "NG-A0587",
+          "buildingType": "Train Workshops",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/9ijpY4Sxku5XFyNpw6pUBWUu7pl6xue7g6U0DHL7.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/9ijpY4Sxku5XFyNpw6pUBWUu7pl6xue7g6U0DHL7.png"
+          ],
+          "url": "https://acero.ae/projects/train-workshops-ng-a0587"
+        },
+        {
+          "jobNumber": "NG-A0688",
+          "buildingType": "Fire Station",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/ax0tq6lI0nPc2PEJm67P0sIGf7S9QAKoTOpMoiIL.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/GT2uA36akSCPLYEFeRxPUgsAGtd1kBGshrxouOFq.png",
+            "https://acero.ae/public/uploads/all/ax0tq6lI0nPc2PEJm67P0sIGf7S9QAKoTOpMoiIL.png",
+            "https://acero.ae/public/uploads/all/1RadmlQY2VOG2zizGqQBdw6FfA6JADvW0hLzvrKI.png",
+            "https://acero.ae/public/uploads/all/mgbnHFMxzmIkF1w13cnEavbDbJ8Mt23sVO6H2oLD.png",
+            "https://acero.ae/public/uploads/all/kEu9fd7QHhCNOextWyprMflgLXZNloRVBafWlGFI.png"
+          ],
+          "url": "https://acero.ae/projects/fire-station-ng-a0688"
+        },
+        {
+          "jobNumber": "KE-A0848",
+          "buildingType": "Turbine Generator Building",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/3AewD58GHdyNJLNu6zCv0Y9FKRYkOGHNi1IY3UDM.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/3AewD58GHdyNJLNu6zCv0Y9FKRYkOGHNi1IY3UDM.png"
+          ],
+          "url": "https://acero.ae/projects/turbine-generator-building-ke-a0848"
+        },
+        {
+          "jobNumber": "IN-A0213",
+          "buildingType": "Thermal Power Station Transformer Shed",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/0G01OatM5KHzU8VOJpYqEkA9WFVZ79lbmuSJ5EFA.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/0G01OatM5KHzU8VOJpYqEkA9WFVZ79lbmuSJ5EFA.png"
+          ],
+          "url": "https://acero.ae/projects/thermal-power-station-transformer-shed-in-a0213"
+        },
+        {
+          "jobNumber": "MG-A0635",
+          "buildingType": "N-Truss Bridge",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/LdAoSkCRNSGXWrLJfJhM7EisK5CHXQwWvJFQWU00.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/SLRQPPsGKht1t32PuqucO4RHXIuaAkqRPUne3fet.png",
+            "https://acero.ae/public/uploads/all/cxHyTkoEE49OpiRJDBlwnvVDXUpAhCBAGZe2pQqm.png",
+            "https://acero.ae/public/uploads/all/LdAoSkCRNSGXWrLJfJhM7EisK5CHXQwWvJFQWU00.png"
+          ],
+          "url": "https://acero.ae/projects/n-truss-bridge-mg-a0635"
+        },
+        {
+          "jobNumber": "CI-A0299",
+          "buildingType": "Filling Station and Warehouse",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/EcnelMjwAHnE7r6SxcjCIjT69fMx8t0KTF9Ky1k8.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/EcnelMjwAHnE7r6SxcjCIjT69fMx8t0KTF9Ky1k8.png",
+            "https://acero.ae/public/uploads/all/T5jh0T8A00fsncJLsxNWqSGAg3STpELTSGlJDfeL.png"
+          ],
+          "url": "https://acero.ae/projects/filling-station-and-warehouse-ci-a0299"
+        },
+        {
+          "jobNumber": "CI-A0298",
+          "buildingType": "Filling Station",
+          "region": "Select Region",
+          "area": "Unknown",
+          "country": "Select Country",
+          "industry": "Select Industry",
+          "thumbnailImage": "https://acero.ae/public/uploads/all/XjS3ip8knmekeYi52vjq4GLrgRvTqjzcWnPv8NWK.png",
+          "projectImages": [
+            "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
+            "https://acero.ae/public/uploads/all/XjS3ip8knmekeYi52vjq4GLrgRvTqjzcWnPv8NWK.png"
+          ],
+          "url": "https://acero.ae/projects/filling-station-ci-a0298"
+        }
+      ]
+    }
+  ],
+  "scrapedAt": "2026-02-01T22:56:08.781Z",
+  "stats": {
+    "totalIndustries": 14,
+    "totalBuildingTypes": 191,
+    "totalProjects": 191,
+    "totalImages": 819,
+    "errors": []
+  }
+}

@@ -11,7 +11,10 @@
     "cleanup:section-types": "node scripts/cleanupUnusedSectionTypes.js",
     "migrate:resources": "node scripts/migrateResources.js",
     "migrate:roles": "node scripts/migrateRoles.js",
-    "setup:superadmin": "node scripts/setupSuperAdmin.js"
+    "setup:superadmin": "node scripts/setupSuperAdmin.js",
+    "scrape:projects": "node scripts/scrapeProjects.js",
+    "seed:scraped-projects": "node scripts/seedScrapedProjects.js",
+    "seed:scraped-projects:dry": "node scripts/seedScrapedProjects.js --dry-run"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +33,7 @@
     "mongoose": "^9.0.2",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.12",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "puppeteer": "^23.11.1"
   }
 }
