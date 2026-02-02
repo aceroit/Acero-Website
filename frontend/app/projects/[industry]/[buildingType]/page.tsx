@@ -82,7 +82,7 @@ function BuildingTypeContent({
 
         {/* Project Details Section */}
         {isLoading ? (
-          <section className="border-t border-border bg-background py-24 md:py-32">
+          <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="text-center">
                 <p className="text-lg text-muted-foreground">Loading project details...</p>
@@ -90,7 +90,7 @@ function BuildingTypeContent({
             </div>
           </section>
         ) : projectForCard ? (
-          <section className="border-t border-border bg-background py-24 md:py-32">
+          <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <ProjectDetailsCard
                 project={projectForCard}
@@ -112,7 +112,7 @@ function BuildingTypeContent({
 
         {/* Additional Projects Info */}
         {projects.length > 1 && (
-          <section className="border-t border-border bg-background py-24 md:py-32">
+          <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="text-center">
                 <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">

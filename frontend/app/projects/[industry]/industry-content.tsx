@@ -107,7 +107,7 @@ export function IndustryContent({ industrySlug }: { industrySlug: string }) {
         {/* Building Types Section */}
         <section
           ref={ref}
-          className="border-t border-border bg-background py-24 md:py-32"
+          className="border-t border-border bg-background py-24"
         >
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             {/* Section Title */}
@@ -149,6 +149,7 @@ export function IndustryContent({ industrySlug }: { industrySlug: string }) {
               <ProjectsGridSection
                 buildingTypes={buildingTypes}
                 industrySlug={industrySlug}
+                noSection
               />
             )}
           </div>

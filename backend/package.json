@@ -15,7 +15,9 @@
     "scrape:projects": "node scripts/scrapeProjects.js",
     "seed:scraped-projects": "node scripts/seedScrapedProjects.js",
     "seed:scraped-projects:dry": "node scripts/seedScrapedProjects.js --dry-run",
-    "seed:company-related": "node seeders/companyRelatedData.seeder.js"
+    "seed:company-related": "node seeders/companyRelatedData.seeder.js",
+    "seed:building-type-images": "node scripts/seedBuildingTypeImagesFromProjects.js",
+    "seed:building-type-images:dry": "node scripts/seedBuildingTypeImagesFromProjects.js --dry-run"
   },
   "keywords": [],
   "author": "",

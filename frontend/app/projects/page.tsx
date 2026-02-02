@@ -73,7 +73,7 @@ function ProjectsContent() {
 
             {/* Render projects grid section with filters */}
             {projectsGridSection && (
-              <section className="border-t border-border bg-background py-24 md:py-32">
+              <section className="border-t border-border bg-background py-24">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                   {/* Section Title from CMS */}
                   {projectsGridSection.content?.title && (
@@ -102,7 +102,7 @@ function ProjectsContent() {
                       <p className="text-lg text-muted-foreground">Loading industries...</p>
                     </div>
                   ) : (
-                    <ProjectsGridSection industries={filteredIndustries} />
+                    <ProjectsGridSection industries={filteredIndustries} noSection />
                   )}
                 </div>
               </section>
