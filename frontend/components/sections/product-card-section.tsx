@@ -1,11 +1,13 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface ProductCardSectionProps {
   title: string
@@ -31,6 +33,8 @@ export function ProductCardSection({
 }: ProductCardSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -62,14 +66,14 @@ export function ProductCardSection({
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid gap-12 md:gap-16 lg:grid-cols-2 lg:items-center"
+          className={cn("grid lg:grid-cols-2 lg:items-center", spacing.gridGap)}
         >
           {/* Image */}
           <motion.div

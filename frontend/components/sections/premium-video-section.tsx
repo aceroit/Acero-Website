@@ -1,8 +1,10 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useMemo } from "react"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface PremiumVideoSectionProps {
   videoId: string
@@ -47,6 +49,8 @@ export function PremiumVideoSection({
   }
 
   const embedUrl = frozenEmbedUrl ?? buildEmbedUrl(autoplay && isInView)
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   // Load iframe once when first entering view; freeze URL so it never changes (prevents reload on scroll)
   useEffect(() => {
@@ -61,9 +65,9 @@ export function PremiumVideoSection({
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
         {title && (
           <motion.h2
             initial={{ opacity: 0, y: 20 }}

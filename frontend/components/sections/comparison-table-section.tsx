@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import {
   TableBody,
   TableCell,
@@ -15,6 +15,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 const MAX_HEADER_CHARS = 14
 
@@ -44,13 +46,15 @@ export function ComparisonTableSection({
 }: ComparisonTableSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto min-w-0 max-w-7xl px-4 lg:px-8">
+      <div className={cn("mx-auto min-w-0 px-4 lg:px-8", spacing.containerMaxWidth)}>
         {/* Title - single line; truncate with ellipsis if too long */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

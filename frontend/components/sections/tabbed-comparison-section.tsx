@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView, AnimatePresence } from "framer-motion"
-import { useRef, useState } from "react"
+import { useRef, useState, useMemo } from "react"
 import {
   Table,
   TableBody,
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 /** Colour class from backend (e.g. "bg-green-500"). Legend item has only color. */
 interface LegendItem {
@@ -102,15 +104,17 @@ export function TabbedComparisonSection({
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || "")
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   const activeTabData = tabs.find((tab) => tab.id === activeTab)
 
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
         {/* Title */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

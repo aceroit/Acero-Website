@@ -130,6 +130,17 @@ export function ProjectsSection({
     setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1))
   }
 
+  // Auto-scroll every 5 seconds
+  useEffect(() => {
+    if (limitedProjects.length <= itemsPerView) return
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1))
+    }, 5000)
+    
+    return () => clearInterval(interval)
+  }, [maxIndex, itemsPerView, limitedProjects.length])
+
   return (
     <section
       ref={ref}

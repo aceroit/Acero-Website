@@ -17,7 +17,11 @@
     "seed:scraped-projects:dry": "node scripts/seedScrapedProjects.js --dry-run",
     "seed:company-related": "node seeders/companyRelatedData.seeder.js",
     "seed:building-type-images": "node scripts/seedBuildingTypeImagesFromProjects.js",
-    "seed:building-type-images:dry": "node scripts/seedBuildingTypeImagesFromProjects.js --dry-run"
+    "seed:building-type-images:dry": "node scripts/seedBuildingTypeImagesFromProjects.js --dry-run",
+    "process:project-images": "node scripts/processProjectImages.js",
+    "process:project-images:dry": "node scripts/processProjectImages.js --dry-run",
+    "process:project-images:remove-logo": "node scripts/processProjectImages.js --remove-logo-only",
+    "process:project-images:download": "node scripts/processProjectImages.js --download-only"
   },
   "keywords": [],
   "author": "",

@@ -1,10 +1,12 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useMemo } from "react"
 import Image from "next/image"
 import { Play } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 // Inline type definitions (temporary)
 interface Video {
@@ -33,17 +35,20 @@ export function VideoCardsSection({
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null)
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   if (videos.length === 0) {
     return (
       <section
         ref={ref}
         className={cn(
-          "border-t border-border bg-background py-24 md:py-32",
+          "border-t border-border bg-background",
+          spacing.sectionPadding,
           className
         )}
       >
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
           <div className="text-center">
             <p className="text-lg text-muted-foreground">
               No videos available at the moment.
@@ -75,12 +80,13 @@ export function VideoCardsSection({
     <section
       ref={ref}
       className={cn(
-        "border-t border-border bg-background py-24 md:py-32",
+        "border-t border-border bg-background",
+        spacing.sectionPadding,
         className
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
+        <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3", spacing.gridGap)}>
           {videos.map((video, index) => {
             const isHovered = hoveredVideoId === video._id
             

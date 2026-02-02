@@ -242,6 +242,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   src: string
                   alt: string
                   name?: string
+                  link?: string
                 }>) || []
                 const columns = (content.columns as 2 | 3 | 6) || 3
                 const imageOrientation =

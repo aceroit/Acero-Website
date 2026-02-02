@@ -12,7 +12,7 @@ const MOBILE_SVG = "/svgs/peb-advantage-sm.svg"
 /**
  * Advantages of PEB section: title + desktop/mobile SVGs.
  * Uses InlineAnimatedSvg so in-SVG hover (showLayer/hideLayer) and CSS :hover work.
- * Follows frontendDesign.md spacing and structure (same pattern as WhyAceroSvgSection).
+ * Takes full container width aligned with header size as per frontendDesign.md.
  */
 export function PebAdvantageSvgSection({ className }: { className?: string }) {
   const { appearance } = useAppearance()
@@ -26,6 +26,7 @@ export function PebAdvantageSvgSection({ className }: { className?: string }) {
         className
       )}
     >
+      {/* Container aligned with header - uses spacing.containerMaxWidth for consistency */}
       <div
         className={cn(
           "mx-auto flex flex-col items-center justify-center",
@@ -37,20 +38,20 @@ export function PebAdvantageSvgSection({ className }: { className?: string }) {
         <h2 className="text-center text-4xl font-bold tracking-tight text-foreground md:text-5xl">
           Advantages of PEB
         </h2>
-        {/* Desktop: inline SVG so hover layers work */}
+        {/* Desktop: inline SVG takes full available width within container */}
         <div className="hidden w-full lg:flex lg:justify-center">
           <InlineAnimatedSvg
             src={DESKTOP_SVG}
             alt="Advantages of PEB"
-            className="w-full max-w-5xl aspect-[1320/580] min-h-0 [&_svg]:mx-auto"
+            className="w-full aspect-[1320/580] min-h-0 [&_svg]:mx-auto [&_svg]:w-full [&_svg]:h-auto"
           />
         </div>
-        {/* Mobile */}
+        {/* Mobile: full width */}
         <div className="flex w-full justify-center lg:hidden">
           <InlineAnimatedSvg
             src={MOBILE_SVG}
             alt="Advantages of PEB"
-            className="w-full max-w-full min-h-0 [&_svg]:mx-auto"
+            className="w-full max-w-full min-h-0 [&_svg]:mx-auto [&_svg]:w-full [&_svg]:h-auto"
           />
         </div>
       </div>

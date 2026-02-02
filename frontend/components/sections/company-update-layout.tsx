@@ -1,8 +1,11 @@
 "use client"
 
+import { useMemo } from "react"
 import { FeaturedUpdateCard } from "@/components/company-updates/featured-update-card"
 import { LinkedInPostsSection } from "@/components/company-updates/linkedin-posts-section"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 // Inline type definitions (temporary)
 interface CompanyUpdate {
@@ -60,15 +63,19 @@ export function CompanyUpdateLayout({
   onPostClick,
   className,
 }: CompanyUpdateLayoutProps) {
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+
   return (
     <section
       className={cn(
-        "border-t border-border bg-background py-24 md:py-32",
+        "border-t border-border bg-background",
+        spacing.sectionPadding,
         className
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
+        <div className={cn("grid grid-cols-1 lg:grid-cols-12", spacing.gridGap)}>
           {/* Left Column - Featured Update (75% width) */}
           <div className="lg:col-span-9">
             <FeaturedUpdateCard update={featuredUpdate} onReadMore={onReadMore} />

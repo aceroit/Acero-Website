@@ -1,9 +1,11 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface CtaSectionProps {
   heading: string
@@ -26,16 +28,18 @@ export function CtaSection({
 }: CtaSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   const isExternal = buttonLink.startsWith("http://") || buttonLink.startsWith("https://")
 
   return (
     <section
       ref={ref}
-      className={cn("py-16 md:py-24", className)}
+      className={cn(spacing.sectionPadding, className)}
       style={{ backgroundColor, color: textColor }}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+      <div className={cn("mx-auto px-6 lg:px-8 text-center", spacing.containerMaxWidth)}>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
