@@ -8,10 +8,10 @@
         {
           "jobNumber": "NG-A0878",
           "buildingType": "Chemical Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Nigeria",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/uUw5JmR1ITF71SANb5ppulZnhjMFiR1YMac2aRyF.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -26,10 +26,10 @@
         {
           "jobNumber": "AR-A0779",
           "buildingType": "Ceramics Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Americas",
+          "area": "South America",
+          "country": "Argentina",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/jKX6bOF7FJLPRA016Xqde3wdzbyuw7kMdSWSbqr5.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -42,10 +42,10 @@
         {
           "jobNumber": "DZ-A0176",
           "buildingType": "Skid Pump Shed",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Algeria",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/zDy8VfOncytHYFelOPnrmpDCr6WPIHahN9i4x2Yu.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -57,10 +57,10 @@
         {
           "jobNumber": "MA-A1025",
           "buildingType": "Aluminium and Copper Recycling Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Morocco",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/xP7H8sywDsdjaLyvhRjALPgNciCKpKo2Z7zQXAIb.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -76,10 +76,10 @@
         {
           "jobNumber": "OM-A0552",
           "buildingType": "Calcium Carbonate Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Oman",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/mtTQ8dX1MAkNbCdzHlapg3XZfSylsLpgNOurooRZ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -91,10 +91,10 @@
         {
           "jobNumber": "AE-A0607",
           "buildingType": "Valve Manufacturing Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/aMvmC7c5CO4YfVLpM1Qn21o0xD6CLdeFfKPatrD3.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -106,10 +106,10 @@
         {
           "jobNumber": "MU-A0529",
           "buildingType": "Steel Mill",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Mauritius",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/oqeq4EhzGwdDlPCiijT6QmZwlVeMRrKGz8mSvjeh.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -121,10 +121,10 @@
         {
           "jobNumber": "ET-A0903",
           "buildingType": "Aluminum Extrusion Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/ZHelc1Ff5veLCUX08fvoOGXo7R3rcb6LSu19uBxm.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -135,10 +135,10 @@
         {
           "jobNumber": "CI-A0133",
           "buildingType": "Steel Mill",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/ZJD7PHv7xL59OmsDDEsUx2dcT63h0M9p7lQO4VFU.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -149,10 +149,10 @@
         {
           "jobNumber": "TZ-A0820",
           "buildingType": "Detonator Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Tanzania",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/fAnsHBF91k5i0RUCLvkGJTQeMxZsXfsnqQXwlXSF.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -168,10 +168,10 @@
         {
           "jobNumber": "CG-A0180",
           "buildingType": "Cement Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Central Africa",
+          "country": "Republic Of The Congo",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/fLZIx6YDvtxA5v1xSFlxnVl9Qf3JOuhmYCsn8Hc7.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -186,10 +186,10 @@
         {
           "jobNumber": "MU-A0401",
           "buildingType": "Soap and Detergent Storage Building",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Mauritius",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/5cyWsmtMjQKGqvUS5uC5c5cEZ762bwuGiEVNevkP.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -201,10 +201,10 @@
         {
           "jobNumber": "ZM-A0248",
           "buildingType": "Warehouse for Mining Operations",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "South Africa",
+          "country": "Zambia",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/tPkBd2KfPt81zd69o7xBigMA06w6MpGUvUvdQwGD.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -218,10 +218,10 @@
         {
           "jobNumber": "QA-A0608",
           "buildingType": "Machinery And Heavy Equipment Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Qatar",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/4apiMuIia43IITfwQOeTcZQITOZ7IDvQVyrJTWSP.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -235,10 +235,10 @@
         {
           "jobNumber": "AE-A0501",
           "buildingType": "Chemical Tanks Storage",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/4DaTrLHFjB2t3zetva82JIaoOhoRmbWZAvEu779z.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -251,10 +251,10 @@
         {
           "jobNumber": "KE-A0300",
           "buildingType": "Mining Equipment Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Kenya",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/gGp4202CA8qxvFWwu4YTkw0Ge508TTuLttHASMrL.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -269,10 +269,10 @@
         {
           "jobNumber": "IQ-A0400",
           "buildingType": "Ores Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Middle East",
+          "country": "Iraq",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/K1Zex87BLUoqNj3FFbcGKRV4ZwMsVktYsVERwddi.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -287,10 +287,10 @@
         {
           "jobNumber": "ET-A0182",
           "buildingType": "Aluminum Extrusion Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/JCCULnrcpPUxIhnplgJf5bneeIDJU6M1Mt1pUQxu.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -315,10 +315,10 @@
         {
           "jobNumber": "OM-A0107",
           "buildingType": "Ferro Alloy Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Oman",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/QGgemmpqUdXz2eJ8qyekTaaOcXFXs2bpTsyxXbrk.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -329,10 +329,10 @@
         {
           "jobNumber": "ET-A0190",
           "buildingType": "Bar Mill",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/v6H6RPkCJJHlEruuYPyqjUT8YGvBXqYAFI2XoN1h.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -345,10 +345,10 @@
         {
           "jobNumber": "AE-A0185",
           "buildingType": "Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/v8LOQWlBUbcMjfUg9Ka4fQINw8LPRcnPItE612Jv.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -361,10 +361,10 @@
         {
           "jobNumber": "GH-A0186",
           "buildingType": "Chemical Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Ghana",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/lzRge2kfBa051xiEjFQCacv0FTs1oavAIFHsZNtV.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -379,10 +379,10 @@
         {
           "jobNumber": "MZ-A0560",
           "buildingType": "Precision Mechanical Machining Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "South Africa",
+          "country": "Mozambique",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/kepMDxPhZ6irUYbtnNgLb4Ajq8S4Gp7qjKePkzop.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -399,10 +399,10 @@
         {
           "jobNumber": "AE-A0237",
           "buildingType": "Industrial Shed",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/jmiRKTxJ4BHTCy4OjqL4ACSfK7oLPfpRrRTA6vDD.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -415,10 +415,10 @@
         {
           "jobNumber": "GE-A0570",
           "buildingType": "Electric Pump House",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Industrial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/snibPrHK6p9HXd6x2zvNmNQUMKtFekxUi7WdHIvB.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -439,10 +439,10 @@
         {
           "jobNumber": "AE-A1003",
           "buildingType": "Sand Blasting Building",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/3gyaVSNgd9yBJGvTAu9QQil3TvTRJbXFuC3iOyjE.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -455,10 +455,10 @@
         {
           "jobNumber": "SN-A0306",
           "buildingType": "Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/iVBosxBmPian6XWX04Pn0tiKSmxaTb7Gpy9Hf1dK.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -472,10 +472,10 @@
         {
           "jobNumber": "ET-A0564",
           "buildingType": "Cork and Can Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/OukpOdqWiOe7Nwz2v5gZqwAGBKZNW4e81Ot6tuhQ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -488,10 +488,10 @@
         {
           "jobNumber": "CI-A0131",
           "buildingType": "Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/1WAEArP1og5AXulTd3yCKOmARXVbAD5qVQVcUZwv.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -503,10 +503,10 @@
         {
           "jobNumber": "MA-A0756",
           "buildingType": "Manufacturing Facility",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Morocco",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/XeC62HsgiGF2PU5AAHqaMaA1KXxDoTxM0swwIwzt.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -518,10 +518,10 @@
         {
           "jobNumber": "ET-A0526",
           "buildingType": "Factory and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/2fBhd3MptqWVKQGpdyGMSSObBLcv3MflWbWdKRDZ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -533,10 +533,10 @@
         {
           "jobNumber": "IN-A0297",
           "buildingType": "Heavy Engineering Manufacturing Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "South Asia",
+          "country": "India",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/j1pxeqBmlMXoEvTi5Dr54Lr9cHlUihw8Za2xv3Q1.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -550,10 +550,10 @@
         {
           "jobNumber": "LK-A0687",
           "buildingType": "Sand Drying Processing Facility",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "South Asia",
+          "country": "Sri Lanka",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/bLyNxxOjvlsqyTRXKhXhl4cr0XIqoqJlOHMirIZa.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -567,10 +567,10 @@
         {
           "jobNumber": "ET-A0203",
           "buildingType": "Mineral Processing Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/ADnCrbvuoIkCmb0SPvALJF2fsxmQbAMKzYbV6bbn.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -582,10 +582,10 @@
         {
           "jobNumber": "TZ-A0333",
           "buildingType": "Fiber Threads Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Tanzania",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/2bpr2xWK4H79O85hvJ6aYAuxP0h7ofTmVjQrvAuV.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -597,10 +597,10 @@
         {
           "jobNumber": "TZ-A0415",
           "buildingType": "Pipe Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Tanzania",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/xj3EJOueoJzVe01Y8NWKsytpayvvO5oVoCMP13Bd.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -614,10 +614,10 @@
         {
           "jobNumber": "TG-A0284",
           "buildingType": "Garment Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Togo",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/UPEpboQulmgbRed5r2LQs6oVoSLgjl3sunwGb1ZC.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -632,10 +632,10 @@
         {
           "jobNumber": "MA-A0516",
           "buildingType": "Packing House",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Morocco",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/4Uvaj66ZKGlumlb9ZYOrNNMH5X7ddsT8qkiJrQR9.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -651,10 +651,10 @@
         {
           "jobNumber": "MA-A0512",
           "buildingType": "Packaging Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Morocco",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/a4uOqsUfB269Nb3RnqxfEgRyIPLcH145CyeK4dr1.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -668,10 +668,10 @@
         {
           "jobNumber": "IN-A0535",
           "buildingType": "Kitchen Equipment Manufacturing Facility",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "South Asia",
+          "country": "India",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/OqPbXbaEUuRhtvOp7DA7tCwRxDhhYDiM2hNXjkSS.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -682,10 +682,10 @@
         {
           "jobNumber": "BJ-A0147",
           "buildingType": "Textile Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Benin",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/s60iCPN5JYkaU4vbcFZTilzbXXwHqbNlnij7ErFi.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -697,10 +697,10 @@
         {
           "jobNumber": "CI-A0337",
           "buildingType": "Blending Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/hWNCfAA3oPKWpBZ12SYXFSLzNSOlUBcxXfDeLyY4.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -713,10 +713,10 @@
         {
           "jobNumber": "AE-A0543",
           "buildingType": "Factory, Warehouse and Office",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/PKDmZdL4ePEKD3dhWlb8Hj016hASH8rjOQ53aUHP.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -728,10 +728,10 @@
         {
           "jobNumber": "AE-A0219",
           "buildingType": "Dewatering & Pump Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Gk4r3VMQM43xd8ep8riFovu2b50fQPY08fogSHDJ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -744,10 +744,10 @@
         {
           "jobNumber": "SN-A0336",
           "buildingType": "Blending Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/6RR4drg0SxSW08wNyQqXyU2Ecx1T77XqUF1WcKr9.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -759,10 +759,10 @@
         {
           "jobNumber": "MA-A0200",
           "buildingType": "Pharmaceutical Production Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Morocco",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/uUqIirf6EYxyABNo1NKgOoO2WoISPUSPckU2A0Xn.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -774,10 +774,10 @@
         {
           "jobNumber": "SA-A0428",
           "buildingType": "Float Glass Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Saudi Arabia",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/4NKgEIFT2i1AFactErdBhi7abac5mnmtXE42UV48.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -788,10 +788,10 @@
         {
           "jobNumber": "SN-A0229",
           "buildingType": "Blending Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/axB0RodOvp1SKoNDD3v30v3uvZ6OJyIVS5WoS9qX.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -804,10 +804,10 @@
         {
           "jobNumber": "GE-A0102",
           "buildingType": "Wood Processing Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Manufacturing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/RRMUdRv2BF3E0IvXjp6ibjNNPyeb8D2ie4QHDLyr.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -826,10 +826,10 @@
         {
           "jobNumber": "GN-A0389",
           "buildingType": "Gym",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Guinea",
+          "industry": "Sports and Leisure",
           "thumbnailImage": "https://acero.ae/public/uploads/all/L2IKhVtEfBFucXqxVlcirOLiWeMIOzuJrHnMLBr8.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -842,10 +842,10 @@
         {
           "jobNumber": "RW-A0270",
           "buildingType": "Sports Hall",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Rwanda",
+          "industry": "Sports and Leisure",
           "thumbnailImage": "https://acero.ae/public/uploads/all/HfvOgTOFspf0JL4zJq4obUvpDNf8wm6CxpDXtYAS.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -858,10 +858,10 @@
         {
           "jobNumber": "CI-A0431",
           "buildingType": "Club House",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Sports and Leisure",
           "thumbnailImage": "https://acero.ae/public/uploads/all/WVWmKaaBUbXDeZV88dnYcSuEAzdgn2aNPEdYHF2b.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -878,10 +878,10 @@
         {
           "jobNumber": "SC-A0882",
           "buildingType": "Paddle Court",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Seychelles",
+          "industry": "Sports and Leisure",
           "thumbnailImage": "https://acero.ae/public/uploads/all/RT0wlaETyv8ON0EClCumVdfxXFLJtLPzC5IRr5tg.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -895,10 +895,10 @@
         {
           "jobNumber": "AE-A0500",
           "buildingType": "Sports Facility",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Sports and Leisure",
           "thumbnailImage": "https://acero.ae/public/uploads/all/iadVFF81kdOQVNUS7uuDgzMbFQbbe92KzIRNp6cz.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -918,10 +918,10 @@
         {
           "jobNumber": "MG-A1070",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Madagascar",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/eT5W3Y4BSSz6RJIGXVlDAytbAEbw4TtAvS9PAnRq.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -934,10 +934,10 @@
         {
           "jobNumber": "GH-A0938",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Ghana",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/z8IAWDHdtIRW1i4cRNVVsau5Q5NIdozy1RpYxyn2.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -951,10 +951,10 @@
         {
           "jobNumber": "LR-A0980",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Liberia",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/9Ycu0KXrNHdO2dWBLuAapdSTtYo1WfDQoZvgUjaL.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -969,10 +969,10 @@
         {
           "jobNumber": "DJ-A0901",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Djibouti",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/lWgJcT21rL8bOzx2W54ezGxcWNwSQyHDxWx8eXYp.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -985,10 +985,10 @@
         {
           "jobNumber": "TM-A0505",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Turkmenistan",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/dv0uGgMfmbJ06ncXkzuYopOkQG4gv3lpbKh1l8SQ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1002,10 +1002,10 @@
         {
           "jobNumber": "SN-A0977",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/q0mE6cMxwckYEqJO4SainPkr9W3UtDczEhgz3JNq.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1019,10 +1019,10 @@
         {
           "jobNumber": "AE-A0861",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/bNrotOZUJv6kCUA7cU2GFI1Lt0xbCcUtAt2h0tTF.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1036,10 +1036,10 @@
         {
           "jobNumber": "MZ-A1043",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "South Africa",
+          "country": "Mozambique",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/sJOJANNRpQd3z9UlUEESKghZFZmQVZrgQdpTWuIv.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1053,10 +1053,10 @@
         {
           "jobNumber": "CI-A0960",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/rSiMLoIfyvK29w0pBV1Ucdj1TEO6w5HztMEyiRkx.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1070,10 +1070,10 @@
         {
           "jobNumber": "TZ-A0877",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Tanzania",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/XJuEHRjnfw4YUSCvQ5tWCeHWMBWyyYn2Z4LaAigA.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1089,10 +1089,10 @@
         {
           "jobNumber": "AE-A0600",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/w8Mu83vUxVtisXqzP55OP1k27ojOAJXfEaS7fbPZ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1105,10 +1105,10 @@
         {
           "jobNumber": "SN-A0151",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Kj23zO35SL660iXXMkZvbejKdgbI1OboiAMhMNas.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1127,10 +1127,10 @@
         {
           "jobNumber": "GH-A0942",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Ghana",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/GatTxkLxvG72nqclx40arUS3A5mquLG1wGvSLnfs.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1147,10 +1147,10 @@
         {
           "jobNumber": "SN-A0224",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/6oPt9Q7IN1PGx6UzlCLV3qjL82prpqSdTR0RoT4z.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1164,10 +1164,10 @@
         {
           "jobNumber": "SN-A0256",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/A6yhPABovbN7ZVxmat5SOhcZLvL9nMsXiSuuktX2.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1181,10 +1181,10 @@
         {
           "jobNumber": "SN-A0145",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/YVjzyn0x5R8LmN82Ey8U6vHk5FKtgWecXUnQhj4X.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1198,10 +1198,10 @@
         {
           "jobNumber": "SC-A0221",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Seychelles",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/W5bEXZ8PFUwehW4EjnKUZLQS6iCnupshzydtiJtU.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1214,10 +1214,10 @@
         {
           "jobNumber": "SN-A0315",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/L8QcjdiF6pVK6fQUdcV1YAKyBIe04clPijbyUakm.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1230,10 +1230,10 @@
         {
           "jobNumber": "KW-A0452",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Kuwait",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/pmP0JvFd2E4au3g4A2UdSQhnrLBbT00MHeHtIJbB.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1246,10 +1246,10 @@
         {
           "jobNumber": "CV-A0511",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cape Verde",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/pIa9Lw9rOnxBG24FI1sngHAGsie3g6FclRF8hgsp.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1262,10 +1262,10 @@
         {
           "jobNumber": "ET-A0129",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/26hHc90RinQPP8ETnC2U0PPQkSWcwA7iXNaotesg.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1279,10 +1279,10 @@
         {
           "jobNumber": "SN-A0503",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Xhvj1y6RRecsnbn09ElsJYY6lm6HnBZE2aaztv9z.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1294,10 +1294,10 @@
         {
           "jobNumber": "DZ-A0843",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Algeria",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/PCq4XeQbfG1Yd0VXhSkrLlE9zZHlmGvhxJLhVihc.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1309,10 +1309,10 @@
         {
           "jobNumber": "GE-A0385",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/OIm3T1LISzxbAf1slimEueDSPSNNgsQusH3INR7i.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1323,10 +1323,10 @@
         {
           "jobNumber": "TG-A0699",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Togo",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/XQYZ6PBWvYjT1aV8ded4Fe3giZgeib6F3CP34lNp.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1338,10 +1338,10 @@
         {
           "jobNumber": "AE-A0285",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/80paJzh58zdGfRnnzHazZ739XMpnqTZM4O2wHsO3.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1352,10 +1352,10 @@
         {
           "jobNumber": "CZ-A0701",
           "buildingType": "Building Material Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Europe",
+          "area": "East Europe",
+          "country": "Czech Republic",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/6gOswLJe11z2cv8vbxhX7YenkEAbKKdUAolENZio.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1366,10 +1366,10 @@
         {
           "jobNumber": "AE-A0375",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/oK4VBwY6J0zGZ7ub465EwdWXzrvGqUiAvk2ra4V8.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1381,10 +1381,10 @@
         {
           "jobNumber": "AE-A0715",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/TmESWt9IHsXeOMs8ohjSbN90lDdSYrDHPXuZfnaI.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1397,10 +1397,10 @@
         {
           "jobNumber": "AE-A0796",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/4jee1WIYQbCYOiIjZFk8Q820r2iXsPYaOitHdHrS.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1413,10 +1413,10 @@
         {
           "jobNumber": "DZ-A0263",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Algeria",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/iaOA8GLpigFrgAu4KNJ66Uvbcfp0MsZRGZcYLLyz.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1429,10 +1429,10 @@
         {
           "jobNumber": "MG-A0935",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Madagascar",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/T3peRWomnxLx9MEUYKcswgVbyfuqJ8p3FrqJCwas.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1444,10 +1444,10 @@
         {
           "jobNumber": "CI-A0179",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/zmYKF18EjRboohAiksoAFbWSUSHp8Zd58uGlFqBp.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1458,10 +1458,10 @@
         {
           "jobNumber": "CI-A0251",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/FtdDijP0s2E4dKHMfdr4prNbJXa7BX0EnmV6JPtV.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1472,10 +1472,10 @@
         {
           "jobNumber": "ET-A0902",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/P857jaMLB91odwgKshxZPE60BtW5qLWQgUlKI9iG.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1486,10 +1486,10 @@
         {
           "jobNumber": "GE-A0419",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/5uIjGycG0R5pFulM14rDTApSCAIhUQjtrKDpLDou.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1502,10 +1502,10 @@
         {
           "jobNumber": "RW-A0354",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Rwanda",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/UN1GBPGs3MJsNCa9aKktE4TC1RCMXKUCGfMg0Kr7.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1519,10 +1519,10 @@
         {
           "jobNumber": "SA-A0279",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Saudi Arabia",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/ZG3qN32pAVUp1FrhGv5zy7ht68QzzkRNHldhMTag.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1536,10 +1536,10 @@
         {
           "jobNumber": "SN-A0126",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/bsbtehHMCP6uvxrT15uPHfkwnveusaIZQLPMMjbN.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1551,10 +1551,10 @@
         {
           "jobNumber": "AE-A0524",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Ar8U10AwrzHUuAALkzOliuh7AG4fw2M7yXN302HC.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1566,10 +1566,10 @@
         {
           "jobNumber": "AE-A0342",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/COSyFT0wBWw55xNHz1NOXhvpR2fC26hcjvxU7wOC.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1583,10 +1583,10 @@
         {
           "jobNumber": "DJ-A0749",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Djibouti",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/S5ZE7RdAvFkBnap63NXkzJ3pJStWkTc8IQBv8zjC.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1600,10 +1600,10 @@
         {
           "jobNumber": "SN-A0164",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/txxXvFTHRazn8YgsDs72R1kvB1J4hrUOiEePdKzf.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1614,10 +1614,10 @@
         {
           "jobNumber": "CZ-A0206",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Europe",
+          "area": "East Europe",
+          "country": "Czech Republic",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/syyYs2bRGbY8qr6sLg6LBkSH6h4avBXTWtvsfCM8.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1629,10 +1629,10 @@
         {
           "jobNumber": "AE-A0208",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/q49djeSzelW1x4Fir94F9P96oDOYIseXydOhYnFw.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1645,10 +1645,10 @@
         {
           "jobNumber": "AE-A0491",
           "buildingType": "Storage Shed",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/WcDeBMg8ZkAPRFZ8p9N6nWdftMtJaeirt4tjq0Hx.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1660,10 +1660,10 @@
         {
           "jobNumber": "GW-A0135",
           "buildingType": "Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Guinea-Bissau",
+          "industry": "Warehousing",
           "thumbnailImage": "https://acero.ae/public/uploads/all/UVqc4I9VN9JTQijxnnJCJ0YPf2Kh6d5z5ASiCitP.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1681,10 +1681,10 @@
         {
           "jobNumber": "UZ-A0312",
           "buildingType": "Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Uzbekistan",
+          "industry": "Workshops",
           "thumbnailImage": "https://acero.ae/public/uploads/all/XmxqrnFln5QBM833LIjSnbpjYyuu8MdJYMqxoJh5.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1698,10 +1698,10 @@
         {
           "jobNumber": "QA-A0282",
           "buildingType": "Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Qatar",
+          "industry": "Workshops",
           "thumbnailImage": "https://acero.ae/public/uploads/all/eyus027eM7wDcFwtdAdWFJn39BB7aMiU8e3MgmXi.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1713,10 +1713,10 @@
         {
           "jobNumber": "AE-A0122",
           "buildingType": "Garage for Fire Trucks",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Workshops",
           "thumbnailImage": "https://acero.ae/public/uploads/all/V7kuRIM2IzCkWsLuHNrogJFgVrjiZeS6YjFIztHV.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1730,10 +1730,10 @@
         {
           "jobNumber": "ZM-A0430",
           "buildingType": "Automotive Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "South Africa",
+          "country": "Zambia",
+          "industry": "Workshops",
           "thumbnailImage": "https://acero.ae/public/uploads/all/u7MpnzMyQS0wHyWFsIfySXFLGxIfUxuTmZhyleMs.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1745,10 +1745,10 @@
         {
           "jobNumber": "GE-A0441",
           "buildingType": "Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Workshops",
           "thumbnailImage": "https://acero.ae/public/uploads/all/RAwUlGnipEjsnb6RMU7qPIzBwEWehGTaohegvLzR.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1761,10 +1761,10 @@
         {
           "jobNumber": "OM-A0114",
           "buildingType": "Furniture Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Oman",
+          "industry": "Workshops",
           "thumbnailImage": "https://acero.ae/public/uploads/all/A0We5izn0gChG6V2yO4q0wddynlKWE2wmHpssZWP.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1775,10 +1775,10 @@
         {
           "jobNumber": "OM-A0218",
           "buildingType": "Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Oman",
+          "industry": "Workshops",
           "thumbnailImage": "https://acero.ae/public/uploads/all/fmSlEzipgFKzMPptP25Vf8wIYaoI07zbfZTBgCe4.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1796,10 +1796,10 @@
         {
           "jobNumber": "SN-A0150",
           "buildingType": "Automotive Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/GdSXf7CmbzwrbB462UwV4fotifKlRe3QxEtq1Umh.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1812,10 +1812,10 @@
         {
           "jobNumber": "IQ-A0929",
           "buildingType": "Automotive Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Middle East",
+          "country": "Iraq",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/adgut3w888NOz5qC18hCSI4HFFm5nQslr0ypAq65.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1829,10 +1829,10 @@
         {
           "jobNumber": "GE-A0928",
           "buildingType": "Automotive Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/BkV6WybU675lFZhyivjBGhoIAK7uRIr1HVmw5rmh.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1846,10 +1846,10 @@
         {
           "jobNumber": "GE-A0421",
           "buildingType": "Truck Service Center",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/LuODWdvyFY3HAEf40PzqICiuRHJmLpuYNYMFRIRY.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1861,10 +1861,10 @@
         {
           "jobNumber": "AE-A0211",
           "buildingType": "Forklift Showroom and Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/OGq8Hj4ta1GMmeRLjal1GIYzAK7xoHE9uO3Hdvxe.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1877,10 +1877,10 @@
         {
           "jobNumber": "GE-A0832",
           "buildingType": "Automotive Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/kaGoehJHb7kjrvhRiUxRz9hXBkoIrkQ5cA75a61A.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1894,10 +1894,10 @@
         {
           "jobNumber": "GE-A0795",
           "buildingType": "Automotive Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/zRa5alCRbhRHEuZ6QSKIRIR81vbACSN8HimQjg2I.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1908,10 +1908,10 @@
         {
           "jobNumber": "IQ-A0304",
           "buildingType": "Automotive Cars Showroom and Service Centre",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Middle East",
+          "country": "Iraq",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/EteoyzIOY4UnXw66J7jWSFttE4fL3j7AY31L6mns.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1926,10 +1926,10 @@
         {
           "jobNumber": "SC-A0574",
           "buildingType": "Automotive Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Seychelles",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/bJWIsfB9oGVUtW1gdSPuewXldZgkfyn1ZCs2182B.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1944,10 +1944,10 @@
         {
           "jobNumber": "SN-A0444",
           "buildingType": "Automotive Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/JxqAjBvZDgHETwmJfIDdYKqeHaiUbhdiaSOunRYD.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1961,10 +1961,10 @@
         {
           "jobNumber": "GE-A0116",
           "buildingType": "Automotive Workshop",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/tX2BB3luXAGAkeSQsmvt8EQ1ZvUjjp1ySRhBvp6V.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1979,10 +1979,10 @@
         {
           "jobNumber": "GE-A0214",
           "buildingType": "Automotive Cars Showroom and Service Centre",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/wHSZjBgVrj3Ss2FgFXoy5cQPBCQXb0soRmWT7FOQ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -1994,10 +1994,10 @@
         {
           "jobNumber": "GE-A0563",
           "buildingType": "Automotive Cars Showroom and Service Centre",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Auto Dealership",
           "thumbnailImage": "https://acero.ae/public/uploads/all/tnkXlqpLbnCJzCifPPZCoxoXJ8PLvOpc8QTP0jqs.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2018,10 +2018,10 @@
         {
           "jobNumber": "CM-A1000",
           "buildingType": "Brewery Building",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Central Africa",
+          "country": "Cameroon",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/wXESVzJeceGaJ5gvxly5GixjCJ7tEufiJ7c2NpUz.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2035,10 +2035,10 @@
         {
           "jobNumber": "GH-A0855",
           "buildingType": "Beverage Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Ghana",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/YE5jXz2IdfSNqtr3GhqbykKmzmAg7K4nEs33aCO7.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2060,10 +2060,10 @@
         {
           "jobNumber": "GE-A0303",
           "buildingType": "Natural Spring Mineral Water Bottling Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/6bpUl1eKUnP2YtfdbhugvwXrnJ4OQMin26EmIeGx.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2081,10 +2081,10 @@
         {
           "jobNumber": "CI-A0616",
           "buildingType": "Beverage Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/rtfdMHpGvOc8VIDS3xqBK5jjXUFfylGOA9m78cJb.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2098,10 +2098,10 @@
         {
           "jobNumber": "CI-A0579",
           "buildingType": "Palm Oil Factory and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Y9nZYK4Xj6ouYOL4gvJqz5SPY6GoInKNaiHeercO.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2114,10 +2114,10 @@
         {
           "jobNumber": "ET-A0328",
           "buildingType": "Coffee Processing Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/3t1te4I9I6tvJozyDlz4GdZn29SA8G0tpMSGrHGC.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2130,10 +2130,10 @@
         {
           "jobNumber": "GE-A0536",
           "buildingType": "Walnut Processing Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/LZLw8mIAbOTuAzbzCzexGXfJFaHZlyNsDLsMMxWb.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2146,10 +2146,10 @@
         {
           "jobNumber": "TZ-A0650",
           "buildingType": "Beverage Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Tanzania",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/0nAytA3zwQxwS8tUUv5szcseRxoPWAHoJYuB8OCw.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2166,10 +2166,10 @@
         {
           "jobNumber": "OM-A0189",
           "buildingType": "Fish Processing Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Oman",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/A66C8OQ2Hn3n3JsLlZ6NijXL3jhrQlm78zjnhXdi.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2181,10 +2181,10 @@
         {
           "jobNumber": "BF-A0395",
           "buildingType": "Factory and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Burkina Faso",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/eyVo27Ox2U6yQvld1zYiXDANijCDBHbEtIU2mvUn.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2196,10 +2196,10 @@
         {
           "jobNumber": "MA-A0508",
           "buildingType": "Cold Store",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Morocco",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/LQAL56ELk36vs8aa3cTU56FLkf9xbyevke1FM8GN.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2215,10 +2215,10 @@
         {
           "jobNumber": "GE-A0561",
           "buildingType": "Beverage Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Uutc7fIn8f4zV6nffgQGXyHhcI8vGcRc9FA19r3h.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png"
@@ -2228,10 +2228,10 @@
         {
           "jobNumber": "CI-A0197",
           "buildingType": "Bottling Factory and Warehouse for Soft Drinks",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/lBuWURFjbXx9Wnr8SZqaoSoRhsgqx8WLknw5Q8Oj.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2243,10 +2243,10 @@
         {
           "jobNumber": "KE-A0628",
           "buildingType": "Avocado Processing Facility and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Kenya",
+          "industry": "Food And Beverage",
           "thumbnailImage": "https://acero.ae/public/uploads/all/bdfSIBJlnI4kx7HiNeMcHEgFsu5XXp2SS8H4EUs0.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2267,10 +2267,10 @@
         {
           "jobNumber": "IN-A0674",
           "buildingType": "Office Building and Logistics Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "South Asia",
+          "country": "India",
+          "industry": "Logistics Centers",
           "thumbnailImage": "https://acero.ae/public/uploads/all/VcWU191CiG33LzLfQNtEoHqSf1QDAGuW8uNNxalV.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2283,10 +2283,10 @@
         {
           "jobNumber": "TZ-A0220",
           "buildingType": "Logistics Facility",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Tanzania",
+          "industry": "Logistics Centers",
           "thumbnailImage": "https://acero.ae/public/uploads/all/GSEFu9cIQ7e8lKjyTtmt3Uym7tpTEc7FP9hgqwt8.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2299,10 +2299,10 @@
         {
           "jobNumber": "QA-A0448",
           "buildingType": "Automotive Logistic Hub",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Qatar",
+          "industry": "Logistics Centers",
           "thumbnailImage": "https://acero.ae/public/uploads/all/kl3y7iVZqfGo2Z0kiy7gPmDpIMvOmd4vhSgdKyex.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2317,10 +2317,10 @@
         {
           "jobNumber": "SL-A0231",
           "buildingType": "Logistics Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Sierra Leone",
+          "industry": "Logistics Centers",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Hf3u6UD5KFkByZsWv5b7yq2rIdqFj8gAvE9SvrSA.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2333,10 +2333,10 @@
         {
           "jobNumber": "SN-A0286",
           "buildingType": "Logistics Facility",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Logistics Centers",
           "thumbnailImage": "https://acero.ae/public/uploads/all/5ZXdkEiTEK5VgdYCCdOH3Gfb0ySxrB60lpjl8nt1.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2349,10 +2349,10 @@
         {
           "jobNumber": "CI-A0252",
           "buildingType": "Logistics Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Logistics Centers",
           "thumbnailImage": "https://acero.ae/public/uploads/all/DDQmRuixIgcht1XKSeuVDxzlUKqkAzvwq5eod6GB.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2365,10 +2365,10 @@
         {
           "jobNumber": "MR-A0372",
           "buildingType": "Port Logistics Center",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Mauritania",
+          "industry": "Logistics Centers",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Tc1Tag5iU9rdON907Iwm4qo8FMTwGm6exvKcweRf.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2380,10 +2380,10 @@
         {
           "jobNumber": "SN-A0103",
           "buildingType": "Logistics Facility",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Logistics Centers",
           "thumbnailImage": "https://acero.ae/public/uploads/all/vS9QgJ076YPcZYFviiqHmGk40hLrqz0BCznyQJF1.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2404,10 +2404,10 @@
         {
           "jobNumber": "GE-A0403",
           "buildingType": "Office Building and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/JgqOtR9v5gHDSCiNJG1YVxPrQaZ9Av4YLRlcUDmL.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2419,10 +2419,10 @@
         {
           "jobNumber": "AE-A0424",
           "buildingType": "Office Building and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/GGI6PhcN1yaTwJ32mgjuTA2dOxM7iGaoJwOCL5qV.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2434,10 +2434,10 @@
         {
           "jobNumber": "NG-A0863",
           "buildingType": "Hypermarket",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Nigeria",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/qFgsP3F4Lt23snFM6mXf2r9PO3v3ytmF8p0Lg1bQ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2451,10 +2451,10 @@
         {
           "jobNumber": "AE-A0225",
           "buildingType": "Office Building and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/tjBdTAtROEYlvCVrP1bfA2a4yTv4b5nzr9pR57bO.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2467,10 +2467,10 @@
         {
           "jobNumber": "SN-A0149",
           "buildingType": "Cosmetics Products Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Senegal",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/UE115LLKgdB4ugvIN4OSiSqltVlcu2YRtRWWRduW.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2482,10 +2482,10 @@
         {
           "jobNumber": "CI-A0233",
           "buildingType": "Electronic Products Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/QRE3JfctMPohR9w47cnPKzFiTl9FekDePpGclrOD.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2497,10 +2497,10 @@
         {
           "jobNumber": "AE-A0637",
           "buildingType": "Retail Distribution Center",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/6XHcWbhxEba4oN5FRyO5bURAKgWPWskywrCKXQwE.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2512,10 +2512,10 @@
         {
           "jobNumber": "OM-A0128",
           "buildingType": "Mall",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Oman",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/lewV7k5lNkbRB0V3uU1XZ2bYrSAondMVebeNRTS8.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2529,10 +2529,10 @@
         {
           "jobNumber": "AE-A0709",
           "buildingType": "Office Building and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/aB9FSSFu4woc7w8fzN6H9B38c1RU5NbkVGnR34Kt.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2544,10 +2544,10 @@
         {
           "jobNumber": "TZ-A0184",
           "buildingType": "Porta Cabins",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Tanzania",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/t7GH3tILPo74vulqIQDsqMKOvZMbVy7FIJKF71do.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2559,10 +2559,10 @@
         {
           "jobNumber": "IN-A0517",
           "buildingType": "Building Materials Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "South Asia",
+          "country": "India",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/6ln4flkLPi2VGP6hzBUqwmXS7sFJdFQhrND43xCq.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2574,10 +2574,10 @@
         {
           "jobNumber": "TG-A0527",
           "buildingType": "Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Togo",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/7lYuDmHcluS4FyQ5BdjTsNrIWKyL3mU3yTRlicP4.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2590,10 +2590,10 @@
         {
           "jobNumber": "BJ-A0249",
           "buildingType": "Central Market",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Benin",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/NubELayyWcXHHGtEu2HPOPCDsQAx4CSXNViGFRmk.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2615,10 +2615,10 @@
         {
           "jobNumber": "GH-A0384",
           "buildingType": "Showroom",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Ghana",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/RtsoDsJxr5zH7plFCblQjCccxU5NXWF0ME0OVezJ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2630,10 +2630,10 @@
         {
           "jobNumber": "JO-A0685",
           "buildingType": "Multi-Purpose Hall",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Middle East",
+          "country": "Jordan",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Nw1Ny8VEGhU9O5x9wgcXq6cRtXwLeGmILwWMaMCP.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2646,10 +2646,10 @@
         {
           "jobNumber": "SO-A0449",
           "buildingType": "Mall",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Somalia",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/3zutKdbzih5PoB1cb1iJgq49t60FAkusnHbYXMTG.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2664,10 +2664,10 @@
         {
           "jobNumber": "GE-A0654",
           "buildingType": "Food Court",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/lFQgo0vEX0CEPJqMGzPkga8Z0rJonfSp1HXP8MxZ.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2680,10 +2680,10 @@
         {
           "jobNumber": "GE-A0240",
           "buildingType": "Restaurant and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/3WlQyZBJS5ryoXssjM7nPgmT1pKBJICOTYFso6gb.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2694,10 +2694,10 @@
         {
           "jobNumber": "GE-A0106",
           "buildingType": "Showroom and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Retail and Commercial",
           "thumbnailImage": "https://acero.ae/public/uploads/all/BEc3KIP3t0TN5tgdEbLCUxnzeLgccYun0AXigFrF.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2716,10 +2716,10 @@
         {
           "jobNumber": "TZ-A0759",
           "buildingType": "Agri-Products Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Tanzania",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/CaNa0U3129yHFxdLX1PT9aKx24DCx0AK1iZtJCb9.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2732,10 +2732,10 @@
         {
           "jobNumber": "OM-A0112",
           "buildingType": "Chicken Rendering Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Oman",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/I5cVMkCL7KCNF2f8806MzzRuiIzGxKRdos7FlFxg.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2747,10 +2747,10 @@
         {
           "jobNumber": "ET-A0233",
           "buildingType": "Animal Food Processing Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Ethiopia",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Epc8kW7TqmARgpa14nwEnpPzwxNEgHXCuQemCImj.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2764,10 +2764,10 @@
         {
           "jobNumber": "NZ-A0169",
           "buildingType": "Barn",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Oceania",
+          "area": "Oceania",
+          "country": "New Zealand",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/MMkoPpkR41jkA3zuAtpD0tRTsnhc48tkre5VHHnd.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2781,10 +2781,10 @@
         {
           "jobNumber": "AE-A0309",
           "buildingType": "Feed Mill Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/GhZtGWARtTHaCOo8lDp5RsklGgpS9qi1t0DV2Oxw.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2798,10 +2798,10 @@
         {
           "jobNumber": "CI-A0746",
           "buildingType": "Slaughterhouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/kJHTETJusXKhFxNoZWLkYEyA0IXJRO0kEY5ry8Ry.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2817,10 +2817,10 @@
         {
           "jobNumber": "DZ-A0160",
           "buildingType": "Fish Food Factory",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Algeria",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/CByxLGvRPkk7l6Jegtrnttq0Pkp3q0IlvccXaMcj.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2833,10 +2833,10 @@
         {
           "jobNumber": "GE-A0142",
           "buildingType": "Animal Food Processing Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Georgia",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/nK01KkBctNNRVVrb5aLkrvOzmdjb2Khps7vp0Lo2.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2849,10 +2849,10 @@
         {
           "jobNumber": "SC-A0753",
           "buildingType": "Abattoir For Poultry",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Seychelles",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/LLmNUmXfxJUI3mVdR7R5gX7BPXRfiCHwCblz8b6D.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2866,10 +2866,10 @@
         {
           "jobNumber": "NZ-A0168",
           "buildingType": "Barn",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Oceania",
+          "area": "Oceania",
+          "country": "New Zealand",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/WAfJSvQTMjtzi1FeEdRlJj0NlIHLae0NsSe1dx2b.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2883,10 +2883,10 @@
         {
           "jobNumber": "NZ-A0170",
           "buildingType": "Agri-Products Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Oceania",
+          "area": "Oceania",
+          "country": "New Zealand",
+          "industry": "Agriculture",
           "thumbnailImage": "https://acero.ae/public/uploads/all/M5dUfenql7NwXvlb9HzPhEOB6eDCxwLxVeJ6yovp.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2908,10 +2908,10 @@
         {
           "jobNumber": "SD-A0545",
           "buildingType": "Aircraft Hangar",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "North Africa",
+          "country": "Sudan",
+          "industry": "Aviation",
           "thumbnailImage": "https://acero.ae/public/uploads/all/Yge43OR5mUjwGUtzvEodK1v7AHsN34h0CNcL7gbb.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2925,10 +2925,10 @@
         {
           "jobNumber": "AM-A0120",
           "buildingType": "Airport Terminal",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Armenia",
+          "industry": "Aviation",
           "thumbnailImage": "https://acero.ae/public/uploads/all/SzGxU1HpzAhsiKCcmxJuAFU5NVvhmmJXk5PMIh1Z.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2946,10 +2946,10 @@
         {
           "jobNumber": "SL-A0555",
           "buildingType": "Innovation Center",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Sierra Leone",
+          "industry": "Education",
           "thumbnailImage": "https://acero.ae/public/uploads/all/XmqMod0g5YCPctxuHBSDht1PT28sGCyJY4UlKi9V.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2964,10 +2964,10 @@
         {
           "jobNumber": "AE-A0253",
           "buildingType": "School",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Education",
           "thumbnailImage": "https://acero.ae/public/uploads/all/82exbZUXtX0cuawT8AvRPGyQbZcBu5gG7pDe5mcr.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -2979,10 +2979,10 @@
         {
           "jobNumber": "AE-A0359",
           "buildingType": "School",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "United Arab Emirates",
+          "industry": "Education",
           "thumbnailImage": "https://acero.ae/public/uploads/all/sV65JXzhItmUUDIhLBzkG5vWkgrI5ZDNbug2Stzt.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3000,10 +3000,10 @@
         {
           "jobNumber": "CG-A0912",
           "buildingType": "Warehouse for Resort",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Central Africa",
+          "country": "Republic Of The Congo",
+          "industry": "Hospitality and Leisure",
           "thumbnailImage": "https://acero.ae/public/uploads/all/dPK6iTPMqSalYda8lj6xE1r79hiSly7TfGaEggM9.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3018,10 +3018,10 @@
         {
           "jobNumber": "AM-A0108",
           "buildingType": "Hotel",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Armenia",
+          "industry": "Hospitality and Leisure",
           "thumbnailImage": "https://acero.ae/public/uploads/all/vDw1oR3lyOjgUSNh5YdZ1NjMEqV2TOwbOlPzP2ax.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3040,10 +3040,10 @@
         {
           "jobNumber": "SO-A0955",
           "buildingType": "Power Plant",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Somalia",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/LdA9uGf2Hjwwu8NWeVaFllTLvCwMtt5gDJTm3XVU.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3057,10 +3057,10 @@
         {
           "jobNumber": "AZ-A0922",
           "buildingType": "Cargo Terminal",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "Central Asia",
+          "country": "Azerbaijan",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/azlNPtqcLo0szfQVZXBHGzcbqr5VABFZLYDe3w4u.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3073,10 +3073,10 @@
         {
           "jobNumber": "OM-A0836",
           "buildingType": "Teleferic Station",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "GCC",
+          "country": "Oman",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/bEUkiSVP8eDZVGayn6BQQATIqlBMXghYEBX7sq9w.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3090,10 +3090,10 @@
         {
           "jobNumber": "CI-A0250",
           "buildingType": "Warehouse for Petrol Station",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/B1AVWRT9uF2pWIdOUK3SaAz1o2MsxzXEZTtn8GHt.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3105,10 +3105,10 @@
         {
           "jobNumber": "NG-A0587",
           "buildingType": "Train Workshops",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Nigeria",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/9ijpY4Sxku5XFyNpw6pUBWUu7pl6xue7g6U0DHL7.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3119,10 +3119,10 @@
         {
           "jobNumber": "NG-A0688",
           "buildingType": "Fire Station",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Nigeria",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/ax0tq6lI0nPc2PEJm67P0sIGf7S9QAKoTOpMoiIL.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3137,10 +3137,10 @@
         {
           "jobNumber": "KE-A0848",
           "buildingType": "Turbine Generator Building",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Kenya",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/3AewD58GHdyNJLNu6zCv0Y9FKRYkOGHNi1IY3UDM.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3151,10 +3151,10 @@
         {
           "jobNumber": "IN-A0213",
           "buildingType": "Thermal Power Station Transformer Shed",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Asia",
+          "area": "South Asia",
+          "country": "India",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/0G01OatM5KHzU8VOJpYqEkA9WFVZ79lbmuSJ5EFA.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3165,10 +3165,10 @@
         {
           "jobNumber": "MG-A0635",
           "buildingType": "N-Truss Bridge",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "East Africa",
+          "country": "Madagascar",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/LdAoSkCRNSGXWrLJfJhM7EisK5CHXQwWvJFQWU00.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3181,10 +3181,10 @@
         {
           "jobNumber": "CI-A0299",
           "buildingType": "Filling Station and Warehouse",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/EcnelMjwAHnE7r6SxcjCIjT69fMx8t0KTF9Ky1k8.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3196,10 +3196,10 @@
         {
           "jobNumber": "CI-A0298",
           "buildingType": "Filling Station",
-          "region": "Select Region",
-          "area": "Unknown",
-          "country": "Select Country",
-          "industry": "Select Industry",
+          "region": "Africa",
+          "area": "Western Africa",
+          "country": "Cote D'Ivoire",
+          "industry": "Infrastructure and Utility",
           "thumbnailImage": "https://acero.ae/public/uploads/all/XjS3ip8knmekeYi52vjq4GLrgRvTqjzcWnPv8NWK.png",
           "projectImages": [
             "https://acero.ae/public/uploads/all/ShrA6hToinWEqMmV0Pd6Nui99JbY4nHzJtN5PVNA.png",
@@ -3217,5 +3217,7 @@
     "totalProjects": 191,
     "totalImages": 819,
     "errors": []
-  }
+  },
+  "updatedAt": "2026-02-02T05:46:03.734Z",
+  "areasUpdatedAt": "2026-02-02T05:47:00.662Z"
 }
