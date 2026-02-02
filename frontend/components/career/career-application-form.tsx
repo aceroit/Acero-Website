@@ -223,7 +223,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
   }
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="w-full">
       {/* Form Heading */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -249,7 +249,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
           },
         }}
         onSubmit={handleSubmit}
-        className="mx-auto max-w-6xl space-y-8"
+        className="w-full space-y-8"
       >
       {/* Section 1: Personal Information */}
       <motion.div

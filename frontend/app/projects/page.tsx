@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -9,6 +9,9 @@ import { ProjectFilters } from "@/components/projects/project-filters"
 import { ProjectsGridSection } from "@/components/projects/projects-grid-section"
 import { useIndustries } from "@/hooks/use-projects"
 import { usePage } from "@/hooks/use-page"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
+import { cn } from "@/lib/utils"
 
 function ProjectsContent() {
   const searchParams = useSearchParams()
@@ -34,6 +37,10 @@ function ProjectsContent() {
   })
 
   const isLoading = pageLoading || industriesLoading
+
+  // Get spacing values from appearance
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   // Transform backend data to match frontend component expectations
   const industries = backendIndustries
@@ -73,8 +80,8 @@ function ProjectsContent() {
 
             {/* Render projects grid section with filters */}
             {projectsGridSection && (
-              <section className="border-t border-border bg-background py-24 md:py-32">
-                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+              <section className={cn("border-t border-border bg-background", spacing.sectionPadding)}>
+                <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
                   {/* Section Title from CMS */}
                   {projectsGridSection.content?.title && (
                     <div className="mb-12 text-center">
@@ -102,7 +109,7 @@ function ProjectsContent() {
                       <p className="text-lg text-muted-foreground">Loading industries...</p>
                     </div>
                   ) : (
-                    <ProjectsGridSection industries={filteredIndustries} />
+                    <ProjectsGridSection industries={filteredIndustries} noSection />
                   )}
                 </div>
               </section>

@@ -1,12 +1,10 @@
-import { Form, Input, Select, Button, Switch } from 'antd';
-import { useEffect, useState } from 'react';
-import * as referenceService from '../../services/referenceService';
-import { toast } from 'react-toastify';
+import { Form, Input, Button, Switch } from 'antd';
+import { useEffect } from 'react';
 
 /**
  * Region Form Component
- * Reusable form for creating and editing regions
- * 
+ * Reusable form for creating and editing regions (standalone - no country)
+ *
  * @param {Object} props
  * @param {Object} props.initialValues - Initial form values
  * @param {Function} props.onSubmit - Submit handler
@@ -23,14 +21,11 @@ const RegionForm = ({
   isEdit = false,
 }) => {
   const [form] = Form.useForm();
-  const [countries, setCountries] = useState([]);
-  const [loadingCountries, setLoadingCountries] = useState(false);
 
   useEffect(() => {
     if (initialValues) {
       const formValues = {
         ...initialValues,
-        country: initialValues.country?._id || initialValues.country,
         code: initialValues.code?.toUpperCase() || '',
         featured: initialValues.featured !== undefined ? initialValues.featured : false,
         isActive: initialValues.isActive !== undefined ? initialValues.isActive : true,
@@ -38,26 +33,6 @@ const RegionForm = ({
       form.setFieldsValue(formValues);
     }
   }, [initialValues, form]);
-
-  // Fetch countries
-  useEffect(() => {
-    fetchCountries();
-  }, []);
-
-  const fetchCountries = async () => {
-    setLoadingCountries(true);
-    try {
-      const response = await referenceService.getCountries();
-      if (response.success) {
-        setCountries(response.data.countries || response.data || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch countries:', error);
-      toast.error('Failed to load countries');
-    } finally {
-      setLoadingCountries(false);
-    }
-  };
 
   // Auto-uppercase code
   const handleCodeChange = (e) => {
@@ -90,26 +65,6 @@ const RegionForm = ({
       {/* Basic Information */}
       <div className="border-b border-gray-200 pb-4 mb-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
-        
-        <Form.Item
-          name="country"
-          label="Country"
-          rules={[{ required: true, message: 'Please select country' }]}
-        >
-          <Select
-            placeholder="Select country"
-            size="large"
-            loading={loadingCountries}
-            showSearch
-            filterOption={(input, option) =>
-              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            }
-            options={countries.map(country => ({
-              value: country._id,
-              label: `${country.name} (${country.code})`,
-            }))}
-          />
-        </Form.Item>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
@@ -139,7 +94,7 @@ const RegionForm = ({
                 message: 'Code must contain only uppercase letters and numbers'
               },
             ]}
-            tooltip="Unique code for the region within the country"
+            tooltip="Unique code for the region (globally unique)"
           >
             <Input
               placeholder="e.g., CA, NY, TX"
@@ -154,7 +109,7 @@ const RegionForm = ({
       {/* Status & Visibility */}
       <div className="border-b border-gray-200 pb-4 mb-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Status & Visibility</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
             name="featured"
@@ -206,4 +161,3 @@ const RegionForm = ({
 };
 
 export default RegionForm;
-

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 
 interface HeroImageSectionProps {
   image: string
-  title: string
+  title?: string
   overlay?: boolean
   /** When false (inner pages e.g. Who We Are), hero uses 75% height below header. When true (home), full height. */
   fullHeight?: boolean
@@ -32,7 +32,7 @@ export function HeroImageSection({
       <div className="absolute inset-0">
         <Image
           src={image}
-          alt={title}
+          alt={title || "Hero image"}
           fill
           priority
           className="object-cover"
@@ -45,19 +45,21 @@ export function HeroImageSection({
         )}
       </div>
 
-      {/* Centered Content */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 text-center"
-        >
-          <h1 className="text-5xl font-extrabold uppercase tracking-tight text-steel-white md:text-6xl lg:text-7xl xl:text-8xl">
-            {title}
-          </h1>
-        </motion.div>
-      </div>
+      {/* Centered Content - Only show if title is provided */}
+      {title && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-10 text-center"
+          >
+            <h1 className="text-5xl font-extrabold uppercase tracking-tight text-steel-white md:text-6xl lg:text-7xl xl:text-8xl">
+              {title}
+            </h1>
+          </motion.div>
+        </div>
+      )}
     </section>
   )
 }

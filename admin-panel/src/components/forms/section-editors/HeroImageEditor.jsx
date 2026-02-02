@@ -37,9 +37,8 @@ const HeroImageEditor = ({ value = {}, onChange, form }) => {
         <Form.Item
           name={['content', 'title']}
           label="Title"
-          tooltip="Title displayed on the hero section"
+          tooltip="Optional title displayed on the hero section"
           rules={[
-            { required: true, message: 'Title is required' },
             { max: 100, message: 'Title must not exceed 100 characters' }
           ]}
         >

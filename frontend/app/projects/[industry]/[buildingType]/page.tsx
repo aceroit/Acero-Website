@@ -6,7 +6,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
 import { ProjectDetailsCard } from "@/components/projects/project-details-card"
-import { ImageGallerySection } from "@/components/sections/image-gallery-section"
+import { ProjectsGalleryImagesSection } from "@/components/sections/projects-gallery-images-section"
 import { useProjects, useIndustries, useBuildingTypes } from "@/hooks/use-projects"
 
 interface BuildingTypePageProps {
@@ -44,9 +44,10 @@ function BuildingTypeContent({
     }
   }
 
-  // Get all project images from all projects and combine them
+  // Get all project images from all projects; only include images with valid src (no empty cards)
   const allProjectImages = projects.flatMap((project) =>
     (project.projectImages || [])
+      .filter((img) => img?.url && String(img.url).trim())
       .sort((a, b) => (a.order || 0) - (b.order || 0))
       .map((img) => ({
         src: img.url,
@@ -81,7 +82,7 @@ function BuildingTypeContent({
 
         {/* Project Details Section */}
         {isLoading ? (
-          <section className="border-t border-border bg-background py-24 md:py-32">
+          <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="text-center">
                 <p className="text-lg text-muted-foreground">Loading project details...</p>
@@ -89,7 +90,7 @@ function BuildingTypeContent({
             </div>
           </section>
         ) : projectForCard ? (
-          <section className="border-t border-border bg-background py-24 md:py-32">
+          <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <ProjectDetailsCard
                 project={projectForCard}
@@ -100,31 +101,13 @@ function BuildingTypeContent({
           </section>
         ) : null}
 
-        {/* Image Gallery Section */}
+        {/* Projects Gallery Images – dynamic title at top, large 2-col cover cards */}
         {!isLoading && allProjectImages.length > 0 && (
-          <ImageGallerySection
-            title="Project Gallery"
-            paragraph={`Explore images from our ${buildingTypeName} projects in the ${industryName} industry`}
+          <ProjectsGalleryImagesSection
+            title={`Project Gallery – ${buildingTypeName} | ${industryName}`}
+            paragraph={`Explore images from our ${buildingTypeName} projects in the ${industryName} industry.`}
             images={allProjectImages}
-            columns={3}
           />
-        )}
-
-        {/* Additional Projects Info */}
-        {projects.length > 1 && (
-          <section className="border-t border-border bg-background py-24 md:py-32">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-              <div className="text-center">
-                <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-                  {projects.length} Projects Completed
-                </h2>
-                <p className="mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
-                  We have successfully completed {projects.length} projects of type{" "}
-                  {buildingTypeName} in the {industryName} industry.
-                </p>
-              </div>
-            </div>
-          </section>
         )}
       </main>
       <Footer />

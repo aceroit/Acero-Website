@@ -79,10 +79,9 @@ const extendedSectionTypes = [
                 name: 'title',
                 type: 'text',
                 label: 'Title',
-                placeholder: 'e.g., Page Title',
-                required: true,
+                placeholder: 'e.g., Page Title (optional)',
+                required: false,
                 validation: {
-                    minLength: 1,
                     maxLength: 100
                 },
                 order: 1
@@ -796,7 +795,7 @@ const extendedSectionTypes = [
                 name: 'images',
                 type: 'json',
                 label: 'Gallery Images',
-                helpText: 'Array: [{"src": "url", "alt": "Alt text", "name": "Optional label below image"}]',
+                helpText: 'Array: [{"src": "url", "alt": "Alt text", "name": "Optional label", "link": "Optional URL (makes image clickable)"}]',
                 required: true,
                 validation: {
                     minItems: 1

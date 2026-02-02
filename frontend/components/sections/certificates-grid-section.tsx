@@ -1,9 +1,11 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface Certificate {
   name: string
@@ -26,6 +28,8 @@ export function CertificatesGridSection({
 }: CertificatesGridSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -50,11 +54,12 @@ export function CertificatesGridSection({
     <section
       ref={ref}
       className={cn(
-        "border-t border-border bg-background py-24 md:py-32",
+        "border-t border-border bg-background",
+        spacing.sectionPadding,
         className
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -84,7 +89,7 @@ export function CertificatesGridSection({
           </motion.div>
 
           {/* Certificates Grid */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+          <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3", spacing.gridGap)}>
             {certificates.map((certificate, index) => (
               <motion.div
                 key={certificate.name}

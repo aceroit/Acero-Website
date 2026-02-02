@@ -146,7 +146,7 @@ const BuildingTypes = () => {
 
   useEffect(() => {
     fetchBuildingTypes();
-  }, [pagination.current, pagination.pageSize, statusFilter, sortField, sortOrder]);
+  }, [statusFilter, sortField, sortOrder]);
 
   // Handle delete building type
   const handleDelete = async () => {
@@ -171,6 +171,13 @@ const BuildingTypes = () => {
   };
 
   const handleTableChange = (paginationConfig, filters, sorter) => {
+    if (paginationConfig && (paginationConfig.current !== pagination.current || paginationConfig.pageSize !== pagination.pageSize)) {
+      const newCurrent = paginationConfig.current ?? pagination.current;
+      const newPageSize = paginationConfig.pageSize ?? pagination.pageSize;
+      setPagination((prev) => ({ ...prev, current: newCurrent, pageSize: newPageSize }));
+      fetchBuildingTypes({ page: newCurrent, limit: newPageSize });
+      return;
+    }
     if (sorter?.field != null && sorter?.order != null) {
       setSortField(sorter.field);
       setSortOrder(sorter.order);
@@ -362,15 +369,12 @@ const BuildingTypes = () => {
               ...pagination,
               showSizeChanger: true,
               showQuickJumper: true,
-              showTotal: (total, range) => 
-                `${range[0]}-${range[1]} of ${total} building types`,
+              showTotal: (total, range) =>
+                total > 0 ? `${range[0]}-${range[1]} of ${total} building types` : '0 building types',
               pageSizeOptions: ['10', '20', '50', '100'],
               onChange: (page, pageSize) => {
-                setPagination((prev) => ({
-                  ...prev,
-                  current: page,
-                  pageSize,
-                }));
+                setPagination((prev) => ({ ...prev, current: page, pageSize: pageSize || prev.pageSize }));
+                fetchBuildingTypes({ page, limit: pageSize || pagination.pageSize });
               },
             }}
             scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}

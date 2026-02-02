@@ -1,9 +1,11 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 // Inline type definitions (temporary)
 interface Brochure {
@@ -31,17 +33,20 @@ export function BrochureCardsSection({
 }: BrochureCardsSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   if (brochures.length === 0) {
     return (
       <section
         ref={ref}
         className={cn(
-          "border-t border-border bg-background py-24 md:py-32",
+          "border-t border-border bg-background",
+          spacing.sectionPadding,
           className
         )}
       >
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
           <div className="text-center">
             <p className="text-lg text-muted-foreground">
               No brochures available at the moment.
@@ -56,12 +61,13 @@ export function BrochureCardsSection({
     <section
       ref={ref}
       className={cn(
-        "border-t border-border bg-background py-24 md:py-32",
+        "border-t border-border bg-background",
+        spacing.sectionPadding,
         className
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3 xl:grid-cols-4">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
+        <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", spacing.gridGap)}>
           {brochures.map((brochure, index) => (
             <motion.div
               key={brochure._id}

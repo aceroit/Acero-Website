@@ -29,7 +29,8 @@ function AnimatedCounter({
 }) {
   const [count, setCount] = useState(0)
   const numericValue = parseInt(value.replace(/[^0-9]/g, ""))
-  const suffix = value.replace(/[0-9]/g, "")
+  // Trim trailing commas so "100000," displays as "100000" not "100000,"
+  const suffix = value.replace(/[0-9]/g, "").replace(/,\s*$/, "")
 
   useEffect(() => {
     if (!isInView || !numericValue) {
@@ -67,7 +68,7 @@ function AnimatedCounter({
 
   return (
     <span>
-      {count.toLocaleString()}
+      {count}
       {suffix}
     </span>
   )
@@ -83,7 +84,10 @@ export function StatsDisplay({
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
-  const gridCols = columns === 4 ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-3"
+  // Make stats responsive: on small screens stack, on medium+ show in a single row
+  const gridCols = columns === 4 
+    ? "grid-cols-2 md:grid-cols-4" 
+    : "grid-cols-1 sm:grid-cols-3"
 
   return (
     <section

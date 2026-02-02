@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useState } from "react"
+import { useRef, useState, useMemo } from "react"
 import {
   Tooltip,
   TooltipContent,
@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/tooltip"
 import { Grid } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface Advantage {
   id: string
@@ -48,6 +50,8 @@ export function CircularAdvantagesSection({
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [hoveredAdvantage, setHoveredAdvantage] = useState<string | null>(null)
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   // Circle radius (responsive)
   const radius = 200 // Base radius for radiating lines
@@ -55,9 +59,9 @@ export function CircularAdvantagesSection({
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-muted/30 py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-muted/30", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
         {/* Title */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

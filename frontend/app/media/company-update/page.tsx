@@ -9,10 +9,11 @@ import { Calendar, ArrowRight } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
-import { CompanyUpdateLayout } from "@/components/sections/company-update-layout"
 import { LinkedInPostModal } from "@/components/company-updates/linkedin-post-modal"
 import { useCompanyUpdates } from "@/hooks/use-company-updates"
 import { usePage } from "@/hooks/use-page"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 import { cn } from "@/lib/utils"
 import type { CompanyUpdate } from "@/services/company-update.service"
 
@@ -119,6 +120,10 @@ export default function CompanyUpdatePage() {
   const heroSection = sections.find((s) => s.sectionTypeSlug === "hero_image")
   const heroImage = heroSection?.content?.image as string | undefined
 
+  // Get spacing values from appearance
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+
   // Transform all company updates
   const transformedUpdates = useMemo(() => {
     if (!companyUpdates || companyUpdates.length === 0) {
@@ -135,20 +140,25 @@ export default function CompanyUpdatePage() {
     return sorted.map(update => transformCompanyUpdate(update))
   }, [companyUpdates])
 
-  // Get featured update (first one) and other updates
+  // Get first 3 updates (displayed vertically) and remaining updates (displayed horizontally)
+  const verticalUpdates = useMemo(() => {
+    return transformedUpdates.slice(0, 3)
+  }, [transformedUpdates])
+
+  // Get remaining updates after first 3 (displayed horizontally)
+  const horizontalUpdates = useMemo(() => {
+    if (transformedUpdates.length <= 3) {
+      return []
+    }
+    return transformedUpdates.slice(3)
+  }, [transformedUpdates])
+
+  // For backward compatibility - use first update as featured
   const featuredUpdate = useMemo(() => {
     if (transformedUpdates.length === 0) {
       return null
     }
     return transformedUpdates[0]
-  }, [transformedUpdates])
-
-  // Get other updates (excluding the featured one)
-  const otherUpdates = useMemo(() => {
-    if (transformedUpdates.length <= 1) {
-      return []
-    }
-    return transformedUpdates.slice(1)
   }, [transformedUpdates])
 
   // Get LinkedIn posts from featured update (or combine from all if needed)
@@ -190,22 +200,33 @@ export default function CompanyUpdatePage() {
           <div className="py-12 text-center">
             <p className="text-lg text-muted-foreground">Loading company updates...</p>
           </div>
-        ) : featuredUpdate ? (
+        ) : verticalUpdates.length > 0 ? (
           <>
-            <CompanyUpdateLayout
-              featuredUpdate={featuredUpdate}
-              linkedInPosts={linkedInPosts}
-              onReadMore={handleReadMore}
-              onPostClick={handlePostClick}
-            />
-            {otherUpdates.length > 0 && (
-              <section className="border-t border-border bg-background py-24 md:py-32">
-                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {/* First 3 Updates - Displayed Vertically (stacked) */}
+            <section className={cn("border-t border-border bg-background", spacing.sectionPadding)}>
+              <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
+                <div className="flex flex-col gap-12">
+                  {verticalUpdates.map((update, index) => (
+                    <VerticalUpdateCard
+                      key={update._id}
+                      update={update}
+                      onReadMore={handleReadMore}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Remaining Updates - Displayed Horizontally in grid */}
+            {horizontalUpdates.length > 0 && (
+              <section className={cn("border-t border-border bg-background", spacing.sectionPadding)}>
+                <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
                   <h2 className="mb-12 text-center text-3xl font-bold tracking-tight text-foreground md:text-4xl">
                     More Company Updates
                   </h2>
-                  <div className="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {otherUpdates.map((update, index) => (
+                  <div className={cn("grid md:grid-cols-2 lg:grid-cols-3", spacing.gridGap)}>
+                    {horizontalUpdates.map((update, index) => (
                       <UpdateCard
                         key={update._id}
                         update={update}
@@ -216,6 +237,7 @@ export default function CompanyUpdatePage() {
                 </div>
               </section>
             )}
+
           </>
         ) : (
           <div className="py-12 text-center">
@@ -233,7 +255,103 @@ export default function CompanyUpdatePage() {
   )
 }
 
-// Update Card Component for grid display
+// Vertical Update Card Component (full-width, stacked layout)
+interface VerticalUpdateCardProps {
+  update: {
+    _id: string
+    slug: string
+    title: string
+    featuredImage: {
+      url: string
+      publicId: string
+      width: number
+      height: number
+    }
+    excerpt?: string
+    content?: string
+    publishedAt: string
+  }
+  onReadMore: (update: any) => void
+  index: number
+}
+
+function VerticalUpdateCard({ update, onReadMore, index }: VerticalUpdateCardProps) {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  }
+
+  const isImageLeft = index % 2 === 0
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className="group"
+    >
+      <Link
+        href={`/media/company-update/${update.slug}`}
+        className="block"
+      >
+        <div className={cn(
+          "grid gap-8 lg:gap-12 lg:items-center",
+          isImageLeft ? "lg:grid-cols-[1fr_1fr]" : "lg:grid-cols-[1fr_1fr]"
+        )}>
+          {/* Image */}
+          <div className={cn(
+            "relative aspect-[16/10] overflow-hidden rounded-lg bg-secondary",
+            !isImageLeft && "lg:order-2"
+          )}>
+            <Image
+              src={update.featuredImage.url}
+              alt={update.title}
+              fill
+              loading="lazy"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              quality={85}
+            />
+            {/* Overlay on hover */}
+            <div className="absolute inset-0 bg-steel-red/0 transition-colors duration-300 group-hover:bg-steel-red/10" />
+            {/* Date Badge */}
+            <div className="absolute left-4 top-4 flex items-center gap-2 bg-steel-red px-3 py-1.5">
+              <Calendar className="h-3 w-3 text-steel-white" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-steel-white">
+                {formatDate(update.publishedAt)}
+              </span>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className={cn(
+            "flex flex-col justify-center",
+            !isImageLeft && "lg:order-1"
+          )}>
+            <h2 className="mb-4 text-2xl font-bold tracking-tight text-foreground md:text-3xl lg:text-4xl">
+              {update.title}
+            </h2>
+            {update.excerpt && (
+              <p className="mb-6 text-base leading-relaxed text-muted-foreground md:text-lg line-clamp-4">
+                {update.excerpt}
+              </p>
+            )}
+            <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-steel-red transition-all group-hover:gap-3">
+              Read More
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  )
+}
+
+// Update Card Component for grid display (horizontal layout)
 interface UpdateCardProps {
   update: {
     _id: string

@@ -23,32 +23,15 @@ exports.getCountries = async (req, res) => {
 };
 
 /**
- * Get all active regions (published only for dropdowns, optionally filtered by country)
+ * Get all active regions (published only for dropdowns; regions are standalone)
  */
 exports.getRegions = async (req, res) => {
     try {
-        const { country } = req.query;
-        let regions;
-        
-        if (country) {
-            // Filter by country, published status, and active
-            regions = await Region.find({ 
-                country, 
-                isActive: true, 
-                status: 'published' 
-            })
-            .populate('country', 'name code')
-            .sort({ name: 1 });
-        } else {
-            // Filter by published status and active
-            regions = await Region.find({ 
-                isActive: true, 
-                status: 'published' 
-            })
-            .populate('country', 'name code')
-            .sort({ name: 1 });
-        }
-        
+        const regions = await Region.find({
+            isActive: true,
+            status: 'published'
+        }).sort({ name: 1 });
+
         return successResponse(res, 200, 'Regions retrieved successfully', { regions });
     } catch (error) {
         console.error('Error in getRegions:', error);
@@ -57,63 +40,15 @@ exports.getRegions = async (req, res) => {
 };
 
 /**
- * Get all active areas (published only for dropdowns, optionally filtered by region or country)
+ * Get all active areas (published only for dropdowns; areas are standalone)
  */
 exports.getAreas = async (req, res) => {
     try {
-        const { region, country } = req.query;
-        let areas;
-        
-        const baseQuery = { isActive: true, status: 'published' };
-        
-        if (region) {
-            // Filter by region, published status, and active
-            areas = await Area.find({ 
-                ...baseQuery,
-                region 
-            })
-            .populate({
-                path: 'region',
-                select: 'name code',
-                populate: {
-                    path: 'country',
-                    select: 'name code'
-                }
-            })
-            .sort({ name: 1 });
-        } else if (country) {
-            // If country is provided, find regions first, then areas
-            const Region = require('../models/Region');
-            const regions = await Region.find({ country, isActive: true, status: 'published' }).select('_id');
-            const regionIds = regions.map(r => r._id);
-            
-            areas = await Area.find({ 
-                ...baseQuery,
-                region: { $in: regionIds }
-            })
-            .populate({
-                path: 'region',
-                select: 'name code',
-                populate: {
-                    path: 'country',
-                    select: 'name code'
-                }
-            })
-            .sort({ name: 1 });
-        } else {
-            // Filter by published status and active
-            areas = await Area.find(baseQuery)
-            .populate({
-                path: 'region',
-                select: 'name code',
-                populate: {
-                    path: 'country',
-                    select: 'name code'
-                }
-            })
-            .sort({ name: 1 });
-        }
-        
+        const areas = await Area.find({
+            isActive: true,
+            status: 'published'
+        }).sort({ name: 1 });
+
         return successResponse(res, 200, 'Areas retrieved successfully', { areas });
     } catch (error) {
         console.error('Error in getAreas:', error);
