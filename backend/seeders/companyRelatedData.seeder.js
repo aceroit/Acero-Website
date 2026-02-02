@@ -137,6 +137,12 @@ As the evening drew to a close, attendees departed with hearts full of gratitude
                 order: 1,
             },
         ],
+        banner: { url: '/placeholder.jpg', publicId: 'company-updates/iftar-banner', width: 1280, height: 960 },
+        metaTitle: 'Acero Iftar Dinner 2024 | Company Update',
+        metaImage: { url: '/placeholder.jpg', publicId: 'company-updates/iftar-meta', width: 150, height: 150 },
+        metaDescription: 'Acero Building Systems organized an Iftar Dinner for employees and families in March 2024.',
+        metaKeywords: ['acero', 'iftar', 'ramadan', 'company event', 'dubai'],
+        showOnHomePage: true,
     },
     {
         slug: 'new-manufacturing-facility-inauguration',
@@ -203,6 +209,12 @@ The inauguration ceremony was attended by key stakeholders, partners, and member
                 order: 1,
             },
         ],
+        banner: { url: '/placeholder.jpg', publicId: 'company-updates/facility-banner', width: 1280, height: 960 },
+        metaTitle: 'New Manufacturing Facility | Acero Building Systems',
+        metaImage: { url: '/placeholder.jpg', publicId: 'company-updates/facility-meta', width: 150, height: 150 },
+        metaDescription: 'Acero Building Systems inaugurates state-of-the-art manufacturing facility.',
+        metaKeywords: ['acero', 'manufacturing', 'facility', 'expansion', 'steel'],
+        showOnHomePage: true,
     },
 ];
 
@@ -536,11 +548,31 @@ const seedCompanyRelatedData = async () => {
                         order: img.order,
                     })),
                     status: 'published',
-                    featured: updateData.featured !== undefined ? updateData.featured : true, // Default to featured
+                    featured: updateData.featured !== undefined ? updateData.featured : true,
                     isActive: true,
                     publishedAt: updateData.eventDate || new Date(),
+                    showOnHomePage: updateData.showOnHomePage !== undefined ? updateData.showOnHomePage : false,
                     createdBy: user._id,
                 };
+                if (updateData.banner) {
+                    updateDoc.banner = {
+                        url: updateData.banner.url,
+                        publicId: updateData.banner.publicId || null,
+                        width: updateData.banner.width || null,
+                        height: updateData.banner.height || null,
+                    };
+                }
+                if (updateData.metaTitle) updateDoc.metaTitle = updateData.metaTitle;
+                if (updateData.metaDescription) updateDoc.metaDescription = updateData.metaDescription;
+                if (updateData.metaKeywords && Array.isArray(updateData.metaKeywords)) updateDoc.metaKeywords = updateData.metaKeywords;
+                if (updateData.metaImage) {
+                    updateDoc.metaImage = {
+                        url: updateData.metaImage.url,
+                        publicId: updateData.metaImage.publicId || null,
+                        width: updateData.metaImage.width || null,
+                        height: updateData.metaImage.height || null,
+                    };
+                }
 
                 // Add LinkedIn posts if provided
                 if (updateData.linkedInPosts && Array.isArray(updateData.linkedInPosts)) {
@@ -607,9 +639,9 @@ const seedCompanyRelatedData = async () => {
                             order: post.order !== undefined ? post.order : 0,
                         }));
                         await existing.save();
-                updatesCreated++;
-            } else {
-                updatesSkipped++;
+                        updatesCreated++;
+                    } else {
+                        updatesSkipped++;
                     }
                 }
             }

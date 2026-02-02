@@ -144,7 +144,7 @@ export function ContentSection({
         <object
           data={img.url}
           type="image/svg+xml"
-          className="absolute inset-0 h-full w-full object-contain"
+          className="absolute inset-0 h-full w-full rounded-lg object-contain"
           aria-label={alt}
         />
       )
@@ -156,7 +156,7 @@ export function ContentSection({
         alt={alt}
         fill
         loading="lazy"
-        className={cn(fitClass, "transition-transform duration-500 group-hover:scale-105")}
+        className={cn(fitClass, "rounded-lg transition-transform duration-500 group-hover:scale-105")}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         quality={85}
       />
@@ -194,14 +194,15 @@ export function ContentSection({
                   : undefined
               }
               className={cn(
-                "flex flex-col gap-3 md:gap-4 w-full min-h-0 overflow-hidden lg:self-stretch",
+                "flex flex-col w-full min-h-0 overflow-hidden lg:self-stretch",
+                spacing.gridGap,
                 getImageOrder()
               )}
             >
               {allImages.map((img, idx) => (
                 <div
                   key={idx}
-                  className="relative min-h-0 flex-1 w-full overflow-hidden rounded-lg border border-border bg-card"
+                  className="relative min-h-0 flex-1 w-full overflow-hidden rounded-2xl bg-transparent"
                 >
                   {renderMedia(img, img.imageAlt || title)}
                 </div>
@@ -212,7 +213,7 @@ export function ContentSection({
             <motion.div
               variants={itemVariants}
               className={cn(
-                "group relative w-full overflow-hidden rounded-lg",
+                "group relative w-full overflow-hidden rounded-2xl bg-transparent",
                 "aspect-[4/3]", // same as product card image size
                 layout === "image-center"
                   ? "mx-auto lg:mx-0 self-center"

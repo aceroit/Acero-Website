@@ -23,7 +23,6 @@ exports.getAllProjects = async (req, res) => {
 
         // Build query
         const query = { isActive: true };
-        
         if (status) query.status = status;
         if (buildingType) query.buildingType = buildingType;
         if (country) query.country = country;

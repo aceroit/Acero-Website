@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useRef, useState, useEffect } from "react"
+import { Suspense, useRef, useState, useEffect, useMemo } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
@@ -8,6 +8,9 @@ import { CareerApplicationForm } from "@/components/career/career-application-fo
 import { VacanciesSection } from "@/components/career/vacancies-section"
 import { usePage } from "@/hooks/use-page"
 import { useSearchParams } from "next/navigation"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
+import { cn } from "@/lib/utils"
 
 function CareerPageContent() {
   // Fetch Career page for hero image
@@ -18,6 +21,10 @@ function CareerPageContent() {
   const searchParams = useSearchParams()
   const formRef = useRef<HTMLDivElement>(null)
   const [selectedVacancyId, setSelectedVacancyId] = useState<string>("")
+  
+  // Get spacing values
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   // Check for vacancy in URL params on mount
   useEffect(() => {
@@ -51,9 +58,9 @@ function CareerPageContent() {
         <section
           ref={formRef}
           id="application-form"
-          className="border-t border-border bg-background py-24 md:py-32"
+          className={cn("border-t border-border bg-background", spacing.sectionPadding)}
         >
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
             <CareerApplicationForm selectedVacancyId={selectedVacancyId} />
           </div>
         </section>

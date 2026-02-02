@@ -1,9 +1,11 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface Application {
   id: string
@@ -30,6 +32,8 @@ export function ApplicationCardsSection({
 }: ApplicationCardsSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   // Generate grid classes based on columns prop (admin allows 2–6)
   const getGridClasses = () => {
@@ -64,9 +68,9 @@ export function ApplicationCardsSection({
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
         {/* Title */}
         {title && (
           <motion.h2
@@ -89,7 +93,7 @@ export function ApplicationCardsSection({
         </motion.p>
 
         {/* Application Cards Grid */}
-        <div className={cn("grid gap-4 md:gap-6", getGridClasses())}>
+        <div className={cn("grid", spacing.gridGap, getGridClasses())}>
           {applications.map((application, index) => (
             <motion.div
               key={application.id}

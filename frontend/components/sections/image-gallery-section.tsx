@@ -16,6 +16,7 @@ interface GalleryImage {
   src: string
   alt: string
   name?: string
+  link?: string // Optional URL link for the image
 }
 
 interface ImageGallerySectionProps {
@@ -48,11 +49,23 @@ export function ImageGallerySection({
   const [previewImage, setPreviewImage] = useState<GalleryImage | null>(null)
   const showPreview = imageOrientation === "horizontal"
 
-  // Horizontal = 3 columns (2 rows). Vertical = 2 columns (more rows).
+  // Filter out images with no valid src to avoid empty cards
+  const validImages = useMemo(
+    () => images.filter((img) => img?.src && String(img.src).trim()),
+    [images]
+  )
+
+  // Grid: use columns prop for layout (2 = 2x2, 3 = 3 cols, 6 = 6 cols). Fallback to imageOrientation.
   const gridCols =
-    imageOrientation === "horizontal" ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2"
+    columns === 2
+      ? "grid-cols-2"
+      : columns === 6
+        ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+        : imageOrientation === "horizontal"
+          ? "grid-cols-2 md:grid-cols-3"
+          : "grid-cols-2"
   const gridGap = spacing.gridGap || "gap-6"
-  // Horizontal: larger cards with aspect ratio. Vertical: original compact card (same as before our changes).
+  // Horizontal: larger cards with aspect ratio. Vertical: original compact card.
   const imageContainerClass =
     imageOrientation === "horizontal"
       ? "aspect-[4/3] min-h-[180px]"
@@ -97,50 +110,70 @@ export function ImageGallerySection({
               gridGap
             )}
           >
-            {images.map((image, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 24 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
-                role={showPreview ? "button" : undefined}
-                tabIndex={showPreview ? 0 : undefined}
-                onClick={showPreview ? () => setPreviewImage(image) : undefined}
-                onKeyDown={
-                  showPreview
-                    ? (e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault()
-                          setPreviewImage(image)
+            {validImages.map((image, index) => {
+              const hasLink = image.link?.trim()
+              const CardContent = (
+                <>
+                  <div className={cn("relative w-full", imageContainerClass)}>
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      loading="lazy"
+                      className="object-contain"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 200px"
+                      quality={85}
+                    />
+                  </div>
+                  {image.name?.trim() && (
+                    <p className="mt-3 text-center text-sm font-medium text-foreground">
+                      {image.name}
+                    </p>
+                  )}
+                </>
+              )
+              
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                  role={showPreview && !hasLink ? "button" : undefined}
+                  tabIndex={showPreview && !hasLink ? 0 : undefined}
+                  onClick={showPreview && !hasLink ? () => setPreviewImage(image) : undefined}
+                  onKeyDown={
+                    showPreview && !hasLink
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault()
+                            setPreviewImage(image)
+                          }
                         }
-                      }
-                    : undefined
-                }
-                className={cn(
-                  "relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm",
-                  "transition-all duration-300 hover:border-steel-red/30 hover:shadow-md",
-                  "flex flex-col",
-                  showPreview && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-steel-red focus:ring-offset-2"
-                )}
-              >
-                <div className={cn("relative w-full", imageContainerClass)}>
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    loading="lazy"
-                    className="object-contain"
-                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 200px"
-                    quality={85}
-                  />
-                </div>
-                {image.name?.trim() && (
-                  <p className="mt-3 text-center text-sm font-medium text-foreground">
-                    {image.name}
-                  </p>
-                )}
-              </motion.div>
-            ))}
+                      : undefined
+                  }
+                  className={cn(
+                    "relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm",
+                    "transition-all duration-300 hover:border-steel-red/30 hover:shadow-md",
+                    "flex flex-col",
+                    (showPreview || hasLink) && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-steel-red focus:ring-offset-2"
+                  )}
+                >
+                  {hasLink ? (
+                    <a
+                      href={image.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex flex-col"
+                    >
+                      {CardContent}
+                    </a>
+                  ) : (
+                    CardContent
+                  )}
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </div>

@@ -172,7 +172,7 @@ export function ContactForm() {
         },
       }}
       onSubmit={handleSubmit}
-      className="mx-auto max-w-6xl space-y-8"
+      className="w-full space-y-8"
     >
       {/* Form Heading */}
       <motion.div

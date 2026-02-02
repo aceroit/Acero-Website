@@ -82,10 +82,10 @@ const seedProjects = async () => {
         const industries = await Industry.find({ isActive: true });
         const buildingTypes = await BuildingType.find({ isActive: true });
         const countries = await Country.find({ isActive: true });
-        const regions = await Region.find({ isActive: true }).populate('country');
-        const areas = await Area.find({ isActive: true }).populate('region');
+        const regions = await Region.find({ isActive: true });
+        const areas = await Area.find({ isActive: true });
 
-        // Create lookup maps
+        // Create lookup maps (regions and areas are standalone - lookup by name)
         const industryMap = new Map();
         industries.forEach(ind => {
             industryMap.set(ind.name, ind._id);
@@ -103,28 +103,12 @@ const seedProjects = async () => {
 
         const regionMap = new Map();
         regions.forEach(r => {
-            const countryName = r.country?.name;
-            if (countryName) {
-                // Store as "regionName|countryName" for unique lookup
-                regionMap.set(`${r.name}|${countryName}`, r._id);
-            }
-            // Also store by name only (for fallback)
-            if (!regionMap.has(r.name)) {
-                regionMap.set(r.name, r._id);
-            }
+            regionMap.set(r.name, r._id);
         });
 
         const areaMap = new Map();
         areas.forEach(a => {
-            const regionName = a.region?.name;
-            if (regionName) {
-                // Store as "areaName|regionName" for unique lookup
-                areaMap.set(`${a.name}|${regionName}`, a._id);
-            }
-            // Also store by name only (for fallback)
-            if (!areaMap.has(a.name)) {
-                areaMap.set(a.name, a._id);
-            }
+            areaMap.set(a.name, a._id);
         });
 
         console.log(`  Industries: ${industryMap.size}`);
@@ -176,15 +160,9 @@ const seedProjects = async () => {
                     const buildingTypeId = buildingTypeMap.get(projectData.buildingType);
                     const countryId = countryMap.get(projectData.country);
                     
-                    // Find region (try with country first, then fallback to name only)
-                    let regionId = null;
-                    const regionKeyWithCountry = `${projectData.region}|${projectData.country}`;
-                    regionId = regionMap.get(regionKeyWithCountry) || regionMap.get(projectData.region);
-                    
-                    // Find area (try with region first, then fallback to name only)
-                    let areaId = null;
-                    const areaKeyWithRegion = `${projectData.area}|${projectData.region}`;
-                    areaId = areaMap.get(areaKeyWithRegion) || areaMap.get(projectData.area);
+                    // Find region and area by name (standalone - no hierarchy)
+                    const regionId = regionMap.get(projectData.region);
+                    const areaId = areaMap.get(projectData.area);
 
                     // Validate required references
                     if (!buildingTypeId) {

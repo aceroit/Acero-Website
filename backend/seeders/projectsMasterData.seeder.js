@@ -187,48 +187,42 @@ const seedProjectsMasterData = async () => {
         
         console.log(`   ✓ Created: ${countriesCreated}, Skipped: ${countriesSkipped}\n`);
 
-        // 2. Seed Regions (need country reference)
+        // 2. Seed Regions (standalone - no country)
         console.log('2. Seeding Regions...');
         const regionMap = new Map();
         let regionsCreated = 0;
         let regionsSkipped = 0;
         
         for (const regionName of masterData.regions) {
-            const countryName = masterData.regionToCountry.get(regionName);
-            const countryId = countryMap.get(countryName);
-            
-            if (!countryId) {
-                console.log(`   ⚠️  Warning: Country "${countryName}" not found for region "${regionName}"`);
-                continue;
-            }
-            
-            // Check if region exists
-            let region = await Region.findOne({ 
-                name: regionName, 
-                country: countryId 
-            });
+            // Check if region exists by name (regions are standalone)
+            let region = await Region.findOne({ name: regionName });
             
             if (!region) {
-                const code = generateCode(regionName);
-                region = await Region.create({
-                    name: regionName,
-                    code: code,
-                    country: countryId,
-                    isActive: true,
-                    status: 'published',
-                    featured: true,
-                    publishedAt: new Date(),
-                    createdBy: user._id
-                });
-                regionsCreated++;
+                let code = generateCode(regionName);
+                try {
+                    region = await Region.create({
+                        name: regionName,
+                        code: code,
+                        isActive: true,
+                        status: 'published',
+                        featured: true,
+                        publishedAt: new Date(),
+                        createdBy: user._id
+                    });
+                    regionsCreated++;
+                } catch (err) {
+                    if (err.code === 11000) {
+                        region = await Region.findOne({ code });
+                        if (region) regionsSkipped++;
+                    } else throw err;
+                }
             } else {
-                // Update existing region to published if not already
                 if (region.status !== 'published' || !region.featured) {
                     region.status = 'published';
                     region.featured = true;
                     region.publishedAt = region.publishedAt || new Date();
                     await region.save();
-                    regionsCreated++; // Count as updated
+                    regionsCreated++;
                 } else {
                     regionsSkipped++;
                 }
@@ -239,48 +233,42 @@ const seedProjectsMasterData = async () => {
         
         console.log(`   ✓ Created: ${regionsCreated}, Skipped: ${regionsSkipped}\n`);
 
-        // 3. Seed Areas (need region reference)
+        // 3. Seed Areas (standalone - no region)
         console.log('3. Seeding Areas...');
         const areaMap = new Map();
         let areasCreated = 0;
         let areasSkipped = 0;
         
         for (const areaName of masterData.areas) {
-            const regionName = masterData.areaToRegion.get(areaName);
-            const regionId = regionMap.get(regionName);
-            
-            if (!regionId) {
-                console.log(`   ⚠️  Warning: Region "${regionName}" not found for area "${areaName}"`);
-                continue;
-            }
-            
-            // Check if area exists
-            let area = await Area.findOne({ 
-                name: areaName, 
-                region: regionId 
-            });
+            // Check if area exists by name (areas are standalone)
+            let area = await Area.findOne({ name: areaName });
             
             if (!area) {
-                const code = generateCode(areaName);
-                area = await Area.create({
-                    name: areaName,
-                    code: code,
-                    region: regionId,
-                    isActive: true,
-                    status: 'published',
-                    featured: true,
-                    publishedAt: new Date(),
-                    createdBy: user._id
-                });
-                areasCreated++;
+                let code = generateCode(areaName);
+                try {
+                    area = await Area.create({
+                        name: areaName,
+                        code: code,
+                        isActive: true,
+                        status: 'published',
+                        featured: true,
+                        publishedAt: new Date(),
+                        createdBy: user._id
+                    });
+                    areasCreated++;
+                } catch (err) {
+                    if (err.code === 11000) {
+                        area = await Area.findOne({ code });
+                        if (area) areasSkipped++;
+                    } else throw err;
+                }
             } else {
-                // Update existing area to published if not already
                 if (area.status !== 'published' || !area.featured) {
                     area.status = 'published';
                     area.featured = true;
                     area.publishedAt = area.publishedAt || new Date();
                     await area.save();
-                    areasCreated++; // Count as updated
+                    areasCreated++;
                 } else {
                     areasSkipped++;
                 }

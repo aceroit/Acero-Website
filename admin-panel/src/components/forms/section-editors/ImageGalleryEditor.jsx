@@ -48,7 +48,7 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
             Gallery Images <span className="text-red-500">*</span>
           </label>
           <p className="text-xs text-gray-500 mb-4">
-            Add images to display in the gallery grid. Each image will be displayed with its alt text.
+            Add images to display in the gallery grid. Each image can have alt text, an optional name label, and an optional link (makes the card clickable).
           </p>
           <Form.List name={['content', 'images']} initialValue={value.images || []}>
             {(fields, { add, remove }) => {
@@ -60,7 +60,7 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
                       <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => add({ src: '', alt: '', name: '' })}
+                        onClick={() => add({ src: '', alt: '', name: '', link: '' })}
                         size="large"
                         style={{
                           backgroundColor: '#1f2937',
@@ -146,6 +146,20 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
                                 maxLength={120}
                               />
                             </Form.Item>
+
+                            {/* Link (optional – makes the image card clickable) */}
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'link']}
+                              label="Link (optional)"
+                              tooltip="URL to open when the image is clicked (e.g. external page, PDF). Leave empty for no link."
+                            >
+                              <Input
+                                placeholder="e.g., https://example.com or /page"
+                                size="large"
+                                maxLength={500}
+                              />
+                            </Form.Item>
                           </div>
                         </Card>
                       ))}
@@ -156,7 +170,7 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
                     <Button
                       type="dashed"
                       icon={<PlusOutlined />}
-                      onClick={() => add({ src: '', alt: '', name: '' })}
+                      onClick={() => add({ src: '', alt: '', name: '', link: '' })}
                       block
                       size="large"
                       className="mt-4"

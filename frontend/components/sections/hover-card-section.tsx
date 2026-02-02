@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useState } from "react"
+import { useRef, useState, useMemo } from "react"
 import Image from "next/image"
 import {
   Dialog,
@@ -11,6 +11,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface HoverCard {
   id: string
@@ -39,6 +41,8 @@ export function HoverCardSection({
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
   const [selectedCard, setSelectedCard] = useState<HoverCard | null>(null)
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   const gridCols =
     columns === 3 ? "md:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-2 lg:grid-cols-4"
@@ -46,9 +50,9 @@ export function HoverCardSection({
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background", spacing.sectionPadding, className)}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
         {title && (
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -72,7 +76,7 @@ export function HoverCardSection({
         )}
 
         {/* Hover Cards Grid */}
-        <div className={cn("grid gap-4 md:gap-6", gridCols)}>
+        <div className={cn("grid", spacing.gridGap, gridCols)}>
           {cards.map((card, index) => {
             const isHovered = hoveredCard === card.id
 

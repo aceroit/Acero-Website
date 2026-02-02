@@ -12,18 +12,16 @@ exports.getAllRegions = async (req, res) => {
             limit = 20,
             status,
             featured,
-            country,
             search,
             sortBy = 'name',
             sortOrder = 'asc'
         } = req.query;
 
-        // Build query
+        // Build query (regions are standalone - no country filter)
         const query = { isActive: true };
         
         if (status) query.status = status;
         if (featured !== undefined) query.featured = featured === 'true';
-        if (country) query.country = country;
         if (search) {
             query.$or = [
                 { name: new RegExp(search, 'i') },
@@ -40,7 +38,6 @@ exports.getAllRegions = async (req, res) => {
 
         const [regions, total] = await Promise.all([
             Region.find(query)
-                .populate('country', 'name code')
                 .populate('createdBy', 'firstName lastName email')
                 .populate('updatedBy', 'firstName lastName email')
                 .sort(sortOptions)
@@ -72,7 +69,6 @@ exports.getRegionById = async (req, res) => {
         const { id } = req.params;
         
         const region = await Region.findOne({ _id: id, isActive: true })
-            .populate('country', 'name code')
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
         
@@ -102,7 +98,6 @@ exports.createRegion = async (req, res) => {
         await region.save();
 
         const populatedRegion = await Region.findById(region._id)
-            .populate('country', 'name code')
             .populate('createdBy', 'firstName lastName email');
 
         return successResponse(
@@ -114,7 +109,7 @@ exports.createRegion = async (req, res) => {
     } catch (error) {
         console.error('Error in createRegion:', error);
         if (error.code === 11000) {
-            return errorResponse(res, 400, 'Region with this code already exists in this country');
+            return errorResponse(res, 400, 'Region with this code already exists');
         }
         if (error.name === 'ValidationError') {
             return errorResponse(res, 400, 'Validation error', error.message);
@@ -160,7 +155,6 @@ exports.updateRegion = async (req, res) => {
         await region.save();
 
         const updatedRegion = await Region.findById(region._id)
-            .populate('country', 'name code')
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
@@ -173,7 +167,7 @@ exports.updateRegion = async (req, res) => {
     } catch (error) {
         console.error('Error in updateRegion:', error);
         if (error.code === 11000) {
-            return errorResponse(res, 400, 'Region with this code already exists in this country');
+            return errorResponse(res, 400, 'Region with this code already exists');
         }
         if (error.name === 'ValidationError') {
             return errorResponse(res, 400, 'Validation error', error.message);

@@ -1,9 +1,11 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useMemo } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 // Inline type definitions (temporary)
 interface CompanyUpdate {
@@ -42,38 +44,55 @@ export function CompanyUpdateDetail({
 }: CompanyUpdateDetailProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+
+  // Filter additional images to only include valid ones with URLs
+  const validAdditionalImages = useMemo(() => {
+    if (!update.additionalImages) return []
+    return update.additionalImages.filter((img) => img && img.url)
+  }, [update.additionalImages])
+
+  // Check if featured image is valid
+  const hasFeaturedImage = update.featuredImage && update.featuredImage.url && update.featuredImage.url !== "/placeholder.jpg"
 
   return (
     <article
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn(
+        "border-t border-border bg-background",
+        spacing.sectionPadding,
+        className
+      )}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Hero Image - 80% width, centered */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.8 }}
-          className="mb-16"
-        >
-          <div className="relative mx-auto aspect-[16/10] w-full max-w-[80%] overflow-hidden rounded-lg bg-secondary">
-            <Image
-              src={update.featuredImage.url}
-              alt={update.title}
-              fill
-              priority
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 80vw"
-              quality={90}
-            />
-          </div>
-        </motion.div>
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
+        {/* Hero Image - 80% width, centered (only if valid image exists) */}
+        {hasFeaturedImage && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8 }}
+            className="mb-16"
+          >
+            <div className="relative mx-auto aspect-[16/10] w-full max-w-[80%] overflow-hidden rounded-lg bg-secondary">
+              <Image
+                src={update.featuredImage.url}
+                alt={update.title}
+                fill
+                priority
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 80vw"
+                quality={90}
+              />
+            </div>
+          </motion.div>
+        )}
 
         {/* Content - Detailed Paragraph */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.8, delay: hasFeaturedImage ? 0.2 : 0 }}
           className="mx-auto max-w-4xl"
         >
           <h1 className="mb-8 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
@@ -86,16 +105,21 @@ export function CompanyUpdateDetail({
           </div>
         </motion.div>
 
-        {/* Additional Images - Two images, 40% each, centered */}
-        {update.additionalImages && update.additionalImages.length >= 2 && (
+        {/* Additional Images - Display if any valid images exist */}
+        {validAdditionalImages.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: hasFeaturedImage ? 0.4 : 0.2 }}
             className="mt-16"
           >
-            <div className="mx-auto grid max-w-[80%] grid-cols-1 gap-6 md:grid-cols-2">
-              {update.additionalImages.slice(0, 2).map((image, index) => (
+            <div className={cn(
+              "mx-auto grid max-w-[80%] gap-6",
+              validAdditionalImages.length === 1 
+                ? "grid-cols-1 max-w-[50%]" 
+                : "grid-cols-1 md:grid-cols-2"
+            )}>
+              {validAdditionalImages.slice(0, 4).map((image, index) => (
                 <div
                   key={index}
                   className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-secondary"

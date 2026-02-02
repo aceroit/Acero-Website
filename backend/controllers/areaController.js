@@ -12,26 +12,16 @@ exports.getAllAreas = async (req, res) => {
             limit = 20,
             status,
             featured,
-            region,
-            country,
             search,
             sortBy = 'name',
             sortOrder = 'asc'
         } = req.query;
 
-        // Build query
+        // Build query (areas are standalone - no region/country filter)
         const query = { isActive: true };
         
         if (status) query.status = status;
         if (featured !== undefined) query.featured = featured === 'true';
-        if (region) query.region = region;
-        if (country) {
-            // If country is provided, we need to find regions first
-            const Region = require('../models/Region');
-            const regions = await Region.find({ country, isActive: true }).select('_id');
-            const regionIds = regions.map(r => r._id);
-            query.region = { $in: regionIds };
-        }
         if (search) {
             query.$or = [
                 { name: new RegExp(search, 'i') },
@@ -48,14 +38,6 @@ exports.getAllAreas = async (req, res) => {
 
         const [areas, total] = await Promise.all([
             Area.find(query)
-                .populate({
-                    path: 'region',
-                    select: 'name code',
-                    populate: {
-                        path: 'country',
-                        select: 'name code'
-                    }
-                })
                 .populate('createdBy', 'firstName lastName email')
                 .populate('updatedBy', 'firstName lastName email')
                 .sort(sortOptions)
@@ -87,14 +69,6 @@ exports.getAreaById = async (req, res) => {
         const { id } = req.params;
         
         const area = await Area.findOne({ _id: id, isActive: true })
-            .populate({
-                path: 'region',
-                select: 'name code',
-                populate: {
-                    path: 'country',
-                    select: 'name code'
-                }
-            })
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
         
@@ -124,14 +98,6 @@ exports.createArea = async (req, res) => {
         await area.save();
 
         const populatedArea = await Area.findById(area._id)
-            .populate({
-                path: 'region',
-                select: 'name code',
-                populate: {
-                    path: 'country',
-                    select: 'name code'
-                }
-            })
             .populate('createdBy', 'firstName lastName email');
 
         return successResponse(
@@ -143,7 +109,7 @@ exports.createArea = async (req, res) => {
     } catch (error) {
         console.error('Error in createArea:', error);
         if (error.code === 11000) {
-            return errorResponse(res, 400, 'Area with this code already exists in this region');
+            return errorResponse(res, 400, 'Area with this code already exists');
         }
         if (error.name === 'ValidationError') {
             return errorResponse(res, 400, 'Validation error', error.message);
@@ -189,14 +155,6 @@ exports.updateArea = async (req, res) => {
         await area.save();
 
         const updatedArea = await Area.findById(area._id)
-            .populate({
-                path: 'region',
-                select: 'name code',
-                populate: {
-                    path: 'country',
-                    select: 'name code'
-                }
-            })
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
@@ -209,7 +167,7 @@ exports.updateArea = async (req, res) => {
     } catch (error) {
         console.error('Error in updateArea:', error);
         if (error.code === 11000) {
-            return errorResponse(res, 400, 'Area with this code already exists in this region');
+            return errorResponse(res, 400, 'Area with this code already exists');
         }
         if (error.name === 'ValidationError') {
             return errorResponse(res, 400, 'Validation error', error.message);

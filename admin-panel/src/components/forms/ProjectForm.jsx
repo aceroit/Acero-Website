@@ -63,35 +63,14 @@ const ProjectForm = ({
     }
   }, [initialValues, form]);
 
-  // Fetch all dropdown options
+  // Fetch all dropdown options (country, region, area are independent)
   useEffect(() => {
     fetchBuildingTypes();
     fetchCountries();
+    fetchRegions();
+    fetchAreas();
     fetchIndustries();
   }, []);
-
-  // Fetch regions when country changes
-  useEffect(() => {
-    const country = form.getFieldValue('country');
-    if (country) {
-      fetchRegions(country);
-    } else {
-      setRegions([]);
-      setAreas([]);
-      form.setFieldsValue({ region: undefined, area: undefined });
-    }
-  }, [form.getFieldValue('country')]);
-
-  // Fetch areas when region changes
-  useEffect(() => {
-    const region = form.getFieldValue('region');
-    if (region) {
-      fetchAreas(region);
-    } else {
-      setAreas([]);
-      form.setFieldsValue({ area: undefined });
-    }
-  }, [form.getFieldValue('region')]);
 
   const fetchBuildingTypes = async () => {
     setLoadingOptions(prev => ({ ...prev, buildingTypes: true }));
@@ -123,10 +102,10 @@ const ProjectForm = ({
     }
   };
 
-  const fetchRegions = async (countryId) => {
+  const fetchRegions = async () => {
     setLoadingOptions(prev => ({ ...prev, regions: true }));
     try {
-      const response = await referenceService.getRegions(countryId);
+      const response = await referenceService.getRegions();
       if (response.success) {
         setRegions(response.data.regions || []);
       }
@@ -138,10 +117,10 @@ const ProjectForm = ({
     }
   };
 
-  const fetchAreas = async (regionId) => {
+  const fetchAreas = async () => {
     setLoadingOptions(prev => ({ ...prev, areas: true }));
     try {
-      const response = await referenceService.getAreas(regionId);
+      const response = await referenceService.getAreas();
       if (response.success) {
         setAreas(response.data.areas || []);
       }
@@ -179,20 +158,6 @@ const ProjectForm = ({
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
       form.setFieldsValue({ jobNumberSlug: slug });
-    }
-  };
-
-  const handleCountryChange = (countryId) => {
-    form.setFieldsValue({ region: undefined, area: undefined });
-    if (countryId) {
-      fetchRegions(countryId);
-    }
-  };
-
-  const handleRegionChange = (regionId) => {
-    form.setFieldsValue({ area: undefined });
-    if (regionId) {
-      fetchAreas(regionId);
     }
   };
 
@@ -355,7 +320,6 @@ const ProjectForm = ({
               filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
-              onChange={handleCountryChange}
               options={countries.map(c => ({
                 value: c._id,
                 label: `${c.name}${c.code ? ` (${c.code})` : ''}`,
@@ -376,8 +340,6 @@ const ProjectForm = ({
               filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
-              onChange={handleRegionChange}
-              disabled={!form.getFieldValue('country')}
               options={regions.map(r => ({
                 value: r._id,
                 label: `${r.name}${r.code ? ` (${r.code})` : ''}`,
@@ -400,7 +362,6 @@ const ProjectForm = ({
               filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
-              disabled={!form.getFieldValue('region')}
               options={areas.map(a => ({
                 value: a._id,
                 label: `${a.name}${a.code ? ` (${a.code})` : ''}`,
@@ -590,15 +551,12 @@ const ProjectForm = ({
         <Form.Item
           name="projectImages"
           label="Project Gallery Images"
-          tooltip="Gallery images for the project (minimum 5 images required, min: 736×368px or 546×273px)"
+          tooltip="Gallery images for the project (min: 736×368px or 546×273px)"
           rules={[
             {
               validator: (_, value) => {
                 if (!value || value.length === 0) {
-                  return Promise.resolve(); // Allow empty on create, validate on publish
-                }
-                if (value.length < 5) {
-                  return Promise.reject(new Error('At least 5 images are required for the gallery'));
+                  return Promise.reject(new Error('At least one image is required for the gallery'));
                 }
                 return Promise.resolve();
               }

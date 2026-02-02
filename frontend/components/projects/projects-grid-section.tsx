@@ -12,6 +12,8 @@ interface ProjectsGridSectionProps {
   buildingTypes?: BuildingType[]
   industrySlug?: string
   className?: string
+  /** When true, render only the inner content (no section wrapper). Use when already inside a section (e.g. projects list, building types list). */
+  noSection?: boolean
 }
 
 export function ProjectsGridSection({
@@ -19,6 +21,7 @@ export function ProjectsGridSection({
   buildingTypes,
   industrySlug,
   className,
+  noSection = false,
 }: ProjectsGridSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
@@ -27,47 +30,56 @@ export function ProjectsGridSection({
     return null
   }
 
+  const gridContent = (
+    <>
+      <div ref={noSection ? ref : undefined} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {industries &&
+          industries.map((industry, index) => (
+            <IndustryCard
+              key={industry.slug}
+              industry={industry}
+              index={index}
+              className={isInView ? "" : "opacity-0"}
+            />
+          ))}
+
+        {buildingTypes &&
+          industrySlug &&
+          buildingTypes.map((buildingType, index) => (
+            <BuildingTypeCard
+              key={buildingType.slug}
+              buildingType={buildingType}
+              industrySlug={industrySlug}
+              index={index}
+              className={isInView ? "" : "opacity-0"}
+            />
+          ))}
+      </div>
+
+      {/* Empty State */}
+      {((industries && industries.length === 0) ||
+        (buildingTypes && buildingTypes.length === 0)) && (
+        <div className="py-12 text-center">
+          <p className="text-lg text-muted-foreground">No results found.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Try adjusting your filters to see more results.
+          </p>
+        </div>
+      )}
+    </>
+  )
+
+  if (noSection) {
+    return <div className={className}>{gridContent}</div>
+  }
+
   return (
     <section
       ref={ref}
-      className={cn("border-t border-border bg-background py-24 md:py-32", className)}
+      className={cn("border-t border-border bg-background py-24", className)}
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {industries &&
-            industries.map((industry, index) => (
-              <IndustryCard
-                key={industry.slug}
-                industry={industry}
-                index={index}
-                className={isInView ? "" : "opacity-0"}
-              />
-            ))}
-
-          {buildingTypes &&
-            industrySlug &&
-            buildingTypes.map((buildingType, index) => (
-              <BuildingTypeCard
-                key={buildingType.slug}
-                buildingType={buildingType}
-                industrySlug={industrySlug}
-                index={index}
-                className={isInView ? "" : "opacity-0"}
-              />
-            ))}
-        </div>
-
-        {/* Empty State */}
-        {((industries && industries.length === 0) ||
-          (buildingTypes && buildingTypes.length === 0)) && (
-          <div className="py-12 text-center">
-            <p className="text-lg text-muted-foreground">No results found.</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Try adjusting your filters to see more results.
-            </p>
-          </div>
-        )}
+        {gridContent}
       </div>
     </section>
   )

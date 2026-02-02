@@ -1,11 +1,14 @@
 "use client"
 
+import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Briefcase, Calendar, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useVacancies } from "@/hooks/use-vacancies"
 import type { Vacancy } from "@/services/vacancy.service"
 import { cn } from "@/lib/utils"
+import { useAppearance } from "@/hooks/use-appearance"
+import { getSpacingValues } from "@/utils/spacing"
 
 interface VacanciesSectionProps {
   onApplyNow: (vacancyId: string) => void
@@ -13,11 +16,13 @@ interface VacanciesSectionProps {
 
 export function VacanciesSection({ onApplyNow }: VacanciesSectionProps) {
   const { vacancies, isLoading, error } = useVacancies()
+  const { appearance } = useAppearance()
+  const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   if (isLoading) {
     return (
-      <section className="border-t border-border bg-background py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <section className={cn("border-t border-border bg-background", spacing.sectionPadding)}>
+        <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
           <div className="text-center">
             <p className="text-lg text-muted-foreground">Loading vacancies...</p>
           </div>
@@ -28,8 +33,8 @@ export function VacanciesSection({ onApplyNow }: VacanciesSectionProps) {
 
   if (error) {
     return (
-      <section className="border-t border-border bg-background py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <section className={cn("border-t border-border bg-background", spacing.sectionPadding)}>
+        <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
           <div className="text-center">
             <p className="text-lg text-destructive">Failed to load vacancies. Please try again later.</p>
           </div>
@@ -43,8 +48,8 @@ export function VacanciesSection({ onApplyNow }: VacanciesSectionProps) {
   }
 
   return (
-    <section className="border-t border-border bg-background py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className={cn("border-t border-border bg-background", spacing.sectionPadding)}>
+      <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -63,7 +68,7 @@ export function VacanciesSection({ onApplyNow }: VacanciesSectionProps) {
         </motion.div>
 
         {/* Vacancies Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className={cn("grid md:grid-cols-2 lg:grid-cols-3", spacing.gridGap)}>
           {vacancies.map((vacancy, index) => (
             <VacancyCard
               key={vacancy._id}
