@@ -29,7 +29,8 @@ function AnimatedCounter({
 }) {
   const [count, setCount] = useState(0)
   const numericValue = parseInt(value.replace(/[^0-9]/g, ""))
-  const suffix = value.replace(/[0-9]/g, "")
+  // Trim trailing commas so "100000," displays as "100000" not "100000,"
+  const suffix = value.replace(/[0-9]/g, "").replace(/,\s*$/, "")
 
   useEffect(() => {
     if (!isInView || !numericValue) {

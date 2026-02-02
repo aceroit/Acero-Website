@@ -54,7 +54,7 @@ export function ImageDisplaySection({
               alt={imageAlt}
               fill
               loading="lazy"
-              className="object-contain"
+              className="object-cover"
               sizes="(max-width: 768px) 100vw, 1200px"
               quality={90}
             />

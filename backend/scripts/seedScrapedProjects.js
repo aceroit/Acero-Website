@@ -13,9 +13,15 @@
  * Usage: node scripts/seedScrapedProjects.js
  * 
  * Options:
+ *   --file=<path>     Input JSON file (default: scraped-projects.json)
  *   --dry-run         Show what would be created without actually creating
  *   --skip-master     Skip master data seeding (use if already seeded)
  *   --force           Force update existing projects
+ * 
+ * Examples:
+ *   node scripts/seedScrapedProjects.js
+ *   node scripts/seedScrapedProjects.js --file=scraped-projects-processed.json
+ *   node scripts/seedScrapedProjects.js --file=scraped-projects-processed.json --force
  */
 
 const path = require('path');
@@ -42,9 +48,13 @@ const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
 const SKIP_MASTER = args.includes('--skip-master');
 const FORCE_UPDATE = args.includes('--force');
+const fileArg = args.find(a => a.startsWith('--file='));
+const inputFileName = fileArg ? fileArg.replace('--file=', '').trim() : 'scraped-projects.json';
 
-// Path to scraped data
-const SCRAPED_DATA_PATH = path.join(__dirname, 'scraped-projects.json');
+// Path to scraped data (default or --file=)
+const SCRAPED_DATA_PATH = path.isAbsolute(inputFileName)
+    ? inputFileName
+    : path.join(__dirname, inputFileName);
 
 // Helper function to generate slug
 function generateSlug(text) {
@@ -132,15 +142,21 @@ class ScrapedProjectsSeeder {
     // Load and validate scraped data
     loadScrapedData() {
         if (!fs.existsSync(SCRAPED_DATA_PATH)) {
-            throw new Error(`Scraped data file not found: ${SCRAPED_DATA_PATH}\nPlease run the scraper first: node scripts/scrapeProjects.js`);
+            throw new Error(`Scraped data file not found: ${SCRAPED_DATA_PATH}\nUse --file=<filename> for a different file, e.g. --file=scraped-projects-processed.json`);
         }
         
         const data = JSON.parse(fs.readFileSync(SCRAPED_DATA_PATH, 'utf8'));
         
+        if (!data.industries || !Array.isArray(data.industries)) {
+            throw new Error('Invalid data: expected "industries" array at root.');
+        }
+        
         console.log('Loaded scraped data:');
-        console.log(`  - Scraped at: ${data.scrapedAt}`);
-        console.log(`  - Industries: ${data.industries?.length || 0}`);
-        console.log(`  - Stats: ${JSON.stringify(data.stats)}\n`);
+        console.log(`  - File: ${path.basename(SCRAPED_DATA_PATH)}`);
+        console.log(`  - Scraped at: ${data.scrapedAt || 'N/A'}`);
+        console.log(`  - Industries: ${data.industries.length}`);
+        if (data.stats) console.log(`  - Stats: ${JSON.stringify(data.stats)}`);
+        console.log('');
         
         return data;
     }
@@ -546,22 +562,37 @@ class ScrapedProjectsSeeder {
                         throw new Error(`Missing required location data for project ${jobNumber}`);
                     }
                     
-                    // Prepare project images
-                    const projectImages = (projectData.projectImages || []).map((url, index) => ({
-                        url: url,
-                        publicId: `scraped_${jobNumberSlug}_${index}`,
-                        order: index,
-                        altText: `${projectData.buildingType} - Image ${index + 1}`
-                    }));
+                    // Prepare project images (use projectImagesData when present, e.g. from processed JSON)
+                    const projectImages = (projectData.projectImagesData && projectData.projectImagesData.length > 0)
+                        ? projectData.projectImagesData.map((img, index) => ({
+                            url: img.url,
+                            publicId: img.publicId || `scraped_${jobNumberSlug}_${index}`,
+                            width: img.width ?? null,
+                            height: img.height ?? null,
+                            order: index,
+                            altText: `${projectData.buildingType} - Image ${index + 1}`
+                        }))
+                        : (projectData.projectImages || []).map((url, index) => ({
+                            url: url,
+                            publicId: `scraped_${jobNumberSlug}_${index}`,
+                            order: index,
+                            altText: `${projectData.buildingType} - Image ${index + 1}`
+                        }));
                     
-                    // Prepare thumbnail
-                    const thumbnailImage = projectData.thumbnailImage ? {
-                        url: projectData.thumbnailImage,
-                        publicId: `scraped_${jobNumberSlug}_thumb`
-                    } : (projectImages[0] ? {
-                        url: projectImages[0].url,
-                        publicId: projectImages[0].publicId
-                    } : null);
+                    // Prepare thumbnail (use thumbnailImageData when present, e.g. from processed JSON)
+                    const thumbnailImage = projectData.thumbnailImageData
+                        ? {
+                            url: projectData.thumbnailImageData.url,
+                            publicId: projectData.thumbnailImageData.publicId || `scraped_${jobNumberSlug}_thumb`,
+                            width: projectData.thumbnailImageData.width ?? null,
+                            height: projectData.thumbnailImageData.height ?? null
+                        }
+                        : projectData.thumbnailImage
+                            ? { url: projectData.thumbnailImage, publicId: `scraped_${jobNumberSlug}_thumb` }
+                            : (projectImages[0] ? {
+                                url: projectImages[0].url,
+                                publicId: projectImages[0].publicId
+                            } : null);
                     
                     const currentOrder = orderByIndustry.get(industryData.name);
                     orderByIndustry.set(industryData.name, currentOrder + 1);
@@ -587,7 +618,14 @@ class ScrapedProjectsSeeder {
                     
                     if (!DRY_RUN) {
                         if (existingProject && FORCE_UPDATE) {
-                            await Project.findByIdAndUpdate(existingProject._id, projectDoc);
+                            // Only update images and order so we keep createdBy, createdAt, meta, etc.
+                            await Project.findByIdAndUpdate(existingProject._id, {
+                                $set: {
+                                    thumbnailImage,
+                                    projectImages,
+                                    order: projectDoc.order
+                                }
+                            });
                             this.stats.projects.updated++;
                         } else {
                             await Project.create(projectDoc);

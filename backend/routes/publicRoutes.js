@@ -878,18 +878,24 @@ router.get('/form-configuration', async (req, res) => {
 
 /**
  * GET /api/public/branches - Get published and featured branches
- * No authentication required
+ * No authentication required.
+ * Branches with missing/invalid country ref (e.g. deleted country) are excluded so the dropdown always has valid country data.
  */
 router.get('/branches', async (req, res) => {
     try {
         const branches = await Branch.getPublished();
 
+        // Exclude branches where country failed to populate (null ref or deleted country)
+        const withCountry = Array.isArray(branches)
+            ? branches.filter((b) => b.country != null)
+            : [];
+
         // Set cache headers (cache for 5 minutes)
         res.set('Cache-Control', 'public, max-age=300');
 
         return successResponse(res, 200, 'Published branches retrieved successfully', {
-            branches,
-            count: branches.length
+            branches: withCountry,
+            count: withCountry.length
         });
     } catch (error) {
         console.error('Error in public getBranches:', error);

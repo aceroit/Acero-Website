@@ -551,15 +551,12 @@ const ProjectForm = ({
         <Form.Item
           name="projectImages"
           label="Project Gallery Images"
-          tooltip="Gallery images for the project (minimum 5 images required, min: 736×368px or 546×273px)"
+          tooltip="Gallery images for the project (min: 736×368px or 546×273px)"
           rules={[
             {
               validator: (_, value) => {
                 if (!value || value.length === 0) {
-                  return Promise.resolve(); // Allow empty on create, validate on publish
-                }
-                if (value.length < 5) {
-                  return Promise.reject(new Error('At least 5 images are required for the gallery'));
+                  return Promise.reject(new Error('At least one image is required for the gallery'));
                 }
                 return Promise.resolve();
               }

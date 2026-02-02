@@ -109,23 +109,6 @@ function BuildingTypeContent({
             images={allProjectImages}
           />
         )}
-
-        {/* Additional Projects Info */}
-        {projects.length > 1 && (
-          <section className="border-t border-border bg-background py-24">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-              <div className="text-center">
-                <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-                  {projects.length} Projects Completed
-                </h2>
-                <p className="mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
-                  We have successfully completed {projects.length} projects of type{" "}
-                  {buildingTypeName} in the {industryName} industry.
-                </p>
-              </div>
-            </div>
-          </section>
-        )}
       </main>
       <Footer />
     </>
