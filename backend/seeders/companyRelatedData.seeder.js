@@ -8,51 +8,10 @@ if (!process.env.MONGODB_URI) {
 }
 
 // Now require modules that depend on environment variables
-const mongoose = require('mongoose');
-const Certification = require('../models/Certification');
-const Customer = require('../models/Customer');
 const CompanyUpdateCategory = require('../models/CompanyUpdateCategory');
 const CompanyUpdate = require('../models/CompanyUpdate');
-const Brochure = require('../models/Brochure');
-const Branch = require('../models/Branch');
-const Country = require('../models/Country');
 const User = require('../models/User');
 const connectDB = require('../configs/database');
-
-// Helper function to generate slug from name
-function generateSlug(name) {
-    return name
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '') // Remove special characters
-        .replace(/\s+/g, '-') // Replace spaces with hyphens
-        .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-        .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-}
-
-// Certifications data (from frontend/app/page.tsx and frontend/app/products/manufacturing/page.tsx)
-const certificationsData = [
-    { name: 'ISO 9001', image: '/images/certifications/iso-9001.png' },
-    { name: 'ISO 14001', image: '/images/certifications/iso-14001.png' },
-    { name: 'ISO 45001', image: '/images/certificates/iso-45001.jpg' },
-    { name: 'OHSAS 18001', image: '/images/certifications/ohsas-18001.png' },
-    { name: 'AS/NZS ISO 3834', image: '/images/certificates/as-nzs-iso-3834.jpg' },
-    { name: 'EN 1090-1', image: '/images/certificates/en-1090-1.jpg' },
-    { name: 'QHSE Policy', image: '/images/certificates/qhse-policy.jpg' },
-    { name: 'CE Mark', image: '/images/certifications/ce-mark.png' },
-    { name: 'ASTM', image: '/images/certifications/astm.png' },
-    { name: 'AISC', image: '/images/certifications/aisc.png' },
-];
-
-// Customers data (from frontend/app/page.tsx)
-const customersData = [
-    { name: 'Customer 1', image: '/images/customers/customer-1.png', order: 0 },
-    { name: 'Customer 2', image: '/images/customers/customer-2.png', order: 1 },
-    { name: 'Customer 3', image: '/images/customers/customer-3.png', order: 2 },
-    { name: 'Customer 4', image: '/images/customers/customer-4.png', order: 3 },
-    { name: 'Customer 5', image: '/images/customers/customer-5.png', order: 4 },
-    { name: 'Customer 6', image: '/images/customers/customer-6.png', order: 5 },
-];
 
 // Company Update Categories (extracted from company updates)
 const companyUpdateCategoriesData = [
@@ -137,6 +96,12 @@ As the evening drew to a close, attendees departed with hearts full of gratitude
                 order: 1,
             },
         ],
+        banner: { url: '/placeholder.jpg', publicId: 'company-updates/iftar-banner', width: 1280, height: 960 },
+        metaTitle: 'Acero Iftar Dinner 2024 | Company Update',
+        metaImage: { url: '/placeholder.jpg', publicId: 'company-updates/iftar-meta', width: 150, height: 150 },
+        metaDescription: 'Acero Building Systems organized an Iftar Dinner for employees and families in March 2024.',
+        metaKeywords: ['acero', 'iftar', 'ramadan', 'company event', 'dubai'],
+        showOnHomePage: true,
     },
     {
         slug: 'new-manufacturing-facility-inauguration',
@@ -203,152 +168,120 @@ The inauguration ceremony was attended by key stakeholders, partners, and member
                 order: 1,
             },
         ],
+        banner: { url: '/placeholder.jpg', publicId: 'company-updates/facility-banner', width: 1280, height: 960 },
+        metaTitle: 'New Manufacturing Facility | Acero Building Systems',
+        metaImage: { url: '/placeholder.jpg', publicId: 'company-updates/facility-meta', width: 150, height: 150 },
+        metaDescription: 'Acero Building Systems inaugurates state-of-the-art manufacturing facility.',
+        metaKeywords: ['acero', 'manufacturing', 'facility', 'expansion', 'steel'],
+        showOnHomePage: true,
     },
-];
+    {
+        slug: 'safety-excellence-award-2024',
+        title: 'Safety Excellence Award 2024',
+        heading: 'Acero Building Systems Wins Safety Excellence Award 2024',
+        categoryName: 'Awards',
+        shortDescription: 'Acero Building Systems has been recognized with the Safety Excellence Award 2024 for outstanding commitment to workplace safety and QHSE practices.',
+        description: `Safety Excellence Award 2024.
 
-// Brochures data (from frontend/utils/brochures-data.ts)
-const brochuresData = [
-    {
-        title: 'Company Overview Brochure',
-        description: 'Comprehensive overview of our company and services',
-        brochureImage: {
-            url: '/placeholder.jpg',
-            publicId: 'brochures/company-overview',
-            width: 300,
-            height: 400,
-        },
-        order: 0,
-    },
-    {
-        title: 'Product Catalog 2024',
-        description: 'Complete catalog of our steel products and solutions',
-        brochureImage: {
-            url: '/placeholder.jpg',
-            publicId: 'brochures/product-catalog',
-            width: 300,
-            height: 400,
-        },
-        order: 1,
-    },
-    {
-        title: 'PEB Solutions Guide',
-        description: 'Detailed guide to Pre-Engineered Building solutions',
-        brochureImage: {
-            url: '/placeholder.jpg',
-            publicId: 'brochures/peb-solutions',
-            width: 300,
-            height: 400,
-        },
-        order: 2,
-    },
-    {
-        title: 'Sustainability Report',
-        description: 'Our commitment to sustainable steel manufacturing',
-        brochureImage: {
-            url: '/placeholder.jpg',
-            publicId: 'brochures/sustainability',
-            width: 300,
-            height: 400,
-        },
-        order: 3,
-    },
-    {
-        title: 'Technical Specifications',
-        description: 'Technical specifications for all our products',
-        brochureImage: {
-            url: '/placeholder.jpg',
-            publicId: 'brochures/technical-specs',
-            width: 300,
-            height: 400,
-        },
-        order: 4,
-    },
-    {
-        title: 'Case Studies Portfolio',
-        description: 'Success stories and case studies from our projects',
-        brochureImage: {
-            url: '/placeholder.jpg',
-            publicId: 'brochures/case-studies',
-            width: 300,
-            height: 400,
-        },
-        order: 5,
-    },
-];
+Acero Building Systems has been honored with the Safety Excellence Award 2024 in recognition of our outstanding commitment to workplace safety, health, and environmental (QHSE) practices. The award reflects our zero-incident culture and continuous improvement in safety standards across all facilities.
 
-// Branches data (from frontend/utils/branches-data.ts)
-const branchesData = [
-    {
-        branchName: 'Acero Building Systems - Dubai',
-        location: 'Dubai',
-        countryName: 'United Arab Emirates',
-        email: 'info@acero.ae',
-        phone: '+97148931000',
-        address: 'Jebel Ali Industrial Area 1, Dubai, United Arab Emirates',
-        logo: '/images/branches/dubai-logo.png',
-        coordinates: { lat: 24.9848, lng: 55.0962 },
-        isHeadOffice: true,
-        googleLink: 'https://maps.google.com/?q=24.9848,55.0962',
+Our safety programs, training initiatives, and on-site protocols have set industry benchmarks. The recognition underscores Acero's dedication to protecting our people and the environment while delivering world-class steel structures.`,
+        eventDate: new Date('2024-04-10'),
+        featuredImage: {
+            url: '/placeholder.jpg',
+            publicId: 'company-updates/safety-award',
+            width: 1200,
+            height: 800,
+        },
+        gallery: [
+            {
+                url: '/placeholder.jpg',
+                publicId: 'company-updates/safety-award-1',
+                width: 800,
+                height: 600,
+                altText: 'Safety Excellence Award',
+                order: 0,
+            },
+        ],
+        featured: true,
+        linkedInPosts: [
+            {
+                companyName: 'Acero Building Systems',
+                date: 'April 2024',
+                text: 'Proud to receive the Safety Excellence Award 2024. Safety is not optional—it\'s our foundation. Thank you to every team member who makes our workplaces safe.',
+                imageUrl: '/placeholder.jpg',
+                hashtags: ['#Acero', '#SafetyFirst', '#QHSE', '#Award', '#Excellence'],
+                likes: 52,
+                comments: 4,
+                isVideo: false,
+                publishedAt: new Date('2024-04-12'),
+                order: 0,
+            },
+        ],
+        banner: { url: '/placeholder.jpg', publicId: 'company-updates/safety-award-banner', width: 1280, height: 960 },
+        metaTitle: 'Safety Excellence Award 2024 | Acero Building Systems',
+        metaImage: { url: '/placeholder.jpg', publicId: 'company-updates/safety-award-meta', width: 150, height: 150 },
+        metaDescription: 'Acero Building Systems wins Safety Excellence Award 2024 for QHSE and workplace safety.',
+        metaKeywords: ['acero', 'safety', 'award', 'QHSE', 'excellence'],
+        showOnHomePage: false,
     },
     {
-        branchName: 'Acero Building Systems - Abu Dhabi',
-        location: 'Abu Dhabi',
-        countryName: 'United Arab Emirates',
-        email: 'abudhabi@acero.ae',
-        phone: '+97125000000',
-        address: 'Industrial Area, Abu Dhabi, United Arab Emirates',
-        logo: '/images/branches/abudhabi-logo.png',
-        coordinates: { lat: 24.4539, lng: 54.3773 },
-        isHeadOffice: false,
-        googleLink: 'https://maps.google.com/?q=24.4539,54.3773',
-    },
-    {
-        branchName: 'Acero Building Systems - Kannur',
-        location: 'Kannur',
-        countryName: 'India',
-        email: 'kannur@acero.ae',
-        phone: '+914971234567',
-        address: 'Industrial Estate, Kannur, Kerala, India',
-        logo: '/images/branches/kannur-logo.png',
-        coordinates: { lat: 11.8745, lng: 75.3704 },
-        isHeadOffice: false,
-        googleLink: 'https://maps.google.com/?q=11.8745,75.3704',
-    },
-    {
-        branchName: 'Acero Building Systems - Kochi',
-        location: 'Kochi',
-        countryName: 'India',
-        email: 'kochi@acero.ae',
-        phone: '+914844123456',
-        address: 'Industrial Area, Kochi, Kerala, India',
-        logo: '/images/branches/kochi-logo.png',
-        coordinates: { lat: 9.9312, lng: 76.2673 },
-        isHeadOffice: false,
-        googleLink: 'https://maps.google.com/?q=9.9312,76.2673',
-    },
-    {
-        branchName: 'Acero Building Systems - Hyderabad',
-        location: 'Hyderabad',
-        countryName: 'India',
-        email: 'hyderabad@acero.ae',
-        phone: '+914012345678',
-        address: 'Industrial Park, Hyderabad, Telangana, India',
-        logo: '/images/branches/hyderabad-logo.png',
-        coordinates: { lat: 17.3850, lng: 78.4867 },
-        isHeadOffice: false,
-        googleLink: 'https://maps.google.com/?q=17.3850,78.4867',
-    },
-    {
-        branchName: 'Acero Building Systems - Cairo',
-        location: 'Cairo',
-        countryName: 'Egypt',
-        email: 'cairo@acero.ae',
-        phone: '+20212345678',
-        address: 'Industrial Zone, Cairo, Egypt',
-        logo: '/images/branches/cairo-logo.png',
-        coordinates: { lat: 30.0444, lng: 31.2357 },
-        isHeadOffice: false,
-        googleLink: 'https://maps.google.com/?q=30.0444,31.2357',
+        slug: 'new-peb-product-line-launch',
+        title: 'New PEB Product Line Launch',
+        heading: 'Acero Launches New Pre-Engineered Building Product Line',
+        categoryName: 'Products',
+        shortDescription: 'Acero Building Systems launches an expanded Pre-Engineered Building (PEB) product line with enhanced design flexibility and sustainability features.',
+        description: `New PEB Product Line Launch.
+
+Acero Building Systems has launched an expanded Pre-Engineered Building (PEB) product line, offering enhanced design flexibility, faster delivery, and improved sustainability. The new range includes wider spans, better insulation options, and integrated solar-ready solutions.
+
+Engineered for commercial, industrial, and institutional applications, the product line reinforces Acero's position as a leading provider of steel building solutions in the region.`,
+        eventDate: new Date('2024-05-01'),
+        featuredImage: {
+            url: '/placeholder.jpg',
+            publicId: 'company-updates/peb-product-launch',
+            width: 1200,
+            height: 800,
+        },
+        gallery: [
+            {
+                url: '/placeholder.jpg',
+                publicId: 'company-updates/peb-product-1',
+                width: 800,
+                height: 600,
+                altText: 'PEB Product Line',
+                order: 0,
+            },
+            {
+                url: '/placeholder.jpg',
+                publicId: 'company-updates/peb-product-2',
+                width: 800,
+                height: 600,
+                altText: 'PEB Product Line',
+                order: 1,
+            },
+        ],
+        featured: true,
+        linkedInPosts: [
+            {
+                companyName: 'Acero Building Systems',
+                date: 'May 2024',
+                text: 'Introducing our new PEB product line: smarter design, faster delivery, built for the future. Discover what\'s new at Acero.',
+                imageUrl: '/placeholder.jpg',
+                hashtags: ['#Acero', '#PEB', '#SteelBuildings', '#Innovation', '#Sustainability'],
+                likes: 38,
+                comments: 2,
+                isVideo: false,
+                publishedAt: new Date('2024-05-02'),
+                order: 0,
+            },
+        ],
+        banner: { url: '/placeholder.jpg', publicId: 'company-updates/peb-product-banner', width: 1280, height: 960 },
+        metaTitle: 'New PEB Product Line | Acero Building Systems',
+        metaImage: { url: '/placeholder.jpg', publicId: 'company-updates/peb-product-meta', width: 150, height: 150 },
+        metaDescription: 'Acero launches expanded Pre-Engineered Building product line with enhanced design and sustainability.',
+        metaKeywords: ['acero', 'PEB', 'product launch', 'steel buildings', 'sustainability'],
+        showOnHomePage: true,
     },
 ];
 
@@ -362,7 +295,7 @@ const seedCompanyRelatedData = async () => {
 
         await connectDB();
 
-        console.log('Starting Company Related Data seeding...\n');
+        console.log('Starting Company Updates seeding...\n');
 
         // Get or find a user for createdBy field
         let user = await User.findOne().sort({ createdAt: 1 }); // Get first user (oldest)
@@ -376,92 +309,8 @@ const seedCompanyRelatedData = async () => {
 
         console.log(`Using user: ${user.email} (${user.firstName} ${user.lastName})\n`);
 
-        // 1. Seed Certifications
-        console.log('1. Seeding Certifications...');
-        let certificationsCreated = 0;
-        let certificationsSkipped = 0;
-
-        for (const certData of certificationsData) {
-            const existing = await Certification.findOne({ name: certData.name });
-            
-            if (!existing) {
-                await Certification.create({
-                    name: certData.name,
-                    certificationImage: {
-                        url: certData.image,
-                        publicId: null, // Will be updated when uploaded to Cloudinary
-                        width: null,
-                        height: null,
-                    },
-                    status: 'published',
-                    featured: true,
-                    isActive: true,
-                    publishedAt: new Date(),
-                    createdBy: user._id,
-                });
-                certificationsCreated++;
-            } else {
-                // Update existing to published if not already
-                if (existing.status !== 'published' || !existing.featured) {
-                    existing.status = 'published';
-                    existing.featured = true;
-                    existing.publishedAt = existing.publishedAt || new Date();
-                    await existing.save();
-                    certificationsCreated++;
-                } else {
-                    certificationsSkipped++;
-                }
-            }
-        }
-
-        console.log(`   ✓ Created/Updated: ${certificationsCreated}, Skipped: ${certificationsSkipped}\n`);
-
-        // 2. Seed Customers
-        console.log('2. Seeding Customers...');
-        let customersCreated = 0;
-        let customersSkipped = 0;
-
-        for (const customerData of customersData) {
-            const existing = await Customer.findOne({ name: customerData.name });
-            
-            if (!existing) {
-                await Customer.create({
-                    name: customerData.name,
-                    customerImage: {
-                        url: customerData.image,
-                        publicId: null,
-                        width: null,
-                        height: null,
-                    },
-                    order: customerData.order,
-                    status: 'published',
-                    featured: true,
-                    isActive: true,
-                    publishedAt: new Date(),
-                    createdBy: user._id,
-                });
-                customersCreated++;
-            } else {
-                // Update existing to published if not already
-                if (existing.status !== 'published' || !existing.featured) {
-                    existing.status = 'published';
-                    existing.featured = true;
-                    existing.publishedAt = existing.publishedAt || new Date();
-                    if (existing.order !== customerData.order) {
-                        existing.order = customerData.order;
-                    }
-                    await existing.save();
-                    customersCreated++;
-                } else {
-                    customersSkipped++;
-                }
-            }
-        }
-
-        console.log(`   ✓ Created/Updated: ${customersCreated}, Skipped: ${customersSkipped}\n`);
-
-        // 3. Seed Company Update Categories
-        console.log('3. Seeding Company Update Categories...');
+        // 1. Seed Company Update Categories
+        console.log('1. Seeding Company Update Categories...');
         const categoryMap = new Map();
         let categoriesCreated = 0;
         let categoriesSkipped = 0;
@@ -498,8 +347,8 @@ const seedCompanyRelatedData = async () => {
 
         console.log(`   ✓ Created/Updated: ${categoriesCreated}, Skipped: ${categoriesSkipped}\n`);
 
-        // 4. Seed Company Updates
-        console.log('4. Seeding Company Updates...');
+        // 2. Seed Company Updates
+        console.log('2. Seeding Company Updates...');
         let updatesCreated = 0;
         let updatesSkipped = 0;
 
@@ -536,11 +385,31 @@ const seedCompanyRelatedData = async () => {
                         order: img.order,
                     })),
                     status: 'published',
-                    featured: updateData.featured !== undefined ? updateData.featured : true, // Default to featured
+                    featured: updateData.featured !== undefined ? updateData.featured : true,
                     isActive: true,
                     publishedAt: updateData.eventDate || new Date(),
+                    showOnHomePage: updateData.showOnHomePage !== undefined ? updateData.showOnHomePage : false,
                     createdBy: user._id,
                 };
+                if (updateData.banner) {
+                    updateDoc.banner = {
+                        url: updateData.banner.url,
+                        publicId: updateData.banner.publicId || null,
+                        width: updateData.banner.width || null,
+                        height: updateData.banner.height || null,
+                    };
+                }
+                if (updateData.metaTitle) updateDoc.metaTitle = updateData.metaTitle;
+                if (updateData.metaDescription) updateDoc.metaDescription = updateData.metaDescription;
+                if (updateData.metaKeywords && Array.isArray(updateData.metaKeywords)) updateDoc.metaKeywords = updateData.metaKeywords;
+                if (updateData.metaImage) {
+                    updateDoc.metaImage = {
+                        url: updateData.metaImage.url,
+                        publicId: updateData.metaImage.publicId || null,
+                        width: updateData.metaImage.width || null,
+                        height: updateData.metaImage.height || null,
+                    };
+                }
 
                 // Add LinkedIn posts if provided
                 if (updateData.linkedInPosts && Array.isArray(updateData.linkedInPosts)) {
@@ -607,9 +476,9 @@ const seedCompanyRelatedData = async () => {
                             order: post.order !== undefined ? post.order : 0,
                         }));
                         await existing.save();
-                updatesCreated++;
-            } else {
-                updatesSkipped++;
+                        updatesCreated++;
+                    } else {
+                        updatesSkipped++;
                     }
                 }
             }
@@ -617,118 +486,8 @@ const seedCompanyRelatedData = async () => {
 
         console.log(`   ✓ Created: ${updatesCreated}, Skipped: ${updatesSkipped}\n`);
 
-        // 5. Seed Brochures
-        console.log('5. Seeding Brochures...');
-        let brochuresCreated = 0;
-        let brochuresSkipped = 0;
-
-        for (const brochureData of brochuresData) {
-            const existing = await Brochure.findOne({ title: brochureData.title });
-            
-            if (!existing) {
-                await Brochure.create({
-                    title: brochureData.title,
-                    description: brochureData.description,
-                    brochureImage: {
-                        url: brochureData.brochureImage.url,
-                        publicId: brochureData.brochureImage.publicId,
-                        width: brochureData.brochureImage.width,
-                        height: brochureData.brochureImage.height,
-                    },
-                    order: brochureData.order,
-                    status: 'published',
-                    featured: true,
-                    isActive: true,
-                    publishedAt: new Date(),
-                    createdBy: user._id,
-                });
-                brochuresCreated++;
-            } else {
-                // Update existing to published if not already
-                if (existing.status !== 'published' || !existing.featured) {
-                    existing.status = 'published';
-                    existing.featured = true;
-                    existing.publishedAt = existing.publishedAt || new Date();
-                    if (existing.order !== brochureData.order) {
-                        existing.order = brochureData.order;
-                    }
-                    await existing.save();
-                    brochuresCreated++;
-                } else {
-                    brochuresSkipped++;
-                }
-            }
-        }
-
-        console.log(`   ✓ Created/Updated: ${brochuresCreated}, Skipped: ${brochuresSkipped}\n`);
-
-        // 6. Seed Branches
-        console.log('6. Seeding Branches...');
-        let branchesCreated = 0;
-        let branchesSkipped = 0;
-
-        // Load countries for branch references
-        const countries = await Country.find({ isActive: true });
-        const countryMap = new Map();
-        countries.forEach(c => {
-            countryMap.set(c.name, c._id);
-        });
-
-        for (const branchData of branchesData) {
-            const countryId = countryMap.get(branchData.countryName);
-            
-            if (!countryId) {
-                console.log(`   ⚠️  Warning: Country "${branchData.countryName}" not found for branch "${branchData.branchName}"`);
-                continue;
-            }
-            
-            // Extract state from address or use location
-            const state = branchData.address.split(',')[1]?.trim() || branchData.location;
-            
-            const existing = await Branch.findOne({ branchName: branchData.branchName });
-            
-            if (!existing) {
-                await Branch.create({
-                    branchName: branchData.branchName,
-                    country: countryId,
-                    state: state,
-                    city: branchData.location,
-                    address: branchData.address,
-                    email: branchData.email,
-                    phone: branchData.phone,
-                    googleLink: branchData.googleLink,
-                    isHeadOffice: branchData.isHeadOffice,
-                    logo: branchData.logo ? {
-                        url: branchData.logo,
-                        publicId: null,
-                        width: null,
-                        height: null,
-                    } : null,
-                    status: 'published',
-                    featured: true,
-                    isActive: true,
-                    publishedAt: new Date(),
-                    createdBy: user._id,
-                });
-                branchesCreated++;
-            } else {
-                // Update existing to published if not already
-                if (existing.status !== 'published' || !existing.featured) {
-                    existing.status = 'published';
-                    existing.featured = true;
-                    existing.publishedAt = existing.publishedAt || new Date();
-                    await existing.save();
-                    branchesCreated++;
-                } else {
-                    branchesSkipped++;
-                }
-            }
-        }
-
-        console.log(`   ✓ Created/Updated: ${branchesCreated}, Skipped: ${branchesSkipped}\n`);
-
-        // 7. Update all existing Company Updates to published and featured
-        console.log('7. Updating all existing Company Updates to published and featured...');
+        // 3. Update all existing Company Updates to published and featured
+        console.log('3. Updating all existing Company Updates to published and featured...');
         const updateResult = await CompanyUpdate.updateMany(
             {
                 $or: [
@@ -762,26 +521,22 @@ const seedCompanyRelatedData = async () => {
 
         // Summary
         console.log('═══════════════════════════════════════════════════════════');
-        console.log('Company Related Data Seeding Summary:');
+        console.log('Company Updates Seeding Summary:');
         console.log('═══════════════════════════════════════════════════════════');
-        console.log(`Certifications:        ${certificationsCreated} created/updated, ${certificationsSkipped} skipped (${certificationsData.length} total)`);
-        console.log(`Customers:             ${customersCreated} created/updated, ${customersSkipped} skipped (${customersData.length} total)`);
         console.log(`Update Categories:     ${categoriesCreated} created/updated, ${categoriesSkipped} skipped (${companyUpdateCategoriesData.length} total)`);
         console.log(`Company Updates:       ${updatesCreated} created/updated, ${updatesSkipped} skipped (${companyUpdatesData.length} total)`);
         if (additionalUpdatesCount > 0) {
             console.log(`   Additional Updates: ${additionalUpdatesCount} existing updates set to published & featured`);
         }
-        console.log(`Brochures:             ${brochuresCreated} created/updated, ${brochuresSkipped} skipped (${brochuresData.length} total)`);
-        console.log(`Branches:              ${branchesCreated} created/updated, ${branchesSkipped} skipped (${branchesData.length} total)`);
         console.log('═══════════════════════════════════════════════════════════\n');
 
-        console.log('✓ All company related data is in PUBLISHED status and marked as FEATURED.');
+        console.log('✓ All company updates are in PUBLISHED status and marked as FEATURED.');
         console.log('   Data is ready for use in frontend.\n');
 
-        console.log('Company Related Data seeding completed successfully!');
+        console.log('Company Updates seeding completed successfully!');
         process.exit(0);
     } catch (error) {
-        console.error('Error seeding company related data:', error);
+        console.error('Error seeding company updates:', error);
         process.exit(1);
     }
 };

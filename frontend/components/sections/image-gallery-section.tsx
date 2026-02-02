@@ -48,11 +48,23 @@ export function ImageGallerySection({
   const [previewImage, setPreviewImage] = useState<GalleryImage | null>(null)
   const showPreview = imageOrientation === "horizontal"
 
-  // Horizontal = 3 columns (2 rows). Vertical = 2 columns (more rows).
+  // Filter out images with no valid src to avoid empty cards
+  const validImages = useMemo(
+    () => images.filter((img) => img?.src && String(img.src).trim()),
+    [images]
+  )
+
+  // Grid: use columns prop for layout (2 = 2x2, 3 = 3 cols, 6 = 6 cols). Fallback to imageOrientation.
   const gridCols =
-    imageOrientation === "horizontal" ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2"
+    columns === 2
+      ? "grid-cols-2"
+      : columns === 6
+        ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+        : imageOrientation === "horizontal"
+          ? "grid-cols-2 md:grid-cols-3"
+          : "grid-cols-2"
   const gridGap = spacing.gridGap || "gap-6"
-  // Horizontal: larger cards with aspect ratio. Vertical: original compact card (same as before our changes).
+  // Horizontal: larger cards with aspect ratio. Vertical: original compact card.
   const imageContainerClass =
     imageOrientation === "horizontal"
       ? "aspect-[4/3] min-h-[180px]"
@@ -97,7 +109,7 @@ export function ImageGallerySection({
               gridGap
             )}
           >
-            {images.map((image, index) => (
+            {validImages.map((image, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 24 }}

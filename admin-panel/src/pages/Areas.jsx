@@ -131,7 +131,7 @@ const Areas = () => {
 
   useEffect(() => {
     fetchAreas();
-  }, [pagination.current, pagination.pageSize, statusFilter, sortField, sortOrder]);
+  }, [statusFilter, sortField, sortOrder]);
 
   // Handle delete area
   const handleDelete = async () => {
@@ -156,6 +156,13 @@ const Areas = () => {
   };
 
   const handleTableChange = (paginationConfig, filters, sorter) => {
+    if (paginationConfig && (paginationConfig.current !== pagination.current || paginationConfig.pageSize !== pagination.pageSize)) {
+      const newCurrent = paginationConfig.current ?? pagination.current;
+      const newPageSize = paginationConfig.pageSize ?? pagination.pageSize;
+      setPagination((prev) => ({ ...prev, current: newCurrent, pageSize: newPageSize }));
+      fetchAreas({ page: newCurrent, limit: newPageSize });
+      return;
+    }
     if (sorter?.field != null && sorter?.order != null) {
       setSortField(sorter.field);
       setSortOrder(sorter.order);
@@ -358,15 +365,12 @@ const Areas = () => {
               ...pagination,
               showSizeChanger: true,
               showQuickJumper: true,
-              showTotal: (total, range) => 
-                `${range[0]}-${range[1]} of ${total} areas`,
+              showTotal: (total, range) =>
+                total > 0 ? `${range[0]}-${range[1]} of ${total} areas` : '0 areas',
               pageSizeOptions: ['10', '20', '50', '100'],
               onChange: (page, pageSize) => {
-                setPagination((prev) => ({
-                  ...prev,
-                  current: page,
-                  pageSize,
-                }));
+                setPagination((prev) => ({ ...prev, current: page, pageSize: pageSize || prev.pageSize }));
+                fetchAreas({ page, limit: pageSize || pagination.pageSize });
               },
             }}
             scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}

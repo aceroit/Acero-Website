@@ -14,7 +14,8 @@
     "setup:superadmin": "node scripts/setupSuperAdmin.js",
     "scrape:projects": "node scripts/scrapeProjects.js",
     "seed:scraped-projects": "node scripts/seedScrapedProjects.js",
-    "seed:scraped-projects:dry": "node scripts/seedScrapedProjects.js --dry-run"
+    "seed:scraped-projects:dry": "node scripts/seedScrapedProjects.js --dry-run",
+    "seed:company-related": "node seeders/companyRelatedData.seeder.js"
   },
   "keywords": [],
   "author": "",
