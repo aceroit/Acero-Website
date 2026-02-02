@@ -472,6 +472,13 @@ class ScrapedProjectsSeeder {
         console.log(`  Areas: ${this.maps.areas.size}\n`);
     }
 
+    // Helper: check if value is a dry-run placeholder (not a valid ObjectId)
+    isDryRunPlaceholder(id) {
+        if (!id) return true;
+        if (typeof id !== 'string') return false;
+        return id.startsWith('dry-run-');
+    }
+
     // Seed Projects
     async seedProjects(scrapedData) {
         console.log('6. Seeding Projects...\n');
@@ -486,16 +493,22 @@ class ScrapedProjectsSeeder {
                 continue;
             }
             
+            // In dry-run, skip DB queries that would cast placeholder strings to ObjectId
+            const industryIdValid = !DRY_RUN || !this.isDryRunPlaceholder(industryId);
+            
             console.log(`   Processing ${industryData.name} (${industryData.projects.length} projects)...`);
             
             // Initialize order counter
             if (!orderByIndustry.has(industryData.name)) {
-                // Get max order for existing projects in this industry
-                const maxOrder = await Project.findOne({ industry: industryId })
-                    .sort({ order: -1 })
-                    .select('order')
-                    .lean();
-                orderByIndustry.set(industryData.name, maxOrder ? maxOrder.order + 1 : 0);
+                let startOrder = 0;
+                if (industryIdValid) {
+                    const maxOrder = await Project.findOne({ industry: industryId })
+                        .sort({ order: -1 })
+                        .select('order')
+                        .lean();
+                    startOrder = maxOrder ? maxOrder.order + 1 : 0;
+                }
+                orderByIndustry.set(industryData.name, startOrder);
             }
             
             for (const projectData of industryData.projects) {
