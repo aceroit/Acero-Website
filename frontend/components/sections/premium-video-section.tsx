@@ -18,7 +18,7 @@ interface PremiumVideoSectionProps {
 export function PremiumVideoSection({
   videoId,
   title,
-  autoplay = true,
+  autoplay = false,
   muted = true,
   loop = true,
   className,

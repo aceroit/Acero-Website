@@ -260,10 +260,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
         
         <div className="relative z-10 space-y-6">
-          <div className="mb-8 flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-              1
-            </div>
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               Personal Information
             </h2>
@@ -366,10 +363,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
       >
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
         <div className="relative z-10 space-y-6">
-          <div className="mb-8 flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-              2
-            </div>
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               Job Details, Experience & Education
             </h2>
@@ -509,10 +503,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
       >
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
         <div className="relative z-10 space-y-6">
-          <div className="mb-8 flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-              3
-            </div>
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               Languages
             </h2>
@@ -553,10 +544,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
       >
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
         <div className="relative z-10 space-y-6">
-          <div className="mb-8 flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-              4
-            </div>
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               Cover Letter
             </h2>
@@ -592,10 +580,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
       >
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
         <div className="relative z-10 space-y-6">
-          <div className="mb-8 flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-steel-red/10 text-xl font-bold text-steel-red">
-              5
-            </div>
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground md:text-3xl">
               CV Upload
             </h2>

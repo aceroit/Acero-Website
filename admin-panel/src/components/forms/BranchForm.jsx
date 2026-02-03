@@ -44,6 +44,7 @@ const BranchForm = ({
         featured: initialValues.featured !== undefined ? initialValues.featured : false,
         isActive: initialValues.isActive !== undefined ? initialValues.isActive : true,
         isHeadOffice: initialValues.isHeadOffice !== undefined ? initialValues.isHeadOffice : false,
+        order: initialValues.order !== undefined ? initialValues.order : 0,
       };
       form.setFieldsValue(formValues);
     }
@@ -97,6 +98,7 @@ const BranchForm = ({
       featured: values.featured !== undefined ? values.featured : false,
       isActive: values.isActive !== undefined ? values.isActive : true,
       isHeadOffice: values.isHeadOffice !== undefined ? values.isHeadOffice : false,
+      order: values.order !== undefined && values.order !== '' ? Number(values.order) : 0,
     };
     await onSubmit(cleanedValues);
   };
@@ -110,6 +112,7 @@ const BranchForm = ({
         isHeadOffice: false,
         featured: false,
         isActive: true,
+        order: 0,
         ...initialValues,
       }}
     >
@@ -284,6 +287,19 @@ const BranchForm = ({
               label: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email,
             }))}
           />
+        </Form.Item>
+      </div>
+
+      {/* Display Order */}
+      <div className="border-b border-gray-200 pb-4 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Display Order</h3>
+        <Form.Item
+          name="order"
+          label="Order"
+          tooltip="Lower numbers appear first in lists. Used on the website and in the admin list."
+          rules={[{ type: 'number', min: 0, message: 'Order must be 0 or greater' }]}
+        >
+          <Input type="number" min={0} placeholder="0" size="large" />
         </Form.Item>
       </div>
 

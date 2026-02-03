@@ -83,7 +83,8 @@ export function ImageGallerySection({
       <div className={cn("mx-auto", spacing.containerMaxWidth, "px-6 lg:px-8")}>
         <div
           className={cn(
-            "grid gap-12 lg:gap-16",
+            "grid",
+            spacing.gridGap,
             "lg:grid-cols-2 lg:items-center"
           )}
         >

@@ -107,7 +107,7 @@ export function VideoCardsSection({
                     {isHovered ? (
                       // YouTube iframe on hover
                       <iframe
-                        src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${video.youtubeId}&modestbranding=1&rel=0`}
+                        src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=0&mute=1&controls=1&modestbranding=1&rel=0`}
                         className="absolute inset-0 h-full w-full"
                         allow="autoplay; encrypted-media"
                         allowFullScreen

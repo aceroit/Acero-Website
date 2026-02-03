@@ -22,7 +22,7 @@ let companyUpdatesCache: CompanyUpdate[] | null = null
 let companyUpdatesCacheTime: number = 0
 let homeCompanyUpdatesCache: CompanyUpdate[] | null = null
 let homeCompanyUpdatesCacheTime: number = 0
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const CACHE_DURATION = 60 * 1000 // 1 minute so backend date/content updates show sooner
 
 let companyUpdateCache: Record<string, CompanyUpdate | null> = {}
 let companyUpdateCacheTime: Record<string, number> = {}
@@ -76,6 +76,22 @@ export function useCompanyUpdates(options?: UseCompanyUpdatesOptions): UseCompan
   useEffect(() => {
     fetchCompanyUpdates()
   }, [fetchCompanyUpdates])
+
+  // When user returns to the tab, invalidate cache and refetch so backend updates (e.g. date changes) show
+  useEffect(() => {
+    const onFocus = () => {
+      if (forHome) {
+        homeCompanyUpdatesCache = null
+        homeCompanyUpdatesCacheTime = 0
+      } else {
+        companyUpdatesCache = null
+        companyUpdatesCacheTime = 0
+      }
+      fetchCompanyUpdates()
+    }
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [forHome, fetchCompanyUpdates])
 
   return {
     companyUpdates,

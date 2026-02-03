@@ -494,7 +494,7 @@ const FooterConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
                 style={{ width: '100%' }}
               >
                 <Option value="LinkedIn">LinkedIn</Option>
-                <Option value="Twitter">Twitter</Option>
+                <Option value="Facebook">Facebook</Option>
                 <Option value="Instagram">Instagram</Option>
                 <Option value="YouTube">YouTube</Option>
               </Select>

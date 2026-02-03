@@ -25,6 +25,14 @@ router.post('/',
 );
 
 /**
+ * PUT /api/branches/reorder - Reorder branches (bulk update order)
+ */
+router.put('/reorder',
+    checkPermission('branches', 'update'),
+    branchController.reorderBranches
+);
+
+/**
  * GET /api/branches/:id - Get branch by ID
  */
 router.get('/:id',
