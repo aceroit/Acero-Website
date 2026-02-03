@@ -66,9 +66,12 @@ function AnimatedCounter({
     return <span>{value}</span>
   }
 
+  // Format count with thousand separators (e.g. 1000 → "1,000", 100000 → "100,000")
+  const formattedCount = count.toLocaleString()
+
   return (
     <span>
-      {count}
+      {formattedCount}
       {suffix}
     </span>
   )

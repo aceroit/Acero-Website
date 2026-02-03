@@ -203,10 +203,7 @@ export function ContactForm() {
         <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/0 to-white/0 transition-opacity duration-700 group-hover:via-white/5 group-hover:to-white/0" />
         
         <div className="relative z-10 space-y-6">
-          <div className="mb-10 flex items-center gap-6">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-steel-red/15 to-steel-red/5 text-2xl font-bold text-steel-red shadow-lg shadow-steel-red/10 transition-all duration-500 group-hover:scale-110 group-hover:bg-gradient-to-br group-hover:from-steel-red/25 group-hover:to-steel-red/10">
-              1
-            </div>
+          <div className="mb-10">
             <h2 className="text-2xl font-bold uppercase tracking-tight text-foreground md:text-3xl">
               Purpose
             </h2>
@@ -248,10 +245,7 @@ export function ContactForm() {
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-700 group-hover:from-steel-red/8 group-hover:via-steel-red/3 group-hover:to-steel-red/8" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/0 to-white/0 transition-opacity duration-700 group-hover:via-white/5 group-hover:to-white/0" />
         <div className="relative z-10 space-y-6">
-          <div className="mb-10 flex items-center gap-6">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-steel-red/15 to-steel-red/5 text-2xl font-bold text-steel-red shadow-lg shadow-steel-red/10 transition-all duration-500 group-hover:scale-110 group-hover:bg-gradient-to-br group-hover:from-steel-red/25 group-hover:to-steel-red/10">
-              2
-            </div>
+          <div className="mb-10">
             <h2 className="text-2xl font-bold uppercase tracking-tight text-foreground md:text-3xl">
               Personal Details
             </h2>
@@ -394,10 +388,7 @@ export function ContactForm() {
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-700 group-hover:from-steel-red/8 group-hover:via-steel-red/3 group-hover:to-steel-red/8" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/0 to-white/0 transition-opacity duration-700 group-hover:via-white/5 group-hover:to-white/0" />
         <div className="relative z-10 space-y-6">
-          <div className="mb-10 flex items-center gap-6">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-steel-red/15 to-steel-red/5 text-2xl font-bold text-steel-red shadow-lg shadow-steel-red/10 transition-all duration-500 group-hover:scale-110 group-hover:bg-gradient-to-br group-hover:from-steel-red/25 group-hover:to-steel-red/10">
-              3
-            </div>
+          <div className="mb-10">
             <h2 className="text-2xl font-bold uppercase tracking-tight text-foreground md:text-3xl">
               Message
             </h2>

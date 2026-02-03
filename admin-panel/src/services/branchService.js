@@ -51,3 +51,13 @@ export const deleteBranch = async (id) => {
   return response.data;
 };
 
+/**
+ * Reorder branches (bulk update order values)
+ * @param {Array<{ branchId: string, order: number }>} branchOrders - Array of { branchId, order }
+ * @returns {Promise} - Response
+ */
+export const reorderBranches = async (branchOrders) => {
+  const response = await API.put('/branches/reorder', { branchOrders });
+  return response.data;
+};
+

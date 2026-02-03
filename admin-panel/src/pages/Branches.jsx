@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Card, Tag, Select, Dropdown, Space, Tooltip } from 'antd';
+import { Table, Button, Input, Card, Tag, Select, Dropdown, Modal, InputNumber, Tooltip } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -11,6 +11,7 @@ import {
   BankOutlined,
   StarOutlined,
   HomeOutlined,
+  OrderedListOutlined,
 } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
@@ -80,10 +81,14 @@ const Branches = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState(null);
-  const [sortField, setSortField] = useState('isHeadOffice');
-  const [sortOrder, setSortOrder] = useState('descend');
+  const [sortField, setSortField] = useState('order');
+  const [sortOrder, setSortOrder] = useState('ascend');
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
+  const [reorderList, setReorderList] = useState([]);
+  const [reorderLoading, setReorderLoading] = useState(false);
+  const [reorderSaving, setReorderSaving] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -164,8 +169,70 @@ const Branches = () => {
     }
   };
 
+  const openReorderModal = async () => {
+    setIsReorderModalOpen(true);
+    setReorderLoading(true);
+    try {
+      const response = await branchService.getAllBranches({
+        page: 1,
+        limit: 500,
+        sortBy: 'order',
+        sortOrder: 'asc',
+      });
+      const list = response.data?.data?.branches || response.data?.branches || response.data || [];
+      setReorderList(list.map((b) => ({ ...b, _order: b.order != null ? b.order : 0 })));
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to load branches for reorder');
+      setIsReorderModalOpen(false);
+    } finally {
+      setReorderLoading(false);
+    }
+  };
+
+  const handleReorderOrderChange = (branchId, value) => {
+    setReorderList((prev) =>
+      prev.map((b) => (b._id === branchId ? { ...b, _order: value ?? 0 } : b))
+    );
+  };
+
+  const handleReorderSave = async () => {
+    setReorderSaving(true);
+    try {
+      const branchOrders = reorderList.map((b, index) => ({
+        branchId: b._id,
+        order: b._order != null ? b._order : index,
+      }));
+      const response = await branchService.reorderBranches(branchOrders);
+      if (response.success) {
+        toast.success('Branches reordered successfully');
+        setIsReorderModalOpen(false);
+        fetchBranches();
+      } else {
+        toast.error(response.message || 'Failed to reorder branches');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to reorder branches');
+    } finally {
+      setReorderSaving(false);
+    }
+  };
+
   // Table columns
   const columns = [
+    {
+      title: 'Order',
+      dataIndex: 'order',
+      key: 'order',
+      width: 80,
+      align: 'center',
+      sorter: true,
+      sortOrder: sortField === 'order' ? sortOrder : null,
+      render: (order) => (
+        <span className="text-gray-700 text-sm font-medium tabular-nums">
+          {order != null ? order : '—'}
+        </span>
+      ),
+    },
     {
       title: 'Branch',
       key: 'branch',
@@ -338,24 +405,37 @@ const Branches = () => {
               Manage and organize your branch locations
             </p>
           </div>
-          <PermissionWrapper resource="branches" action="create">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              size="large"
-              onClick={() => navigate('/branches/new')}
-              className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all text-white"
-              style={{
-                backgroundColor: '#1f2937',
-                borderColor: '#1f2937',
-                height: '44px',
-                borderRadius: '8px',
-                fontWeight: '600'
-              }}
-            >
-              Create Branch
-            </Button>
-          </PermissionWrapper>
+          <div className="flex flex-wrap gap-2">
+            <PermissionWrapper resource="branches" action="update">
+              <Button
+                icon={<OrderedListOutlined />}
+                size="large"
+                onClick={openReorderModal}
+                className="w-full md:w-auto border border-gray-300 hover:bg-gray-50"
+                style={{ height: '44px', borderRadius: '8px' }}
+              >
+                Reorder
+              </Button>
+            </PermissionWrapper>
+            <PermissionWrapper resource="branches" action="create">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                size="large"
+                onClick={() => navigate('/branches/new')}
+                className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all text-white"
+                style={{
+                  backgroundColor: '#1f2937',
+                  borderColor: '#1f2937',
+                  height: '44px',
+                  borderRadius: '8px',
+                  fontWeight: '600'
+                }}
+              >
+                Create Branch
+              </Button>
+            </PermissionWrapper>
+          </div>
         </div>
 
         {/* Search and Filters Bar */}
@@ -454,6 +534,64 @@ const Branches = () => {
           }}
           okText="Delete"
         />
+
+        {/* Reorder Modal */}
+        <Modal
+          title="Reorder Branches"
+          open={isReorderModalOpen}
+          onCancel={() => !reorderSaving && setIsReorderModalOpen(false)}
+          onOk={handleReorderSave}
+          okText="Save order"
+          confirmLoading={reorderSaving}
+          cancelButtonProps={{ disabled: reorderSaving }}
+          width={560}
+          okButtonProps={{
+            className: 'text-white',
+            style: { backgroundColor: '#1f2937', borderColor: '#1f2937', fontWeight: '600' },
+          }}
+        >
+          <p className="text-gray-600 text-sm mb-4">
+            Set the display order for each branch. Lower numbers appear first on the website and in the list.
+          </p>
+          {reorderLoading ? (
+            <div className="py-8 text-center text-gray-500">Loading branches...</div>
+          ) : (
+            <div className="max-h-[60vh] overflow-y-auto border border-gray-200 rounded-lg">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th className="text-left py-2 px-3 text-gray-900 font-semibold w-20">Order</th>
+                    <th className="text-left py-2 px-3 text-gray-900 font-semibold">Branch</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reorderList.map((b) => (
+                    <tr key={b._id} className="border-t border-gray-100 hover:bg-gray-50">
+                      <td className="py-2 px-3">
+                        <InputNumber
+                          min={0}
+                          value={b._order}
+                          onChange={(v) => handleReorderOrderChange(b._id, v)}
+                          className="w-full"
+                          size="small"
+                        />
+                      </td>
+                      <td className="py-2 px-3 text-gray-900">
+                        {b.isHeadOffice && (
+                          <Tag color="blue" className="mr-1 text-xs">Head Office</Tag>
+                        )}
+                        {b.branchName}
+                        <span className="text-gray-500 ml-1">
+                          ({b.city}, {b.state})
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Modal>
       </div>
     </MainLayout>
   );

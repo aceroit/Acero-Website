@@ -38,7 +38,7 @@ const footerConfigData = {
             isFieldActive: true
         },
         {
-            platform: 'Twitter',
+            platform: 'Facebook',
             href: '#',
             icon: null,
             isFieldActive: true

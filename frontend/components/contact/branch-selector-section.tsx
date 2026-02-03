@@ -99,7 +99,7 @@ export function BranchSelectorSection() {
               defaultValue={firstBranchId}
               className="space-y-6"
             >
-              {selectedCountryData.branches.map((branch, index) => (
+              {selectedCountryData.branches.map((branch) => (
                 <AccordionItem
                   key={branch._id}
                   value={branch._id}
@@ -110,9 +110,6 @@ export function BranchSelectorSection() {
 
                   <AccordionTrigger className="relative z-10 py-8 text-left hover:no-underline">
                     <div className="flex items-center gap-6">
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-steel-red/15 to-steel-red/5 text-2xl font-bold text-steel-red shadow-lg shadow-steel-red/10 transition-all duration-500 group-hover:scale-110 group-hover:bg-gradient-to-br group-hover:from-steel-red/25 group-hover:to-steel-red/10">
-                        {index + 1}
-                      </div>
                       <div>
                         <h3 className="text-xl font-bold uppercase tracking-tight text-foreground md:text-2xl">
                           {branch.name}

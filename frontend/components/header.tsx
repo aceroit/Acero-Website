@@ -150,9 +150,13 @@ export function Header() {
               className="h-12 w-auto object-contain"
             />
           ) : (
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              {brandName}
-            </span>
+            <Image
+              src="/Logo/Logo.png"
+              alt="Acero Logo"
+              width={48}
+              height={48}
+              className="h-12 w-auto object-contain"
+            />
           )}
         </Link>
 
