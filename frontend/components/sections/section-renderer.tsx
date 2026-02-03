@@ -219,7 +219,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               case 'premium_video': {
                 const videoId = (content.videoId as string) || ''
                 const title = (content.title as string) || undefined
-                const autoplay = (content.autoplay as boolean) ?? true
+                const autoplay = (content.autoplay as boolean) ?? false
                 const muted = (content.muted as boolean) ?? true
                 const loop = (content.loop as boolean) ?? true
 
