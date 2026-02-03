@@ -16,8 +16,8 @@ exports.getAllBranches = async (req, res) => {
             city,
             isHeadOffice,
             search,
-            sortBy = 'isHeadOffice',
-            sortOrder = 'desc'
+            sortBy = 'order',
+            sortOrder = 'asc'
         } = req.query;
 
         // Build query
@@ -39,10 +39,10 @@ exports.getAllBranches = async (req, res) => {
         // Execute query with pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
         const sortOptions = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
-        // Secondary sort by branchName
-        if (sortBy !== 'branchName') {
-            sortOptions.branchName = 1;
-        }
+        // Secondary sort: order then isHeadOffice then branchName for consistent listing
+        if (sortBy !== 'order') sortOptions.order = 1;
+        if (sortBy !== 'isHeadOffice') sortOptions.isHeadOffice = -1;
+        if (sortBy !== 'branchName') sortOptions.branchName = 1;
 
         const [branches, total] = await Promise.all([
             Branch.find(query)
@@ -104,6 +104,11 @@ exports.createBranch = async (req, res) => {
             ...req.body,
             createdBy: req.user._id
         };
+        // Set order to end of list if not provided
+        if (branchData.order === undefined) {
+            const lastBranch = await Branch.findOne({ isActive: true }).sort({ order: -1 }).select('order');
+            branchData.order = lastBranch ? lastBranch.order + 1 : 0;
+        }
 
         const branch = new Branch(branchData);
         await branch.save();
@@ -223,6 +228,47 @@ exports.deleteBranch = async (req, res) => {
     } catch (error) {
         console.error('Error in deleteBranch:', error);
         return errorResponse(res, 500, 'Failed to delete branch', error.message);
+    }
+};
+
+/**
+ * Reorder branches (bulk update order values)
+ * Body: { branchOrders: [{ branchId, order }, ...] }
+ */
+exports.reorderBranches = async (req, res) => {
+    try {
+        const { branchOrders } = req.body;
+
+        if (!Array.isArray(branchOrders) || branchOrders.length === 0) {
+            return errorResponse(res, 400, 'branchOrders array is required');
+        }
+
+        const ids = branchOrders.map(item => item.branchId || item._id || item.id);
+        const branches = await Branch.find({ _id: { $in: ids }, isActive: true });
+
+        if (branches.length !== ids.length) {
+            return errorResponse(res, 404, 'One or more branches not found');
+        }
+
+        const { canEditContent } = require('../utils/workflowStatusValidator');
+        for (const branch of branches) {
+            const validation = await canEditContent(req.user, branch, 'branches', 'update');
+            if (!validation.canEdit) {
+                return errorResponse(res, 403, validation.reason || 'You do not have permission to reorder one or more branches');
+            }
+        }
+
+        const mappedOrders = branchOrders.map(item => ({
+            branchId: item.branchId || item._id || item.id,
+            order: Number(item.order) >= 0 ? Number(item.order) : 0
+        }));
+
+        await Branch.reorderBranches(mappedOrders);
+
+        return successResponse(res, 200, 'Branches reordered successfully', null);
+    } catch (error) {
+        console.error('Error in reorderBranches:', error);
+        return errorResponse(res, 500, 'Failed to reorder branches', error.message);
     }
 };
 

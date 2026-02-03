@@ -25,6 +25,13 @@ const branchSchema = new mongoose.Schema({
         default: false,
         index: true
     },
+    // Display order (lower numbers appear first; used in admin and public listing)
+    order: {
+        type: Number,
+        default: 0,
+        min: 0,
+        index: true
+    },
     manager: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -149,20 +156,20 @@ const branchSchema = new mongoose.Schema({
 // Indexes
 branchSchema.index({ country: 1, state: 1, city: 1 });
 branchSchema.index({ isHeadOffice: 1, isActive: 1 });
-branchSchema.index({ isActive: 1, branchName: 1 });
+branchSchema.index({ isActive: 1, order: 1, branchName: 1 });
 branchSchema.index({ status: 1, isActive: 1 });
 // Compound index for public queries (status, featured, isActive)
 branchSchema.index({ status: 1, featured: 1, isActive: 1 });
 
-// Static method to get active branches
+// Static method to get active branches (ordered by order, then isHeadOffice, then name)
 branchSchema.statics.getActive = async function() {
     return await this.find({ isActive: true })
         .populate('country', 'name code')
         .populate('manager', 'firstName lastName email')
-        .sort({ isHeadOffice: -1, branchName: 1 });
+        .sort({ order: 1, isHeadOffice: -1, branchName: 1 });
 };
 
-// Static method to get published and featured branches
+// Static method to get published and featured branches (ordered by order, then isHeadOffice, then name)
 branchSchema.statics.getPublished = async function(filters = {}) {
     const query = {
         status: 'published',
@@ -174,7 +181,7 @@ branchSchema.statics.getPublished = async function(filters = {}) {
     return await this.find(query)
         .populate('country', 'name code')
         .populate('manager', 'firstName lastName email')
-        .sort({ isHeadOffice: -1, branchName: 1 });
+        .sort({ order: 1, isHeadOffice: -1, branchName: 1 });
 };
 
 // Static method to get head office
@@ -187,7 +194,7 @@ branchSchema.statics.getHeadOffice = async function() {
     .populate('manager', 'firstName lastName email');
 };
 
-// Static method to get branches by country
+// Static method to get branches by country (ordered by order, then isHeadOffice, then name)
 branchSchema.statics.getByCountry = async function(countryId) {
     return await this.find({ 
         country: countryId, 
@@ -195,10 +202,10 @@ branchSchema.statics.getByCountry = async function(countryId) {
     })
     .populate('country', 'name code')
     .populate('manager', 'firstName lastName email')
-    .sort({ isHeadOffice: -1, branchName: 1 });
+    .sort({ order: 1, isHeadOffice: -1, branchName: 1 });
 };
 
-// Static method to get branches by state
+// Static method to get branches by state (ordered by order, then name)
 branchSchema.statics.getByState = async function(state) {
     return await this.find({ 
         state: state, 
@@ -206,7 +213,15 @@ branchSchema.statics.getByState = async function(state) {
     })
     .populate('country', 'name code')
     .populate('manager', 'firstName lastName email')
-    .sort({ branchName: 1 });
+    .sort({ order: 1, branchName: 1 });
+};
+
+// Static method to reorder branches (bulk update order values)
+branchSchema.statics.reorderBranches = async function(branchOrders) {
+    const updatePromises = branchOrders.map(({ branchId, order }) =>
+        this.findByIdAndUpdate(branchId, { order: Number(order) })
+    );
+    await Promise.all(updatePromises);
 };
 
 const Branch = mongoose.model('Branch', branchSchema);
