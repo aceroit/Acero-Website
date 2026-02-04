@@ -6,13 +6,7 @@ import { useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { CustomSelect } from "@/components/ui/custom-select"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
@@ -212,24 +206,13 @@ export function ContactForm() {
             <Label htmlFor="purpose" className="text-sm font-semibold uppercase tracking-wider text-foreground">
               Select Purpose <span className="text-destructive">*</span>
             </Label>
-            <Select
+            <CustomSelect
               value={formData.purpose}
               onValueChange={(value) => setFormData({ ...formData, purpose: value })}
-            >
-              <SelectTrigger
-                id="purpose"
-                className={cn("h-14 w-full border-2 bg-card text-base shadow-md transition-all hover:border-steel-red/30 hover:shadow-lg", errors.purpose && "border-destructive")}
-              >
-                <SelectValue placeholder="Choose one from the dropdown" />
-              </SelectTrigger>
-              <SelectContent>
-                {purposeOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              options={purposeOptions}
+              placeholder="Choose one from the dropdown"
+              className={cn("h-14 w-full border-2 bg-card text-base shadow-md transition-all hover:border-steel-red/30 hover:shadow-lg", errors.purpose && "border-destructive")}
+            />
             {errors.purpose && (
               <p className="text-xs font-medium text-destructive">{errors.purpose}</p>
             )}
@@ -302,7 +285,7 @@ export function ContactForm() {
               <Label htmlFor="country" className="text-sm font-semibold uppercase tracking-wider text-foreground">
                 Country <span className="text-destructive">*</span>
               </Label>
-              <Select
+              <CustomSelect
                 value={formData.country}
                 onValueChange={(value) => {
                   const dialCode = getDialCodeForCountry(value)
@@ -312,21 +295,13 @@ export function ContactForm() {
                     countryCode: dialCode,
                   }))
                 }}
-              >
-                <SelectTrigger
-                  id="country"
-                  className={cn("!h-14 min-h-[3.5rem] w-full min-w-0 border-2 bg-card text-base shadow-md transition-all hover:border-steel-red/30 hover:shadow-lg", errors.country && "border-destructive")}
-                >
-                  <SelectValue placeholder="Select your country" />
-                </SelectTrigger>
-                <SelectContent>
-                  {countriesWithDialCodes.map((c) => (
-                    <SelectItem key={c.value} value={c.value}>
-                      {c.label} {c.dialCode ? `(${c.dialCode})` : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                options={countriesWithDialCodes.map((c) => ({
+                  value: c.value,
+                  label: `${c.label}${c.dialCode ? ` (${c.dialCode})` : ""}`,
+                }))}
+                placeholder="Select your country"
+                className={cn("!h-14 min-h-[3.5rem] w-full min-w-0 border-2 bg-card text-base shadow-md transition-all hover:border-steel-red/30 hover:shadow-lg", errors.country && "border-destructive")}
+              />
               {errors.country && (
                 <p className="text-xs font-medium text-destructive">{errors.country}</p>
               )}

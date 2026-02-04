@@ -2,13 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect } from "react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { CustomSelect } from "@/components/ui/custom-select"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -78,81 +72,74 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
     router.push("?", { scroll: false })
   }, [router])
 
+  // Prepare options for CustomSelect
+  const industryOptions = [
+    { value: "all", label: "All Industries" },
+    ...(isLoading 
+      ? [{ value: "loading", label: "Loading...", isDisabled: true }]
+      : filterOptions.industries.map((ind) => ({ value: ind.slug, label: ind.name }))
+    )
+  ]
+
+  const areaOptions = [
+    { value: "all", label: "All Areas" },
+    ...(isLoading
+      ? [{ value: "loading", label: "Loading...", isDisabled: true }]
+      : filterOptions.areas.map((a) => ({ value: a.code, label: a.name }))
+    )
+  ]
+
+  const regionOptions = [
+    { value: "all", label: "All Regions" },
+    ...(isLoading
+      ? [{ value: "loading", label: "Loading...", isDisabled: true }]
+      : filterOptions.regions.map((r) => ({ value: r.code, label: r.name }))
+    )
+  ]
+
+  const countryOptions = [
+    { value: "all", label: "All Countries" },
+    ...(isLoading
+      ? [{ value: "loading", label: "Loading...", isDisabled: true }]
+      : filterOptions.countries.map((c) => ({ value: c.code, label: c.name }))
+    )
+  ]
+
   return (
     <div className={cn("flex flex-wrap items-center justify-center gap-6", className)}>
       {!hideIndustry && (
-        <Select value={currentIndustryValue} onValueChange={(value) => updateFilter("industry", value)}>
-          <SelectTrigger className="h-12 w-[220px] text-base font-medium">
-            <SelectValue placeholder="All Industries" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Industries</SelectItem>
-            {isLoading ? (
-              <SelectItem value="loading" disabled>Loading...</SelectItem>
-            ) : (
-              filterOptions.industries.map((ind) => (
-                <SelectItem key={ind.slug} value={ind.slug}>
-                  {ind.name}
-                </SelectItem>
-              ))
-            )}
-          </SelectContent>
-        </Select>
+        <CustomSelect
+          value={currentIndustryValue}
+          onValueChange={(value) => updateFilter("industry", value)}
+          options={industryOptions}
+          placeholder="All Industries"
+          className="h-12 w-[220px] text-base font-medium"
+        />
       )}
 
-      <Select value={area} onValueChange={(value) => updateFilter("area", value)}>
-        <SelectTrigger className="h-12 w-[220px] text-base font-medium">
-          <SelectValue placeholder="All Areas" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Areas</SelectItem>
-          {isLoading ? (
-            <SelectItem value="loading" disabled>Loading...</SelectItem>
-          ) : (
-            filterOptions.areas.map((a) => (
-              <SelectItem key={a.code} value={a.code}>
-                {a.name}
-              </SelectItem>
-            ))
-          )}
-        </SelectContent>
-      </Select>
+      <CustomSelect
+        value={area}
+        onValueChange={(value) => updateFilter("area", value)}
+        options={areaOptions}
+        placeholder="All Areas"
+        className="h-12 w-[220px] text-base font-medium"
+      />
 
-      <Select value={region} onValueChange={(value) => updateFilter("region", value)}>
-        <SelectTrigger className="h-12 w-[220px] text-base font-medium">
-          <SelectValue placeholder="All Regions" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Regions</SelectItem>
-          {isLoading ? (
-            <SelectItem value="loading" disabled>Loading...</SelectItem>
-          ) : (
-            filterOptions.regions.map((r) => (
-              <SelectItem key={r.code} value={r.code}>
-                {r.name}
-              </SelectItem>
-            ))
-          )}
-        </SelectContent>
-      </Select>
+      <CustomSelect
+        value={region}
+        onValueChange={(value) => updateFilter("region", value)}
+        options={regionOptions}
+        placeholder="All Regions"
+        className="h-12 w-[220px] text-base font-medium"
+      />
 
-      <Select value={country} onValueChange={(value) => updateFilter("country", value)}>
-        <SelectTrigger className="h-12 w-[220px] text-base font-medium">
-          <SelectValue placeholder="All Countries" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Countries</SelectItem>
-          {isLoading ? (
-            <SelectItem value="loading" disabled>Loading...</SelectItem>
-          ) : (
-            filterOptions.countries.map((c) => (
-              <SelectItem key={c.code} value={c.code}>
-                {c.name}
-              </SelectItem>
-            ))
-          )}
-        </SelectContent>
-      </Select>
+      <CustomSelect
+        value={country}
+        onValueChange={(value) => updateFilter("country", value)}
+        options={countryOptions}
+        placeholder="All Countries"
+        className="h-12 w-[220px] text-base font-medium"
+      />
 
       {hasActiveFilters && (
         <Button
