@@ -18,6 +18,8 @@
     "seed:company-related": "node seeders/companyRelatedData.seeder.js",
     "seed:building-type-images": "node scripts/seedBuildingTypeImagesFromProjects.js",
     "seed:building-type-images:dry": "node scripts/seedBuildingTypeImagesFromProjects.js --dry-run",
+    "seed:industry-images": "node scripts/seedIndustryImagesFromProcessedJson.js",
+    "seed:industry-images:dry": "node scripts/seedIndustryImagesFromProcessedJson.js --dry-run",
     "process:project-images": "node scripts/processProjectImages.js",
     "process:project-images:dry": "node scripts/processProjectImages.js --dry-run",
     "process:project-images:remove-logo": "node scripts/processProjectImages.js --remove-logo-only",

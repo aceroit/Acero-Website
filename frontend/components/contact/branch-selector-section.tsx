@@ -9,13 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { CustomSelect } from "@/components/ui/custom-select"
 import { Label } from "@/components/ui/label"
 import { BranchAccordionItem } from "./branch-accordion-item"
 import { useBranches } from "@/hooks/use-branches"
@@ -68,22 +62,17 @@ export function BranchSelectorSection() {
           <Label className="mb-4 text-center text-sm font-semibold uppercase tracking-wider text-foreground">
             Select Country
           </Label>
-          <Select
+          <CustomSelect
             value={selectedCountry}
             onValueChange={setSelectedCountry}
-            disabled={isLoading || countries.length === 0}
-          >
-            <SelectTrigger className="h-11 w-full max-w-[280px] border-2 border-border bg-card text-base shadow-md transition-all hover:border-steel-red/30 hover:shadow-lg">
-              <SelectValue placeholder={isLoading ? "Loading…" : "Select a country"} />
-            </SelectTrigger>
-            <SelectContent className="max-h-[300px] w-[var(--radix-select-trigger-width)] max-w-[280px]">
-              {countries.map((country) => (
-                <SelectItem key={country.code} value={country.code}>
-                  {country.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            options={countries.map((country) => ({
+              value: country.code,
+              label: country.name,
+            }))}
+            placeholder={isLoading ? "Loading…" : "Select a country"}
+            isDisabled={isLoading || countries.length === 0}
+            className="h-11 w-full max-w-[280px] border-2 border-border bg-card text-base shadow-md transition-all hover:border-steel-red/30 hover:shadow-lg"
+          />
         </div>
 
         {selectedCountryData && selectedCountryData.branches.length > 0 && (
