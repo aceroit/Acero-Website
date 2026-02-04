@@ -6,13 +6,7 @@ import { useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { CustomSelect } from "@/components/ui/custom-select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
@@ -374,31 +368,21 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
               <Label htmlFor="vacancyId" className="text-sm font-medium text-foreground">
                 Current Vacancies Applied For <span className="text-destructive">*</span>
               </Label>
-              <Select
+              <CustomSelect
                 value={formData.vacancyId}
                 onValueChange={(value) => setFormData({ ...formData, vacancyId: value })}
-                disabled={vacanciesLoading}
-              >
-                <SelectTrigger
-                  id="vacancyId"
-                  className={cn("h-12 w-full", errors.vacancyId && "border-destructive")}
-                >
-                  <SelectValue placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {vacancies.length === 0 && !vacanciesLoading ? (
-                    <SelectItem value="no-vacancies" disabled>
-                      No vacancies available
-                    </SelectItem>
-                  ) : (
-                    vacancies.map((vacancy) => (
-                      <SelectItem key={vacancy._id} value={vacancy._id}>
-                        {vacancy.title} - {vacancy.department}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+                options={
+                  vacancies.length === 0 && !vacanciesLoading
+                    ? [{ value: "no-vacancies", label: "No vacancies available", isDisabled: true }]
+                    : vacancies.map((vacancy) => ({
+                        value: vacancy._id,
+                        label: `${vacancy.title} - ${vacancy.department}`,
+                      }))
+                }
+                placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"}
+                isDisabled={vacanciesLoading}
+                className={cn("h-12 w-full", errors.vacancyId && "border-destructive")}
+              />
               {errors.vacancyId && (
                 <p className="text-xs text-destructive">{errors.vacancyId}</p>
               )}
@@ -408,26 +392,18 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
               <Label htmlFor="experienceLevel" className="text-sm font-medium text-foreground">
                 Experience Level <span className="text-destructive">*</span>
               </Label>
-              <Select
+              <CustomSelect
                 value={formData.experienceLevel}
                 onValueChange={(value) =>
                   setFormData({ ...formData, experienceLevel: value })
                 }
-              >
-                <SelectTrigger
-                  id="experienceLevel"
-                  className={cn("h-12 w-full", errors.experienceLevel && "border-destructive")}
-                >
-                  <SelectValue placeholder="Select experience level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {experienceLevels.map((level) => (
-                    <SelectItem key={level.value} value={level.value}>
-                      {level.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                options={experienceLevels.map((level) => ({
+                  value: level.value,
+                  label: level.label,
+                }))}
+                placeholder="Select experience level"
+                className={cn("h-12 w-full", errors.experienceLevel && "border-destructive")}
+              />
               {errors.experienceLevel && (
                 <p className="text-xs text-destructive">{errors.experienceLevel}</p>
               )}
@@ -438,26 +414,18 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                 <Label htmlFor="educationLevel" className="text-sm font-medium text-foreground">
                   Level of Education <span className="text-destructive">*</span>
                 </Label>
-                <Select
+                <CustomSelect
                   value={formData.educationLevel}
                   onValueChange={(value) =>
                     setFormData({ ...formData, educationLevel: value })
                   }
-                >
-                  <SelectTrigger
-                    id="educationLevel"
-                    className={cn("h-12 w-full", errors.educationLevel && "border-destructive")}
-                  >
-                    <SelectValue placeholder="Select education level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {educationLevels.map((level) => (
-                      <SelectItem key={level.value} value={level.value}>
-                        {level.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  options={educationLevels.map((level) => ({
+                    value: level.value,
+                    label: level.label,
+                  }))}
+                  placeholder="Select education level"
+                  className={cn("h-12 w-full", errors.educationLevel && "border-destructive")}
+                />
                 {errors.educationLevel && (
                   <p className="text-xs text-destructive">{errors.educationLevel}</p>
                 )}
