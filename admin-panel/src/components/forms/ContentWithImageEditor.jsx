@@ -1,9 +1,9 @@
 import { Card, Button, Input, Select, Space, Form } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import ImageUpload from '../common/ImageUpload';
+import SimpleRichTextEditor from '../common/SimpleRichTextEditor';
 import './ContentWithImageEditor.css';
 
-const { TextArea } = Input;
 const { Option } = Select;
 
 /**
@@ -85,12 +85,8 @@ const ContentWithImageEditor = ({ value = {}, onChange, form }) => {
                             name={[field.name]}
                             rules={[{ required: true, message: 'Paragraph text is required' }]}
                           >
-                            <TextArea
+                            <SimpleRichTextEditor
                               placeholder="Enter paragraph text..."
-                              rows={4}
-                              size="large"
-                              maxLength={1000}
-                              showCount
                             />
                           </Form.Item>
                         </Card>

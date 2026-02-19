@@ -48,7 +48,7 @@ interface TabbedComparisonSectionProps {
   className?: string
 }
 
-/** Map legacy value strings to colour class when legend has no value key (e.g. legend is color-only) */
+/** Map legacy value strings to colour class */
 const LEGACY_VALUE_TO_COLOR: Record<string, string> = {
   good: "bg-green-500",
   average: "bg-yellow-500",
@@ -60,23 +60,38 @@ const LEGACY_VALUE_TO_COLOR: Record<string, string> = {
   slow: "bg-red-500",
 }
 
-/** Default label for legend when backend only sends color (no value/label) */
-const COLOR_TO_LABEL: Record<string, string> = {
-  "bg-green-500": "Good",
-  "bg-yellow-500": "Average",
-  "bg-red-500": "Poor",
-}
-
 /** Resolve colour class: use string directly, look up by value in legend, or legacy value map */
 function getColorClass(
   cell: CellValue,
   legend: LegendItem[]
 ): string {
-  if (typeof cell === "string") return cell || "bg-muted-foreground"
+  if (typeof cell === "string") {
+    if (cell.startsWith("bg-")) return cell
+    return LEGACY_VALUE_TO_COLOR[cell.toLowerCase()] || cell || "bg-muted-foreground"
+  }
   const val = cell?.value?.toLowerCase?.() ?? ""
   const fromLegend = legend.find((l) => (l.value ?? "").toLowerCase() === val)?.color
   if (fromLegend) return fromLegend
   return LEGACY_VALUE_TO_COLOR[val] ?? "bg-muted-foreground"
+}
+
+/**
+ * Derive per-color labels from the tab data cells.
+ * When legend items lack explicit labels, this extracts them from { value, label } cell objects.
+ */
+function deriveLegendLabelsFromData(tab: TabData): Map<string, string> {
+  const colorToLabel = new Map<string, string>()
+  for (const row of tab.data) {
+    for (const cell of [row.preEngineered, row.conventionalSteel, row.reinforcedConcrete]) {
+      if (typeof cell === "object" && cell?.value && cell?.label) {
+        const color = LEGACY_VALUE_TO_COLOR[cell.value.toLowerCase()]
+        if (color && !colorToLabel.has(color)) {
+          colorToLabel.set(color, cell.label)
+        }
+      }
+    }
+  }
+  return colorToLabel
 }
 
 /** Table cell: only the colored dot; labels appear once in the legend below tabs */
@@ -167,27 +182,32 @@ export function TabbedComparisonSection({
                     transition={{ duration: 0.3 }}
                   >
                     {/* Legend: dots + labels outside table (above table) */}
-                    <div className="mb-6 flex flex-wrap items-center justify-center gap-6">
-                      {tab.legend.map((item, idx) => {
-                        const colorClass = item.color || "bg-muted-foreground"
-                        const label =
-                          item.label ?? item.value ?? COLOR_TO_LABEL[colorClass] ?? ""
-                        return (
-                          <div
-                            key={item.color ?? idx}
-                            className="flex items-center gap-2 text-sm text-muted-foreground"
-                          >
-                            <div
-                              className={cn(
-                                "h-3 w-3 shrink-0 rounded-full",
-                                colorClass
-                              )}
-                            />
-                            {label && <span>{label}</span>}
-                          </div>
-                        )
-                      })}
-                    </div>
+                    {(() => {
+                      const derivedLabels = deriveLegendLabelsFromData(tab)
+                      return (
+                        <div className="mb-6 flex flex-wrap items-center justify-center gap-6">
+                          {tab.legend.map((item, idx) => {
+                            const colorClass = item.color || "bg-muted-foreground"
+                            const label =
+                              item.label ?? item.value ?? derivedLabels.get(colorClass) ?? ""
+                            return (
+                              <div
+                                key={`${tab.id}-${item.color ?? idx}`}
+                                className="flex items-center gap-2 text-sm text-muted-foreground"
+                              >
+                                <div
+                                  className={cn(
+                                    "h-3 w-3 shrink-0 rounded-full",
+                                    colorClass
+                                  )}
+                                />
+                                {label && <span>{label}</span>}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )
+                    })()}
 
                     {/* Comparison Table */}
                     <div className="overflow-x-auto rounded-lg border border-border">
