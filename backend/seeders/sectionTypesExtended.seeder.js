@@ -619,7 +619,7 @@ const extendedSectionTypes = [
                 name: 'applications',
                 type: 'json',
                 label: 'Applications',
-                helpText: 'Array: [{"id": "unique-id", "name": "Application Name", "icon": "icon-name"}]',
+                helpText: 'Array: [{"id": "unique-id", "name": "Application Name", "icon": "icon-name", "description": "optional text", "redirectUrl": "optional /route"}]',
                 required: true,
                 validation: {
                     minItems: 1
@@ -637,6 +637,16 @@ const extendedSectionTypes = [
                     max: 6
                 },
                 order: 3
+            },
+            {
+                name: 'clickBehavior',
+                type: 'select',
+                label: 'Click Behavior',
+                helpText: 'What happens when an application card is clicked',
+                required: false,
+                defaultValue: 'both',
+                options: ['both', 'modal', 'redirect'],
+                order: 4
             }
         ],
         previewComponent: 'ApplicationCards',

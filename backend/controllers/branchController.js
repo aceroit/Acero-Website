@@ -271,4 +271,3 @@ exports.reorderBranches = async (req, res) => {
         return errorResponse(res, 500, 'Failed to reorder branches', error.message);
     }
 };
-

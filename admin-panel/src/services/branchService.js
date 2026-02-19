@@ -60,4 +60,3 @@ export const reorderBranches = async (branchOrders) => {
   const response = await API.put('/branches/reorder', { branchOrders });
   return response.data;
 };
-

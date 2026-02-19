@@ -1,9 +1,9 @@
 import { Card, Button, Input, Select, Form } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import ImageUpload from '../../common/ImageUpload';
+import SimpleRichTextEditor from '../../common/SimpleRichTextEditor';
 import './ImageModalGalleryEditor.css';
 
-const { TextArea } = Input;
 const { Option } = Select;
 
 /**
@@ -114,15 +114,11 @@ const ImageModalGalleryEditor = ({ value = {}, onChange, form }) => {
                               {...field}
                               name={[field.name, 'description']}
                               label="Description"
-                              tooltip="Description text displayed for this item"
+                              tooltip="Description text displayed for this item. Supports bold text and links."
                               rules={[{ required: true, message: 'Description is required' }]}
                             >
-                              <TextArea
+                              <SimpleRichTextEditor
                                 placeholder="Enter description..."
-                                rows={3}
-                                size="large"
-                                maxLength={500}
-                                showCount
                               />
                             </Form.Item>
 

@@ -80,16 +80,7 @@ export function ProjectsGalleryImagesSection({
               initial={{ opacity: 0, y: 24 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
               transition={{ duration: 0.5, delay: index * 0.08 }}
-              role="button"
-              tabIndex={0}
-              onClick={() => setPreviewImage(image)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault()
-                  setPreviewImage(image)
-                }
-              }}
-              className="relative w-full overflow-hidden rounded-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer focus:outline-none focus:ring-2 focus:ring-steel-red focus:ring-offset-2 [&>img]:block"
+              className="relative w-full overflow-hidden rounded-lg transition-all duration-300 [&>img]:block"
             >
               {/* Native img so container sizes exactly to image (no extra horizontal space) */}
               <img
@@ -103,6 +94,7 @@ export function ProjectsGalleryImagesSection({
         </div>
       </div>
 
+      {/* Modal disabled – uncomment to re-enable image preview on click
       <Dialog
         open={!!previewImage}
         onOpenChange={(open) => !open && setPreviewImage(null)}
@@ -135,6 +127,7 @@ export function ProjectsGalleryImagesSection({
           )}
         </DialogContent>
       </Dialog>
+      */}
     </section>
   )
 }

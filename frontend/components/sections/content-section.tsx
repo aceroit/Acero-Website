@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
 import { InlineAnimatedSvg } from "@/components/sections/inline-animated-svg"
+import { RichText } from "@/components/ui/rich-text"
 
 interface ContentSectionProps {
   title: string
@@ -251,13 +252,12 @@ export function ContentSection({
 
             <div className="space-y-4">
               {paragraphs.map((paragraph, index) => (
-                <motion.p
+                <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="text-lg leading-relaxed text-muted-foreground"
                 >
-                  {paragraph}
-                </motion.p>
+                  <RichText html={paragraph} className="text-lg leading-relaxed text-muted-foreground" />
+                </motion.div>
               ))}
             </div>
 
