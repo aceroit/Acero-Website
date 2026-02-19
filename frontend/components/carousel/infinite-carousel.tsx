@@ -90,7 +90,7 @@ export function InfiniteCarousel({
             return (
               <div key={`${item.alt}-${index}`}>
                 {item.link ? (
-                  <Link href={item.link} className="block">
+                  <Link href={item.link} target="_blank" rel="noopener noreferrer" className="block">
                     {itemContent}
                   </Link>
                 ) : (

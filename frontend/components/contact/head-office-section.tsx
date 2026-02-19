@@ -13,14 +13,14 @@ export function HeadOfficeSection() {
     {
       icon: MapPin,
       title: "Location",
-      content: "Jebel Ali Industrial Area 1, Dubai, United Arab Emirates",
+      content: "United Arab Emirates, Dubai: Jebel Ali Industrial Area 1",
     },
     {
       icon: Phone,
       title: "Contact",
       content: (
         <>
-          In the Dubai: +97148931000
+          Dubai: +97148931000
           <br />
           Email: info@acero.ae
         </>

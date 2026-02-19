@@ -1,0 +1,61 @@
+.simple-rich-text-editor {
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+  position: relative;
+}
+
+.simple-rich-text-editor:focus-within {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+}
+
+.simple-rich-text-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  border-radius: 6px 6px 0 0;
+}
+
+.toolbar-btn-active {
+  background-color: #e6f4ff !important;
+  color: #1677ff !important;
+}
+
+.simple-rich-text-content {
+  padding: 8px 12px;
+  min-height: 80px;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.simple-rich-text-content p {
+  margin: 0 0 0.5em 0;
+}
+
+.simple-rich-text-content p:last-child {
+  margin-bottom: 0;
+}
+
+.simple-rich-text-content strong {
+  font-weight: 700;
+}
+
+.simple-rich-text-content a {
+  color: #1677ff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.simple-rich-text-placeholder {
+  position: absolute;
+  top: 45px;
+  left: 12px;
+  color: #bfbfbf;
+  pointer-events: none;
+  font-size: 14px;
+}

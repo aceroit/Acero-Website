@@ -103,9 +103,9 @@ export function BranchSelectorSection() {
                         <h3 className="text-xl font-bold uppercase tracking-tight text-foreground md:text-2xl">
                           {branch.name}
                         </h3>
-                        <p className="mt-2 text-base font-medium text-muted-foreground md:text-lg">
+                        {/* <p className="mt-2 text-base font-medium text-muted-foreground md:text-lg">
                           {branch.location}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   </AccordionTrigger>

@@ -33,6 +33,7 @@ import { ComparisonTableSection } from '@/components/sections/comparison-table-s
 import { CtaSection } from '@/components/sections/cta-section'
 import { getIconComponent } from '@/lib/utils/icon-mapper'
 import { getPebApplicationSvgPath } from '@/utils/peb-application-svg'
+import { getConventionalSteelApplicationImagePath } from '@/utils/conventional-steel-application-images'
 import { getPortaCabinImagePath } from '@/utils/porta-cabin-icons'
 
 interface SectionRendererProps {
@@ -433,18 +434,22 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const title = (content.title as string) || undefined
                 const subtitle = (content.subtitle as string) || ''
                 const columns = (content.columns as number) || undefined
+                const clickBehavior = (content.clickBehavior as 'modal' | 'redirect' | 'both') || 'both'
                 const applicationsData = (content.applications as Array<{
                   id: string
                   name: string
                   icon?: string
+                  description?: string
+                  redirectUrl?: string
                 }>) || []
 
-                // Transform applications: icon component + optional PEB application SVG (local SVGs override icon)
                 const applications = applicationsData.map((application) => ({
                   id: application.id,
                   name: application.name,
                   icon: getIconComponent(application.icon),
-                  svgPath: getPebApplicationSvgPath(application.name),
+                  svgPath: getPebApplicationSvgPath(application.name) || getConventionalSteelApplicationImagePath(application.name),
+                  description: application.description,
+                  redirectUrl: application.redirectUrl,
                 }))
 
                 return (
@@ -454,6 +459,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     subtitle={subtitle}
                     applications={applications}
                     columns={columns}
+                    clickBehavior={clickBehavior}
                   />
                 )
               }

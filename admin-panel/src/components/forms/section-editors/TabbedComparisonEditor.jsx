@@ -172,7 +172,7 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                           <Button
                                             type="dashed"
                                             icon={<PlusOutlined />}
-                                            onClick={() => addLegend({ color: '' })}
+                                            onClick={() => addLegend({ color: '', label: '' })}
                                             size="small"
                                           >
                                             Add Legend Item
@@ -214,6 +214,19 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                                   maxLength={50}
                                                 />
                                               </Form.Item>
+                                              <Form.Item
+                                                {...legendField}
+                                                name={[legendField.name, 'label']}
+                                                label="Label"
+                                                tooltip="Display label for this legend item (e.g., Good, Low, On-Time)"
+                                                rules={[{ required: true, message: 'Label is required' }]}
+                                              >
+                                                <Input
+                                                  placeholder="e.g., Good, Low, On-Time"
+                                                  size="small"
+                                                  maxLength={50}
+                                                />
+                                              </Form.Item>
                                             </Card>
                                           ))}
                                         </div>
@@ -222,7 +235,7 @@ const TabbedComparisonEditor = ({ value = {}, onChange, form }) => {
                                         <Button
                                           type="dashed"
                                           icon={<PlusOutlined />}
-                                          onClick={() => addLegend({ color: '' })}
+                                          onClick={() => addLegend({ color: '', label: '' })}
                                           block
                                           size="small"
                                           className="mt-2"

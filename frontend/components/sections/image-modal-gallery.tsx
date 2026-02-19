@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
+import { RichText } from "@/components/ui/rich-text"
 
 interface GalleryItem {
   id: string
@@ -116,8 +117,10 @@ export function ImageModalGallery({
                 <DialogTitle className="text-2xl font-bold text-foreground">
                   {selectedItem.title}
                 </DialogTitle>
-                <DialogDescription className="text-base leading-relaxed text-muted-foreground">
-                  {selectedItem.description}
+                <DialogDescription asChild>
+                  <div>
+                    <RichText html={selectedItem.description} className="text-base leading-relaxed text-muted-foreground" />
+                  </div>
                 </DialogDescription>
               </DialogHeader>
             </>

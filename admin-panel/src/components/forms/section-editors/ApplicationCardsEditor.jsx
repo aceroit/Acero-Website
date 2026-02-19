@@ -1,14 +1,15 @@
-import { Card, Button, Input, Form, Select } from 'antd';
+import { Card, Button, Input, Form, Select, Radio } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import './ApplicationCardsEditor.css';
 
 const { TextArea } = Input;
 
-/**
- * Application Cards Editor Component
- * Custom editor for application cards sections with icon grid
- */
 const ApplicationCardsEditor = ({ value = {}, onChange, form }) => {
+  const clickBehavior = Form.useWatch(['content', 'clickBehavior'], form) || 'both';
+
+  const showDescription = clickBehavior === 'modal' || clickBehavior === 'both';
+  const showRedirectUrl = clickBehavior === 'redirect' || clickBehavior === 'both';
+
   return (
     <div className="application-cards-editor">
       <div className="space-y-6">
@@ -59,7 +60,7 @@ const ApplicationCardsEditor = ({ value = {}, onChange, form }) => {
                       <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => add({ id: '', name: '', icon: '' })}
+                        onClick={() => add({ id: '', name: '', icon: '', description: '', redirectUrl: '' })}
                         size="large"
                         style={{
                           backgroundColor: '#1f2937',
@@ -137,6 +138,40 @@ const ApplicationCardsEditor = ({ value = {}, onChange, form }) => {
                                 maxLength={50}
                               />
                             </Form.Item>
+
+                            {/* Description (shown when modal or both) */}
+                            {showDescription && (
+                              <Form.Item
+                                {...field}
+                                name={[field.name, 'description']}
+                                label="Description"
+                                tooltip="Text displayed in the modal dialog when the card is clicked"
+                              >
+                                <TextArea
+                                  placeholder="e.g., Detailed description of this application..."
+                                  rows={3}
+                                  size="large"
+                                  maxLength={1000}
+                                  showCount
+                                />
+                              </Form.Item>
+                            )}
+
+                            {/* Redirect URL (shown when redirect or both) */}
+                            {showRedirectUrl && (
+                              <Form.Item
+                                {...field}
+                                name={[field.name, 'redirectUrl']}
+                                label="Redirect URL"
+                                tooltip="Page route to navigate to when the card is clicked (e.g., /products/conventional-steel/pipe-racks)"
+                              >
+                                <Input
+                                  placeholder="e.g., /products/conventional-steel/pipe-racks"
+                                  size="large"
+                                  maxLength={500}
+                                />
+                              </Form.Item>
+                            )}
                           </div>
                         </Card>
                       ))}
@@ -147,7 +182,7 @@ const ApplicationCardsEditor = ({ value = {}, onChange, form }) => {
                     <Button
                       type="dashed"
                       icon={<PlusOutlined />}
-                      onClick={() => add({ id: '', name: '', icon: '' })}
+                      onClick={() => add({ id: '', name: '', icon: '', description: '', redirectUrl: '' })}
                       block
                       size="large"
                       className="mt-4"
@@ -186,6 +221,24 @@ const ApplicationCardsEditor = ({ value = {}, onChange, form }) => {
               ]}
             />
           </Form.Item>
+
+          <Form.Item
+            name={['content', 'clickBehavior']}
+            label="Click Behavior"
+            tooltip="What happens when an application card is clicked. 'Both' shows a modal with an optional redirect link."
+            initialValue="both"
+          >
+            <Radio.Group
+              optionType="button"
+              buttonStyle="solid"
+              size="large"
+              options={[
+                { value: 'both', label: 'Both (Default)' },
+                { value: 'modal', label: 'Modal Only' },
+                { value: 'redirect', label: 'Redirect Only' },
+              ]}
+            />
+          </Form.Item>
         </Card>
       </div>
     </div>
@@ -193,4 +246,3 @@ const ApplicationCardsEditor = ({ value = {}, onChange, form }) => {
 };
 
 export default ApplicationCardsEditor;
-
