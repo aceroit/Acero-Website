@@ -1,9 +1,9 @@
 import { Card, Button, Input, Select, Space, Form } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import ImageUpload from '../../common/ImageUpload';
+import SimpleRichTextEditor from '../../common/SimpleRichTextEditor';
 import './ImageGalleryEditor.css';
 
-const { TextArea } = Input;
 const { Option } = Select;
 
 /**
@@ -33,12 +33,8 @@ const ImageGalleryEditor = ({ value = {}, onChange, form }) => {
           label="Description Paragraph"
           tooltip="Optional description text displayed below the title"
         >
-          <TextArea
+          <SimpleRichTextEditor
             placeholder="e.g., At Acero Building Systems, we combine global presence with precision-driven processes..."
-            rows={4}
-            size="large"
-            maxLength={1000}
-            showCount
           />
         </Form.Item>
 
