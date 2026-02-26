@@ -99,13 +99,13 @@ export function BranchSelectorSection() {
                         <h3 className="text-xl font-bold uppercase tracking-tight text-foreground md:text-2xl">
                           {branch.name}
                         </h3>
-                        <p className="mt-2 text-base font-medium text-muted-foreground md:text-lg">
+                        {/* <p className="mt-2 text-base font-medium text-muted-foreground md:text-lg">
                           {branch.location}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="relative z-10 pb-8 pt-6">
+                  <AccordionContent className="relative z-10 pb-8">
                     <BranchAccordionItem branch={branch} />
                   </AccordionContent>
                 </AccordionItem>
