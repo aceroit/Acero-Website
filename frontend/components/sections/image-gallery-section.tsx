@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { RichText } from "@/components/ui/rich-text"
 
 interface GalleryImage {
   src: string
@@ -98,9 +99,10 @@ export function ImageGallerySection({
             <h2 className="mb-6 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               {title}
             </h2>
-            <p className="text-lg leading-relaxed text-foreground">
-              {paragraph}
-            </p>
+            <RichText
+              html={paragraph}
+              className="text-lg leading-relaxed text-foreground"
+            />
           </motion.div>
 
           {/* Right column: grid of image cards with optional name below */}
