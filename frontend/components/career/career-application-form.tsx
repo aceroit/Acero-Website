@@ -326,7 +326,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                 label: `${c.label}${c.dialCode ? ` (${c.dialCode})` : ""}`,
               }))}
               placeholder="Select your country"
-              className={cn("h-12 w-full", errors.country && "border-destructive")}
+              size="md"
+              className={cn("w-full", errors.country && "border-destructive")}
             />
             {errors.country && (
               <p className="text-xs text-destructive">{errors.country}</p>
@@ -392,7 +393,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                 }
                 placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"}
                 isDisabled={vacanciesLoading}
-                className={cn("h-12 w-full", errors.vacancyId && "border-destructive")}
+                size="md"
+                className={cn("w-full", errors.vacancyId && "border-destructive")}
               />
               {errors.vacancyId && (
                 <p className="text-xs text-destructive">{errors.vacancyId}</p>
@@ -413,7 +415,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                   label: level.label,
                 }))}
                 placeholder="Select experience level"
-                className={cn("h-12 w-full", errors.experienceLevel && "border-destructive")}
+                size="md"
+                className={cn("w-full", errors.experienceLevel && "border-destructive")}
               />
               {errors.experienceLevel && (
                 <p className="text-xs text-destructive">{errors.experienceLevel}</p>
@@ -435,7 +438,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                     label: level.label,
                   }))}
                   placeholder="Select education level"
-                  className={cn("h-12 w-full", errors.educationLevel && "border-destructive")}
+                  size="md"
+                  className={cn("w-full", errors.educationLevel && "border-destructive")}
                 />
                 {errors.educationLevel && (
                   <p className="text-xs text-destructive">{errors.educationLevel}</p>

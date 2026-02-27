@@ -22,7 +22,7 @@ interface CustomSelectProps extends Omit<SelectProps<CustomSelectOption, false, 
   value?: string
   onValueChange?: (value: string) => void
   placeholder?: string
-  size?: 'sm' | 'default' | 'lg'
+  size?: 'sm' | 'default' | 'md' | 'lg'
   className?: string
 }
 
@@ -37,7 +37,7 @@ export function CustomSelect({
 }: CustomSelectProps) {
   const selectedOption = options.find(opt => opt.value === value)
 
-  const controlHeight = size === 'sm' ? '32px' : size === 'lg' ? '56px' : '36px'
+  const controlHeight = size === 'sm' ? '32px' : size === 'md' ? '48px' : size === 'lg' ? '56px' : '36px'
 
   const customStyles: StylesConfig<CustomSelectOption, false> = {
     control: (base, state) => ({

@@ -189,7 +189,7 @@ export function ContactForm() {
       {/* Section 1: Purpose */}
       <motion.div
         variants={sectionVariants}
-        className="group relative overflow-hidden rounded-2xl border-2 border-border/50 bg-card p-10 shadow-lg transition-all duration-700 hover:border-steel-red/40 hover:shadow-2xl hover:shadow-steel-red/10 md:p-12"
+        className="group relative overflow-hidden rounded-2xl border-2 border-border/50 bg-card p-6 shadow-lg transition-all duration-700 hover:border-steel-red/40 hover:shadow-2xl hover:shadow-steel-red/10 md:p-10 lg:p-12"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-700 group-hover:from-steel-red/8 group-hover:via-steel-red/3 group-hover:to-steel-red/8" />
         
@@ -224,7 +224,7 @@ export function ContactForm() {
       {/* Section 2: Personal Details (with Country, Country Code auto, Mobile & Telephone) */}
       <motion.div
         variants={sectionVariants}
-        className="group relative overflow-hidden rounded-2xl border-2 border-border/50 bg-card p-10 shadow-lg transition-all duration-700 hover:border-steel-red/40 hover:shadow-2xl hover:shadow-steel-red/10 md:p-12"
+        className="group relative overflow-hidden rounded-2xl border-2 border-border/50 bg-card p-6 shadow-lg transition-all duration-700 hover:border-steel-red/40 hover:shadow-2xl hover:shadow-steel-red/10 md:p-10 lg:p-12"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-700 group-hover:from-steel-red/8 group-hover:via-steel-red/3 group-hover:to-steel-red/8" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/0 to-white/0 transition-opacity duration-700 group-hover:via-white/5 group-hover:to-white/0" />
@@ -234,8 +234,8 @@ export function ContactForm() {
               Personal Details
             </h2>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 [&>div]:min-w-0">
-            <div className="space-y-3 sm:col-span-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 [&>div]:min-w-0">
+            <div className="space-y-3 lg:col-span-2">
               <Label htmlFor="fullName" className="text-sm font-semibold uppercase tracking-wider text-foreground">
                 Full Name <span className="text-destructive">*</span>
               </Label>
@@ -360,7 +360,7 @@ export function ContactForm() {
       {/* Section 3: Message */}
       <motion.div
         variants={sectionVariants}
-        className="group relative overflow-hidden rounded-2xl border-2 border-border/50 bg-card p-10 shadow-lg transition-all duration-700 hover:border-steel-red/40 hover:shadow-2xl hover:shadow-steel-red/10 md:p-12"
+        className="group relative overflow-hidden rounded-2xl border-2 border-border/50 bg-card p-6 shadow-lg transition-all duration-700 hover:border-steel-red/40 hover:shadow-2xl hover:shadow-steel-red/10 md:p-10 lg:p-12"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-700 group-hover:from-steel-red/8 group-hover:via-steel-red/3 group-hover:to-steel-red/8" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/0 to-white/0 transition-opacity duration-700 group-hover:via-white/5 group-hover:to-white/0" />
@@ -421,7 +421,7 @@ export function ContactForm() {
         <Button
           type="submit"
           disabled={submitting}
-          className="group relative h-20 overflow-hidden bg-gradient-to-r from-steel-red to-steel-red/90 px-20 text-lg font-bold uppercase tracking-wider text-steel-white shadow-2xl shadow-steel-red/30 transition-all hover:from-steel-red/95 hover:to-steel-red/85 hover:shadow-2xl hover:shadow-steel-red/40 disabled:opacity-50"
+          className="group relative h-16 overflow-hidden bg-gradient-to-r from-steel-red to-steel-red/90 px-10 text-base font-bold uppercase tracking-wider text-steel-white shadow-2xl shadow-steel-red/30 transition-all hover:from-steel-red/95 hover:to-steel-red/85 hover:shadow-2xl hover:shadow-steel-red/40 disabled:opacity-50 lg:h-20 lg:px-20 lg:text-lg"
         >
           <span className="relative z-10">
             {submitting ? "Submitting..." : "Send Message"}
