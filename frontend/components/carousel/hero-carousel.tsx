@@ -85,12 +85,12 @@ export function HeroCarousel({
 
           {/* Centered Content */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
+            <div className="relative z-10 mx-auto max-w-5xl px-14 text-center lg:px-6">
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="mb-6 text-5xl font-extrabold uppercase tracking-tight text-steel-white md:text-6xl lg:text-7xl xl:text-8xl"
+                className="mb-4 text-4xl font-extrabold uppercase tracking-tight text-steel-white md:text-5xl lg:mb-6 lg:text-7xl xl:text-8xl"
               >
                 {slides[currentIndex].title}
               </motion.h1>
@@ -98,7 +98,7 @@ export function HeroCarousel({
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="mx-auto max-w-3xl text-lg leading-relaxed text-steel-white/90 md:text-xl"
+                className="mx-auto max-w-3xl text-sm leading-relaxed text-steel-white/90 md:text-lg lg:text-xl"
               >
                 {slides[currentIndex].description}
               </motion.p>
@@ -110,17 +110,17 @@ export function HeroCarousel({
       {/* Navigation Arrows */}
       <button
         onClick={goToPrevious}
-        className="absolute left-6 top-1/2 z-20 -translate-y-1/2 rounded-full border border-steel-white/30 bg-black/30 p-3 text-steel-white backdrop-blur-sm transition-all hover:bg-black/50 hover:border-steel-white/50 md:left-8"
+        className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-steel-white/30 bg-black/30 p-2 text-steel-white backdrop-blur-sm transition-all hover:bg-black/50 hover:border-steel-white/50 lg:left-8 lg:p-3"
         aria-label="Previous slide"
       >
-        <ChevronLeft className="h-6 w-6 md:h-8 md:w-8" />
+        <ChevronLeft className="h-5 w-5 lg:h-8 lg:w-8" />
       </button>
       <button
         onClick={goToNext}
-        className="absolute right-6 top-1/2 z-20 -translate-y-1/2 rounded-full border border-steel-white/30 bg-black/30 p-3 text-steel-white backdrop-blur-sm transition-all hover:bg-black/50 hover:border-steel-white/50 md:right-8"
+        className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-steel-white/30 bg-black/30 p-2 text-steel-white backdrop-blur-sm transition-all hover:bg-black/50 hover:border-steel-white/50 lg:right-8 lg:p-3"
         aria-label="Next slide"
       >
-        <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
+        <ChevronRight className="h-5 w-5 lg:h-8 lg:w-8" />
       </button>
 
       {/* Navigation Dots */}

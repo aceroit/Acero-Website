@@ -7,7 +7,7 @@ import { getSpacingValues } from "@/utils/spacing"
 import { useMemo } from "react"
 
 const DESKTOP_SVG = "/svgs/why-acero-desktop.svg"
-const MOBILE_SVG = "/svgs/why-acero-mobile.svg"
+const MOBILE_SVG = "/svgs/why-acero-sm.svg"
 
 /**
  * Why Acero section: shows the Why Acero animated SVG.

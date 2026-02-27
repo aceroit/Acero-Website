@@ -34,10 +34,10 @@ export function AdvantagesGridSection({
 
   const gridCols =
     columns === 2
-      ? "md:grid-cols-2"
+      ? "grid-cols-2"
       : columns === 3
-        ? "md:grid-cols-3"
-        : "md:grid-cols-2 lg:grid-cols-4"
+        ? "grid-cols-2 md:grid-cols-3"
+        : "grid-cols-2 lg:grid-cols-4"
 
   return (
     <section
@@ -65,9 +65,8 @@ export function AdvantagesGridSection({
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
-              <div className="group flex h-full flex-col items-center justify-center border border-border bg-card p-8 text-center transition-all hover:border-steel-red/50 hover:bg-card/50">
-                {/* Icon: image from public/portaCabin when iconImageUrl set, else Lucide icon */}
-                <div className="mb-4 flex h-16 w-16 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 md:h-20 md:w-20">
+              <div className="group flex h-full flex-col items-center justify-center rounded-xl border border-border bg-card p-4 text-center transition-all hover:border-steel-red/50 hover:bg-card/50 lg:p-8">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 lg:mb-4 lg:h-20 lg:w-20">
                   {advantage.iconImageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -79,8 +78,7 @@ export function AdvantagesGridSection({
                     advantage.icon
                   )}
                 </div>
-                {/* Title */}
-                <h4 className="text-lg font-semibold text-foreground md:text-xl">
+                <h4 className="text-sm font-semibold text-foreground lg:text-xl">
                   {advantage.title}
                 </h4>
               </div>

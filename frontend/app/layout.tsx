@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { AppearanceProvider } from "@/components/appearance-provider"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { Toaster } from "@/components/ui/toaster"
+import { ScrollToTop } from "@/components/scroll-to-top"
 import "./globals.css"
 
 const inter = Inter({
@@ -69,6 +70,7 @@ export default function RootLayout({
           </AppearanceProvider>
         </ThemeProvider>
         <Toaster />
+        <ScrollToTop />
         <Analytics />
       </body>
     </html>

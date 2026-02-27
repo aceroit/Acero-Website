@@ -45,6 +45,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [expandedMobileDropdown, setExpandedMobileDropdown] = useState<string | null>(null)
   const { theme, toggleTheme } = useTheme()
   const { header, isLoading } = useHeader()
 
@@ -307,8 +308,10 @@ export function Header() {
             transition={{ duration: 0.3 }}
             className="border-t border-border bg-background lg:hidden"
           >
-            <div className="flex flex-col px-6 py-6">
-              {navLinks.map((link, index) => (
+            <div className="flex flex-col px-6 py-6 overflow-y-auto max-h-[calc(100vh-5rem)]">
+              {navLinks.map((link, index) => {
+                const isExpanded = expandedMobileDropdown === link.label
+                return (
                 <motion.div
                   key={link.href}
                   initial={{ opacity: 0, x: -20 }}
@@ -316,44 +319,65 @@ export function Header() {
                   transition={{ delay: index * 0.05 }}
                   className="border-b border-border/50 last:border-b-0"
                 >
-                  <Link
-                    href={link.href}
-                    onClick={() => !link.dropdown && setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-4 text-lg font-medium uppercase tracking-wider text-foreground transition-colors hover:text-steel-red"
-                  >
-                    {link.label}
+                  <div className="flex items-center">
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex-1 py-4 text-lg font-medium uppercase tracking-wider text-foreground transition-colors hover:text-steel-red"
+                    >
+                      {link.label}
+                    </Link>
                     {link.dropdown && (
-                      <svg
-                        className="h-5 w-5 text-muted-foreground"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                      <button
+                        onClick={() =>
+                          setExpandedMobileDropdown(isExpanded ? null : link.label)
+                        }
+                        className="flex h-10 w-10 items-center justify-center text-muted-foreground"
+                        aria-label={`${isExpanded ? "Collapse" : "Expand"} ${link.label}`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    )}
-                  </Link>
-                  {link.dropdown && (
-                    <div className="pb-4 pl-4">
-                      {link.dropdown.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block rounded-md py-2 px-2 text-muted-foreground transition-all hover:bg-steel-red/10 hover:text-steel-red"
+                        <svg
+                          className={`h-5 w-5 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  <AnimatePresence>
+                    {link.dropdown && isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pb-4 pl-4">
+                          {link.dropdown.map((item) => (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="block rounded-md py-2 px-2 text-muted-foreground transition-all hover:bg-steel-red/10 hover:text-steel-red"
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
-              ))}
+                )
+              })}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
