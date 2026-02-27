@@ -18,6 +18,10 @@ import {
   educationLevels,
   languages,
 } from "@/utils/career-data"
+import {
+  countriesWithDialCodes,
+  getDialCodeForCountry,
+} from "@/lib/countries"
 import { useVacancies } from "@/hooks/use-vacancies"
 import { uploadCV, submitApplication, type CVFile } from "@/services/application.service"
 import { cn } from "@/lib/utils"
@@ -311,6 +315,24 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
             )}
           </div>
           <div className="space-y-2">
+            <Label htmlFor="country" className="text-sm font-medium text-foreground">
+              Country <span className="text-destructive">*</span>
+            </Label>
+            <CustomSelect
+              value={formData.country}
+              onValueChange={(value) => setFormData({ ...formData, country: value })}
+              options={countriesWithDialCodes.map((c) => ({
+                value: c.value,
+                label: `${c.label}${c.dialCode ? ` (${c.dialCode})` : ""}`,
+              }))}
+              placeholder="Select your country"
+              className={cn("h-12 w-full", errors.country && "border-destructive")}
+            />
+            {errors.country && (
+              <p className="text-xs text-destructive">{errors.country}</p>
+            )}
+          </div>
+          <div className="space-y-2 sm:col-span-2">
             <Label
               htmlFor="mobileNumber"
               className="text-sm font-medium text-foreground"
@@ -325,25 +347,14 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                 setFormData({ ...formData, mobileNumber: e.target.value })
               }
               className={cn("h-12", errors.mobileNumber && "border-destructive")}
-              placeholder="+971 XX XXX XXXX"
+              placeholder={
+                formData.country
+                  ? `${getDialCodeForCountry(formData.country)} XX XXX XXXX`
+                  : "+XXX XX XXX XXXX"
+              }
             />
             {errors.mobileNumber && (
               <p className="text-xs text-destructive">{errors.mobileNumber}</p>
-            )}
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="country" className="text-sm font-medium text-foreground">
-              Country <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="country"
-              value={formData.country}
-              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-              className={cn("h-12", errors.country && "border-destructive")}
-              placeholder="Enter your country"
-            />
-            {errors.country && (
-              <p className="text-xs text-destructive">{errors.country}</p>
             )}
           </div>
         </div>

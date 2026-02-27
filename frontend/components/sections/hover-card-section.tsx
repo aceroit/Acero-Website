@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useState, useMemo } from "react"
+import { useRef, useState, useMemo, useEffect, useCallback } from "react"
 import Image from "next/image"
 import {
   Dialog,
@@ -39,10 +39,31 @@ export function HoverCardSection({
 }: HoverCardSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null)
+  const [activeCard, setActiveCard] = useState<string | null>(null)
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
   const [selectedCard, setSelectedCard] = useState<HoverCard | null>(null)
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+
+  useEffect(() => {
+    setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches)
+  }, [])
+
+  const handleCardInteraction = useCallback(
+    (card: HoverCard) => {
+      if (isTouchDevice) {
+        // First tap: reveal overlay. Second tap: open modal.
+        if (activeCard === card.id) {
+          setSelectedCard(card)
+        } else {
+          setActiveCard(card.id)
+        }
+      } else {
+        setSelectedCard(card)
+      }
+    },
+    [isTouchDevice, activeCard]
+  )
 
   const gridCols =
     columns === 3 ? "md:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-2 lg:grid-cols-4"
@@ -78,7 +99,7 @@ export function HoverCardSection({
         {/* Hover Cards Grid */}
         <div className={cn("grid", spacing.gridGap, gridCols)}>
           {cards.map((card, index) => {
-            const isHovered = hoveredCard === card.id
+            const isActive = activeCard === card.id
 
             return (
               <motion.div
@@ -87,9 +108,9 @@ export function HoverCardSection({
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
                 className="group relative cursor-pointer"
-                onMouseEnter={() => setHoveredCard(card.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-                onClick={() => setSelectedCard(card)}
+                onMouseEnter={() => !isTouchDevice && setActiveCard(card.id)}
+                onMouseLeave={() => !isTouchDevice && setActiveCard(null)}
+                onClick={() => handleCardInteraction(card)}
               >
                 <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50">
                   <Image
@@ -101,28 +122,38 @@ export function HoverCardSection({
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
                     quality={85}
                   />
-                  {/* Hover Overlay with Description */}
+                  {/* Full overlay with title + description (visible on hover/tap) */}
                   <div
                     className={cn(
-                      "absolute inset-0 flex flex-col items-center justify-center bg-black/0 p-4 md:p-6 text-center transition-all duration-300 overflow-hidden",
-                      isHovered && "bg-black/70"
+                      "absolute inset-0 flex flex-col items-center justify-center overflow-hidden p-4 text-center transition-all duration-300 lg:p-6",
+                      isActive ? "bg-black/75" : "bg-transparent"
                     )}
                   >
-                    <h3 className="mb-2 text-base font-bold text-steel-white md:text-lg lg:text-xl">
+                    <h3
+                      className={cn(
+                        "mb-2 text-base font-bold text-steel-white transition-opacity duration-300 lg:text-xl",
+                        isActive ? "opacity-100" : "opacity-0"
+                      )}
+                    >
                       {card.title}
                     </h3>
                     <p
                       className={cn(
-                        "text-xs leading-relaxed text-steel-white transition-opacity duration-300 md:text-sm lg:text-base line-clamp-4 px-2",
-                        isHovered ? "opacity-100" : "opacity-0"
+                        "line-clamp-4 px-1 text-xs leading-relaxed text-steel-white/90 transition-opacity duration-300 lg:text-base",
+                        isActive ? "opacity-100" : "opacity-0"
                       )}
                     >
                       {card.description}
                     </p>
                   </div>
-                  {/* Title Overlay (always visible) */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4">
-                    <h3 className="text-base font-semibold text-steel-white md:text-lg">
+                  {/* Bottom title (visible only when NOT active) */}
+                  <div
+                    className={cn(
+                      "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 transition-opacity duration-300 lg:p-4",
+                      isActive ? "opacity-0" : "opacity-100"
+                    )}
+                  >
+                    <h3 className="text-sm font-semibold text-steel-white lg:text-lg">
                       {card.title}
                     </h3>
                   </div>
@@ -138,7 +169,7 @@ export function HoverCardSection({
         <DialogContent className="max-w-3xl">
           {selectedCard && (
             <>
-              <div className="relative w-full min-h-[300px] max-h-[70vh] overflow-hidden rounded-lg flex items-center justify-center">
+              <div className="relative flex min-h-[200px] w-full items-center justify-center overflow-hidden rounded-lg lg:min-h-[300px] lg:max-h-[70vh]">
                 <Image
                   src={selectedCard.image}
                   alt={selectedCard.imageAlt}
@@ -149,10 +180,10 @@ export function HoverCardSection({
                 />
               </div>
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-foreground">
+                <DialogTitle className="text-xl font-bold text-foreground lg:text-2xl">
                   {selectedCard.title}
                 </DialogTitle>
-                <DialogDescription className="text-base leading-relaxed text-muted-foreground">
+                <DialogDescription className="text-sm leading-relaxed text-muted-foreground lg:text-base">
                   {selectedCard.description}
                 </DialogDescription>
               </DialogHeader>

@@ -163,7 +163,7 @@ export function TabbedComparisonSection({
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  className="data-[state=active]:bg-steel-red data-[state=active]:text-steel-white"
+                  className="text-xs lg:text-sm data-[state=active]:bg-steel-red data-[state=active]:text-steel-white"
                 >
                   {tab.label}
                 </TabsTrigger>
@@ -210,25 +210,34 @@ export function TabbedComparisonSection({
                     })()}
 
                     {/* Comparison Table */}
-                    <div className="overflow-x-auto rounded-lg border border-border">
-                      <Table>
+                    <div className="overflow-hidden rounded-lg border border-border">
+                      <table className="w-full table-fixed border-collapse text-sm">
+                        <colgroup>
+                          <col className="w-[34%] lg:w-[28%]" />
+                          <col className="w-[22%] lg:w-[24%]" />
+                          <col className="w-[22%] lg:w-[24%]" />
+                          <col className="w-[22%] lg:w-[24%]" />
+                        </colgroup>
                         <TableHeader>
                           <TableRow className="border-b border-border bg-foreground hover:bg-foreground">
-                            <TableHead className="h-14 px-6 text-sm font-bold uppercase tracking-wider text-background md:text-base">
+                            <TableHead className="h-auto px-2 py-2.5 text-left text-[10px] font-bold uppercase leading-snug tracking-wider text-background lg:px-6 lg:py-4 lg:text-sm">
                               {tab.label === "General Criteria"
                                 ? "General Criteria"
                                 : tab.label === "Cost Comparison"
                                   ? "Cost Criteria"
                                   : "Time Criteria"}
                             </TableHead>
-                            <TableHead className="h-14 px-6 text-center text-sm font-bold uppercase tracking-wider text-background md:text-base">
-                              Pre Engineered Buildings
+                            <TableHead className="h-auto px-1.5 py-2.5 text-center text-[10px] font-bold uppercase leading-snug tracking-wider text-background lg:px-6 lg:py-4 lg:text-sm">
+                              <span className="lg:hidden">PEB</span>
+                              <span className="hidden lg:inline">Pre Engineered Buildings</span>
                             </TableHead>
-                            <TableHead className="h-14 px-6 text-center text-sm font-bold uppercase tracking-wider text-background md:text-base">
-                              Conventional Steel Buildings
+                            <TableHead className="h-auto px-1.5 py-2.5 text-center text-[10px] font-bold uppercase leading-snug tracking-wider text-background lg:px-6 lg:py-4 lg:text-sm">
+                              <span className="lg:hidden">CSB</span>
+                              <span className="hidden lg:inline">Conventional Steel Buildings</span>
                             </TableHead>
-                            <TableHead className="h-14 px-6 text-center text-sm font-bold uppercase tracking-wider text-background md:text-base">
-                              Reinforced Cement Concrete
+                            <TableHead className="h-auto px-1.5 py-2.5 text-center text-[10px] font-bold uppercase leading-snug tracking-wider text-background lg:px-6 lg:py-4 lg:text-sm">
+                              <span className="lg:hidden">RCC</span>
+                              <span className="hidden lg:inline">Reinforced Cement Concrete</span>
                             </TableHead>
                           </TableRow>
                         </TableHeader>
@@ -241,22 +250,22 @@ export function TabbedComparisonSection({
                                 index % 2 === 0 ? "bg-card" : "bg-muted/30"
                               )}
                             >
-                              <TableCell className="px-6 py-4 font-semibold text-foreground">
+                              <TableCell className="break-words px-2 py-2 text-xs font-semibold text-foreground [white-space:normal] lg:px-6 lg:py-4 lg:text-sm">
                                 {row.criteria}
                               </TableCell>
-                              <TableCell className="px-6 py-4">
+                              <TableCell className="px-1.5 py-2 lg:px-6 lg:py-4">
                                 <RatingDot
                                   cell={row.preEngineered}
                                   legend={tab.legend}
                                 />
                               </TableCell>
-                              <TableCell className="px-6 py-4">
+                              <TableCell className="px-1.5 py-2 lg:px-6 lg:py-4">
                                 <RatingDot
                                   cell={row.conventionalSteel}
                                   legend={tab.legend}
                                 />
                               </TableCell>
-                              <TableCell className="px-6 py-4">
+                              <TableCell className="px-1.5 py-2 lg:px-6 lg:py-4">
                                 <RatingDot
                                   cell={row.reinforcedConcrete}
                                   legend={tab.legend}
@@ -265,10 +274,16 @@ export function TabbedComparisonSection({
                             </TableRow>
                           ))}
                         </TableBody>
-                      </Table>
+                      </table>
                     </div>
 
-               
+                    {/* Mobile abbreviation legend */}
+                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-muted-foreground lg:hidden">
+                      <span><strong>PEB</strong> = Pre Engineered Buildings</span>
+                      <span><strong>CSB</strong> = Conventional Steel Buildings</span>
+                      <span><strong>RCC</strong> = Reinforced Cement Concrete</span>
+                    </div>
+
                     {/* Tab-specific text below table */}
                     {tab.textBelowTable && (
                       <p className="mt-6 text-center text-sm leading-relaxed text-muted-foreground md:text-base">
