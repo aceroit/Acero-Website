@@ -13,8 +13,17 @@ export interface SpacingValues {
 
 const DEFAULT_SPACING: SpacingValues = {
   containerMaxWidth: 'max-w-7xl',
-  sectionPadding: 'px-6 py-24',
+  sectionPadding: 'px-6 py-16 lg:py-24',
   gridGap: 'gap-8',
+}
+
+/**
+ * Ensure sectionPadding uses py-16 on mobile (<lg) regardless of CMS value.
+ * Transforms e.g. "px-6 py-24" → "px-6 py-16 lg:py-24"
+ */
+function ensureMobilePadding(padding: string): string {
+  if (padding.includes('lg:py-')) return padding
+  return padding.replace(/py-(\d+)/, 'py-16 lg:py-$1')
 }
 
 /**
@@ -28,15 +37,17 @@ export function getSpacingValues(appearance: WebsiteAppearance | null): SpacingV
 
   const { spacing } = appearance
 
+  const rawPadding =
+    spacing.sectionPadding?.isFieldActive && spacing.sectionPadding.value
+      ? spacing.sectionPadding.value
+      : DEFAULT_SPACING.sectionPadding
+
   return {
     containerMaxWidth:
       spacing.containerMaxWidth?.isFieldActive && spacing.containerMaxWidth.value
         ? spacing.containerMaxWidth.value
         : DEFAULT_SPACING.containerMaxWidth,
-    sectionPadding:
-      spacing.sectionPadding?.isFieldActive && spacing.sectionPadding.value
-        ? spacing.sectionPadding.value
-        : DEFAULT_SPACING.sectionPadding,
+    sectionPadding: ensureMobilePadding(rawPadding),
     gridGap:
       spacing.gridGap?.isFieldActive && spacing.gridGap.value
         ? spacing.gridGap.value

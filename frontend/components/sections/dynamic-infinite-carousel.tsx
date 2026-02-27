@@ -98,7 +98,7 @@ export function DynamicInfiniteCarousel({
     return (
       <section
         key={sectionId}
-        className={`border-t border-border ${bgClass} py-16 md:py-24`}
+        className={`border-t border-border ${bgClass} py-16 lg:py-24`}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {title && (
@@ -124,7 +124,7 @@ export function DynamicInfiniteCarousel({
     return (
       <section
         key={sectionId}
-        className={`border-t border-border ${bgClass} py-16 md:py-24`}
+        className={`border-t border-border ${bgClass} py-16 lg:py-24`}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <h2 className="mb-12 text-center text-4xl font-bold tracking-tight text-foreground md:text-5xl">
