@@ -24,7 +24,9 @@ export function HeroImageSection({
     <section
       className={cn(
         "relative mt-20 w-full overflow-hidden",
-        fullHeight ? "h-[calc(100vh-5rem)]" : "h-[calc((100vh-5rem)*0.75)]",
+        fullHeight
+          ? "h-[calc(100vh-5rem)]"
+          : "h-[60vh] lg:h-[calc((100vh-5rem)*0.75)]",
         className
       )}
     >

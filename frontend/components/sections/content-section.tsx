@@ -215,7 +215,7 @@ export function ContentSection({
               variants={itemVariants}
               className={cn(
                 "group relative w-full overflow-hidden rounded-2xl bg-transparent",
-                "aspect-[4/3]", // same as product card image size
+                showInlineSvg ? "aspect-square lg:aspect-[4/3]" : "aspect-[4/3]",
                 layout === "image-center"
                   ? "mx-auto lg:mx-0 self-center"
                   : "self-center lg:self-stretch",

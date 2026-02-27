@@ -106,14 +106,15 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
   ]
 
   return (
-    <div className={cn("flex flex-wrap items-center justify-center gap-6", className)}>
+    <div className={cn("flex flex-col items-stretch gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:justify-center lg:gap-6", className)}>
       {!hideIndustry && (
         <CustomSelect
           value={currentIndustryValue}
           onValueChange={(value) => updateFilter("industry", value)}
           options={industryOptions}
           placeholder="All Industries"
-          className="h-12 w-[220px] text-base font-medium"
+          size="md"
+          className="w-full text-base font-medium lg:w-[220px]"
         />
       )}
 
@@ -122,7 +123,8 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
         onValueChange={(value) => updateFilter("area", value)}
         options={areaOptions}
         placeholder="All Areas"
-        className="h-12 w-[220px] text-base font-medium"
+        size="md"
+        className="w-full text-base font-medium lg:w-[220px]"
       />
 
       <CustomSelect
@@ -130,7 +132,8 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
         onValueChange={(value) => updateFilter("region", value)}
         options={regionOptions}
         placeholder="All Regions"
-        className="h-12 w-[220px] text-base font-medium"
+        size="md"
+        className="w-full text-base font-medium lg:w-[220px]"
       />
 
       <CustomSelect
@@ -138,7 +141,8 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
         onValueChange={(value) => updateFilter("country", value)}
         options={countryOptions}
         placeholder="All Countries"
-        className="h-12 w-[220px] text-base font-medium"
+        size="md"
+        className="w-full text-base font-medium lg:w-[220px]"
       />
 
       {hasActiveFilters && (

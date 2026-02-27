@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useState, useMemo } from "react"
+import { useRef, useState, useMemo, useEffect } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
@@ -31,8 +31,13 @@ export function FlipCardSection({
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set())
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+
+  useEffect(() => {
+    setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches)
+  }, [])
 
   const gridCols =
     columns === 2
@@ -41,7 +46,7 @@ export function FlipCardSection({
         ? "md:grid-cols-2 lg:grid-cols-3"
         : "md:grid-cols-2 lg:grid-cols-4"
 
-  const handleFlip = (cardId: string) => {
+  const toggleFlip = (cardId: string) => {
     setFlippedCards((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(cardId)) {
@@ -83,8 +88,9 @@ export function FlipCardSection({
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="group"
                 style={{ perspective: "1000px" }}
-                onMouseEnter={() => handleFlip(card.id)}
-                onMouseLeave={() => handleFlip(card.id)}
+                onClick={() => isTouchDevice && toggleFlip(card.id)}
+                onMouseEnter={() => !isTouchDevice && toggleFlip(card.id)}
+                onMouseLeave={() => !isTouchDevice && toggleFlip(card.id)}
               >
                 <div
                   className="relative aspect-[4/3] w-full cursor-pointer"
@@ -113,28 +119,31 @@ export function FlipCardSection({
                         quality={85}
                       />
                       {/* Title Overlay */}
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6">
-                        <h3 className="text-xl font-bold text-steel-white md:text-2xl">
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 lg:p-6">
+                        <h3 className="text-lg font-bold text-steel-white lg:text-2xl">
                           {card.title}
                         </h3>
+                        <p className="mt-1 text-xs text-steel-white/70 lg:hidden">
+                          Tap to read more
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Back Side - Description */}
                   <div
-                    className="absolute inset-0 rounded-lg border border-border bg-card p-8 shadow-lg"
+                    className="absolute inset-0 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-lg lg:p-8"
                     style={{
                       backfaceVisibility: "hidden",
                       WebkitBackfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
                     }}
                   >
-                    <div className="flex h-full flex-col justify-center">
-                      <h3 className="mb-4 text-xl font-bold text-foreground md:text-2xl">
+                    <div className="flex h-full flex-col justify-center overflow-y-auto">
+                      <h3 className="mb-2 text-lg font-bold text-foreground lg:mb-4 lg:text-2xl">
                         {card.title}
                       </h3>
-                      <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
+                      <p className="text-sm leading-relaxed text-muted-foreground lg:text-lg">
                         {card.description}
                       </p>
                     </div>

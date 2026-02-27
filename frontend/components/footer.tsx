@@ -157,8 +157,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand Column */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center">
+          <div className="text-center lg:col-span-2 lg:text-left">
+            <Link href="/" className="flex items-center justify-center lg:justify-start">
               {brandInfo.logo?.imageUrl ? (
                 <Image
                   src={brandInfo.logo.imageUrl}
@@ -170,7 +170,6 @@ export function Footer() {
                 />
               ) : (
                 <>
-                  {/* Static logo fallback */}
                   <Image
                     src="/Logo/Logo.png"
                     alt="Acero Logo"
@@ -183,7 +182,7 @@ export function Footer() {
               )}
             </Link>
             {brandInfo.description && (
-            <p className="mt-6 max-w-sm text-muted-foreground leading-relaxed">
+            <p className="mt-6 mx-auto max-w-sm text-muted-foreground leading-relaxed lg:mx-0">
                 {brandInfo.description}
             </p>
             )}
@@ -194,7 +193,7 @@ export function Footer() {
                 {contactInfo.phone && (
               <a
                     href={`tel:${contactInfo.phone.replace(/\s/g, "")}`}
-                className="flex items-center gap-3 text-muted-foreground transition-colors hover:text-[#E10600]"
+                className="flex items-center justify-center gap-3 text-muted-foreground transition-colors hover:text-[#E10600] lg:justify-start"
               >
                 <svg
                   className="h-5 w-5"
@@ -215,7 +214,7 @@ export function Footer() {
                 {contactInfo.email && (
               <a
                     href={`mailto:${contactInfo.email}`}
-                className="flex items-center gap-3 text-muted-foreground transition-colors hover:text-[#E10600]"
+                className="flex items-center justify-center gap-3 text-muted-foreground transition-colors hover:text-[#E10600] lg:justify-start"
               >
                 <svg
                   className="h-5 w-5"
@@ -234,7 +233,7 @@ export function Footer() {
               </a>
                 )}
                 {contactInfo.address && (
-              <div className="flex items-start gap-3 text-muted-foreground">
+              <div className="flex items-start justify-center gap-3 text-muted-foreground lg:justify-start">
                 <svg
                   className="h-5 w-5 mt-0.5 flex-shrink-0"
                   fill="none"
@@ -280,7 +279,7 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="text-center lg:text-left">
             <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-foreground">
               Quick Links
             </h4>
@@ -299,7 +298,7 @@ export function Footer() {
           </div>
 
           {/* Products */}
-          <div>
+          <div className="text-center lg:text-left">
             <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-foreground">
               Products
             </h4>
@@ -318,7 +317,7 @@ export function Footer() {
           </div>
 
           {/* Media */}
-          <div>
+          <div className="text-center lg:text-left">
             <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-foreground">
               Media
             </h4>
@@ -338,8 +337,8 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
-          <p className="text-sm text-muted-foreground">{copyright}</p>
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 lg:flex-row">
+          <p className="text-sm text-center text-muted-foreground lg:text-left">{copyright}</p>
           <div className="flex items-center gap-6">
             {/* Social Links - Moved here from brand column */}
             {socialLinks.length > 0 && (
