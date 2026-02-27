@@ -211,7 +211,8 @@ export function ContactForm() {
               onValueChange={(value) => setFormData({ ...formData, purpose: value })}
               options={purposeOptions}
               placeholder="Choose one from the dropdown"
-              className={cn("h-14 w-full border-2 bg-card text-base shadow-md transition-all hover:border-steel-red/30 hover:shadow-lg", errors.purpose && "border-destructive")}
+              size="lg"
+              className={cn("w-full", errors.purpose && "border-destructive")}
             />
             {errors.purpose && (
               <p className="text-xs font-medium text-destructive">{errors.purpose}</p>
@@ -300,7 +301,8 @@ export function ContactForm() {
                   label: `${c.label}${c.dialCode ? ` (${c.dialCode})` : ""}`,
                 }))}
                 placeholder="Select your country"
-                className={cn("!h-14 min-h-[3.5rem] w-full min-w-0 border-2 bg-card text-base shadow-md transition-all hover:border-steel-red/30 hover:shadow-lg", errors.country && "border-destructive")}
+                size="lg"
+                className={cn("w-full min-w-0", errors.country && "border-destructive")}
               />
               {errors.country && (
                 <p className="text-xs font-medium text-destructive">{errors.country}</p>
