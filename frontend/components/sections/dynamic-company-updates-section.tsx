@@ -113,6 +113,7 @@ export function DynamicCompanyUpdatesSection({
       title={title}
       subtitle={subtitle}
       columns={columns}
+      limitOnMobile={forHome}
     />
   )
 }

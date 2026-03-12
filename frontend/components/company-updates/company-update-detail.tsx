@@ -62,6 +62,7 @@ export function CompanyUpdateDetail({
       className={cn(
         "border-t border-border bg-background",
         spacing.sectionPadding,
+        "pt-24",
         className
       )}
     >
@@ -74,7 +75,7 @@ export function CompanyUpdateDetail({
             transition={{ duration: 0.8 }}
             className="mb-16"
           >
-            <div className="relative mx-auto aspect-[16/10] w-full max-w-[80%] overflow-hidden rounded-lg bg-secondary">
+            <div className="relative mx-auto aspect-[16/10] w-full max-w-full md:max-w-[80%] overflow-hidden rounded-lg bg-secondary">
               <Image
                 src={update.featuredImage.url}
                 alt={update.title}
@@ -114,9 +115,9 @@ export function CompanyUpdateDetail({
             className="mt-16"
           >
             <div className={cn(
-              "mx-auto grid max-w-[80%] gap-6",
+              "mx-auto grid max-w-full md:max-w-[80%] gap-6",
               validAdditionalImages.length === 1 
-                ? "grid-cols-1 max-w-[50%]" 
+                ? "grid-cols-1 md:max-w-[50%]" 
                 : "grid-cols-1 md:grid-cols-2"
             )}>
               {validAdditionalImages.slice(0, 4).map((image, index) => (
