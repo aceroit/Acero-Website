@@ -1,8 +1,19 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { ArrowUp } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+export function RouteScrollToTop() {
+  const pathname = usePathname()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+
+  return null
+}
 
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false)

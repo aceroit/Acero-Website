@@ -132,20 +132,22 @@ export function FlipCardSection({
 
                   {/* Back Side - Description */}
                   <div
-                    className="absolute inset-0 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-lg lg:p-8"
+                    className="absolute inset-0 overflow-hidden rounded-lg border border-border bg-card p-0 shadow-lg lg:p-8"
                     style={{
                       backfaceVisibility: "hidden",
                       WebkitBackfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
                     }}
                   >
-                    <div className="flex h-full flex-col justify-center overflow-y-auto">
-                      <h3 className="mb-2 text-lg font-bold text-foreground lg:mb-4 lg:text-2xl">
-                        {card.title}
-                      </h3>
-                      <p className="text-sm leading-relaxed text-muted-foreground lg:text-lg">
-                        {card.description}
-                      </p>
+                    <div className="h-full overflow-y-auto">
+                      <div className="flex min-h-full flex-col justify-center p-4 lg:p-0">
+                        <h3 className="mb-2 text-lg font-bold text-foreground lg:mb-4 lg:text-2xl">
+                          {card.title}
+                        </h3>
+                        <p className="text-sm leading-relaxed text-muted-foreground lg:text-lg">
+                          {card.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
