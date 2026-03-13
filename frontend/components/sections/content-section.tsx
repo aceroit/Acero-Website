@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
-import { useRef, useState, useLayoutEffect, useMemo } from "react"
+import { useRef, useState, useEffect, useLayoutEffect, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -60,7 +60,16 @@ export function ContentSection({
   const ref = useRef(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [contentHeight, setContentHeight] = useState<number | null>(null)
+  const [isDesktop, setIsDesktop] = useState(false)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)")
+    setIsDesktop(mql.matches)
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    mql.addEventListener("change", handler)
+    return () => mql.removeEventListener("change", handler)
+  }, [])
 
   // Constrain image stack height to content height (so images don’t extend past content)
   useLayoutEffect(() => {
@@ -190,7 +199,7 @@ export function ContentSection({
             <motion.div
               variants={itemVariants}
               style={
-                contentHeight != null
+                isDesktop && contentHeight != null
                   ? { maxHeight: contentHeight }
                   : undefined
               }
@@ -203,7 +212,7 @@ export function ContentSection({
               {allImages.map((img, idx) => (
                 <div
                   key={idx}
-                  className="relative min-h-0 flex-1 w-full overflow-hidden rounded-2xl bg-transparent"
+                  className="relative aspect-[4/3] lg:aspect-auto lg:min-h-0 lg:flex-1 w-full overflow-hidden rounded-2xl bg-transparent"
                 >
                   {renderMedia(img, img.imageAlt || title)}
                 </div>

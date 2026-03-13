@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useFooter } from "@/hooks/use-footer"
+import { RichText } from "@/components/ui/rich-text"
 
 // Default fallback values
 const defaultFooterLinks = {
@@ -131,13 +132,18 @@ export function Footer() {
   }, [footer])
 
   // Get copyright
-  const copyright = useMemo(() => {
+  const copyrightYear = useMemo(() => {
     if (footer?.copyright?.isFieldActive) {
-      const year = footer.copyright.year || new Date().getFullYear()
-      const text = footer.copyright.text || defaultCopyright
-      return `© ${year} ${text}`
+      return footer.copyright.year || new Date().getFullYear()
     }
-    return `© ${new Date().getFullYear()} ${defaultCopyright}`
+    return new Date().getFullYear()
+  }, [footer])
+
+  const copyrightText = useMemo(() => {
+    if (footer?.copyright?.isFieldActive) {
+      return footer.copyright.text || defaultCopyright
+    }
+    return defaultCopyright
   }, [footer])
 
   // Get legal links
@@ -338,7 +344,10 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 lg:flex-row">
-          <p className="text-sm text-center text-muted-foreground lg:text-left">{copyright}</p>
+          <div className="text-sm text-center text-muted-foreground lg:text-left">
+            <span>{`© ${copyrightYear} `}</span>
+            <RichText html={copyrightText} className="inline" />
+          </div>
           <div className="flex items-center gap-6">
             {/* Social Links - Moved here from brand column */}
             {socialLinks.length > 0 && (
