@@ -24,6 +24,7 @@ interface CompanyUpdatesSectionProps {
   title: string
   subtitle?: string
   columns?: 3 | 4
+  limitOnMobile?: boolean
   className?: string
 }
 
@@ -41,6 +42,7 @@ export function CompanyUpdatesSection({
   title,
   subtitle,
   columns = 3,
+  limitOnMobile = false,
   className,
 }: CompanyUpdatesSectionProps) {
   const ref = useRef(null)
@@ -84,7 +86,7 @@ export function CompanyUpdatesSection({
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="h-full"
+              className={cn("h-full", limitOnMobile && index > 0 && "hidden md:block")}
             >
               <UpdateCard update={update} />
             </motion.div>

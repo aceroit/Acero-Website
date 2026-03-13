@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Card, Breadcrumb, Spin, Divider, Collapse, Space, Button, Form, Input, Switch, Select, InputNumber, message } from 'antd';
 import { HomeOutlined, HistoryOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
+import SimpleRichTextEditor from '../components/common/SimpleRichTextEditor';
 import { usePermissions } from '../contexts/PermissionContext';
 import { WorkflowStatusBadge, WorkflowActions, WorkflowTimeline, WorkflowStatusGuard } from '../components/workflow';
 import useWorkflowStatus from '../hooks/useWorkflowStatus';
@@ -626,7 +627,7 @@ const FooterConfigurationForm = ({ form, initialValues, onSubmit, onCancel, load
       </Form.Item>
 
       <Form.Item name={['copyright', 'text']} label="Copyright Text">
-        <Input placeholder="© {year} Acero Steel Manufacturing. All rights reserved." />
+        <SimpleRichTextEditor placeholder="Acero Steel Manufacturing. All rights reserved." />
       </Form.Item>
 
       <Form.Item name={['copyright', 'year']} label="Copyright Year">

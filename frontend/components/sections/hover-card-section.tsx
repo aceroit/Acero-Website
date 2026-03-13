@@ -112,7 +112,7 @@ export function HoverCardSection({
                 onMouseLeave={() => !isTouchDevice && setActiveCard(null)}
                 onClick={() => handleCardInteraction(card)}
               >
-                <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50">
+                <div className="relative aspect-square md:aspect-[4/3] overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-steel-red/50">
                   <Image
                     src={card.image}
                     alt={card.imageAlt}

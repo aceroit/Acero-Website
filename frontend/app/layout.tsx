@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { AppearanceProvider } from "@/components/appearance-provider"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { Toaster } from "@/components/ui/toaster"
-import { ScrollToTop } from "@/components/scroll-to-top"
+import { ScrollToTop, RouteScrollToTop } from "@/components/scroll-to-top"
 import "./globals.css"
 
 const inter = Inter({
@@ -66,6 +66,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground">
         <ThemeProvider defaultTheme="dark" storageKey="acero-theme">
           <AppearanceProvider>
+          <RouteScrollToTop />
           <SmoothScroll>{children}</SmoothScroll>
           </AppearanceProvider>
         </ThemeProvider>
