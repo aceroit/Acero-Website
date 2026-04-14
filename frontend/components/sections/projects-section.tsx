@@ -58,9 +58,9 @@ function ProjectCard({
         <div className="absolute inset-0 bg-muted" aria-hidden />
       )}
 
-      {/* Industry name (and title) overlay - visible only on hover */}
+      {/* Industry name (and title) overlay - always visible on mobile, hover on desktop */}
       <div
-        className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-100 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100"
         aria-hidden
       >
         {project.category && (
@@ -68,9 +68,6 @@ function ProjectCard({
             {project.category}
           </span>
         )}
-        {/* <span className="text-center text-base font-medium tracking-tight text-steel-white/90 drop-shadow-md md:text-lg">
-          {project.title}
-        </span> */}
       </div>
     </div>
   )

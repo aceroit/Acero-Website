@@ -253,17 +253,22 @@ export function useFilterOptions(filters?: FilterParams): UseFilterOptionsReturn
 
       // Check cache
       const cacheKey = JSON.stringify(filters || {})
+      console.log('[useFilterOptions] Filters:', filters, 'CacheKey:', cacheKey)
+      
       if (
         filterOptionsCache &&
         filterOptionsCache.timestamp + FILTER_CACHE_DURATION > Date.now() &&
         JSON.stringify(filterOptionsCache.filters || {}) === cacheKey
       ) {
+        console.log('[useFilterOptions] Using cache, industries:', filterOptionsCache.data.industries?.length)
         setFilterOptions(filterOptionsCache.data)
         setIsLoading(false)
         return
       }
 
+      console.log('[useFilterOptions] Fetching fresh data...')
       const data = await getFilterOptions(filters)
+      console.log('[useFilterOptions] Received data, industries:', data.industries?.length)
       setFilterOptions(data)
 
       // Update cache

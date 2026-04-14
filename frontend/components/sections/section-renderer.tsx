@@ -98,6 +98,10 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   title.trim() === 'Reliability, Excellence, Trust'
                     ? '/svgs/Reliability.svg'
                     : undefined
+                const inlineSvgPathMobile =
+                  title.trim() === 'Reliability, Excellence, Trust'
+                    ? '/svgs/Reliability-mobile.svg'
+                    : undefined
 
                 return (
                   <ContentSection
@@ -109,6 +113,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     imageAlt={imageAlt}
                     images={images}
                     inlineSvgPath={inlineSvgPath}
+                    inlineSvgPathMobile={inlineSvgPathMobile}
                     layout={layout}
                     imageFit={imageFit}
                     variant={variant}
@@ -514,6 +519,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   name: string
                   image: string
                   imageAlt: string
+                  url?: string
                 }>) || []
 
                 return (
@@ -562,6 +568,10 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               case 'image_display': {
                 const image = (content.image as string) || ''
                 const imageAlt = (content.alt as string) || (content.imageAlt as string) || ''
+                const mobileImage = (content.mobileImage as string) || undefined
+                const mobilePopupImage = (content.mobilePopupImage as string) || undefined
+                const mobileClickText = (content.mobileClickText as string) || undefined
+                const mobileTitle = (content.mobileTitle as string) || undefined
                 const title = (content.title as string) || undefined
                 const caption = (content.caption as string) || undefined
 
@@ -570,6 +580,10 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     key={section._id}
                     image={image}
                     imageAlt={imageAlt}
+                    mobileImage={mobileImage}
+                    mobilePopupImage={mobilePopupImage}
+                    mobileClickText={mobileClickText}
+                    mobileTitle={mobileTitle}
                     title={title}
                     caption={caption}
                   />

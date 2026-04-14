@@ -9,22 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
-
-const MAX_HEADER_CHARS = 14
-
-function truncateHeader(text: string, max = MAX_HEADER_CHARS): string {
-  const t = text.trim()
-  if (t.length <= max) return t
-  return t.slice(0, max) + "…"
-}
 
 interface ComparisonSystem {
   name: string
@@ -66,38 +53,31 @@ export function ComparisonTableSection({
           {title}
         </motion.h2>
 
-        {/* Comparison Table - no scroll: no overflow wrapper, table-fixed so it fits viewport */}
+        {/* Comparison Table - horizontal scroll on mobile, full width on desktop */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="min-w-0 overflow-hidden rounded-lg border border-border"
+          className="overflow-x-auto rounded-lg border border-border"
         >
-          <table className="w-full min-w-0 table-fixed caption-bottom border-collapse text-sm">
+          <table className="w-full min-w-[700px] caption-bottom border-collapse text-sm lg:min-w-0 lg:table-fixed">
             <colgroup>
-              <col style={{ width: "20%" }} />
-              {/* Remaining columns share 80% equally via table-fixed */}
+              <col className="w-[120px] lg:w-[20%]" />
+              {systems.map((_, index) => (
+                <col key={index} className="w-[110px] lg:w-auto" />
+              ))}
             </colgroup>
             <TableHeader>
               <TableRow className="border-b border-border bg-foreground hover:bg-foreground">
-                <TableHead className="h-auto min-h-[2.5rem] overflow-hidden align-top px-2 py-2.5 text-left text-[11px] font-bold uppercase leading-snug tracking-wider text-background md:px-2.5 md:text-xs">
-                  <span className="block truncate">Factors</span>
+                <TableHead className="h-auto min-h-[2.5rem] align-top px-3 py-3 text-left text-xs font-bold uppercase leading-snug tracking-wider text-background whitespace-normal">
+                  Factors
                 </TableHead>
                 {systems.map((system, index) => (
                   <TableHead
                     key={index}
-                    className="h-auto min-h-[2.5rem] overflow-hidden align-top px-2 py-2.5 text-center text-[11px] font-bold uppercase leading-snug tracking-wider text-background md:px-2.5 md:text-xs"
+                    className="h-auto min-h-[2.5rem] align-top px-3 py-3 text-center text-xs font-bold uppercase leading-snug tracking-wider text-background whitespace-normal"
                   >
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="block truncate cursor-default">
-                          {truncateHeader(system.name)}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-center">
-                        {system.name}
-                      </TooltipContent>
-                    </Tooltip>
+                    {system.name}
                   </TableHead>
                 ))}
               </TableRow>
@@ -111,13 +91,13 @@ export function ComparisonTableSection({
                     factorIndex % 2 === 0 ? "bg-card" : "bg-muted/30"
                   )}
                 >
-                  <TableCell className="overflow-hidden break-words px-2 py-2 text-sm font-semibold text-foreground md:px-2.5 md:py-2.5 [white-space:normal]">
+                  <TableCell className="px-3 py-3 text-sm font-semibold text-foreground whitespace-normal">
                     {factor}
                   </TableCell>
                   {systems.map((system, systemIndex) => (
                     <TableCell
                       key={systemIndex}
-                      className="overflow-hidden break-words px-2 py-2 text-center text-xs text-muted-foreground md:px-2.5 md:py-2.5 [white-space:normal]"
+                      className="px-3 py-3 text-center text-sm text-muted-foreground whitespace-normal"
                     >
                       {system.values[factorIndex]}
                     </TableCell>

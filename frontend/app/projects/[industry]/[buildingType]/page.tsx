@@ -1,7 +1,7 @@
 "use client"
 
-import { Suspense } from "react"
-import { notFound } from "next/navigation"
+import { Suspense, use } from "react"
+import { notFound, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
@@ -20,10 +20,23 @@ function BuildingTypeContent({
   industrySlug: string
   buildingTypeSlug: string
 }) {
-  // Fetch data from backend
-  const { industries, isLoading: industriesLoading } = useIndustries()
-  const { buildingTypes, isLoading: buildingTypesLoading } = useBuildingTypes(industrySlug)
-  const { projects, isLoading: projectsLoading } = useProjects(industrySlug, buildingTypeSlug)
+  const searchParams = useSearchParams()
+
+  // Get location filters from URL
+  const areaParam = searchParams.get("area")
+  const regionParam = searchParams.get("region")
+  const countryParam = searchParams.get("country")
+
+  const area = areaParam && areaParam !== "all" ? areaParam : undefined
+  const region = regionParam && regionParam !== "all" ? regionParam : undefined
+  const country = countryParam && countryParam !== "all" ? countryParam : undefined
+
+  const locationFilters = { area, region, country }
+
+  // Fetch data from backend with location filters
+  const { industries, isLoading: industriesLoading } = useIndustries(locationFilters)
+  const { buildingTypes, isLoading: buildingTypesLoading } = useBuildingTypes(industrySlug, locationFilters)
+  const { projects, isLoading: projectsLoading } = useProjects(industrySlug, buildingTypeSlug, locationFilters)
 
   const isLoading = industriesLoading || buildingTypesLoading || projectsLoading
 
@@ -115,17 +128,17 @@ function BuildingTypeContent({
   )
 }
 
+function BuildingTypePageContent({ params }: BuildingTypePageProps) {
+  const { industry, buildingType } = use(params)
+
+  return <BuildingTypeContent industrySlug={industry} buildingTypeSlug={buildingType} />
+}
+
 export default function BuildingTypePage({ params }: BuildingTypePageProps) {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <BuildingTypePageContent params={params} />
     </Suspense>
   )
-}
-
-async function BuildingTypePageContent({ params }: BuildingTypePageProps) {
-  const { industry, buildingType } = await params
-
-  return <BuildingTypeContent industrySlug={industry} buildingTypeSlug={buildingType} />
 }
 

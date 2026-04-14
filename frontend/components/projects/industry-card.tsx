@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
+import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { Industry } from "@/utils/projects-data"
 
@@ -13,6 +14,23 @@ interface IndustryCardProps {
 }
 
 export function IndustryCard({ industry, index = 0, className }: IndustryCardProps) {
+  const searchParams = useSearchParams()
+  
+  // Preserve current location filters when navigating to industry page
+  const buildHref = () => {
+    const params = new URLSearchParams()
+    const region = searchParams.get("region")
+    const country = searchParams.get("country")
+    const area = searchParams.get("area")
+    
+    if (region && region !== "all") params.set("region", region)
+    if (country && country !== "all") params.set("country", country)
+    if (area && area !== "all") params.set("area", area)
+    
+    const queryString = params.toString()
+    return `/projects/${industry.slug}${queryString ? `?${queryString}` : ""}`
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -21,7 +39,7 @@ export function IndustryCard({ industry, index = 0, className }: IndustryCardPro
       className={cn("group h-full", className)}
     >
       <Link
-        href={`/projects/${industry.slug}`}
+        href={buildHref()}
         className="block h-full transition-transform duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-steel-red focus-visible:ring-offset-2 rounded-lg"
         aria-label={`View projects in ${industry.name}`}
       >

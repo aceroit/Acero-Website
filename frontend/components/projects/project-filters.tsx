@@ -26,9 +26,9 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
   const country = searchParams.get("country") || "all"
 
   // Get dynamic filter options based on current selections
-  // When on industry page, always filter by that industry
+  // NOTE: Don't pass industry filter here - we want to show ALL industries in the dropdown
+  // Only pass location filters (country, region, area) for cascading behavior
   const { filterOptions, isLoading } = useFilterOptions({
-    industry: industry,
     country: country !== "all" ? country : undefined,
     region: region !== "all" ? region : undefined,
     area: area !== "all" ? area : undefined,
@@ -80,6 +80,10 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
       : filterOptions.industries.map((ind) => ({ value: ind.slug, label: ind.name }))
     )
   ]
+  
+  // Debug: log industry options
+  console.log('[ProjectFilters] filterOptions.industries:', filterOptions.industries?.length)
+  console.log('[ProjectFilters] industryOptions:', industryOptions.length, industryOptions)
 
   const areaOptions = [
     { value: "all", label: "All Areas" },

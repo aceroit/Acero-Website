@@ -114,11 +114,22 @@ export function CustomSelect({
       ...base,
       padding: '4px',
       maxHeight: '300px',
-      // Hide scrollbar
-      scrollbarWidth: 'none', // Firefox
-      msOverflowStyle: 'none', // IE and Edge
+      overflowY: 'auto',
+      // Thin scrollbar styling
+      scrollbarWidth: 'thin', // Firefox
+      scrollbarColor: 'var(--color-muted) transparent', // Firefox
       '::-webkit-scrollbar': {
-        display: 'none', // Chrome, Safari, Opera
+        width: '6px',
+      },
+      '::-webkit-scrollbar-track': {
+        background: 'transparent',
+      },
+      '::-webkit-scrollbar-thumb': {
+        background: 'var(--color-muted)',
+        borderRadius: '3px',
+      },
+      '::-webkit-scrollbar-thumb:hover': {
+        background: 'var(--color-muted-foreground)',
       },
     }),
     option: (base, state) => ({

@@ -219,36 +219,58 @@ router.get('/industries', async (req, res) => {
     try {
         const { country, region, area } = req.query;
         
+        console.log(`[Industries API] Filters received: region=${region}, country=${country}, area=${area}`);
+        
         // Build filter based on location filters
         let industryFilter = {};
         if (country || region || area) {
             // Find projects matching location filters to get industries
-            const projectFilters = {};
-            if (country) {
-                const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
-                if (countryDoc) projectFilters.country = countryDoc._id;
-            }
-            if (region) {
-                const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
-                if (regionDoc) projectFilters.region = regionDoc._id;
-            }
-            if (area) {
-                const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
-                if (areaDoc) projectFilters.area = areaDoc._id;
-            }
-            
-            // Get unique industry IDs from matching projects
-            const projects = await Project.find({
-                ...projectFilters,
+            const projectFilters = {
                 status: 'published',
                 featured: true,
                 isActive: true
-            }).distinct('industry');
+            };
             
-            if (projects.length > 0) {
-                industryFilter._id = { $in: projects };
+            if (country) {
+                const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
+                if (countryDoc) {
+                    projectFilters.country = countryDoc._id;
+                    console.log(`[Industries API] Country filter: ${country} -> ${countryDoc._id}`);
+                } else {
+                    console.log(`[Industries API] Country not found: ${country}`);
+                }
+            }
+            if (region) {
+                const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
+                if (regionDoc) {
+                    projectFilters.region = regionDoc._id;
+                    console.log(`[Industries API] Region filter: ${region} -> ${regionDoc._id}`);
+                } else {
+                    console.log(`[Industries API] Region not found: ${region}`);
+                }
+            }
+            if (area) {
+                const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
+                if (areaDoc) {
+                    projectFilters.area = areaDoc._id;
+                    console.log(`[Industries API] Area filter: ${area} -> ${areaDoc._id}`);
+                } else {
+                    console.log(`[Industries API] Area not found: ${area}`);
+                }
+            }
+            
+            console.log(`[Industries API] Project filters:`, JSON.stringify(projectFilters));
+            
+            // Get unique industry IDs from matching projects
+            const industryIds = await Project.find(projectFilters).distinct('industry');
+            
+            console.log(`[Industries API] Found ${industryIds.length} unique industries from projects`);
+            
+            if (industryIds.length > 0) {
+                industryFilter._id = { $in: industryIds };
             } else {
                 // No projects match, return empty array
+                console.log(`[Industries API] No projects match filters, returning empty`);
                 return successResponse(res, 200, 'Published industries retrieved successfully', {
                     industries: [],
                     count: 0
@@ -290,12 +312,23 @@ router.get('/industries', async (req, res) => {
             })
         );
 
+        // Filter out industries with 0 projects when location filters are applied
+        const filteredIndustries = (country || region || area)
+            ? industriesWithCounts.filter(ind => ind.projectCount > 0)
+            : industriesWithCounts;
+
+        // Debug logging
+        if (country || region || area) {
+            console.log(`Industries filter: region=${region}, country=${country}, area=${area}`);
+            console.log(`Found ${industries.length} industries, ${filteredIndustries.length} with projects after filtering`);
+        }
+
         // Set cache headers (cache for 5 minutes)
         res.set('Cache-Control', 'public, max-age=300');
 
         return successResponse(res, 200, 'Published industries retrieved successfully', {
-            industries: industriesWithCounts,
-            count: industriesWithCounts.length
+            industries: filteredIndustries,
+            count: filteredIndustries.length
         });
     } catch (error) {
         console.error('Error in public getIndustries:', error);
@@ -385,7 +418,22 @@ router.get('/building-types', async (req, res) => {
             console.warn(`Warning: ${buildingTypesWithoutSlugs.length} building types are missing slugs:`, buildingTypesWithoutSlugs.map(bt => ({ name: bt.name, _id: bt._id })));
         }
 
-        // Calculate project count for each building type
+        // Build location filters for project count (same filters used for getting building type IDs)
+        const locationFilters = {};
+        if (country) {
+            const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
+            if (countryDoc) locationFilters.country = countryDoc._id;
+        }
+        if (region) {
+            const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
+            if (regionDoc) locationFilters.region = regionDoc._id;
+        }
+        if (area) {
+            const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
+            if (areaDoc) locationFilters.area = areaDoc._id;
+        }
+
+        // Calculate project count for each building type (with location filters applied)
         const buildingTypesWithCounts = await Promise.all(
             buildingTypes.map(async (buildingType) => {
                 const projectCount = await Project.countDocuments({
@@ -394,6 +442,7 @@ router.get('/building-types', async (req, res) => {
                     status: 'published',
                     featured: true,
                     isActive: true,
+                    ...locationFilters,
                 });
                 const buildingTypeObj = buildingType.toObject();
                 // Ensure slug is included

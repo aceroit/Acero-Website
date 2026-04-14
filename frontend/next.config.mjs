@@ -5,7 +5,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-    // Allow project/industry/building-type images from backend (acero.ae or localhost)
+    // Allow project/industry/building-type images from backend (acero.ae, localhost, cloudinary)
     remotePatterns: [
       {
         protocol: 'https',
@@ -20,6 +20,11 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
         pathname: '/**',
       },
     ],

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
+import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { BuildingType } from "@/utils/projects-data"
 
@@ -19,8 +20,25 @@ export function BuildingTypeCard({
   index = 0,
   className,
 }: BuildingTypeCardProps) {
+  const searchParams = useSearchParams()
+
   if (!buildingType.slug) {
     return null
+  }
+
+  // Preserve current location filters when navigating to building type page
+  const buildHref = () => {
+    const params = new URLSearchParams()
+    const region = searchParams.get("region")
+    const country = searchParams.get("country")
+    const area = searchParams.get("area")
+    
+    if (region && region !== "all") params.set("region", region)
+    if (country && country !== "all") params.set("country", country)
+    if (area && area !== "all") params.set("area", area)
+    
+    const queryString = params.toString()
+    return `/projects/${industrySlug}/${buildingType.slug}${queryString ? `?${queryString}` : ""}`
   }
 
   return (
@@ -31,7 +49,7 @@ export function BuildingTypeCard({
       className={cn("group h-full", className)}
     >
       <Link
-        href={`/projects/${industrySlug}/${buildingType.slug}`}
+        href={buildHref()}
         className="block h-full transition-transform duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-steel-red focus-visible:ring-offset-2 rounded-lg"
         aria-label={`View ${buildingType.name} projects`}
       >
