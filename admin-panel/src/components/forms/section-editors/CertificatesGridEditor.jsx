@@ -121,10 +121,10 @@ const CertificatesGridEditor = ({ value = {}, onChange, form }) => {
                 {fields.length === 0 ? (
                   <Card className="border border-gray-200 border-dashed bg-gray-50 text-center py-6">
                     <p className="text-gray-500 mb-4">No certificates added yet</p>
-                    <Button
+                      <Button
                       type="primary"
                       icon={<PlusOutlined />}
-                      onClick={() => add({ name: '', image: '', imageAlt: '' })}
+                      onClick={() => add({ name: '', image: '', imageAlt: '', url: '' })}
                       size="large"
                       style={{ backgroundColor: '#1f2937', borderColor: '#1f2937' }}
                     >
@@ -198,6 +198,14 @@ const CertificatesGridEditor = ({ value = {}, onChange, form }) => {
                           <Form.Item name={[field.name, 'imageAlt']} label="Image Alt Text">
                             <Input placeholder="e.g., ISO 9001 Certificate" size="large" maxLength={200} />
                           </Form.Item>
+
+                          <Form.Item 
+                            name={[field.name, 'url']} 
+                            label="Certificate URL (optional)"
+                            tooltip="If provided, clicking the certificate name will open this URL in a new tab"
+                          >
+                            <Input placeholder="e.g., https://example.com/certificate.pdf" size="large" maxLength={500} />
+                          </Form.Item>
                         </div>
                       </Card>
                     ))}
@@ -207,7 +215,7 @@ const CertificatesGridEditor = ({ value = {}, onChange, form }) => {
                   <Button
                     type="dashed"
                     icon={<PlusOutlined />}
-                    onClick={() => add({ name: '', image: '', imageAlt: '' })}
+                    onClick={() => add({ name: '', image: '', imageAlt: '', url: '' })}
                     block
                     size="large"
                     className="mt-4"

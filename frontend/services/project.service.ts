@@ -239,9 +239,12 @@ export async function getFilterOptions(filters?: FilterParams): Promise<FilterOp
     const queryString = params.toString()
     const endpoint = `${API_ENDPOINTS.PUBLIC_FILTER_OPTIONS}${queryString ? `?${queryString}` : ''}`
 
+    console.log('[getFilterOptions] Fetching:', endpoint)
     const result = await apiGet<FilterOptions>(endpoint)
+    console.log('[getFilterOptions] Result:', result)
 
     if (result.success && result.data) {
+      console.log('[getFilterOptions] Industries count:', result.data.industries?.length)
       return result.data
     }
 

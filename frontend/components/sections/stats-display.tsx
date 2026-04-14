@@ -28,9 +28,10 @@ function AnimatedCounter({
   isInView: boolean
 }) {
   const [count, setCount] = useState(0)
+  // Extract numeric value (remove commas and other non-digits)
   const numericValue = parseInt(value.replace(/[^0-9]/g, ""))
-  // Trim trailing commas so "100000," displays as "100000" not "100000,"
-  const suffix = value.replace(/[0-9]/g, "").replace(/,\s*$/, "")
+  // Extract only the suffix after all digits and commas (e.g., "+" from "100,000+")
+  const suffix = value.replace(/^[\d,\s]+/, "")
 
   useEffect(() => {
     if (!isInView || !numericValue) {
@@ -110,11 +111,22 @@ export function StatsDisplay({
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
+              className={stat.sublabel ? "pt-4" : ""}
             >
-              {/* Premium Luxury Card with Glassmorphism */}
-              <div className="relative h-full overflow-hidden rounded-xl border border-steel-red/20 bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-md p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:from-steel-dark/80 dark:via-steel-dark/60 dark:to-steel-dark/40 dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              {/* Premium Card with Floating Red Banner */}
+              <div className="relative h-full rounded-xl border border-border bg-card shadow-lg">
+                {/* Floating Red Banner - positioned half outside the card */}
+                {stat.sublabel && (
+                  <div className="absolute -top-4 inset-x-3 z-10">
+                    <div className="rounded-md bg-steel-red px-4 py-2 shadow-lg text-center">
+                      <p className="text-xs font-semibold tracking-wide text-white md:text-sm">
+                        {stat.sublabel}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 {/* Content */}
-                <div className="relative z-10 text-center">
+                <div className="px-6 py-6 text-center">
                   {stat.icon && (
                     <div className="mb-4 flex justify-center">
                       <div className="rounded-full bg-gradient-to-br from-steel-red/10 to-steel-red/5 p-3">
@@ -122,19 +134,14 @@ export function StatsDisplay({
                       </div>
                     </div>
                   )}
-                  <div className="mb-3">
-                    <p className="bg-gradient-to-br from-foreground via-foreground to-steel-red bg-clip-text text-4xl font-extrabold text-transparent md:text-5xl">
+                  <div className="mb-2">
+                    <p className="text-4xl font-extrabold text-foreground md:text-5xl">
                       <AnimatedCounter value={stat.value} isInView={isInView} />
                     </p>
                   </div>
-                  <p className="mb-1 text-base font-bold uppercase tracking-[0.15em] text-foreground">
+                  <p className="text-sm font-semibold uppercase tracking-widest text-foreground md:text-base">
                     {stat.label}
                   </p>
-                  {stat.sublabel && (
-                    <p className="text-xs font-medium text-muted-foreground/80">
-                      {stat.sublabel}
-                    </p>
-                  )}
                 </div>
               </div>
             </motion.div>

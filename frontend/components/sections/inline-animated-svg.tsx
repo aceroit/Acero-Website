@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 
 interface InlineAnimatedSvgProps {
@@ -29,9 +29,147 @@ function registerSvgLayerHelpers() {
   ;(window as unknown as { hideLayer: (id: string) => void }).hideLayer = (layerId: string) => {
     const el = document.getElementById(layerId)
     if (el) {
+      el.style.display = "none"
       el.style.opacity = "0"
       el.style.visibility = "hidden"
     }
+  }
+}
+
+/**
+ * Add mouse and touch/click support for SVG interactive elements.
+ * Inline event handlers (onmouseover/onmouseout) don't work when SVG is inlined via dangerouslySetInnerHTML,
+ * so we manually attach event listeners.
+ */
+function addInteractivityToSvg(container: HTMLElement) {
+  const interactiveGroups = container.querySelectorAll("[onmouseover]")
+  
+  // Detect touch device
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+  
+  // Use a closure to track active layer across all groups
+  const state = { activeLayer: null as string | null }
+
+  interactiveGroups.forEach((group) => {
+    const mouseoverAttr = group.getAttribute("onmouseover")
+    if (!mouseoverAttr) return
+
+    const match = mouseoverAttr.match(/showLayer\(['"]([^'"]+)['"]\)/)
+    if (!match) return
+
+    const layerId = match[1]
+    
+    // Make the group clickable with cursor pointer
+    ;(group as HTMLElement).style.cursor = "pointer"
+
+    const showLayer = () => {
+      const el = document.getElementById(layerId)
+      if (el) {
+        el.style.display = "block"
+        el.style.opacity = "1"
+        el.style.visibility = "visible"
+      }
+    }
+
+    const hideLayer = () => {
+      const el = document.getElementById(layerId)
+      if (el) {
+        el.style.display = "none"
+        el.style.opacity = "0"
+        el.style.visibility = "hidden"
+      }
+    }
+
+    // Desktop only: hover behavior (not on touch devices)
+    if (!isTouchDevice) {
+      group.addEventListener("mouseenter", showLayer)
+      group.addEventListener("mouseleave", hideLayer)
+    }
+    
+    // Touch devices: use touchend for tap to toggle
+    if (isTouchDevice) {
+      group.addEventListener("touchend", (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        
+        // Hide previous active layer if different
+        if (state.activeLayer && state.activeLayer !== layerId) {
+          const prevEl = document.getElementById(state.activeLayer)
+          if (prevEl) {
+            prevEl.style.display = "none"
+            prevEl.style.opacity = "0"
+            prevEl.style.visibility = "hidden"
+          }
+        }
+        
+        const el = document.getElementById(layerId)
+        if (el) {
+          // Toggle: if same layer tapped again, hide it
+          if (state.activeLayer === layerId) {
+            el.style.display = "none"
+            el.style.opacity = "0"
+            el.style.visibility = "hidden"
+            state.activeLayer = null
+          } else {
+            el.style.display = "block"
+            el.style.opacity = "1"
+            el.style.visibility = "visible"
+            state.activeLayer = layerId
+          }
+        }
+      }, { passive: false })
+    } else {
+      // Desktop: click to toggle (for accessibility)
+      group.addEventListener("click", (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        
+        // Hide previous active layer if different
+        if (state.activeLayer && state.activeLayer !== layerId) {
+          const prevEl = document.getElementById(state.activeLayer)
+          if (prevEl) {
+            prevEl.style.display = "none"
+            prevEl.style.opacity = "0"
+            prevEl.style.visibility = "hidden"
+          }
+        }
+        
+        const el = document.getElementById(layerId)
+        if (el) {
+          // Toggle: if same layer clicked again, hide it
+          if (state.activeLayer === layerId) {
+            el.style.display = "none"
+            el.style.opacity = "0"
+            el.style.visibility = "hidden"
+            state.activeLayer = null
+          } else {
+            el.style.display = "block"
+            el.style.opacity = "1"
+            el.style.visibility = "visible"
+            state.activeLayer = layerId
+          }
+        }
+      })
+    }
+  })
+  
+  // Tap/click outside to close active layer
+  const closeOnOutsideInteraction = (e: Event) => {
+    if (state.activeLayer && !container.contains(e.target as Node)) {
+      const el = document.getElementById(state.activeLayer)
+      if (el) {
+        el.style.display = "none"
+        el.style.opacity = "0"
+        el.style.visibility = "hidden"
+      }
+      state.activeLayer = null
+    }
+  }
+  
+  if (isTouchDevice) {
+    document.addEventListener("touchstart", closeOnOutsideInteraction)
+  } else {
+    document.addEventListener("click", closeOnOutsideInteraction)
   }
 }
 
@@ -44,10 +182,17 @@ function registerSvgLayerHelpers() {
 export function InlineAnimatedSvg({ src, alt, className }: InlineAnimatedSvgProps) {
   const [svgContent, setSvgContent] = useState<string | null>(null)
   const [error, setError] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     registerSvgLayerHelpers()
   }, [])
+
+  useEffect(() => {
+    if (svgContent && containerRef.current) {
+      addInteractivityToSvg(containerRef.current)
+    }
+  }, [svgContent])
 
   useEffect(() => {
     let cancelled = false
@@ -90,7 +235,8 @@ export function InlineAnimatedSvg({ src, alt, className }: InlineAnimatedSvgProp
 
   return (
     <div
-      className={cn("flex w-full items-center justify-center [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:block [&_svg]:mx-auto", className)}
+      ref={containerRef}
+      className={cn("flex w-full items-center justify-center [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:block [&_svg]:mx-auto [&_svg]:w-full [&_svg]:h-auto", className)}
       dangerouslySetInnerHTML={{ __html: svgContent }}
       role="img"
       aria-label={alt ?? undefined}

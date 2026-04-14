@@ -115,26 +115,6 @@ export function ImageGallerySection({
           >
             {validImages.map((image, index) => {
               const hasLink = image.link?.trim()
-              const CardContent = (
-                <>
-                  <div className={cn("relative w-full", imageContainerClass)}>
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      loading="lazy"
-                      className="object-contain"
-                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 200px"
-                      quality={85}
-                    />
-                  </div>
-                  {image.name?.trim() && (
-                    <p className="mt-3 text-center text-sm font-medium text-foreground">
-                      {image.name}
-                    </p>
-                  )}
-                </>
-              )
               
               return (
                 <motion.div
@@ -142,37 +122,57 @@ export function ImageGallerySection({
                   initial={{ opacity: 0, y: 24 }}
                   animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
                   transition={{ duration: 0.5, delay: index * 0.08 }}
-                  role={showPreview && !hasLink ? "button" : undefined}
-                  tabIndex={showPreview && !hasLink ? 0 : undefined}
-                  onClick={showPreview && !hasLink ? () => setPreviewImage(image) : undefined}
-                  onKeyDown={
-                    showPreview && !hasLink
-                      ? (e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault()
-                            setPreviewImage(image)
-                          }
-                        }
-                      : undefined
-                  }
-                  className={cn(
-                    "relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm",
-                    "transition-all duration-300 hover:border-steel-red/30 hover:shadow-md",
-                    "flex flex-col",
-                    (showPreview || hasLink) && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-steel-red focus:ring-offset-2"
-                  )}
+                  className="flex flex-col"
                 >
-                  {hasLink ? (
-                    <a
-                      href={image.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex flex-col"
-                    >
-                      {CardContent}
-                    </a>
-                  ) : (
-                    CardContent
+                  {/* Card - click to zoom preview */}
+                  <div
+                    role={showPreview ? "button" : undefined}
+                    tabIndex={showPreview ? 0 : undefined}
+                    onClick={showPreview ? () => setPreviewImage(image) : undefined}
+                    onKeyDown={
+                      showPreview
+                        ? (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault()
+                              setPreviewImage(image)
+                            }
+                          }
+                        : undefined
+                    }
+                    className={cn(
+                      "relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm",
+                      "transition-all duration-300 hover:border-steel-red/30 hover:shadow-md",
+                      showPreview && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-steel-red focus:ring-offset-2"
+                    )}
+                  >
+                    <div className={cn("relative w-full", imageContainerClass)}>
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        loading="lazy"
+                        className="object-contain"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 200px"
+                        quality={85}
+                      />
+                    </div>
+                  </div>
+                  {/* Name - outside card, with optional URL link */}
+                  {image.name?.trim() && (
+                    <p className="mt-3 text-center text-sm font-medium text-foreground">
+                      {hasLink ? (
+                        <a
+                          href={image.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-steel-red hover:underline"
+                        >
+                          {image.name}
+                        </a>
+                      ) : (
+                        image.name
+                      )}
+                    </p>
                   )}
                 </motion.div>
               )

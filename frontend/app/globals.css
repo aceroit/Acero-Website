@@ -281,16 +281,32 @@ html {
   }
 }
 
+/* Mobile: faster animation since viewport is smaller */
 .animate-scroll-slow {
-  animation: scroll-left 30s linear infinite;
+  animation: scroll-left 15s linear infinite;
 }
 
 .animate-scroll-medium {
-  animation: scroll-left 20s linear infinite;
+  animation: scroll-left 10s linear infinite;
 }
 
 .animate-scroll-fast {
-  animation: scroll-left 10s linear infinite;
+  animation: scroll-left 5s linear infinite;
+}
+
+/* Tablet and up: standard speeds */
+@media (min-width: 768px) {
+  .animate-scroll-slow {
+    animation: scroll-left 30s linear infinite;
+  }
+
+  .animate-scroll-medium {
+    animation: scroll-left 20s linear infinite;
+  }
+
+  .animate-scroll-fast {
+    animation: scroll-left 10s linear infinite;
+  }
 }
 
 .animation-paused {

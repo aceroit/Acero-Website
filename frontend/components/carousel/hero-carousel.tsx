@@ -53,7 +53,7 @@ export function HeroCarousel({
 
   return (
     <section
-      className={cn("relative mt-20 h-[calc(100vh-5rem)] w-full overflow-hidden", className)}
+      className={cn("relative mt-20 h-[60vh] sm:h-[65vh] md:h-[calc(100vh-5rem)] w-full overflow-hidden", className)}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -85,12 +85,12 @@ export function HeroCarousel({
 
           {/* Centered Content */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative z-10 mx-auto max-w-5xl px-14 text-center lg:px-6">
+            <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="mb-4 text-4xl font-extrabold uppercase tracking-tight text-steel-white md:text-5xl lg:mb-6 lg:text-7xl xl:text-8xl"
+                className="mb-4 text-3xl font-extrabold uppercase tracking-tight text-steel-white sm:text-4xl md:text-5xl lg:mb-6 lg:text-7xl xl:text-8xl"
               >
                 {slides[currentIndex].title}
               </motion.h1>

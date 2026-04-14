@@ -125,7 +125,7 @@ export function HoverCardSection({
                   {/* Full overlay with title + description (visible on hover/tap) */}
                   <div
                     className={cn(
-                      "absolute inset-0 flex flex-col items-center justify-center overflow-hidden p-4 text-center transition-all duration-300 lg:p-6",
+                      "absolute inset-0 flex flex-col items-center justify-center overflow-hidden p-4 pb-12 text-center transition-all duration-300 lg:p-6 lg:pb-14",
                       isActive ? "bg-black/75" : "bg-transparent"
                     )}
                   >
@@ -145,6 +145,17 @@ export function HoverCardSection({
                     >
                       {card.description}
                     </p>
+                  </div>
+                  {/* Click to know more - appears at bottom on hover */}
+                  <div
+                    className={cn(
+                      "absolute bottom-0 left-0 right-0 flex items-center justify-center bg-steel-red py-2 transition-all duration-300 lg:py-2.5",
+                      isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full"
+                    )}
+                  >
+                    <span className="text-xs font-medium text-white lg:text-sm">
+                      Click to know more
+                    </span>
                   </div>
                   {/* Bottom title (visible only when NOT active) */}
                   <div

@@ -68,9 +68,9 @@ function ProductCard({
         <div className="absolute inset-0 bg-muted" aria-hidden />
       )}
 
-      {/* Product name overlay - visible only on hover */}
+      {/* Product name overlay - always visible on mobile, hover on desktop */}
       <div
-        className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-100 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100"
         aria-hidden
       >
         <span className="text-center text-xl font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">

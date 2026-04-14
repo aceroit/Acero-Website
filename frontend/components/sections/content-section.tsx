@@ -24,6 +24,8 @@ interface ContentSectionProps {
   images?: Array<{ url: string; imageAlt?: string }>
   /** When set, render this local SVG inline (so animations run) instead of backend image. Used e.g. for "Reliability, Excellence, Trust" on Who we are. */
   inlineSvgPath?: string
+  /** Optional mobile-specific SVG path. If set, used on screens < lg breakpoint. */
+  inlineSvgPathMobile?: string
   layout?: "image-left" | "image-right" | "image-center" | "text-only" | "split"
   imageFit?: "contain" | "cover"
   variant?: "default" | "accent" | "muted"
@@ -38,6 +40,7 @@ export function ContentSection({
   imageAlt,
   images,
   inlineSvgPath,
+  inlineSvgPathMobile,
   layout = "image-right",
   imageFit = "contain",
   variant = "default",
@@ -154,7 +157,7 @@ export function ContentSection({
         <object
           data={img.url}
           type="image/svg+xml"
-          className="absolute inset-0 h-full w-full rounded-lg object-contain"
+          className="absolute inset-0 h-full w-full object-contain"
           aria-label={alt}
         />
       )
@@ -166,7 +169,7 @@ export function ContentSection({
         alt={alt}
         fill
         loading="lazy"
-        className={cn(fitClass, "rounded-lg transition-transform duration-500 group-hover:scale-105")}
+        className={cn(fitClass, "transition-transform duration-500 group-hover:scale-105")}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         quality={85}
       />
@@ -223,8 +226,8 @@ export function ContentSection({
             <motion.div
               variants={itemVariants}
               className={cn(
-                "group relative w-full overflow-hidden rounded-2xl bg-transparent",
-                showInlineSvg ? "aspect-square lg:aspect-[4/3]" : "aspect-[4/3]",
+                "group relative w-full overflow-hidden rounded-2xl",
+                showInlineSvg ? "aspect-[610/660] lg:aspect-[4/3] border border-border bg-muted/20" : "aspect-[4/3]",
                 layout === "image-center"
                   ? "mx-auto lg:mx-0 self-center"
                   : "self-center lg:self-stretch",
@@ -232,11 +235,24 @@ export function ContentSection({
               )}
             >
               {showInlineSvg && inlineSvgPath ? (
-                <InlineAnimatedSvg
-                  src={inlineSvgPath}
-                  alt={title}
-                  className="absolute inset-0 h-full w-full"
-                />
+                <>
+                  {/* Desktop SVG */}
+                  <div className="hidden lg:block absolute inset-0 h-full w-full">
+                    <InlineAnimatedSvg
+                      src={inlineSvgPath}
+                      alt={title}
+                      className="h-full w-full"
+                    />
+                  </div>
+                  {/* Mobile SVG */}
+                  <div className="lg:hidden absolute inset-0 h-full w-full">
+                    <InlineAnimatedSvg
+                      src={inlineSvgPathMobile || inlineSvgPath}
+                      alt={title}
+                      className="h-full w-full"
+                    />
+                  </div>
+                </>
               ) : (
                 renderMedia(allImages[0], allImages[0].imageAlt || title)
               )}

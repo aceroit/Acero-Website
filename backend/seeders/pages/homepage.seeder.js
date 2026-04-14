@@ -69,35 +69,37 @@ const seedHomepage = async () => {
         }
 
         // Step 2: Create Sections (in order)
+        // Note: Images use Cloudinary URLs. When updating existing sections, images are preserved.
         const sectionsData = [
             {
                 // Section 1: Hero Carousel
                 sectionTypeSlug: 'hero_carousel',
                 order: 0,
+                preserveImages: true, // Don't overwrite existing images
                 content: {
                     slides: [
                         {
-                            image: '/images/carousel/global-reach.jpg',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769155248/acero-cms/hero/yckoqubyvqzcnplrbmch.jpg',
                             title: 'GLOBAL REACH, LOCAL IMPACT',
                             description: 'Our extensive global network empowers us to serve customers across borders while maintaining a localized approach, our steel building systems resonate with local needs.',
                         },
                         {
-                            image: '/images/carousel/manufacturing-mastery.jpg',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769157172/acero-cms/hero/xrcfo73nkq7fxtcdmrmb.jpg',
                             title: 'MANUFACTURING MASTERY',
                             description: 'With a robust production capacity exceeding 100,000 tons per year, we stand tall as industry leaders. Our commitment to precision and quality ensures that every ton we produce meets the highest standards.',
                         },
                         {
-                            image: '/images/carousel/engineering-excellence.jpg',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769158570/acero-cms/hero/idt55f4mjjdmestlongp.jpg',
                             title: 'ENGINEERING EXCELLENCE',
                             description: 'Our engineering prowess lies in our ability to deliver steel buildings that are not only precise but also cost-effective. We optimize designs, processes and materials to create value for our customers.',
                         },
                         {
-                            image: '/images/carousel/quality-uncompromised.jpg',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769159048/acero-cms/hero/mnofe5i0qrqejmppezuk.jpg',
                             title: 'QUALITY UNCOMPROMISED',
                             description: 'From the moment raw materials arrive at our doorstep, we embark on a journey of excellence. Our unwavering commitment to quality ensures that each product leaving our facility bears the mark of excellence.',
                         },
                         {
-                            image: '/images/carousel/safety-first.jpg',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769432396/acero-cms/hero/yuek0tfe2wjs8agdo8su.jpg',
                             title: 'SAFETY FIRST',
                             description: 'Our relentless pursuit of safety drives us toward our goal: zero accidents. We invest in training, protocols and cutting-edge technology to safeguard our workforce and the communities we serve.',
                         },
@@ -110,12 +112,13 @@ const seedHomepage = async () => {
                 // Section 2: Complete Steel Building Solutions
                 sectionTypeSlug: 'content_with_image',
                 order: 1,
+                preserveImages: true, // Don't overwrite existing images
                 content: {
                     title: 'Complete Steel Building Solutions',
                     paragraphs: [
                         'Acero Building Systems provides total solutions for customized steel buildings, including design, manufacture and supply, using internationally recognized engineering software and advanced production equipment. Acero specializes in Pre-Engineered Steel Buildings (fast-track and customized solutions), Conventional Steel Buildings, Roof and Wall Systems, Porta Cabins, Racking Systems and Building Accessories.',
                     ],
-                    image: '/images/steel-building-solutions.jpg',
+                    image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769155248/acero-cms/hero/yckoqubyvqzcnplrbmch.jpg',
                     imageAlt: 'Complete Steel Building Solutions',
                     layout: 'image-right',
                     cta: {
@@ -138,12 +141,13 @@ const seedHomepage = async () => {
                         },
                         {
                             value: '100,000+',
-                            label: 'MT / year',
+                            label: 'MT / Year',
                             sublabel: 'Manufacturing Capacity',
                         },
                         {
                             value: '1,000+',
                             label: 'Number of Employees',
+                            sublabel: 'Human Resource Globally',
                         },
                     ],
                     columns: 3,
@@ -299,7 +303,33 @@ const seedHomepage = async () => {
                 console.log(`✓ Created section ${sectionData.order + 1}: ${sectionData.sectionTypeSlug}`);
             } else {
                 // Update content if section exists
-                section.content = sectionData.content;
+                // If preserveImages is true, merge content but keep existing images
+                if (sectionData.preserveImages && section.content) {
+                    const existingContent = section.content;
+                    const newContent = { ...sectionData.content };
+                    
+                    // Preserve existing image field if it exists and is a valid URL
+                    if (existingContent.image && existingContent.image.startsWith('http')) {
+                        newContent.image = existingContent.image;
+                    }
+                    
+                    // Preserve existing slides images if they exist
+                    if (existingContent.slides && Array.isArray(existingContent.slides)) {
+                        const existingSlides = existingContent.slides;
+                        if (newContent.slides && Array.isArray(newContent.slides)) {
+                            newContent.slides = newContent.slides.map((slide, index) => {
+                                if (existingSlides[index] && existingSlides[index].image && existingSlides[index].image.startsWith('http')) {
+                                    return { ...slide, image: existingSlides[index].image };
+                                }
+                                return slide;
+                            });
+                        }
+                    }
+                    
+                    section.content = newContent;
+                } else {
+                    section.content = sectionData.content;
+                }
                 section.isVisible = true;
                 await section.save();
                 sectionsUpdated++;
