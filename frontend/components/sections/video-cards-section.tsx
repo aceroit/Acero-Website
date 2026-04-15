@@ -148,7 +148,7 @@ export function VideoCardsSection({
                   </div>
 
                 {/* Video Info - visible on mobile only */}
-                <div className="border-t border-border bg-card p-4 md:hidden">
+                <div className="border-t border-border bg-card p-4">
                   <h3 className="text-base font-semibold text-foreground line-clamp-2">
                     {video.title}
                   </h3>
