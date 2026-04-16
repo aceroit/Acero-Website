@@ -17,7 +17,7 @@ interface GalleryImage {
   src: string
   alt: string
   name?: string
-  link?: string // Optional URL link for the image
+  link?: string
 }
 
 interface ImageGallerySectionProps {
@@ -25,22 +25,18 @@ interface ImageGallerySectionProps {
   paragraph: string
   images: GalleryImage[]
   columns?: 2 | 3 | 6
-  /** Horizontal = 3 columns (2 rows). Vertical = 2 columns (more rows). */
   imageOrientation?: "horizontal" | "vertical"
   className?: string
+  enableImageLink?: boolean
 }
 
-/**
- * Image gallery section: two-column layout matching "Engineering Excellence" design.
- * Left = title (steel-red) + paragraph; Right = 3x2 grid of white logo/label cards.
- * Follows frontendDesign.md: steel-red accent, bg-card, border-border, spacing.
- */
 export function ImageGallerySection({
   title,
   paragraph,
   images,
   columns = 3,
   imageOrientation = "horizontal",
+  enableImageLink = false,
   className,
 }: ImageGallerySectionProps) {
   const ref = useRef(null)
@@ -48,25 +44,26 @@ export function ImageGallerySection({
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
   const [previewImage, setPreviewImage] = useState<GalleryImage | null>(null)
-  const showPreview = imageOrientation === "horizontal"
 
-  // Filter out images with no valid src to avoid empty cards
+  // ✅ IMPORTANT FIX: disable preview if links are enabled
+  const showPreview = imageOrientation === "horizontal" && !enableImageLink
+
   const validImages = useMemo(
     () => images.filter((img) => img?.src && String(img.src).trim()),
     [images]
   )
 
-  // Grid: use columns prop for layout (2 = 2x2, 3 = 3 cols, 6 = 6 cols). Fallback to imageOrientation.
   const gridCols =
     columns === 2
       ? "grid-cols-2"
       : columns === 6
-        ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
-        : imageOrientation === "horizontal"
-          ? "grid-cols-2 md:grid-cols-3"
-          : "grid-cols-2"
+      ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+      : imageOrientation === "horizontal"
+      ? "grid-cols-2 md:grid-cols-3"
+      : "grid-cols-2"
+
   const gridGap = spacing.gridGap || "gap-6"
-  // Horizontal: larger cards with aspect ratio. Vertical: original compact card.
+
   const imageContainerClass =
     imageOrientation === "horizontal"
       ? "aspect-[4/3] min-h-[180px]"
@@ -89,10 +86,10 @@ export function ImageGallerySection({
             "lg:grid-cols-2 lg:items-center"
           )}
         >
-          {/* Left column: title + paragraph */}
+          {/* Left */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
             className="flex flex-col justify-center"
           >
@@ -105,61 +102,81 @@ export function ImageGallerySection({
             />
           </motion.div>
 
-          {/* Right column: grid of image cards with optional name below */}
-          <div
-            className={cn(
-              "grid",
-              gridCols,
-              gridGap
-            )}
-          >
+          {/* Right */}
+          <div className={cn("grid", gridCols, gridGap)}>
             {validImages.map((image, index) => {
-              const hasLink = image.link?.trim()
-              
+              const hasLink = !!image.link?.trim()
+
+              // ✅ Card UI (single source of truth)
+              const card = (
+                <div
+                  role={showPreview ? "button" : undefined}
+                  tabIndex={showPreview ? 0 : undefined}
+                  onClick={
+                    showPreview
+                      ? () => setPreviewImage(image)
+                      : undefined
+                  }
+                  onKeyDown={
+                    showPreview
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault()
+                            setPreviewImage(image)
+                          }
+                        }
+                      : undefined
+                  }
+                  className={cn(
+                    "relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm",
+                    "transition-all duration-300 hover:border-steel-red/30 hover:shadow-md",
+                    showPreview &&
+                      "cursor-pointer focus:outline-none focus:ring-2 focus:ring-steel-red focus:ring-offset-2",
+                    enableImageLink &&
+                      hasLink &&
+                      "cursor-pointer group"
+                  )}
+                >
+                  <div className={cn("relative w-full", imageContainerClass)}>
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      loading="lazy"
+                      className="object-contain"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 200px"
+                      quality={85}
+                    />
+                  </div>
+
+                 
+                </div>
+              )
+
               return (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 24 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5, delay: index * 0.08 }}
                   className="flex flex-col"
                 >
-                  {/* Card - click to zoom preview */}
-                  <div
-                    role={showPreview ? "button" : undefined}
-                    tabIndex={showPreview ? 0 : undefined}
-                    onClick={showPreview ? () => setPreviewImage(image) : undefined}
-                    onKeyDown={
-                      showPreview
-                        ? (e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault()
-                              setPreviewImage(image)
-                            }
-                          }
-                        : undefined
-                    }
-                    className={cn(
-                      "relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm",
-                      "transition-all duration-300 hover:border-steel-red/30 hover:shadow-md",
-                      showPreview && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-steel-red focus:ring-offset-2"
-                    )}
-                  >
-                    <div className={cn("relative w-full", imageContainerClass)}>
-                      <Image
-                        src={image.src}
-                        alt={image.alt}
-                        fill
-                        loading="lazy"
-                        className="object-contain"
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 200px"
-                        quality={85}
-                      />
-                    </div>
-                  </div>
-                  {/* Name - outside card, with optional URL link */}
+                  {/* ✅ CONDITIONAL WRAP (core fix) */}
+                  {enableImageLink && hasLink ? (
+                    <a
+                      href={image.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {card}
+                    </a>
+                  ) : (
+                    card
+                  )}
+
+                  {/* Name */}
                   {image.name?.trim() && (
-                    <p className="mt-3 text-center text-sm font-medium text-foreground">
+                    <p className="mt-1 text-center text-sm font-medium text-foreground">
                       {hasLink ? (
                         <a
                           href={image.link}
@@ -181,21 +198,18 @@ export function ImageGallerySection({
         </div>
       </div>
 
-      {/* Large preview modal – only for horizontal orientation */}
+      {/* Preview Modal */}
       <Dialog
         open={!!previewImage}
         onOpenChange={(open) => !open && setPreviewImage(null)}
       >
-        <DialogContent
-          className="max-w-6xl w-[98vw] max-h-[98vh] p-2 sm:p-4 flex flex-col"
-          showCloseButton={true}
-        >
+        <DialogContent className="max-w-6xl w-[98vw] max-h-[98vh] p-2 sm:p-4 flex flex-col">
           {previewImage && (
             <>
               <DialogTitle className="sr-only">
                 {previewImage.name || previewImage.alt}
               </DialogTitle>
-              <div className="relative w-full flex-1 min-h-[70vh] max-h-[90vh] bg-card rounded-lg overflow-hidden">
+              <div className="relative w-full flex-1 min-h-[80vh] max-h-[90vh] bg-card rounded-lg overflow-hidden">
                 <Image
                   src={previewImage.src}
                   alt={previewImage.alt}
@@ -205,11 +219,11 @@ export function ImageGallerySection({
                   quality={95}
                 />
               </div>
-              {previewImage.name?.trim() && (
+              {/* {previewImage.name?.trim() && (
                 <p className="text-center text-sm font-medium text-foreground mt-2">
                   {previewImage.name}
                 </p>
-              )}
+              )} */}
             </>
           )}
         </DialogContent>

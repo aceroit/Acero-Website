@@ -242,6 +242,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               }
 
               case 'image_gallery': {
+                
                 const title = (content.title as string) || ''
                 const paragraph = (content.paragraph as string) || ''
                 const images = (content.images as Array<{
@@ -262,6 +263,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     images={images}
                     columns={columns}
                     imageOrientation={imageOrientation}
+                    enableImageLink={title.trim() === 'Engineering Excellence' ? true : false}
                   />
                 )
               }
