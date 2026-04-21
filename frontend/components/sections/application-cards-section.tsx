@@ -50,7 +50,7 @@ export function ApplicationCardsSection({
   const router = useRouter()
 
   const isClickable = clickBehavior === 'modal' || clickBehavior === 'redirect' || clickBehavior === 'both'
-
+  console.log(applications)
   const handleCardClick = (application: Application) => {
     if (clickBehavior === 'redirect' && application.redirectUrl) {
       router.push(application.redirectUrl)
@@ -127,9 +127,9 @@ export function ApplicationCardsSection({
                 onClick={isClickable ? () => handleCardClick(application) : undefined}
               >
                 <div className="group flex h-full flex-col items-center justify-center rounded-lg border border-border bg-card p-4 text-center transition-all hover:border-steel-red/50 hover:bg-card/50 md:p-6">
-                  <div className="mb-3 flex h-12 w-12 shrink-0 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 md:h-14 md:w-14">
+                  <div className="mb-3 flex h-12 w-12 shrink-0 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 md:h-12 md:w-18">
                     {application.svgPath ? (
-                      <div className="relative h-full w-full">
+                      <div className="relative h-18 w-18">
                         <Image
                           src={application.svgPath}
                           alt={application.name}
