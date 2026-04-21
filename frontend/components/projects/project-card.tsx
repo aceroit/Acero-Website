@@ -5,32 +5,46 @@ import Link from "next/link"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
-import type { Industry } from "@/utils/projects-data"
+import type { Project } from "@/services/project.service"
 
-interface IndustryCardProps {
-  industry: Industry
+interface ProjectCardProps {
+  project: Project
   index?: number
   className?: string
 }
 
-export function IndustryCard({ industry, index = 0, className }: IndustryCardProps) {
+export function ProjectCard({ project, index = 0, className }: ProjectCardProps) {
   const searchParams = useSearchParams()
-  
-  // Set industry filter as query param (stay on projects page)
+
+  // Determine the thumbnail: explicit thumbnail, first project image, or null
+  const thumbnailUrl =
+    project.thumbnailImage?.url ||
+    (project.projectImages && project.projectImages.length > 0
+      ? project.projectImages.sort((a, b) => (a.order || 0) - (b.order || 0))[0]?.url
+      : null)
+
+  const industrySlug = project.industry?.slug
+  const buildingTypeSlug = project.buildingType?.slug
+  const buildingTypeName = project.buildingType?.name
+
+  // Can't link to detail page without both slugs
+  if (!industrySlug || !buildingTypeSlug) {
+    return null
+  }
+
+  // Preserve current location filters when navigating to building type detail page
   const buildHref = () => {
     const params = new URLSearchParams()
     const region = searchParams.get("region")
     const country = searchParams.get("country")
     const area = searchParams.get("area")
-    
-    // Set the industry filter
-    params.set("industry", industry.slug)
-    
+
     if (region && region !== "all") params.set("region", region)
     if (country && country !== "all") params.set("country", country)
     if (area && area !== "all") params.set("area", area)
-    
-    return `/projects?${params.toString()}`
+
+    const queryString = params.toString()
+    return `/projects/${industrySlug}/${buildingTypeSlug}${queryString ? `?${queryString}` : ""}`
   }
 
   return (
@@ -43,14 +57,14 @@ export function IndustryCard({ industry, index = 0, className }: IndustryCardPro
       <Link
         href={buildHref()}
         className="block h-full transition-transform duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-steel-red focus-visible:ring-offset-2 rounded-lg"
-        aria-label={`View projects in ${industry.name}`}
+        aria-label={`View ${buildingTypeName} projects`}
       >
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all duration-500 hover:border-steel-red/50 hover:shadow-xl">
           {/* Image - full bleed */}
-          {industry.logo && industry.logo !== "/placeholder.jpg" ? (
+          {thumbnailUrl ? (
             <Image
-              src={industry.logo}
-              alt={industry.name}
+              src={thumbnailUrl}
+              alt={buildingTypeName || `Project ${project.jobNumber}`}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -65,7 +79,7 @@ export function IndustryCard({ industry, index = 0, className }: IndustryCardPro
             aria-hidden
           >
             <h3 className="text-center text-xl font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">
-              {industry.name}
+              {buildingTypeName}
             </h3>
           </div>
         </div>

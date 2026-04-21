@@ -189,6 +189,34 @@ export async function getProjectsByBuildingType(
 }
 
 /**
+ * Get all published projects with filters (for flat project listing on projects page)
+ */
+export async function getAllProjects(filters?: FilterParams): Promise<Project[]> {
+  try {
+    const params = new URLSearchParams()
+    if (filters?.industry) params.append('industry', filters.industry)
+    if (filters?.buildingType) params.append('buildingType', filters.buildingType)
+    if (filters?.country) params.append('country', filters.country)
+    if (filters?.region) params.append('region', filters.region)
+    if (filters?.area) params.append('area', filters.area)
+
+    const queryString = params.toString()
+    const endpoint = `${API_ENDPOINTS.PUBLIC_PROJECTS}${queryString ? `?${queryString}` : ''}`
+
+    const result = await apiGet<{ projects: Project[]; count: number }>(endpoint)
+
+    if (result.success && result.data) {
+      return result.data.projects || []
+    }
+
+    return []
+  } catch (error) {
+    console.error('Error fetching all projects:', error)
+    return []
+  }
+}
+
+/**
  * Get published and featured projects (for Projects listing page; uses filters)
  */
 export async function getFeaturedProjects(): Promise<Project[]> {

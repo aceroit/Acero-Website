@@ -1,6 +1,6 @@
 "use client"
 
-import { useState , useEffect } from "react"
+import { useState, useEffect } from "react"
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
 import { useRouter } from "next/navigation"
@@ -187,8 +187,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         description: "Your application has been submitted successfully!",
       })
 
-    // Redirect to thank you page
-    router.push("/thank-you?from=career")
+      // Redirect to thank you page
+      router.push("/thank-you?from=career")
     } catch (error) {
       console.error('Application submission error:', error)
       toast({
@@ -249,204 +249,204 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         onSubmit={handleSubmit}
         className="w-full space-y-8"
       >
-      {/* Section 1: Personal Information */}
-      <motion.div
-        variants={sectionVariants}
-        className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
-      >
-        {/* Premium gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        
-        <div className="relative z-10 space-y-6">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-              Personal Information
-            </h2>
-          </div>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="firstName" className="text-sm font-medium text-foreground">
-              First Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="firstName"
-              value={formData.firstName}
-              onChange={(e) =>
-                setFormData({ ...formData, firstName: e.target.value })
-              }
-              className={cn("h-12", errors.firstName && "border-destructive")}
-              placeholder="Enter your first name"
-            />
-            {errors.firstName && (
-              <p className="text-xs text-destructive">{errors.firstName}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastName" className="text-sm font-medium text-foreground">
-              Last Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="lastName"
-              value={formData.lastName}
-              onChange={(e) =>
-                setFormData({ ...formData, lastName: e.target.value })
-              }
-              className={cn("h-12", errors.lastName && "border-destructive")}
-              placeholder="Enter your last name"
-            />
-            {errors.lastName && (
-              <p className="text-xs text-destructive">{errors.lastName}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-foreground">
-              Email <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className={cn("h-12", errors.email && "border-destructive")}
-              placeholder="your.email@example.com"
-            />
-            {errors.email && (
-              <p className="text-xs text-destructive">{errors.email}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="country" className="text-sm font-medium text-foreground">
-              Country <span className="text-destructive">*</span>
-            </Label>
-            <CustomSelect
-              value={formData.country}
-              onValueChange={(value) => setFormData({ ...formData, country: value })}
-              options={countriesWithDialCodes.map((c) => ({
-                value: c.value,
-                label: `${c.label}${c.dialCode ? ` (${c.dialCode})` : ""}`,
-              }))}
-              placeholder="Select your country"
-              size="md"
-              className={cn("w-full", errors.country && "border-destructive")}
-            />
-            {errors.country && (
-              <p className="text-xs text-destructive">{errors.country}</p>
-            )}
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label
-              htmlFor="mobileNumber"
-              className="text-sm font-medium text-foreground"
-            >
-              Mobile Number <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="mobileNumber"
-              type="tel"
-              value={formData.mobileNumber}
-              onChange={(e) =>
-                setFormData({ ...formData, mobileNumber: e.target.value })
-              }
-              className={cn("h-12", errors.mobileNumber && "border-destructive")}
-              placeholder={
-                formData.country
-                  ? `${getDialCodeForCountry(formData.country)} XX XXX XXXX`
-                  : "+XXX XX XXX XXXX"
-              }
-            />
-            {errors.mobileNumber && (
-              <p className="text-xs text-destructive">{errors.mobileNumber}</p>
-            )}
-          </div>
-        </div>
-        </div>
-      </motion.div>
+        {/* Section 1: Personal Information */}
+        <motion.div
+          variants={sectionVariants}
+          className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
+        >
+          {/* Premium gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
 
-      {/* Section 2: Job Details, Experience & Education (one card) */}
-      <motion.div
-        variants={sectionVariants}
-        className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        <div className="relative z-10 space-y-6">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-              Job Details, Experience & Education
-            </h2>
+          <div className="relative z-10 space-y-6">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-foreground md:text-3xl">
+                Personal Information
+              </h2>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-sm font-medium text-foreground">
+                  First Name <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
+                  className={cn("h-12", errors.firstName && "border-destructive")}
+                  placeholder="Enter your first name"
+                />
+                {errors.firstName && (
+                  <p className="text-xs text-destructive">{errors.firstName}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-sm font-medium text-foreground">
+                  Last Name <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
+                  className={cn("h-12", errors.lastName && "border-destructive")}
+                  placeholder="Enter your last name"
+                />
+                {errors.lastName && (
+                  <p className="text-xs text-destructive">{errors.lastName}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-foreground">
+                  Email <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className={cn("h-12", errors.email && "border-destructive")}
+                  placeholder="your.email@example.com"
+                />
+                {errors.email && (
+                  <p className="text-xs text-destructive">{errors.email}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country" className="text-sm font-medium text-foreground">
+                  Country <span className="text-destructive">*</span>
+                </Label>
+                <CustomSelect
+                  value={formData.country}
+                  onValueChange={(value) => setFormData({ ...formData, country: value })}
+                  options={countriesWithDialCodes.map((c) => ({
+                    value: c.value,
+                    label: `${c.label}${c.dialCode ? ` (${c.dialCode})` : ""}`,
+                  }))}
+                  placeholder="Select your country"
+                  size="md"
+                  className={cn("w-full", errors.country && "border-destructive")}
+                />
+                {errors.country && (
+                  <p className="text-xs text-destructive">{errors.country}</p>
+                )}
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label
+                  htmlFor="mobileNumber"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Mobile Number <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="mobileNumber"
+                  type="tel"
+                  value={formData.mobileNumber}
+                  onChange={(e) =>
+                    setFormData({ ...formData, mobileNumber: e.target.value })
+                  }
+                  className={cn("h-12", errors.mobileNumber && "border-destructive")}
+                  placeholder={
+                    formData.country
+                      ? `${getDialCodeForCountry(formData.country)} XX XXX XXXX`
+                      : "+XXX XX XXX XXXX"
+                  }
+                />
+                {errors.mobileNumber && (
+                  <p className="text-xs text-destructive">{errors.mobileNumber}</p>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
-            {/* Job Details */}
-            <div className="space-y-2">
-              <Label htmlFor="vacancyId" className="text-sm font-medium text-foreground">
-                Current Vacancies Applied For <span className="text-destructive">*</span>
-              </Label>
-              <CustomSelect
-                value={formData.vacancyId}
-                onValueChange={(value) => setFormData({ ...formData, vacancyId: value })}
-                options={
-                  vacancies.length === 0 && !vacanciesLoading
-                    ? [{ value: "no-vacancies", label: "No vacancies available", isDisabled: true }]
-                    : vacancies.map((vacancy) => ({
+        </motion.div>
+
+        {/* Section 2: Job Details, Experience & Education (one card) */}
+        <motion.div
+          variants={sectionVariants}
+          className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
+          <div className="relative z-10 space-y-6">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-foreground md:text-3xl">
+                Current Vacancies, Experience & Education
+              </h2>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
+              {/* Job Details */}
+              <div className="space-y-2">
+                <Label htmlFor="vacancyId" className="text-sm font-medium text-foreground">
+                  Current Vacancies Applied For <span className="text-destructive">*</span>
+                </Label>
+                <CustomSelect
+                  value={formData.vacancyId}
+                  onValueChange={(value) => setFormData({ ...formData, vacancyId: value })}
+                  options={
+                    vacancies.length === 0 && !vacanciesLoading
+                      ? [{ value: "no-vacancies", label: "No vacancies available", isDisabled: true }]
+                      : vacancies.map((vacancy) => ({
                         value: vacancy._id,
                         label: `${vacancy.title} - ${vacancy.department}`,
                       }))
-                }
-                placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"}
-                isDisabled={vacanciesLoading}
-                size="md"
-                className={cn("w-full", errors.vacancyId && "border-destructive")}
-              />
-              {errors.vacancyId && (
-                <p className="text-xs text-destructive">{errors.vacancyId}</p>
-              )}
-            </div>
-            {/* Experience */}
-            <div className="space-y-2">
-              <Label htmlFor="experienceLevel" className="text-sm font-medium text-foreground">
-                Experience Level <span className="text-destructive">*</span>
-              </Label>
-              <CustomSelect
-                value={formData.experienceLevel}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, experienceLevel: value })
-                }
-                options={experienceLevels.map((level) => ({
-                  value: level.value,
-                  label: level.label,
-                }))}
-                placeholder="Select experience level"
-                size="md"
-                className={cn("w-full", errors.experienceLevel && "border-destructive")}
-              />
-              {errors.experienceLevel && (
-                <p className="text-xs text-destructive">{errors.experienceLevel}</p>
-              )}
-            </div>
-            {/* Education */}
-            <div className="space-y-4">
+                  }
+                  placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"}
+                  isDisabled={vacanciesLoading}
+                  size="md"
+                  className={cn("w-full", errors.vacancyId && "border-destructive")}
+                />
+                {errors.vacancyId && (
+                  <p className="text-xs text-destructive">{errors.vacancyId}</p>
+                )}
+              </div>
+              {/* Experience */}
               <div className="space-y-2">
-                <Label htmlFor="educationLevel" className="text-sm font-medium text-foreground">
-                  Level of Education <span className="text-destructive">*</span>
+                <Label htmlFor="experienceLevel" className="text-sm font-medium text-foreground">
+                  Experience Level <span className="text-destructive">*</span>
                 </Label>
                 <CustomSelect
-                  value={formData.educationLevel}
+                  value={formData.experienceLevel}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, educationLevel: value })
+                    setFormData({ ...formData, experienceLevel: value })
                   }
-                  options={educationLevels.map((level) => ({
+                  options={experienceLevels.map((level) => ({
                     value: level.value,
                     label: level.label,
                   }))}
-                  placeholder="Select education level"
+                  placeholder="Select experience level"
                   size="md"
-                  className={cn("w-full", errors.educationLevel && "border-destructive")}
+                  className={cn("w-full", errors.experienceLevel && "border-destructive")}
                 />
-                {errors.educationLevel && (
-                  <p className="text-xs text-destructive">{errors.educationLevel}</p>
+                {errors.experienceLevel && (
+                  <p className="text-xs text-destructive">{errors.experienceLevel}</p>
                 )}
               </div>
-              {/* Engineering Degree – commented out for now */}
-              {/* <div className="space-y-2">
+              {/* Education */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="educationLevel" className="text-sm font-medium text-foreground">
+                    Level of Education <span className="text-destructive">*</span>
+                  </Label>
+                  <CustomSelect
+                    value={formData.educationLevel}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, educationLevel: value })
+                    }
+                    options={educationLevels.map((level) => ({
+                      value: level.value,
+                      label: level.label,
+                    }))}
+                    placeholder="Select education level"
+                    size="md"
+                    className={cn("w-full", errors.educationLevel && "border-destructive")}
+                  />
+                  {errors.educationLevel && (
+                    <p className="text-xs text-destructive">{errors.educationLevel}</p>
+                  )}
+                </div>
+                {/* Engineering Degree – commented out for now */}
+                {/* <div className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">
                   Engineering Degree <span className="text-destructive">*</span>
                 </Label>
@@ -474,132 +474,132 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                   <p className="text-xs text-destructive">{errors.hasEngineeringDegree}</p>
                 )}
               </div> */}
+              </div>
             </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
 
-      {/* Section 3: Languages */}
-      <motion.div
-        variants={sectionVariants}
-        className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        <div className="relative z-10 space-y-6">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-              Languages
-            </h2>
-          </div>
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-foreground">
-            Please tick all languages the applicant can speak:{" "}
-            <span className="text-destructive">*</span>
-          </Label>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {languages.map((language) => (
-              <div key={language.value} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`language-${language.value}`}
-                  checked={formData.languages.includes(language.value)}
-                  onCheckedChange={() => handleLanguageToggle(language.value)}
-                />
-                <Label
-                  htmlFor={`language-${language.value}`}
-                  className="cursor-pointer text-sm font-normal text-foreground"
-                >
-                  {language.label}
-                </Label>
-              </div>
-            ))}
-          </div>
-          {errors.languages && (
-            <p className="text-xs text-destructive">{errors.languages}</p>
-          )}
-        </div>
-        </div>
-      </motion.div>
-
-      {/* Section 4: Cover Letter */}
-      <motion.div
-        variants={sectionVariants}
-        className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        <div className="relative z-10 space-y-6">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-              Cover Letter
-            </h2>
-          </div>
-        <div className="space-y-2">
-          <Label htmlFor="coverLetter" className="text-sm font-medium text-foreground">
-            Cover Letter <span className="text-destructive">*</span>
-          </Label>
-          <Textarea
-            id="coverLetter"
-            value={formData.coverLetter}
-            onChange={(e) =>
-              setFormData({ ...formData, coverLetter: e.target.value })
-            }
-            className={cn(
-              "min-h-32 resize-none",
-              errors.coverLetter && "border-destructive"
-            )}
-            placeholder="Paste or write your cover letter here..."
-            rows={10}
-          />
-          {errors.coverLetter && (
-            <p className="text-xs text-destructive">{errors.coverLetter}</p>
-          )}
-        </div>
-        </div>
-      </motion.div>
-
-      {/* Section 5: CV Upload */}
-      <motion.div
-        variants={sectionVariants}
-        className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
-        <div className="relative z-10 space-y-6">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground md:text-3xl">
-              CV Upload
-            </h2>
-          </div>
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-foreground">
-            CV File <span className="text-destructive">*</span>
-          </Label>
-          <p className="mb-4 text-xs text-muted-foreground">
-            Only pdf, doc, jpeg, jpg, png – max size 2 MB
-          </p>
-          <FileUpload
-            value={formData.cvFile}
-            onChange={(file) => setFormData({ ...formData, cvFile: file })}
-            error={errors.cvFile}
-          />
-        </div>
-        </div>
-      </motion.div>
-
-      {/* Section 6: Submission */}
-      <motion.div
-        variants={sectionVariants}
-        className="flex justify-center pt-8"
-      >
-        <Button
-          type="submit"
-          disabled={submitting || uploadingCV}
-          className="group relative h-16 overflow-hidden bg-steel-red px-16 text-base font-semibold uppercase tracking-wider text-steel-white transition-all hover:bg-steel-red/90 hover:shadow-xl hover:shadow-steel-red/20 disabled:opacity-50"
+        {/* Section 3: Languages */}
+        <motion.div
+          variants={sectionVariants}
+          className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
         >
-          <span className="relative z-10">
-            {uploadingCV ? "Uploading CV..." : submitting ? "Submitting..." : "Submit Application"}
-          </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-        </Button>
-      </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
+          <div className="relative z-10 space-y-6">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-foreground md:text-3xl">
+                Languages
+              </h2>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">
+                Please tick all languages the applicant can speak:{" "}
+                <span className="text-destructive">*</span>
+              </Label>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {languages.map((language) => (
+                  <div key={language.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`language-${language.value}`}
+                      checked={formData.languages.includes(language.value)}
+                      onCheckedChange={() => handleLanguageToggle(language.value)}
+                    />
+                    <Label
+                      htmlFor={`language-${language.value}`}
+                      className="cursor-pointer text-sm font-normal text-foreground"
+                    >
+                      {language.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {errors.languages && (
+                <p className="text-xs text-destructive">{errors.languages}</p>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Section 4: Cover Letter */}
+        <motion.div
+          variants={sectionVariants}
+          className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
+          <div className="relative z-10 space-y-6">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-foreground md:text-3xl">
+                Cover Letter
+              </h2>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="coverLetter" className="text-sm font-medium text-foreground">
+                Cover Letter <span className="text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="coverLetter"
+                value={formData.coverLetter}
+                onChange={(e) =>
+                  setFormData({ ...formData, coverLetter: e.target.value })
+                }
+                className={cn(
+                  "min-h-32 resize-none",
+                  errors.coverLetter && "border-destructive"
+                )}
+                placeholder="Paste or write your cover letter here..."
+                rows={10}
+              />
+              {errors.coverLetter && (
+                <p className="text-xs text-destructive">{errors.coverLetter}</p>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Section 5: CV Upload */}
+        <motion.div
+          variants={sectionVariants}
+          className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-steel-red/0 via-steel-red/0 to-steel-red/0 transition-all duration-500 group-hover:from-steel-red/5 group-hover:via-steel-red/2 group-hover:to-steel-red/5" />
+          <div className="relative z-10 space-y-6">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-foreground md:text-3xl">
+                CV Upload
+              </h2>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">
+                CV File <span className="text-destructive">*</span>
+              </Label>
+              <p className="mb-4 text-xs text-muted-foreground">
+                Only pdf, doc, jpeg, jpg, png – max size 2 MB
+              </p>
+              <FileUpload
+                value={formData.cvFile}
+                onChange={(file) => setFormData({ ...formData, cvFile: file })}
+                error={errors.cvFile}
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Section 6: Submission */}
+        <motion.div
+          variants={sectionVariants}
+          className="flex justify-center pt-8"
+        >
+          <Button
+            type="submit"
+            disabled={submitting || uploadingCV}
+            className="group relative h-16 overflow-hidden bg-steel-red px-16 text-base font-semibold uppercase tracking-wider text-steel-white transition-all hover:bg-steel-red/90 hover:shadow-xl hover:shadow-steel-red/20 disabled:opacity-50"
+          >
+            <span className="relative z-10">
+              {uploadingCV ? "Uploading CV..." : submitting ? "Submitting..." : "Submit Application"}
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+          </Button>
+        </motion.div>
       </motion.form>
     </div>
   )

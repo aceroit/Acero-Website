@@ -5,6 +5,7 @@ import {
   getPublishedIndustries,
   getBuildingTypesByIndustry,
   getProjectsByBuildingType,
+  getAllProjects,
   getFilterOptions,
   type Industry,
   type BuildingType,
@@ -230,6 +231,58 @@ export function useProjects(
     isLoading,
     error,
     refetch: fetchProjects,
+  }
+}
+
+// Cache for all projects (flat listing)
+const allProjectsCache = new Map<string, { data: Project[]; timestamp: number }>()
+
+/**
+ * Hook to fetch and cache all projects with filters (flat listing on projects page)
+ */
+export function useAllProjects(filters?: FilterParams): UseProjectsReturn {
+  const [projects, setProjects] = useState<Project[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchAllProjects = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      const cacheKey = `all-${JSON.stringify(filters || {})}`
+      const cached = allProjectsCache.get(cacheKey)
+      if (cached && cached.timestamp + CACHE_DURATION > Date.now()) {
+        setProjects(cached.data)
+        setIsLoading(false)
+        return
+      }
+
+      const data = await getAllProjects(filters)
+      setProjects(data)
+
+      allProjectsCache.set(cacheKey, {
+        data,
+        timestamp: Date.now(),
+      })
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch projects'
+      setError(errorMessage)
+      console.error('Error fetching all projects:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [JSON.stringify(filters || {})])
+
+  useEffect(() => {
+    fetchAllProjects()
+  }, [fetchAllProjects])
+
+  return {
+    projects,
+    isLoading,
+    error,
+    refetch: fetchAllProjects,
   }
 }
 
