@@ -32,7 +32,7 @@ export function ProjectCard({ project, index = 0, className }: ProjectCardProps)
     return null
   }
 
-  // Preserve current location filters when navigating to building type detail page
+  // Preserve current location filters and include unique job number when navigating to building type detail page
   const buildHref = () => {
     const params = new URLSearchParams()
     const region = searchParams.get("region")
@@ -42,6 +42,9 @@ export function ProjectCard({ project, index = 0, className }: ProjectCardProps)
     if (region && region !== "all") params.set("region", region)
     if (country && country !== "all") params.set("country", country)
     if (area && area !== "all") params.set("area", area)
+
+    // Include the unique job number slug so the detail page fetches only this specific project
+    if (project.jobNumberSlug) params.set("project", project.jobNumberSlug)
 
     const queryString = params.toString()
     return `/projects/${industrySlug}/${buildingTypeSlug}${queryString ? `?${queryString}` : ""}`

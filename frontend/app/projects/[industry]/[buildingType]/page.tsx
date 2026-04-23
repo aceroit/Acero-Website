@@ -26,6 +26,7 @@ function BuildingTypeContent({
   const areaParam = searchParams.get("area")
   const regionParam = searchParams.get("region")
   const countryParam = searchParams.get("country")
+  const projectSlugParam = searchParams.get("project")
 
   const area = areaParam && areaParam !== "all" ? areaParam : undefined
   const region = regionParam && regionParam !== "all" ? regionParam : undefined
@@ -57,8 +58,13 @@ function BuildingTypeContent({
     }
   }
 
-  // Get all project images from all projects; only include images with valid src (no empty cards)
-  const allProjectImages = projects.flatMap((project) =>
+  // Filter projects if a specific project slug is provided
+  const filteredProjects = projectSlugParam 
+    ? projects.filter(p => p.jobNumberSlug === projectSlugParam)
+    : projects
+
+  // Get all project images from filtered projects; only include images with valid src (no empty cards)
+  const allProjectImages = filteredProjects.flatMap((project) =>
     (project.projectImages || [])
       .filter((img) => img?.url && String(img.url).trim())
       .sort((a, b) => (a.order || 0) - (b.order || 0))
@@ -68,8 +74,8 @@ function BuildingTypeContent({
       }))
   )
 
-  // Get unique project details (use first project as representative)
-  const representativeProject = projects[0]
+  // Get unique project details (use first project from filtered list as representative)
+  const representativeProject = filteredProjects[0] || projects[0]
 
   // Transform project for ProjectDetailsCard component
   const projectForCard = representativeProject
@@ -89,7 +95,7 @@ function BuildingTypeContent({
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
         <HeroImageSection 
-          image={buildingTypeImage || "/images/projects/hero.jpg"} 
+          image={representativeProject?.thumbnailImage?.url || buildingTypeImage || "/images/projects/hero.jpg"} 
           title={buildingTypeName || "Building Type"} 
         />
 
