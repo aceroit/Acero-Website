@@ -76,7 +76,9 @@ function BuildingTypeContent({
   const projectForCard = filteredRepresentativeProject
     ? {
         jobNumber: filteredRepresentativeProject.jobNumber,
+        buildingType: buildingTypeName || "--",
         region: filteredRepresentativeProject.region?.name || "--",
+        area: filteredRepresentativeProject.area?.name || "--",
         country: filteredRepresentativeProject.country?.name || "--",
         accessoriesAndSpecialFeatures:
           filteredRepresentativeProject.specialFeatures?.join(", ") || "--",
