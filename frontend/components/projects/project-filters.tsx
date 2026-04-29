@@ -25,10 +25,13 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
   const region = searchParams.get("region") || "all"
   const country = searchParams.get("country") || "all"
 
-  // NOTE: Don't pass ANY filters here to disable cascading
-  // This ensures all options remain visible in the dropdowns regardless of what is selected
-  // so the user can freely switch filters without them disappearing.
-  const { filterOptions, isLoading } = useFilterOptions({})
+  // Pass location filters (country, region, area) for cascading behavior
+  // NOTE: Don't pass industry filter here - we want to show ALL industries in the dropdown
+  const { filterOptions, isLoading } = useFilterOptions({
+    country: country !== "all" ? country : undefined,
+    region: region !== "all" ? region : undefined,
+    area: area !== "all" ? area : undefined,
+  })
 
   // Get current industry value for display (use industrySlug from props if on industry page)
   const currentIndustryValue = industrySlug || (industryParam !== "all" ? industryParam : "all")
@@ -44,12 +47,15 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
     (key: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString())
       
-      // Clear dependent filters when parent filter changes
-      if (key === "country") {
+      // Clear dependent (child) filters when a parent filter changes
+      // Hierarchy: Area > Region > Country
+      if (key === "area") {
         params.delete("region")
-        params.delete("area")
+        params.delete("country")
       } else if (key === "region") {
-        params.delete("area")
+        params.delete("country")
+      } else if (key === "country") {
+        // Changing country doesn't clear area or region since it's the most specific
       } else if (key === "industry") {
         // Industry change doesn't require clearing location filters
       }

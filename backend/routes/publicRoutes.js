@@ -564,75 +564,58 @@ router.get('/filter-options', async (req, res) => {
     try {
         const { industry, buildingType, country, region, area } = req.query;
         
-        // Build base project query based on current selections
-        const projectQuery = {
-            status: 'published',
-            featured: true,
-            isActive: true
+        // Resolve references to get ObjectIds efficiently
+        let industryDoc, buildingTypeDoc, countryDoc, regionDoc, areaDoc;
+        await Promise.all([
+            industry ? Industry.findBySlug(industry).then(d => industryDoc = d) : Promise.resolve(null),
+            buildingType ? BuildingType.findBySlug(buildingType).then(d => buildingTypeDoc = d) : Promise.resolve(null),
+            country ? Country.findOne({ code: country.toUpperCase(), isActive: true }).then(d => countryDoc = d) : Promise.resolve(null),
+            region ? Region.findOne({ code: region.toUpperCase(), isActive: true }).then(d => regionDoc = d) : Promise.resolve(null),
+            area ? Area.findOne({ code: area.toUpperCase(), isActive: true }).then(d => areaDoc = d) : Promise.resolve(null)
+        ]);
+
+        // Function to build query excluding a specific facet
+        const buildQuery = (excludeFacet) => {
+            const query = { status: 'published', featured: true, isActive: true };
+            if (industryDoc && excludeFacet !== 'industry') query.industry = industryDoc._id;
+            if (buildingTypeDoc && excludeFacet !== 'buildingType') query.buildingType = buildingTypeDoc._id;
+            if (countryDoc && excludeFacet !== 'country') query.country = countryDoc._id;
+            if (regionDoc && excludeFacet !== 'region') query.region = regionDoc._id;
+            if (areaDoc && excludeFacet !== 'area') query.area = areaDoc._id;
+            return query;
         };
+
+        // Fetch independent facets
+        const [industryProjects, countryProjects, regionProjects, areaProjects] = await Promise.all([
+            Project.find(buildQuery('industry')).populate('industry', 'name slug'),
+            Project.find(buildQuery('country')).populate('country', 'name code'),
+            Project.find(buildQuery('region')).populate('region', 'name code').populate('country', 'code'),
+            Project.find(buildQuery('area')).populate('area', 'name code').populate('region', 'code')
+        ]);
         
-        // Add industry filter if provided
-        if (industry) {
-            const industryDoc = await Industry.findBySlug(industry);
-            if (industryDoc) {
-                projectQuery.industry = industryDoc._id;
-            }
-        }
-        
-        // Add buildingType filter if provided
-        if (buildingType) {
-            const buildingTypeDoc = await BuildingType.findBySlug(buildingType);
-            if (buildingTypeDoc) {
-                projectQuery.buildingType = buildingTypeDoc._id;
-            }
-        }
-        
-        // Add location filters if provided
-        if (country) {
-            const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
-            if (countryDoc) projectQuery.country = countryDoc._id;
-        }
-        if (region) {
-            const regionDoc = await Region.findOne({ code: region.toUpperCase(), isActive: true });
-            if (regionDoc) projectQuery.region = regionDoc._id;
-        }
-        if (area) {
-            const areaDoc = await Area.findOne({ code: area.toUpperCase(), isActive: true });
-            if (areaDoc) projectQuery.area = areaDoc._id;
-        }
-        
-        // Get all matching projects
-        const projects = await Project.find(projectQuery)
-            .populate('industry', 'name slug')
-            .populate('buildingType', 'name slug')
-            .populate('country', 'name code')
-            .populate('region', 'name code')
-            .populate('area', 'name code');
-        
-        // Extract unique values for each filter
+        // Extract unique values for each filter independently
         const industriesMap = new Map();
-        const countriesMap = new Map();
-        const regionsMap = new Map();
-        const areasMap = new Map();
-        
-        projects.forEach(project => {
-            // Industries
+        industryProjects.forEach(project => {
             if (project.industry && project.industry.slug) {
                 industriesMap.set(project.industry.slug, {
                     name: project.industry.name,
                     slug: project.industry.slug
                 });
             }
-            
-            // Countries
+        });
+        
+        const countriesMap = new Map();
+        countryProjects.forEach(project => {
             if (project.country && project.country.code) {
                 countriesMap.set(project.country.code, {
                     name: project.country.name,
                     code: project.country.code
                 });
             }
-            
-            // Regions
+        });
+        
+        const regionsMap = new Map();
+        regionProjects.forEach(project => {
             if (project.region && project.region.code) {
                 regionsMap.set(project.region.code, {
                     name: project.region.name,
@@ -640,8 +623,10 @@ router.get('/filter-options', async (req, res) => {
                     country: project.country ? project.country.code : null
                 });
             }
-            
-            // Areas
+        });
+        
+        const areasMap = new Map();
+        areaProjects.forEach(project => {
             if (project.area && project.area.code) {
                 areasMap.set(project.area.code, {
                     name: project.area.name,
