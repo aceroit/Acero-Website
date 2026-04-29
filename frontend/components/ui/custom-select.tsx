@@ -175,6 +175,16 @@ export function CustomSelect({
     )
   }
 
+  const MenuList = (props: any) => {
+    return (
+      <div data-lenis-prevent="true">
+        <components.MenuList {...props}>
+          {props.children}
+        </components.MenuList>
+      </div>
+    )
+  }
+
   return (
     <ReactSelect<CustomSelectOption>
       {...props}
@@ -190,17 +200,12 @@ export function CustomSelect({
       components={{
         DropdownIndicator,
         Option,
+        MenuList,
       }}
       className={cn('react-select-container', className)}
       classNamePrefix="react-select"
       menuPlacement="auto"
-      menuPosition="fixed"
-      menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
       isSearchable={false}
-      // Prevent body scroll on mobile
-      closeMenuOnScroll={(e) => {
-        return e.target === document
-      }}
     />
   )
 }

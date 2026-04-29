@@ -25,14 +25,10 @@ export function ProjectFilters({ hideIndustry = false, industrySlug, className }
   const region = searchParams.get("region") || "all"
   const country = searchParams.get("country") || "all"
 
-  // Get dynamic filter options based on current selections
-  // NOTE: Don't pass industry filter here - we want to show ALL industries in the dropdown
-  // Only pass location filters (country, region, area) for cascading behavior
-  const { filterOptions, isLoading } = useFilterOptions({
-    country: country !== "all" ? country : undefined,
-    region: region !== "all" ? region : undefined,
-    area: area !== "all" ? area : undefined,
-  })
+  // NOTE: Don't pass ANY filters here to disable cascading
+  // This ensures all options remain visible in the dropdowns regardless of what is selected
+  // so the user can freely switch filters without them disappearing.
+  const { filterOptions, isLoading } = useFilterOptions({})
 
   // Get current industry value for display (use industrySlug from props if on industry page)
   const currentIndustryValue = industrySlug || (industryParam !== "all" ? industryParam : "all")
