@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
 import { ProjectDetailsCard } from "@/components/projects/project-details-card"
 import { ProjectsGalleryImagesSection } from "@/components/sections/projects-gallery-images-section"
-import { useProjects, useIndustries, useBuildingTypes } from "@/hooks/use-projects"
+import { useProjects } from "@/hooks/use-projects"
 
 interface BuildingTypePageProps {
   params: Promise<{ industry: string; buildingType: string }>
@@ -35,25 +35,20 @@ function BuildingTypeContent({
   const locationFilters = { area, region, country }
 
   // Fetch data from backend with location filters
-  const { industries, isLoading: industriesLoading } = useIndustries(locationFilters)
-  const { buildingTypes, isLoading: buildingTypesLoading } = useBuildingTypes(industrySlug, locationFilters)
   const { projects, isLoading: projectsLoading } = useProjects(industrySlug, buildingTypeSlug, locationFilters)
 
-  const isLoading = industriesLoading || buildingTypesLoading || projectsLoading
+  const isLoading = projectsLoading
 
-  const industry = industries.find((ind) => ind.slug === industrySlug)
-  const buildingType = buildingTypes.find((bt) => bt.slug === buildingTypeSlug)
+  // Get unique project details (use first project from list as representative)
+  const representativeProject = projects[0]
 
-  const industryName = industry?.name
-  const buildingTypeName = buildingType?.name
-  const buildingTypeImage = buildingType?.image?.url || null
+  const industryName = representativeProject?.industry?.name
+  const buildingTypeName = representativeProject?.buildingType?.name
+  const buildingTypeImage = representativeProject?.buildingType?.image?.url || null
 
   // Only check for not found after loading is complete
   if (!isLoading) {
-    if (!industryName || !buildingTypeName) {
-      notFound()
-    }
-    if (projects.length === 0) {
+    if (projects.length === 0 || !industryName || !buildingTypeName) {
       notFound()
     }
   }
@@ -74,18 +69,18 @@ function BuildingTypeContent({
       }))
   )
 
-  // Get unique project details (use first project from filtered list as representative)
-  const representativeProject = filteredProjects[0] || projects[0]
+  // We already defined representativeProject above as projects[0], but if filtered we can update it
+  const filteredRepresentativeProject = filteredProjects[0] || projects[0]
 
   // Transform project for ProjectDetailsCard component
-  const projectForCard = representativeProject
+  const projectForCard = filteredRepresentativeProject
     ? {
-        jobNumber: representativeProject.jobNumber,
-        region: representativeProject.region?.name || "--",
-        country: representativeProject.country?.name || "--",
+        jobNumber: filteredRepresentativeProject.jobNumber,
+        region: filteredRepresentativeProject.region?.name || "--",
+        country: filteredRepresentativeProject.country?.name || "--",
         accessoriesAndSpecialFeatures:
-          representativeProject.specialFeatures?.join(", ") || "--",
-        builtUpAreaSqm: representativeProject.totalArea || "--",
+          filteredRepresentativeProject.specialFeatures?.join(", ") || "--",
+        builtUpAreaSqm: filteredRepresentativeProject.totalArea || "--",
       }
     : null
 
@@ -95,7 +90,7 @@ function BuildingTypeContent({
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
         <HeroImageSection 
-          image={representativeProject?.thumbnailImage?.url || buildingTypeImage || "/images/projects/hero.jpg"} 
+          image={filteredRepresentativeProject?.thumbnailImage?.url || buildingTypeImage || "/placeholder.jpg"} 
           title={buildingTypeName || "Building Type"} 
         />
 
