@@ -72,7 +72,7 @@ export default function MediaLiteraturePage() {
       <main className="min-h-screen bg-background">
         <HeroImageSection
           image={heroImage || "/images/projects/hero.jpg"}
-          title="Media"
+          title={(heroSection?.content?.title as string) || "Literature"}
         />
         {brochuresLoading ? (
           <div className="py-12 text-center">

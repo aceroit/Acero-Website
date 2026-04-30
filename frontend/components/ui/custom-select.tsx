@@ -205,6 +205,7 @@ export function CustomSelect({
       className={cn('react-select-container', className)}
       classNamePrefix="react-select"
       menuPlacement="auto"
+      menuPortalTarget={typeof window !== "undefined" ? document.body : null}
       isSearchable={false}
     />
   )

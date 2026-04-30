@@ -1,13 +1,15 @@
 "use client"
 
 import { Suspense, use } from "react"
-import { notFound, useSearchParams } from "next/navigation"
+import { notFound, useSearchParams, useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
 import { ProjectDetailsCard } from "@/components/projects/project-details-card"
 import { ProjectsGalleryImagesSection } from "@/components/sections/projects-gallery-images-section"
 import { useProjects } from "@/hooks/use-projects"
+import { ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface BuildingTypePageProps {
   params: Promise<{ industry: string; buildingType: string }>
@@ -21,6 +23,7 @@ function BuildingTypeContent({
   buildingTypeSlug: string
 }) {
   const searchParams = useSearchParams()
+  const router = useRouter()
 
   // Get location filters from URL
   const areaParam = searchParams.get("area")
@@ -108,6 +111,15 @@ function BuildingTypeContent({
         ) : projectForCard ? (
           <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
+              <div className="mb-8 flex justify-start">
+                <Button 
+                  onClick={() => router.back()}
+                  className="group flex items-center gap-2 bg-steel-red text-steel-white hover:bg-steel-red/90 uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                  Back
+                </Button>
+              </div>
               <ProjectDetailsCard
                 project={projectForCard}
                 industry={industryName || ""}

@@ -98,7 +98,7 @@ export function ImageGallerySection({
             </h2>
             <RichText
               html={paragraph}
-              className="text-lg leading-relaxed text-foreground"
+              className="text-lg leading-relaxed text-muted-foreground"
             />
           </motion.div>
 

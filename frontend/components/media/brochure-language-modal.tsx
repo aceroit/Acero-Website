@@ -11,23 +11,12 @@ import {
 import { FileText } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// Inline type definitions (temporary)
+import type { Brochure } from "@/services/brochure.service"
+
 interface BrochureLanguage {
   languageCode: string
   languageName: string
   fileUrl: string
-}
-
-interface Brochure {
-  _id: string
-  title: string
-  brochureImage: { url: string; publicId: string; width: number; height: number }
-  description?: string
-  languages: BrochureLanguage[]
-  order: number
-  featured: boolean
-  status: string
-  isActive: boolean
 }
 
 interface BrochureLanguageModalProps {
@@ -66,7 +55,7 @@ export function BrochureLanguageModal({
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
             <AnimatePresence>
-              {brochure.languages.map((language, index) => (
+              {(brochure.languages || []).map((language, index) => (
                 <motion.button
                   key={language.languageCode}
                   initial={{ opacity: 0, y: 10 }}
