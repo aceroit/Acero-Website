@@ -94,9 +94,10 @@ export function Header() {
   }, [header])
 
   // Check if theme toggle should be shown
-  const showThemeToggle = useMemo(() => {
-    return header?.themeToggle?.isFieldActive && header.themeToggle.enabled !== false
-  }, [header])
+   const showThemeToggle = useMemo(() => {
+  if (!header) return true
+  return header?.themeToggle?.isFieldActive && header.themeToggle.enabled !== false
+}, [header])
 
   // Get logo
   const logo = useMemo(() => {
