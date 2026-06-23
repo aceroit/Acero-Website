@@ -209,26 +209,46 @@ pageSchema.statics.getTree = async function(parentId = null) {
 
 // Static method to get published page tree for public site
 pageSchema.statics.getPublishedTree = async function(parentId = null) {
-    const pages = await this.find({ 
-        parentId, 
-        isActive: true, 
+    const pages = await this.find({
+        isActive: true,
         status: 'published',
-        showInMenu: true 
-    }).sort({ order: 1 });
-    
-    const tree = await Promise.all(pages.map(async (page) => {
-        const children = await this.getPublishedTree(page._id);
-        return {
+        showInMenu: true
+    })
+        .select('_id title slug path menuIcon parentId order')
+        .sort({ order: 1, title: 1 })
+        .lean();
+
+    const pageMap = new Map();
+    const roots = [];
+
+    pages.forEach((page) => {
+        pageMap.set(String(page._id), {
             id: page._id,
             title: page.title,
             slug: page.slug,
             path: page.path,
             menuIcon: page.menuIcon,
-            children
-        };
-    }));
-    
-    return tree;
+            children: []
+        });
+    });
+
+    pages.forEach((page) => {
+        const current = pageMap.get(String(page._id));
+        const parentKey = page.parentId ? String(page.parentId) : null;
+
+        if (parentKey && pageMap.has(parentKey)) {
+            pageMap.get(parentKey).children.push(current);
+        } else {
+            roots.push(current);
+        }
+    });
+
+    if (parentId) {
+        const parent = pageMap.get(String(parentId));
+        return parent ? parent.children : [];
+    }
+
+    return roots;
 };
 
 const Page = mongoose.model('Page', pageSchema);
