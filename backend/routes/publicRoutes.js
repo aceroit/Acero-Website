@@ -34,6 +34,118 @@ const Application = require('../models/Application');
 const FormConfiguration = require('../models/FormConfiguration');
 const fileUpload = require('express-fileupload');
 
+/// Simple in-memory cache for public GET APIs
+// Fresh TTL = how long data is considered fresh
+// Stale TTL = how long old data can still be served while refreshing in background
+const publicCache = new Map();
+
+function getPublicCache(key) {
+    const cached = publicCache.get(key);
+
+    if (!cached) {
+        return {
+            status: 'MISS',
+            data: null
+        };
+    }
+
+    const now = Date.now();
+
+    if (now <= cached.freshUntil) {
+        return {
+            status: 'HIT',
+            data: cached.data
+        };
+    }
+
+    if (now <= cached.staleUntil) {
+        return {
+            status: 'STALE',
+            data: cached.data
+        };
+    }
+
+    publicCache.delete(key);
+
+    return {
+        status: 'MISS',
+        data: null
+    };
+}
+
+function setPublicCache(key, data, freshTtlMs = 2 * 60 * 1000, staleTtlMs = 30 * 60 * 1000) {
+    const now = Date.now();
+
+    publicCache.set(key, {
+        data,
+        freshUntil: now + freshTtlMs,
+        staleUntil: now + staleTtlMs,
+        isRefreshing: false
+    });
+}
+
+async function refreshPublicCacheInBackground(key, fetchData, freshTtlMs, staleTtlMs) {
+    const cached = publicCache.get(key);
+
+    if (cached && cached.isRefreshing) {
+        return;
+    }
+
+    if (cached) {
+        cached.isRefreshing = true;
+    }
+
+    try {
+        const freshData = await fetchData();
+        setPublicCache(key, freshData, freshTtlMs, staleTtlMs);
+        console.log(`[Public Cache] Refreshed: ${key}`);
+    } catch (error) {
+        console.error(`[Public Cache] Background refresh failed: ${key}`, error);
+
+        if (cached) {
+            cached.isRefreshing = false;
+        }
+    }
+}
+
+
+async function sendCachedPublicResponse(
+    res,
+    cacheKey,
+    message,
+    fetchData,
+    freshTtlMs = 2 * 60 * 1000,
+    staleTtlMs = 30 * 60 * 1000,
+    maxAgeSeconds = 120
+) {
+    const cached = getPublicCache(cacheKey);
+
+    if (cached.status === 'HIT') {
+        res.set('X-Cache', 'HIT');
+        res.set('Cache-Control', `public, max-age=${maxAgeSeconds}`);
+
+        return successResponse(res, 200, message, cached.data);
+    }
+
+    if (cached.status === 'STALE') {
+        res.set('X-Cache', 'STALE');
+        res.set('Cache-Control', `public, max-age=${maxAgeSeconds}`);
+
+        refreshPublicCacheInBackground(cacheKey, fetchData, freshTtlMs, staleTtlMs);
+
+        return successResponse(res, 200, message, cached.data);
+    }
+
+    const data = await fetchData();
+
+    setPublicCache(cacheKey, data, freshTtlMs, staleTtlMs);
+
+    res.set('X-Cache', 'MISS');
+    res.set('Cache-Control', `public, max-age=${maxAgeSeconds}`);
+
+    return successResponse(res, 200, message, data);
+}
+
 // Configure file upload middleware for public CV uploads
 const uploadMiddleware = fileUpload({
     useTempFiles: true,
@@ -51,12 +163,18 @@ const uploadMiddleware = fileUpload({
  */
 router.get('/pages/tree', async (req, res) => {
     try {
-        const tree = await Page.getPublishedTree();
-
-        // Set cache headers (cache for 5 minutes)
-        res.set('Cache-Control', 'public, max-age=300');
-
-        return successResponse(res, 200, 'Published page tree retrieved successfully', { tree });
+        return sendCachedPublicResponse(
+            res,
+            'public-pages-tree',
+            'Published page tree retrieved successfully',
+            async () => {
+                const tree = await Page.getPublishedTree();
+                return { tree };
+            },
+            2 * 60 * 1000,
+            30 * 60 * 1000,
+            120
+        );
     } catch (error) {
         console.error('Error in public getPageTree:', error);
         return errorResponse(res, 500, 'Failed to retrieve page tree');
@@ -70,28 +188,72 @@ router.get('/pages/tree', async (req, res) => {
 router.get('/pages/slug/:slug', async (req, res) => {
     try {
         const { slug } = req.params;
+        const cacheKey = `public-page-slug:${slug}`;
 
-        // Find published page by slug
+        const cached = getPublicCache(cacheKey);
+
+        if (cached.status === 'HIT') {
+            res.set('X-Cache', 'HIT');
+            res.set('Cache-Control', 'public, max-age=120');
+            return successResponse(res, 200, 'Page retrieved successfully', cached.data);
+        }
+
+        if (cached.status === 'STALE') {
+            res.set('X-Cache', 'STALE');
+            res.set('Cache-Control', 'public, max-age=120');
+
+            refreshPublicCacheInBackground(
+                cacheKey,
+                async () => {
+                    const page = await Page.findOne({
+                        slug,
+                        isActive: true,
+                        status: 'published'
+                    })
+                        .select('title slug path metaTitle metaDescription metaKeywords')
+                        .lean();
+
+                    if (!page) return cached.data;
+
+                    const sections = await Section.getPublishedSections(page._id);
+
+                    return {
+                        page,
+                        sections
+                    };
+                },
+                2 * 60 * 1000,
+                30 * 60 * 1000
+            );
+
+            return successResponse(res, 200, 'Page retrieved successfully', cached.data);
+        }
+
         const page = await Page.findOne({
             slug,
             isActive: true,
             status: 'published'
-        }).select('title slug path metaTitle metaDescription metaKeywords');
+        })
+            .select('title slug path metaTitle metaDescription metaKeywords')
+            .lean();
 
         if (!page) {
             return errorResponse(res, 404, 'Page not found');
         }
 
-        // Get published sections for this page
         const sections = await Section.getPublishedSections(page._id);
 
-        // Set cache headers (cache for 5 minutes)
-        res.set('Cache-Control', 'public, max-age=300');
-
-        return successResponse(res, 200, 'Page retrieved successfully', {
+        const data = {
             page,
             sections
-        });
+        };
+
+        setPublicCache(cacheKey, data, 2 * 60 * 1000, 30 * 60 * 1000);
+
+        res.set('X-Cache', 'MISS');
+        res.set('Cache-Control', 'public, max-age=120');
+
+        return successResponse(res, 200, 'Page retrieved successfully', data);
     } catch (error) {
         console.error('Error in public getPageBySlug:', error);
         return errorResponse(res, 500, 'Failed to retrieve page');
@@ -473,12 +635,19 @@ router.get('/building-types', async (req, res) => {
  */
 router.get('/projects/home', async (req, res) => {
     try {
-        const projects = await Project.getHomePageProjects();
-        res.set('Cache-Control', 'public, max-age=300');
-        return successResponse(res, 200, 'Home page projects retrieved successfully', {
-            projects,
-            count: projects.length
-        });
+        return sendCachedPublicResponse(
+            res,
+            'public-projects-home',
+            'Home page projects retrieved successfully',
+            async () => {
+                const projects = await Project.getHomePageProjects();
+
+                return {
+                    projects,
+                    count: projects.length
+                };
+            }
+        );
     } catch (error) {
         console.error('Error in public getHomePageProjects:', error);
         return errorResponse(res, 500, 'Failed to retrieve home page projects');
@@ -898,12 +1067,15 @@ router.post('/upload-cv', uploadMiddleware, async (req, res) => {
  */
 router.get('/form-configuration', async (req, res) => {
     try {
-        const config = await FormConfiguration.getActive();
-
-        // Set cache headers (cache for 5 minutes)
-        res.set('Cache-Control', 'public, max-age=300');
-
-        return successResponse(res, 200, 'Form configuration retrieved successfully', { config });
+        return sendCachedPublicResponse(
+            res,
+            'public-form-configuration',
+            'Form configuration retrieved successfully',
+            async () => {
+                const config = await FormConfiguration.getActive();
+                return { config };
+            }
+        );
     } catch (error) {
         console.error('Error in public getFormConfiguration:', error);
         return errorResponse(res, 500, 'Failed to retrieve form configuration');
@@ -917,20 +1089,23 @@ router.get('/form-configuration', async (req, res) => {
  */
 router.get('/branches', async (req, res) => {
     try {
-        const branches = await Branch.getPublished();
+        return sendCachedPublicResponse(
+            res,
+            'public-branches',
+            'Published branches retrieved successfully',
+            async () => {
+                const branches = await Branch.getPublished();
 
-        // Exclude branches where country failed to populate (null ref or deleted country)
-        const withCountry = Array.isArray(branches)
-            ? branches.filter((b) => b.country != null)
-            : [];
+                const withCountry = Array.isArray(branches)
+                    ? branches.filter((b) => b.country != null)
+                    : [];
 
-        // Set cache headers (cache for 5 minutes)
-        res.set('Cache-Control', 'public, max-age=300');
-
-        return successResponse(res, 200, 'Published branches retrieved successfully', {
-            branches: withCountry,
-            count: withCountry.length
-        });
+                return {
+                    branches: withCountry,
+                    count: withCountry.length
+                };
+            }
+        );
     } catch (error) {
         console.error('Error in public getBranches:', error);
         return errorResponse(res, 500, 'Failed to retrieve branches');
@@ -943,15 +1118,19 @@ router.get('/branches', async (req, res) => {
  */
 router.get('/customers', async (req, res) => {
     try {
-        const customers = await Customer.getPublished();
+        return sendCachedPublicResponse(
+            res,
+            'public-customers',
+            'Published customers retrieved successfully',
+            async () => {
+                const customers = await Customer.getPublished();
 
-        // Set cache headers (cache for 5 minutes)
-        res.set('Cache-Control', 'public, max-age=300');
-
-        return successResponse(res, 200, 'Published customers retrieved successfully', {
-            customers,
-            count: customers.length
-        });
+                return {
+                    customers,
+                    count: customers.length
+                };
+            }
+        );
     } catch (error) {
         console.error('Error in public getCustomers:', error);
         return errorResponse(res, 500, 'Failed to retrieve customers');
@@ -964,15 +1143,19 @@ router.get('/customers', async (req, res) => {
  */
 router.get('/certifications', async (req, res) => {
     try {
-        const certifications = await Certification.getPublished();
+        return sendCachedPublicResponse(
+            res,
+            'public-certifications',
+            'Published certifications retrieved successfully',
+            async () => {
+                const certifications = await Certification.getPublished();
 
-        // Set cache headers (cache for 5 minutes)
-        res.set('Cache-Control', 'public, max-age=300');
-
-        return successResponse(res, 200, 'Published certifications retrieved successfully', {
-            certifications,
-            count: certifications.length
-        });
+                return {
+                    certifications,
+                    count: certifications.length
+                };
+            }
+        );
     } catch (error) {
         console.error('Error in public getCertifications:', error);
         return errorResponse(res, 500, 'Failed to retrieve certifications');
@@ -985,12 +1168,19 @@ router.get('/certifications', async (req, res) => {
  */
 router.get('/company-updates/home', async (req, res) => {
     try {
-        const companyUpdates = await CompanyUpdate.getHomePageCompanyUpdates();
-        res.set('Cache-Control', 'public, max-age=300');
-        return successResponse(res, 200, 'Home page company updates retrieved successfully', {
-            companyUpdates,
-            count: companyUpdates.length
-        });
+        return sendCachedPublicResponse(
+            res,
+            'public-company-updates-home',
+            'Home page company updates retrieved successfully',
+            async () => {
+                const companyUpdates = await CompanyUpdate.getHomePageCompanyUpdates();
+
+                return {
+                    companyUpdates,
+                    count: companyUpdates.length
+                };
+            }
+        );
     } catch (error) {
         console.error('Error in public getHomePageCompanyUpdates:', error);
         return errorResponse(res, 500, 'Failed to retrieve home page company updates');
@@ -1080,15 +1270,19 @@ router.get('/company-update-categories', async (req, res) => {
  */
 router.get('/brochures', async (req, res) => {
     try {
-        const brochures = await Brochure.getPublished();
+        return sendCachedPublicResponse(
+            res,
+            'public-brochures',
+            'Published brochures retrieved successfully',
+            async () => {
+                const brochures = await Brochure.getPublished();
 
-        // Set cache headers (cache for 5 minutes)
-        res.set('Cache-Control', 'public, max-age=300');
-
-        return successResponse(res, 200, 'Published brochures retrieved successfully', {
-            brochures,
-            count: brochures.length
-        });
+                return {
+                    brochures,
+                    count: brochures.length
+                };
+            }
+        );
     } catch (error) {
         console.error('Error in public getBrochures:', error);
         return errorResponse(res, 500, 'Failed to retrieve brochures');
@@ -1147,8 +1341,15 @@ function getYouTubeThumbnail(videoId, quality = 'hqdefault') {
 // Header configuration (published + featured)
 router.get('/header-configuration', async (req, res) => {
     try {
-        const header = await HeaderConfiguration.getPublished();
-        return successResponse(res, 200, 'Published header configuration retrieved successfully', { header });
+        return sendCachedPublicResponse(
+            res,
+            'public-header-configuration',
+            'Published header configuration retrieved successfully',
+            async () => {
+                const header = await HeaderConfiguration.getPublished();
+                return { header };
+            }
+        );
     } catch (error) {
         console.error('Error in public getHeaderConfiguration:', error);
         return errorResponse(res, 500, 'Failed to retrieve header configuration');
@@ -1158,8 +1359,15 @@ router.get('/header-configuration', async (req, res) => {
 // Footer configuration (published + featured)
 router.get('/footer-configuration', async (req, res) => {
     try {
-        const footer = await FooterConfiguration.getPublished();
-        return successResponse(res, 200, 'Published footer configuration retrieved successfully', { footer });
+        return sendCachedPublicResponse(
+            res,
+            'public-footer-configuration',
+            'Published footer configuration retrieved successfully',
+            async () => {
+                const footer = await FooterConfiguration.getPublished();
+                return { footer };
+            }
+        );
     } catch (error) {
         console.error('Error in public getFooterConfiguration:', error);
         return errorResponse(res, 500, 'Failed to retrieve footer configuration');
@@ -1169,8 +1377,15 @@ router.get('/footer-configuration', async (req, res) => {
 // Website appearance (published + featured)
 router.get('/website-appearance', async (req, res) => {
     try {
-        const appearance = await WebsiteAppearance.getPublished();
-        return successResponse(res, 200, 'Published website appearance retrieved successfully', { appearance });
+        return sendCachedPublicResponse(
+            res,
+            'public-website-appearance',
+            'Published website appearance retrieved successfully',
+            async () => {
+                const appearance = await WebsiteAppearance.getPublished();
+                return { appearance };
+            }
+        );
     } catch (error) {
         console.error('Error in public getWebsiteAppearance:', error);
         return errorResponse(res, 500, 'Failed to retrieve website appearance');
