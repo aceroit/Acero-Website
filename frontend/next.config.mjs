@@ -4,28 +4,21 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
-    // Allow project/industry/building-type images from backend (acero.ae, localhost, cloudinary)
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'acero.ae',
-        pathname: '/**',
-      },
-      {
-        protocol: 'http',
-        hostname: 'acero.ae',
-        pathname: '/**',
-      },
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        pathname: '/**',
-      },
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'acerogroup.co',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.acerogroup.co',
+        pathname: '/uploads/**',
       },
     ],
   },

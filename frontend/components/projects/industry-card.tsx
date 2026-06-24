@@ -52,6 +52,7 @@ export function IndustryCard({ industry, index = 0, className }: IndustryCardPro
               src={industry.logo}
               alt={industry.name}
               fill
+unoptimized
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />

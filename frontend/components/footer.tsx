@@ -181,27 +181,12 @@ export function Footer() {
           {/* Brand Column */}
           <div className="text-center lg:col-span-2 lg:text-left">
             <Link href="/" className="flex items-center justify-center lg:justify-start">
-              {brandInfo.logo?.imageUrl ? (
-                <Image
-                  src={brandInfo.logo.imageUrl}
-                  alt={brandInfo.logo.altText || "Acero Logo"}
-                  width={48}
-                  height={48}
-                  className="h-12 w-auto object-contain"
-                  style={{ maxHeight: '48px' }}
-                />
-              ) : (
-                <>
-                  <Image
-                    src="/Logo/Logo.png"
-                    alt="Acero Logo"
-                    width={48}
-                    height={48}
-                    className="h-12 w-auto object-contain"
-                    style={{ maxHeight: '48px' }}
-                  />
-                </>
-              )}
+              <img
+  src="/Logo/Logo.png"
+  alt="Acero Logo"
+  className="h-12 w-auto object-contain"
+  style={{ maxHeight: "48px" }}
+/>
             </Link>
             {brandInfo.description && (
             <p className="mt-6 mx-auto max-w-sm text-muted-foreground leading-relaxed lg:mx-0">

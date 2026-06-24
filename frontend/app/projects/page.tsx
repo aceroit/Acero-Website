@@ -51,14 +51,28 @@ function ProjectsContent() {
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
   // Transform backend industries data to match frontend component expectations
-  const industries = backendIndustries
-    .filter((ind) => ind.slug) // Filter out industries without slugs
-    .map((ind) => ({
-      name: ind.name,
-      slug: ind.slug || "", // Ensure slug is never undefined
-      logo: ind.logo?.url || null, // Use null instead of placeholder so background doesn't show if no image
-      projectCount: ind.projectCount || 0,
-    }))
+  const getLogoUrl = (logo: any): string | null => {
+  if (!logo) return null
+
+  if (typeof logo === "string") {
+    return logo
+  }
+
+  if (typeof logo === "object") {
+    return logo.url || logo.secure_url || logo.path || null
+  }
+
+  return null
+}
+
+const industries = backendIndustries
+  .filter((ind) => ind.slug)
+  .map((ind) => ({
+    name: ind.name,
+    slug: ind.slug || "",
+    logo: getLogoUrl(ind.logo),
+    projectCount: ind.projectCount || 0,
+  }))
 
   // Separate sections by type
   const heroSection = sections.find((s) => s.sectionTypeSlug === "hero_image")

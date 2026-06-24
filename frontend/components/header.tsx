@@ -143,23 +143,12 @@ export function Header() {
       <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
-          {logo && !isLoading ? (
-            <Image
-              src={logo.imageUrl}
-              alt={logo.altText}
-              width={48}
-              height={48}
-              className="h-12 w-auto object-contain"
-            />
-          ) : (
-            <Image
-              src="/Logo/Logo.png"
-              alt="Acero Logo"
-              width={48}
-              height={48}
-              className="h-12 w-auto object-contain"
-            />
-          )}
+          <img
+  src="/Logo/Logo.png"
+  alt="Acero Logo"
+  className="h-12 w-auto object-contain"
+  style={{ maxHeight: "48px" }}
+/>
         </Link>
 
         {/* Desktop Navigation */}
