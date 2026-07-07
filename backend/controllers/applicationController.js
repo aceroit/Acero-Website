@@ -195,6 +195,7 @@ function getExportRows(applications) {
 
 function escapeXml(value = '') {
     return String(value)
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, ' ')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -290,8 +291,8 @@ function buildExcelBuffer(applications) {
 <sheetFormatPr defaultRowHeight="18"/>
 <cols>${colsXml}</cols>
 <sheetData>${sheetRows.join('')}</sheetData>
-<mergeCells count="2"><mergeCell ref="A1:${lastColumn}1"/><mergeCell ref="A2:${lastColumn}2"/></mergeCells>
 <autoFilter ref="A4:${lastColumn}${Math.max(rows.length + 4, 4)}"/>
+<mergeCells count="2"><mergeCell ref="A1:${lastColumn}1"/><mergeCell ref="A2:${lastColumn}2"/></mergeCells>
 ${hyperlinksXml}
 <pageMargins left="0.25" right="0.25" top="0.5" bottom="0.5" header="0.2" footer="0.2"/>
 </worksheet>`;
