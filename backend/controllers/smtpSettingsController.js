@@ -1,3 +1,4 @@
+const nodemailer = require('nodemailer');
 const SMTPSettings = require('../models/SMTPSettings');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent } = require('../utils/workflowStatusValidator');
@@ -160,3 +161,70 @@ exports.deleteSMTPSettings = async (req, res) => {
 };
 
 
+
+exports.sendSMTPTestEmail = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body || {};
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim())) {
+            return errorResponse(res, 400, 'Please provide a valid test email address');
+        }
+
+        const item = await SMTPSettings.findOne({ _id: id, isActive: true });
+        if (!item) {
+            return errorResponse(res, 404, 'SMTP settings not found');
+        }
+
+        if (!item.host?.value || !item.port?.value || !item.username?.value || !item.password?.value) {
+            return errorResponse(res, 400, 'SMTP host, port, username, and password are required before sending a test email');
+        }
+
+        const transporter = nodemailer.createTransport({
+            host: item.host.value,
+            port: Number(item.port.value),
+            secure: !!item.secure?.value,
+            auth: {
+                user: item.username.value,
+                pass: item.password.value
+            }
+        });
+
+        await transporter.verify();
+
+        const fromEmail = item.fromEmail?.value || item.username.value;
+        const fromName = item.fromName?.value || item.title || 'Acero CMS';
+        const to = String(email).trim();
+        const sentAt = new Date().toISOString().replace('T', ' ').slice(0, 16);
+
+        const info = await transporter.sendMail({
+            from: `${fromName} <${fromEmail}>`,
+            to,
+            subject: 'Acero SMTP Test Email',
+            html: `
+                <div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;margin:0 auto;border:1px solid #e5e7eb;">
+                    <div style="background:#b81725;color:#fff;padding:22px 26px;">
+                        <div style="font-size:28px;font-weight:700;letter-spacing:.5px;">ACERO</div>
+                        <div style="font-size:16px;margin-top:6px;">SMTP Test Email</div>
+                    </div>
+                    <div style="padding:26px;color:#1f2937;font-size:15px;line-height:1.6;">
+                        <p style="margin:0 0 14px;">This is a test email from Acero CMS SMTP settings.</p>
+                        <p style="margin:0 0 14px;">If you received this email, the selected SMTP configuration is able to send mail successfully.</p>
+                        <p style="margin:0;"><strong>Sent at:</strong> ${sentAt} UTC</p>
+                    </div>
+                    <div style="background:#1f2937;color:#fff;padding:14px 26px;font-size:12px;">
+                        Copyright (c) 2026 Acero Building Systems. All rights reserved.
+                    </div>
+                </div>
+            `
+        });
+
+        return successResponse(res, 200, 'Test email sent successfully', {
+            messageId: info.messageId,
+            accepted: info.accepted || []
+        });
+    } catch (error) {
+        console.error('Error in sendSMTPTestEmail:', error);
+        return errorResponse(res, 500, `Failed to send test email: ${error.message}`);
+    }
+};

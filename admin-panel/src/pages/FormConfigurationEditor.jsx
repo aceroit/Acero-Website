@@ -7,6 +7,10 @@ import { usePermissions } from '../contexts/PermissionContext';
 import * as formConfigurationService from '../services/formConfigurationService';
 import { toast } from 'react-toastify';
 
+function getConfigFromResponse(response) {
+  return response?.data?.formConfiguration || response?.data?.config || response?.data || null;
+}
+
 const FormConfigurationEditor = () => {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
@@ -26,7 +30,10 @@ const FormConfigurationEditor = () => {
     try {
       const response = await formConfigurationService.getActiveFormConfiguration();
       if (response.success) {
-        const configData = response.data.formConfiguration || response.data;
+        const configData = getConfigFromResponse(response);
+        if (!configData) {
+          return;
+        }
         setConfig(configData);
         form.setFieldsValue({
           career: {

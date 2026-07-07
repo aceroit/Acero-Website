@@ -28,6 +28,13 @@ router.post(
     smtpSettingsController.createSMTPSettings
 );
 
+
+// Send test email using saved SMTP settings
+router.post(
+    '/:id/test-email',
+    checkPermission('smtp-settings', 'read'),
+    smtpSettingsController.sendSMTPTestEmail
+);
 // Update
 router.put(
     '/:id',
