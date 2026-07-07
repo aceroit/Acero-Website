@@ -33,6 +33,7 @@ const Enquiry = require('../models/Enquiry');
 const Application = require('../models/Application');
 const FormConfiguration = require('../models/FormConfiguration');
 const fileUpload = require('express-fileupload');
+const { saveUploadedFile, getUploadTempDir } = require('../utils/localFileStorage');
 
 /// Simple in-memory cache for public GET APIs
 // Fresh TTL = how long data is considered fresh
@@ -149,7 +150,7 @@ async function sendCachedPublicResponse(
 // Configure file upload middleware for public CV uploads
 const uploadMiddleware = fileUpload({
     useTempFiles: true,
-    tempFileDir: '/tmp/',
+    tempFileDir: getUploadTempDir(),
     limits: {
         fileSize: 2 * 1024 * 1024 // 2MB max for CV files
     },
@@ -992,7 +993,7 @@ router.post('/upload-cv', uploadMiddleware, async (req, res) => {
 
         const file = req.files.file;
         const fileExt = file.name.split('.').pop().toLowerCase();
-        
+
         // Validate file type (PDF, DOC, DOCX, JPEG, JPG, PNG)
         const allowedTypes = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];
         if (!allowedTypes.includes(fileExt)) {
@@ -1005,54 +1006,16 @@ router.post('/upload-cv', uploadMiddleware, async (req, res) => {
             return errorResponse(res, 400, 'File size exceeds 2MB limit');
         }
 
-        // Upload directly to Cloudinary (bypass Media model for public CV uploads)
-        const cloudinary = require('cloudinary').v2;
-        const isImage = ['jpeg', 'jpg', 'png'].includes(fileExt);
-        
-        const uploadOptions = {
-            folder: `${process.env.MEDIA_FOLDER_PREFIX || 'acero-cms'}/career-applications/cv`,
-            resource_type: isImage ? 'image' : 'raw',
-        };
-
-        let result;
-        if (file.buffer) {
-            result = await new Promise((resolve, reject) => {
-                const uploadStream = cloudinary.uploader.upload_stream(
-                    uploadOptions,
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
-                uploadStream.end(file.buffer);
-            });
-        } else if (file.path || file.tempFilePath) {
-            result = await cloudinary.uploader.upload(
-                file.path || file.tempFilePath,
-                uploadOptions
-            );
-        } else {
-            return errorResponse(res, 400, 'Invalid file object');
-        }
-
-        // Determine mime type from file extension
-        const mimeTypes = {
-            'pdf': 'application/pdf',
-            'doc': 'application/msword',
-            'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'jpeg': 'image/jpeg',
-            'jpg': 'image/jpeg',
-            'png': 'image/png'
-        };
-        const mimeType = mimeTypes[fileExt] || null;
+        // Save CV locally under UPLOAD_ROOT/career-applications/cv
+        const savedFile = await saveUploadedFile(file, 'career-applications/cv');
 
         return successResponse(res, 201, 'CV uploaded successfully', {
             cvFile: {
-                url: result.secure_url || result.url,
-                publicId: result.public_id,
-                filename: result.original_filename || file.name || file.originalname,
-                size: result.bytes,
-                mimeType: mimeType
+                url: savedFile.url,
+                publicId: savedFile.publicId,
+                filename: savedFile.filename,
+                size: savedFile.size,
+                mimeType: savedFile.mimeType
             }
         });
     } catch (error) {

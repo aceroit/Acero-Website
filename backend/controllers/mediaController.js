@@ -242,7 +242,7 @@ exports.deleteMedia = async (req, res) => {
             );
         }
 
-        // Delete from Cloudinary and database
+        // Delete from local storage and database
         await uploadService.deleteFile(id);
 
         return successResponse(res, 200, 'Media deleted successfully');
@@ -389,7 +389,7 @@ exports.bulkDeleteMedia = async (req, res) => {
                     continue;
                 }
 
-                // Delete from Cloudinary and database
+                // Delete from local storage and database
                 await uploadService.deleteFile(id);
                 results.deleted.push(id);
             } catch (error) {

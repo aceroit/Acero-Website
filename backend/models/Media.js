@@ -13,7 +13,7 @@ const mediaSchema = new mongoose.Schema({
     },
     publicId: {
         type: String,
-        required: [true, 'Cloudinary public ID is required'],
+        required: [true, 'File public ID is required'],
         unique: true,
         index: true
     },
@@ -59,7 +59,7 @@ const mediaSchema = new mongoose.Schema({
         type: String,
         trim: true,
         index: true
-        // Cloudinary folder path (e.g., 'pages', 'sections', 'users', 'media')
+        // Local upload folder path (e.g., 'pages', 'sections', 'users', 'media')
     },
     tags: [{
         type: String,

@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 const  connectDB = require('./configs/database');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
-const { cloudinaryConnect } = require('./configs/cloudinary');
+const { getUploadRoot } = require('./utils/localFileStorage');
 // Loading environment variables from .env file
 dotenv.config();
 
@@ -24,8 +24,9 @@ app.use(
 );
 app.use(express.json());
 
-// Connecting to cloudinary
-cloudinaryConnect();
+const uploadRoot = getUploadRoot();
+app.use("/uploads", express.static(uploadRoot));
+
 
 // Activity logging middleware (must be after basic middleware, before routes)
 const { activityLogger } = require('./middleware/logger');

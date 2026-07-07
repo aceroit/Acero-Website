@@ -1,10 +1,71 @@
-const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+const path = require('path');
 const Media = require('../models/Media');
+const { saveUploadedFile, getUploadRoot, getPublicUploadBase } = require('../utils/localFileStorage');
 
 /**
  * Upload Service
- * Centralized file upload service using Cloudinary
+ * Centralized file upload service using local storage
  */
+
+
+function getStorageFolder(folder = 'media') {
+    const prefix = process.env.MEDIA_FOLDER_PREFIX || 'acero-cms';
+    const cleanFolder = String(folder || 'media')
+        .replace(/^\/+|\/+$/g, '')
+        .replace(/\\/g, '/')
+        .split('/')
+        .filter((part) => part && part !== '.' && part !== '..')
+        .join('/');
+
+    return [prefix, cleanFolder].filter(Boolean).join('/');
+}
+
+function getFileExt(file) {
+    const name = file.originalname || file.name || '';
+    return name.split('.').pop().toLowerCase();
+}
+
+function getFormatFromFilename(filename = '') {
+    const ext = path.extname(filename).replace('.', '').toLowerCase();
+    return ext || undefined;
+}
+
+function getLocalPathFromPublicId(publicId) {
+    if (!publicId) return null;
+
+    if (publicId.startsWith('http://') || publicId.startsWith('https://')) {
+        return null;
+    }
+
+    const uploadRoot = getUploadRoot();
+    const normalized = publicId.replace(/^\/uploads\//, '').replace(/^uploads\//, '');
+    const filePath = path.resolve(uploadRoot, normalized);
+    const relative = path.relative(uploadRoot, filePath);
+
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+        return null;
+    }
+
+    return filePath;
+}
+
+function removeLocalFileIfExists(publicId) {
+    const filePath = getLocalPathFromPublicId(publicId);
+
+    if (!filePath) return false;
+
+    try {
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            return true;
+        }
+    } catch (error) {
+        console.warn('Failed to delete local file:', filePath, error.message);
+    }
+
+    return false;
+}
 
 /**
  * Validate file before upload
@@ -16,24 +77,18 @@ const Media = require('../models/Media');
 exports.validateFile = (file, allowedTypes, maxSize) => {
     const errors = [];
 
-    // Check if file exists
     if (!file) {
         errors.push('No file provided');
         return { valid: false, errors };
     }
 
-    // Get file extension
-    const fileExt = file.originalname ? 
-        file.originalname.split('.').pop().toLowerCase() : 
-        file.name.split('.').pop().toLowerCase();
+    const fileExt = getFileExt(file);
 
-    // Check file type
     if (!allowedTypes.includes(fileExt)) {
         errors.push(`File type .${fileExt} not allowed. Allowed types: ${allowedTypes.join(', ')}`);
     }
 
-    // Check file size
-    const fileSize = file.size || file.buffer?.length || 0;
+    const fileSize = file.size || file.buffer?.length || file.data?.length || 0;
     if (fileSize > maxSize) {
         const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(2);
         const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2);
@@ -47,71 +102,31 @@ exports.validateFile = (file, allowedTypes, maxSize) => {
 };
 
 /**
- * Upload image to Cloudinary
- * @param {Object} file - File object (from multer or express-fileupload)
- * @param {String} folder - Cloudinary folder path
- * @param {Object} options - Upload options
- * @param {String} userId - ID of user uploading
- * @returns {Object} - Uploaded media details
+ * Upload image to local storage
  */
 exports.uploadImage = async (file, folder = 'media', options = {}, userId) => {
     try {
-        // Validate file
         const allowedTypes = (process.env.ALLOWED_IMAGE_TYPES || 'jpg,jpeg,png,gif,webp,svg').split(',');
-        const maxSize = parseInt(process.env.MAX_FILE_SIZE || 10485760); // 10MB default
+        const maxSize = parseInt(process.env.MAX_FILE_SIZE || 10485760); // 10MB
 
         const validation = exports.validateFile(file, allowedTypes, maxSize);
         if (!validation.valid) {
             throw new Error(validation.errors.join(', '));
         }
 
-        // Prepare upload options
-        const uploadOptions = {
-            folder: `${process.env.MEDIA_FOLDER_PREFIX || 'acero-cms'}/${folder}`,
-            resource_type: 'image',
-            transformation: options.transformation || [
-                { quality: 'auto' },
-                { fetch_format: 'auto' }
-            ],
-            ...options
-        };
+        const saved = await saveUploadedFile(file, getStorageFolder(folder));
 
-        // Upload to Cloudinary
-        let result;
-        if (file.buffer) {
-            // If file has buffer (from multer memory storage)
-            result = await new Promise((resolve, reject) => {
-                const uploadStream = cloudinary.uploader.upload_stream(
-                    uploadOptions,
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
-                uploadStream.end(file.buffer);
-            });
-        } else if (file.path || file.tempFilePath) {
-            // If file has path (from multer disk storage or express-fileupload)
-            result = await cloudinary.uploader.upload(
-                file.path || file.tempFilePath,
-                uploadOptions
-            );
-        } else {
-            throw new Error('Invalid file object');
-        }
-
-        // Save media record to database
         const media = await Media.create({
-            filename: result.original_filename || file.originalname || file.name,
-            originalName: file.originalname || file.name,
-            publicId: result.public_id,
-            url: result.url,
-            secureUrl: result.secure_url,
-            resourceType: result.resource_type,
-            format: result.format,
-            size: result.bytes,
-            width: result.width,
-            height: result.height,
+            filename: saved.storedFilename || saved.filename,
+            originalName: saved.originalName || file.originalname || file.name,
+            publicId: saved.publicId,
+            url: saved.url,
+            secureUrl: saved.secureUrl || saved.url,
+            resourceType: 'image',
+            format: getFormatFromFilename(saved.filename),
+            size: saved.size,
+            width: options.width || undefined,
+            height: options.height || undefined,
             folder: folder,
             uploadedBy: userId,
             tags: options.tags || [],
@@ -128,11 +143,6 @@ exports.uploadImage = async (file, folder = 'media', options = {}, userId) => {
 
 /**
  * Upload multiple images
- * @param {Array} files - Array of file objects
- * @param {String} folder - Cloudinary folder path
- * @param {Object} options - Upload options
- * @param {String} userId - ID of user uploading
- * @returns {Array} - Array of uploaded media details
  */
 exports.uploadMultipleImages = async (files, folder = 'media', options = {}, userId) => {
     try {
@@ -140,13 +150,11 @@ exports.uploadMultipleImages = async (files, folder = 'media', options = {}, use
             throw new Error('No files provided');
         }
 
-        // Upload all files in parallel
-        const uploadPromises = files.map(file => 
+        const uploadPromises = files.map(file =>
             exports.uploadImage(file, folder, options, userId)
         );
 
-        const results = await Promise.all(uploadPromises);
-        return results;
+        return await Promise.all(uploadPromises);
     } catch (error) {
         console.error('Upload multiple images error:', error);
         throw error;
@@ -154,66 +162,30 @@ exports.uploadMultipleImages = async (files, folder = 'media', options = {}, use
 };
 
 /**
- * Upload video to Cloudinary
- * @param {Object} file - File object
- * @param {String} folder - Cloudinary folder path
- * @param {Object} options - Upload options
- * @param {String} userId - ID of user uploading
- * @returns {Object} - Uploaded media details
+ * Upload video to local storage
  */
 exports.uploadVideo = async (file, folder = 'media', options = {}, userId) => {
     try {
-        // Validate file
         const allowedTypes = (process.env.ALLOWED_VIDEO_TYPES || 'mp4,webm,mov').split(',');
-        const maxSize = parseInt(process.env.MAX_VIDEO_SIZE || 104857600); // 100MB default
+        const maxSize = parseInt(process.env.MAX_VIDEO_SIZE || 104857600); // 100MB
 
         const validation = exports.validateFile(file, allowedTypes, maxSize);
         if (!validation.valid) {
             throw new Error(validation.errors.join(', '));
         }
 
-        // Prepare upload options
-        const uploadOptions = {
-            folder: `${process.env.MEDIA_FOLDER_PREFIX || 'acero-cms'}/${folder}`,
-            resource_type: 'video',
-            ...options
-        };
+        const saved = await saveUploadedFile(file, getStorageFolder(folder));
 
-        // Upload to Cloudinary
-        let result;
-        if (file.buffer) {
-            result = await new Promise((resolve, reject) => {
-                const uploadStream = cloudinary.uploader.upload_stream(
-                    uploadOptions,
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
-                uploadStream.end(file.buffer);
-            });
-        } else if (file.path || file.tempFilePath) {
-            result = await cloudinary.uploader.upload(
-                file.path || file.tempFilePath,
-                uploadOptions
-            );
-        } else {
-            throw new Error('Invalid file object');
-        }
-
-        // Save media record to database
         const media = await Media.create({
-            filename: result.original_filename || file.originalname || file.name,
-            originalName: file.originalname || file.name,
-            publicId: result.public_id,
-            url: result.url,
-            secureUrl: result.secure_url,
-            resourceType: result.resource_type,
-            format: result.format,
-            size: result.bytes,
-            width: result.width,
-            height: result.height,
-            duration: result.duration,
+            filename: saved.storedFilename || saved.filename,
+            originalName: saved.originalName || file.originalname || file.name,
+            publicId: saved.publicId,
+            url: saved.url,
+            secureUrl: saved.secureUrl || saved.url,
+            resourceType: 'video',
+            format: getFormatFromFilename(saved.filename),
+            size: saved.size,
+            duration: options.duration || undefined,
             folder: folder,
             uploadedBy: userId,
             tags: options.tags || [],
@@ -228,19 +200,16 @@ exports.uploadVideo = async (file, folder = 'media', options = {}, userId) => {
 };
 
 /**
- * Delete file from Cloudinary and database
- * @param {String} publicId - Cloudinary public ID or Media document ID
- * @returns {Object} - Deletion result
+ * Delete file from local storage and database
+ * @param {String} publicId - Local publicId or Media document ID
  */
 exports.deleteFile = async (publicId) => {
     try {
-        // Check if it's a MongoDB ID or Cloudinary public ID
         let media;
+
         if (publicId.match(/^[0-9a-fA-F]{24}$/)) {
-            // MongoDB ObjectId
             media = await Media.findById(publicId);
         } else {
-            // Cloudinary public ID
             media = await Media.findOne({ publicId });
         }
 
@@ -248,17 +217,14 @@ exports.deleteFile = async (publicId) => {
             throw new Error('Media not found');
         }
 
-        // Check if media is in use
         if (media.usedIn && media.usedIn.length > 0) {
             throw new Error('Cannot delete media that is currently in use');
         }
 
-        // Delete from Cloudinary
-        await cloudinary.uploader.destroy(media.publicId, {
-            resource_type: media.resourceType
-        });
+        // Delete local file only if publicId is a local relative path.
+        // Old external records will be removed from DB only.
+        removeLocalFileIfExists(media.publicId);
 
-        // Delete from database
         await Media.findByIdAndDelete(media._id);
 
         return { success: true, message: 'Media deleted successfully' };
@@ -269,23 +235,19 @@ exports.deleteFile = async (publicId) => {
 };
 
 /**
- * Get optimized/transformed image URL
- * @param {String} publicId - Cloudinary public ID
- * @param {Object} transformations - Transformation options
- * @returns {String} - Transformed image URL
+ * Get optimized/transformed image URL.
+ * Local storage does not transform images, so return direct local URL.
  */
 exports.getOptimizedUrl = (publicId, transformations = {}) => {
     try {
-        const url = cloudinary.url(publicId, {
-            quality: transformations.quality || 'auto',
-            fetch_format: transformations.format || 'auto',
-            width: transformations.width,
-            height: transformations.height,
-            crop: transformations.crop || 'limit',
-            ...transformations
-        });
+        if (!publicId) return null;
 
-        return url;
+        if (publicId.startsWith('http://') || publicId.startsWith('https://')) {
+            return publicId;
+        }
+
+        const normalized = publicId.replace(/^\/uploads\//, '').replace(/^uploads\//, '');
+        return `${getPublicUploadBase()}/${normalized}`;
     } catch (error) {
         console.error('Get optimized URL error:', error);
         throw error;
@@ -293,21 +255,12 @@ exports.getOptimizedUrl = (publicId, transformations = {}) => {
 };
 
 /**
- * Generate thumbnail URL
- * @param {String} publicId - Cloudinary public ID
- * @param {Number} width - Thumbnail width
- * @param {Number} height - Thumbnail height
- * @returns {String} - Thumbnail URL
+ * Generate thumbnail URL.
+ * Local storage does not generate thumbnails, so return direct local URL.
  */
 exports.generateThumbnail = (publicId, width = 200, height = 200) => {
     try {
-        return cloudinary.url(publicId, {
-            width,
-            height,
-            crop: 'fill',
-            quality: 'auto',
-            fetch_format: 'auto'
-        });
+        return exports.getOptimizedUrl(publicId);
     } catch (error) {
         console.error('Generate thumbnail error:', error);
         throw error;
@@ -315,14 +268,35 @@ exports.generateThumbnail = (publicId, width = 200, height = 200) => {
 };
 
 /**
- * Get file details from Cloudinary
- * @param {String} publicId - Cloudinary public ID
- * @returns {Object} - File details
+ * Get file details from local DB/file system
  */
 exports.getFileDetails = async (publicId) => {
     try {
-        const result = await cloudinary.api.resource(publicId);
-        return result;
+        let media;
+
+        if (publicId.match(/^[0-9a-fA-F]{24}$/)) {
+            media = await Media.findById(publicId);
+        } else {
+            media = await Media.findOne({ publicId });
+        }
+
+        if (!media) {
+            throw new Error('Media not found');
+        }
+
+        const details = media.toObject ? media.toObject() : media;
+        const filePath = getLocalPathFromPublicId(media.publicId);
+
+        if (filePath && fs.existsSync(filePath)) {
+            const stat = fs.statSync(filePath);
+            details.localPath = filePath;
+            details.size = details.size || stat.size;
+            details.exists = true;
+        } else {
+            details.exists = false;
+        }
+
+        return details;
     } catch (error) {
         console.error('Get file details error:', error);
         throw error;
@@ -330,63 +304,29 @@ exports.getFileDetails = async (publicId) => {
 };
 
 /**
- * Upload raw file (PDFs, documents, etc.)
- * @param {Object} file - File object
- * @param {String} folder - Cloudinary folder path
- * @param {Object} options - Upload options
- * @param {String} userId - ID of user uploading
- * @returns {Object} - Uploaded media details
+ * Upload raw file (PDFs, documents, etc.) to local storage
  */
 exports.uploadRawFile = async (file, folder = 'media', options = {}, userId) => {
     try {
-        // Validate file
         const allowedTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
-        const maxSize = parseInt(process.env.MAX_FILE_SIZE || 20971520); // 20MB default
+        const maxSize = parseInt(process.env.MAX_FILE_SIZE || 20971520); // 20MB
 
         const validation = exports.validateFile(file, allowedTypes, maxSize);
         if (!validation.valid) {
             throw new Error(validation.errors.join(', '));
         }
 
-        // Prepare upload options
-        const uploadOptions = {
-            folder: `${process.env.MEDIA_FOLDER_PREFIX || 'acero-cms'}/${folder}`,
-            resource_type: 'raw',
-            ...options
-        };
+        const saved = await saveUploadedFile(file, getStorageFolder(folder));
 
-        // Upload to Cloudinary
-        let result;
-        if (file.buffer) {
-            result = await new Promise((resolve, reject) => {
-                const uploadStream = cloudinary.uploader.upload_stream(
-                    uploadOptions,
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
-                uploadStream.end(file.buffer);
-            });
-        } else if (file.path || file.tempFilePath) {
-            result = await cloudinary.uploader.upload(
-                file.path || file.tempFilePath,
-                uploadOptions
-            );
-        } else {
-            throw new Error('Invalid file object');
-        }
-
-        // Save media record to database
         const media = await Media.create({
-            filename: result.original_filename || file.originalname || file.name,
-            originalName: file.originalname || file.name,
-            publicId: result.public_id,
-            url: result.url,
-            secureUrl: result.secure_url,
-            resourceType: result.resource_type,
-            format: result.format,
-            size: result.bytes,
+            filename: saved.storedFilename || saved.filename,
+            originalName: saved.originalName || file.originalname || file.name,
+            publicId: saved.publicId,
+            url: saved.url,
+            secureUrl: saved.secureUrl || saved.url,
+            resourceType: 'raw',
+            format: getFormatFromFilename(saved.filename),
+            size: saved.size,
             folder: folder,
             uploadedBy: userId,
             tags: options.tags || [],
@@ -399,4 +339,3 @@ exports.uploadRawFile = async (file, folder = 'media', options = {}, userId) => 
         throw error;
     }
 };
-

@@ -3,11 +3,12 @@ const router = express.Router();
 const mediaController = require('../controllers/mediaController');
 const { authenticate, authorize } = require('../middleware/auth');
 const fileUpload = require('express-fileupload');
+const { getUploadTempDir } = require('../utils/localFileStorage');
 
 // Configure file upload middleware
 const uploadMiddleware = fileUpload({
     useTempFiles: true,
-    tempFileDir: '/tmp/',
+    tempFileDir: getUploadTempDir(),
     limits: {
         fileSize: parseInt(process.env.MAX_VIDEO_SIZE || 104857600) // 100MB max
     },

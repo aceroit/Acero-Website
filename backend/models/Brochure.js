@@ -58,7 +58,7 @@ const brochureSchema = new mongoose.Schema({
         }
     },
 
-    // PDFs by language: one URL per language (uploaded via Cloudinary)
+    // PDFs by language: one URL per language (uploaded locally)
     languages: [{
         languageCode: { type: String, trim: true, required: true },
         languageName: { type: String, trim: true, required: true },
