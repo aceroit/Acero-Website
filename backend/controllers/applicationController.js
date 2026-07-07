@@ -192,6 +192,27 @@ function getExportRows(applications) {
     }));
 }
 
+function escapeXml(value = '') {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+function getColumnName(index) {
+    let name = '';
+    let current = index;
+
+    while (current > 0) {
+        const remainder = (current - 1) % 26;
+        name = String.fromCharCode(65 + remainder) + name;
+        current = Math.floor((current - 1) / 26);
+    }
+
+    return name;
+}
 function sendDownload(res, buffer, filename, contentType) {
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
@@ -202,44 +223,108 @@ function sendDownload(res, buffer, filename, contentType) {
 function buildExcelBuffer(applications) {
     const rows = getExportRows(applications);
     const columns = [
-        ['No.', 'no'],
-        ['First Name', 'firstName'],
-        ['Last Name', 'lastName'],
-        ['Email', 'email'],
-        ['Phone', 'phone'],
-        ['Country', 'country'],
-        ['Vacancy', 'vacancy'],
-        ['Department', 'department'],
-        ['Location', 'location'],
-        ['Experience', 'experience'],
-        ['Education', 'education'],
-        ['Engineering Degree', 'engineeringDegree'],
-        ['Languages', 'languages'],
-        ['Status', 'status'],
-        ['Submitted At', 'submittedAt'],
-        ['Cover Letter', 'coverLetter'],
-        ['CV Link', 'cvUrl'],
+        { label: '#', key: 'no', width: 6, style: 3 },
+        { label: 'First Name', key: 'firstName', width: 20, style: 3 },
+        { label: 'Last Name', key: 'lastName', width: 20, style: 3 },
+        { label: 'Email', key: 'email', width: 34, style: 3 },
+        { label: 'Phone', key: 'phone', width: 18, style: 3 },
+        { label: 'Country', key: 'country', width: 20, style: 3 },
+        { label: 'Vacancy', key: 'vacancy', width: 28, style: 3 },
+        { label: 'Department', key: 'department', width: 24, style: 3 },
+        { label: 'Location', key: 'location', width: 24, style: 3 },
+        { label: 'Experience', key: 'experience', width: 16, style: 3 },
+        { label: 'Education', key: 'education', width: 20, style: 3 },
+        { label: 'Eng. Degree', key: 'engineeringDegree', width: 14, style: 3 },
+        { label: 'Languages', key: 'languages', width: 18, style: 3 },
+        { label: 'Status', key: 'status', width: 14, style: 3 },
+        { label: 'Submitted At', key: 'submittedAt', width: 20, style: 3 },
+        { label: 'Cover Letter', key: 'coverLetter', width: 60, style: 4 },
+        { label: 'CV Link', key: 'cvUrl', width: 16, style: 5 },
     ];
 
-    const htmlRows = [
-        '<tr>' + columns.map(([label]) => `<th>${escapeHtml(label)}</th>`).join('') + '</tr>',
-        ...rows.map((row) => '<tr>' + columns.map(([, key]) => {
-            const value = row[key] || '';
-            if (key === 'cvUrl' && value) {
-                return `<td><a href="${escapeHtml(value)}">View CV</a></td>`;
+    const lastColumn = getColumnName(columns.length);
+    const generatedAt = formatDateTime(new Date());
+    const hyperlinks = [];
+
+    function cell(ref, value, styleId = 0) {
+        const safeValue = escapeXml(value || '');
+        const style = styleId ? ` s="${styleId}"` : '';
+        return `<c r="${ref}" t="inlineStr"${style}><is><t>${safeValue}</t></is></c>`;
+    }
+
+    const sheetRows = [];
+    sheetRows.push(`<row r="1" ht="30"><c r="A1" t="inlineStr" s="1"><is><t>ACERO Job Applications Export</t></is></c></row>`);
+    sheetRows.push(`<row r="2" ht="22"><c r="A2" t="inlineStr" s="2"><is><t>Generated ${escapeXml(generatedAt)} | ${rows.length} applications | Filtered export from Acero CMS</t></is></c></row>`);
+    sheetRows.push('<row r="3" ht="8"></row>');
+
+    const headerRowNumber = 4;
+    sheetRows.push(`<row r="${headerRowNumber}" ht="24">${columns.map((column, index) => cell(`${getColumnName(index + 1)}${headerRowNumber}`, column.label, 6)).join('')}</row>`);
+
+    rows.forEach((row, rowIndex) => {
+        const rowNumber = rowIndex + 5;
+        const cells = columns.map((column, columnIndex) => {
+            const ref = `${getColumnName(columnIndex + 1)}${rowNumber}`;
+            if (column.key === 'cvUrl') {
+                if (row.cvUrl) {
+                    hyperlinks.push({ ref, url: row.cvUrl });
+                    return cell(ref, 'View CV', 5);
+                }
+                return cell(ref, 'No CV', 3);
             }
-            return `<td>${escapeHtml(value)}</td>`;
-        }).join('') + '</tr>'),
-    ].join('');
+            return cell(ref, row[column.key], column.style || 3);
+        }).join('');
+        sheetRows.push(`<row r="${rowNumber}" ht="${row.coverLetter && row.coverLetter.length > 120 ? 54 : 28}">${cells}</row>`);
+    });
 
-    const html = `<!doctype html><html><head><meta charset="utf-8" />
-<style>
-table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;}th{background:#1f2937;color:#fff;font-weight:bold;}th,td{border:1px solid #d9e2ec;padding:7px 9px;vertical-align:top;}td{mso-number-format:"\\@";}a{color:#1268d9;}
-</style></head><body><table>${htmlRows}</table></body></html>`;
+    const dimensionEnd = `${lastColumn}${Math.max(rows.length + 4, 4)}`;
+    const colsXml = columns.map((column, index) => `<col min="${index + 1}" max="${index + 1}" width="${column.width}" customWidth="1"/>`).join('');
+    const hyperlinksXml = hyperlinks.length
+        ? `<hyperlinks>${hyperlinks.map((link, index) => `<hyperlink ref="${link.ref}" r:id="rId${index + 1}" display="View CV"/>`).join('')}</hyperlinks>`
+        : '';
 
-    return Buffer.from(html, 'utf8');
+    const worksheet = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<dimension ref="A1:${dimensionEnd}"/>
+<sheetViews><sheetView workbookViewId="0"><pane ySplit="4" topLeftCell="A5" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+<sheetFormatPr defaultRowHeight="18"/>
+<cols>${colsXml}</cols>
+<sheetData>${sheetRows.join('')}</sheetData>
+<mergeCells count="2"><mergeCell ref="A1:${lastColumn}1"/><mergeCell ref="A2:${lastColumn}2"/></mergeCells>
+<autoFilter ref="A4:${lastColumn}${Math.max(rows.length + 4, 4)}"/>
+${hyperlinksXml}
+<pageMargins left="0.25" right="0.25" top="0.5" bottom="0.5" header="0.2" footer="0.2"/>
+</worksheet>`;
+
+    const worksheetRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+${hyperlinks.map((link, index) => `<Relationship Id="rId${index + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${escapeXml(link.url)}" TargetMode="External"/>`).join('')}
+</Relationships>`;
+
+    const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<fonts count="6"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="18"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font><font><i/><sz val="10"/><color rgb="FF64748B"/><name val="Calibri"/></font><font><sz val="11"/><name val="Calibri"/></font><font><sz val="10"/><name val="Calibri"/></font><font><u/><sz val="11"/><color rgb="FF0563C1"/><name val="Calibri"/></font></fonts>
+<fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFB81725"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF8FAFC"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1F2937"/><bgColor indexed="64"/></patternFill></fill></fills>
+<borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD8DEE9"/></left><right style="thin"><color rgb="FFD8DEE9"/></right><top style="thin"><color rgb="FFD8DEE9"/></top><bottom style="thin"><color rgb="FFD8DEE9"/></bottom><diagonal/></border><border><left style="thin"><color rgb="FFFFFFFF"/></left><right style="thin"><color rgb="FFFFFFFF"/></right><top style="thin"><color rgb="FFFFFFFF"/></top><bottom style="thin"><color rgb="FFFFFFFF"/></bottom><diagonal/></border></borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="2" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf><xf numFmtId="0" fontId="4" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf><xf numFmtId="0" fontId="5" fillId="0" borderId="1" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="top"/></xf><xf numFmtId="0" fontId="1" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf></cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+
+    const workbook = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Applications" sheetId="1" r:id="rId1"/></sheets></workbook>`;
+    const workbookRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+    const rels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+    const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`;
+
+    return buildZipBuffer([
+        { name: '[Content_Types].xml', data: Buffer.from(contentTypes, 'utf8') },
+        { name: '_rels/.rels', data: Buffer.from(rels, 'utf8') },
+        { name: 'xl/workbook.xml', data: Buffer.from(workbook, 'utf8') },
+        { name: 'xl/_rels/workbook.xml.rels', data: Buffer.from(workbookRels, 'utf8') },
+        { name: 'xl/styles.xml', data: Buffer.from(styles, 'utf8') },
+        { name: 'xl/worksheets/sheet1.xml', data: Buffer.from(worksheet, 'utf8') },
+        { name: 'xl/worksheets/_rels/sheet1.xml.rels', data: Buffer.from(worksheetRels, 'utf8') },
+    ]);
 }
-
 function pdfEscape(value = '') {
     return String(value).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
 }
@@ -267,86 +352,190 @@ function buildPdfBuffer(applications) {
     const rows = getExportRows(applications);
     const objects = [];
     const pages = [];
-    const fontObjectId = 3;
     const width = 842;
     const height = 595;
-    const margin = 38;
+    const margin = 30;
+    const footerY = 22;
+    const topY = 548;
+    const rowHeight = 34;
+    const headerHeight = 24;
+    const tableTop = 474;
+    const tableBottom = 54;
+    const fonts = {
+        regular: 3,
+        bold: 4,
+    };
+    const columns = [
+        { label: '#', key: 'no', x: 30, w: 24, align: 'center' },
+        { label: 'Candidate', key: 'name', x: 54, w: 88 },
+        { label: 'Email', key: 'email', x: 142, w: 118 },
+        { label: 'Phone', key: 'phone', x: 260, w: 72 },
+        { label: 'Vacancy', key: 'vacancy', x: 332, w: 104 },
+        { label: 'Department', key: 'department', x: 436, w: 82 },
+        { label: 'Country', key: 'country', x: 518, w: 68 },
+        { label: 'Exp.', key: 'experience', x: 586, w: 52 },
+        { label: 'Education', key: 'education', x: 638, w: 65 },
+        { label: 'Status', key: 'status', x: 703, w: 54 },
+        { label: 'CV', key: 'cvUrl', x: 757, w: 40, align: 'center' },
+        { label: 'Applied', key: 'submittedAt', x: 797, w: 45 },
+    ];
 
     function addObject(content) {
         objects.push(content);
         return objects.length;
     }
 
-    function addPage(lines, annotations) {
-        const content = [
-            'BT',
-            '/F1 18 Tf',
-            '38 552 Td',
-            `(Acero Job Applications Export) Tj`,
-            '/F1 9 Tf',
-            `0 -18 Td`,
-            `(${pdfEscape(`Generated ${formatDateTime(new Date())} | ${applications.length} applications`)}) Tj`,
-        ];
+    function textWidth(value, fontSize) {
+        return cleanText(value).length * fontSize * 0.48;
+    }
 
-        let cursorY = 504;
-        lines.forEach((line) => {
-            content.push(`1 0 0 1 ${margin} ${cursorY} Tm`);
-            content.push(`(${pdfEscape(line)}) Tj`);
-            cursorY -= 13;
+    function truncateText(value, maxWidth, fontSize) {
+        const text = cleanText(value);
+        if (textWidth(text, fontSize) <= maxWidth) return text;
+        let output = text;
+        while (output.length > 0 && textWidth(`${output}...`, fontSize) > maxWidth) {
+            output = output.slice(0, -1);
+        }
+        return `${output || text.slice(0, 1)}...`;
+    }
+
+    function linesForCell(value, maxWidth, fontSize, maxLines = 2) {
+        const words = cleanText(value).split(' ').filter(Boolean);
+        const lines = [];
+        let current = '';
+
+        words.forEach((word) => {
+            const next = current ? `${current} ${word}` : word;
+            if (textWidth(next, fontSize) > maxWidth && current) {
+                lines.push(current);
+                current = word;
+            } else {
+                current = next;
+            }
         });
-        content.push('ET');
+        if (current) lines.push(current);
+        if (!lines.length) lines.push('');
 
-        const stream = content.join('\n');
+        const clipped = lines.slice(0, maxLines);
+        if (lines.length > maxLines) {
+            clipped[maxLines - 1] = truncateText(clipped[maxLines - 1], maxWidth, fontSize);
+        }
+        return clipped;
+    }
+
+    function setColor(r, g, b) {
+        return `${(r / 255).toFixed(3)} ${(g / 255).toFixed(3)} ${(b / 255).toFixed(3)} rg`;
+    }
+
+    function setStroke(r, g, b) {
+        return `${(r / 255).toFixed(3)} ${(g / 255).toFixed(3)} ${(b / 255).toFixed(3)} RG`;
+    }
+
+    function rect(x, y, w, h, fill = true) {
+        return `${x} ${y} ${w} ${h} re ${fill ? 'f' : 'S'}`;
+    }
+
+    function drawText(x, y, value, fontSize = 8, font = fonts.regular, color = [17, 24, 39]) {
+        return [
+            setColor(color[0], color[1], color[2]),
+            `BT /F${font} ${fontSize} Tf 1 0 0 1 ${x} ${y} Tm (${pdfEscape(value)}) Tj ET`,
+        ].join('\n');
+    }
+
+    function drawCenteredText(x, y, w, value, fontSize = 8, font = fonts.regular, color = [17, 24, 39]) {
+        const display = truncateText(value, w - 6, fontSize);
+        const tx = x + Math.max(3, (w - textWidth(display, fontSize)) / 2);
+        return drawText(tx, y, display, fontSize, font, color);
+    }
+
+    function addPage(pageRows, pageNumber, totalPages) {
+        const commands = [];
+        const annotations = [];
+
+        commands.push(setColor(184, 23, 37));
+        commands.push(rect(0, 526, width, 69));
+        commands.push(drawText(margin, 562, 'ACERO', 24, fonts.bold, [255, 255, 255]));
+        commands.push(drawText(margin, 542, 'Job Applications Export', 14, fonts.bold, [255, 255, 255]));
+        commands.push(drawText(610, 562, `Generated: ${formatDateTime(new Date())}`, 8, fonts.regular, [255, 255, 255]));
+        commands.push(drawText(610, 546, `Records: ${rows.length}`, 8, fonts.regular, [255, 255, 255]));
+        commands.push(drawText(610, 530, `Page ${pageNumber} of ${totalPages}`, 8, fonts.regular, [255, 255, 255]));
+
+        commands.push(setColor(248, 250, 252));
+        commands.push(rect(margin, 492, width - margin * 2, 22));
+        commands.push(drawText(margin + 10, 500, 'Filtered export from Acero CMS. CV cells are clickable when a CV URL is available.', 9, fonts.regular, [71, 85, 105]));
+
+        commands.push(setColor(31, 41, 55));
+        commands.push(rect(margin, tableTop, width - margin * 2, headerHeight));
+        columns.forEach((column) => {
+            commands.push(drawCenteredText(column.x, tableTop + 8, column.w, column.label, 7, fonts.bold, [255, 255, 255]));
+        });
+
+        let y = tableTop - rowHeight;
+        pageRows.forEach((row, index) => {
+            commands.push(setColor(index % 2 === 0 ? 255 : 248, index % 2 === 0 ? 255 : 250, index % 2 === 0 ? 255 : 252));
+            commands.push(rect(margin, y, width - margin * 2, rowHeight));
+            commands.push(setStroke(226, 232, 240));
+            commands.push(rect(margin, y, width - margin * 2, rowHeight, false));
+
+            columns.forEach((column) => {
+                commands.push(setStroke(226, 232, 240));
+                commands.push(rect(column.x, y, column.w, rowHeight, false));
+
+                if (column.key === 'cvUrl') {
+                    if (row.cvUrl) {
+                        commands.push(drawCenteredText(column.x, y + 13, column.w, 'View', 7.5, fonts.bold, [37, 99, 235]));
+                        annotations.push(`<< /Type /Annot /Subtype /Link /Rect [${column.x + 4} ${y + 8} ${column.x + column.w - 4} ${y + 24}] /Border [0 0 0] /A << /S /URI /URI (${pdfEscape(row.cvUrl)}) >> >>`);
+                    } else {
+                        commands.push(drawCenteredText(column.x, y + 13, column.w, '-', 7.5));
+                    }
+                    return;
+                }
+
+                const value = column.key === 'submittedAt' ? String(row.submittedAt || '').slice(0, 10) : row[column.key];
+                const cellLines = linesForCell(value, column.w - 8, 7.2, 2);
+                cellLines.forEach((line, lineIndex) => {
+                    if (column.align === 'center') {
+                        commands.push(drawCenteredText(column.x, y + 20 - lineIndex * 10, column.w, line, 7.2));
+                    } else {
+                        commands.push(drawText(column.x + 4, y + 20 - lineIndex * 10, truncateText(line, column.w - 8, 7.2), 7.2));
+                    }
+                });
+            });
+
+            y -= rowHeight;
+        });
+
+        commands.push(setColor(31, 41, 55));
+        commands.push(rect(0, 0, width, 38));
+        commands.push(drawText(margin, footerY, 'Copyright (c) 2026 Acero Building Systems. All rights reserved.', 9, fonts.regular, [255, 255, 255]));
+        commands.push(drawText(width - 118, footerY, `Page ${pageNumber} of ${totalPages}`, 9, fonts.regular, [255, 255, 255]));
+
+        const stream = commands.join('\n');
         const contentId = addObject(`<< /Length ${Buffer.byteLength(stream, 'utf8')} >>\nstream\n${stream}\nendstream`);
         const annotationIds = annotations.map((annotation) => addObject(annotation));
         const pageId = addObject('');
-        objects[pageId - 1] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /Font << /F1 ${fontObjectId} 0 R >> >> /Contents ${contentId} 0 R /Annots [${annotationIds.map((id) => `${id} 0 R`).join(' ')}] >>`;
+        objects[pageId - 1] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /Font << /F${fonts.regular} ${fonts.regular} 0 R /F${fonts.bold} ${fonts.bold} 0 R >> >> /Contents ${contentId} 0 R /Annots [${annotationIds.map((id) => `${id} 0 R`).join(' ')}] >>`;
         pages.push(pageId);
     }
 
     addObject('<< /Type /Catalog /Pages 2 0 R >>');
     addObject('');
     addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+    addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
 
-    let currentLines = [];
-    let currentAnnotations = [];
-    let y = 504;
-
-    function flushPage() {
-        addPage(currentLines, currentAnnotations);
-        currentLines = [];
-        currentAnnotations = [];
-        y = 504;
+    const rowsPerPage = Math.max(1, Math.floor((tableTop - tableBottom - headerHeight) / rowHeight));
+    const pageGroups = [];
+    for (let index = 0; index < rows.length; index += rowsPerPage) {
+        pageGroups.push(rows.slice(index, index + rowsPerPage));
     }
+    if (!pageGroups.length) pageGroups.push([]);
 
-    rows.forEach((row) => {
-        const rowLines = [
-            `${row.no}. ${row.name} | ${row.vacancy} | ${row.status}`,
-            `Email: ${row.email} | Phone: ${row.phone} | Country: ${row.country}`,
-            `Experience: ${row.experience} | Education: ${row.education} | Submitted: ${row.submittedAt}`,
-            ...wrapText(`Cover Letter: ${row.coverLetter}`, 130),
-            row.cvUrl ? `CV: ${row.cvUrl}` : 'CV: Not uploaded',
-            '',
-        ];
-
-        if (y - rowLines.length * 13 < 34 && currentLines.length) {
-            flushPage();
+    pageGroups.forEach((pageRows, index) => {
+        if (!pageRows.length) {
+            pageRows.push({ no: '', name: 'No applications matched the selected filters.' });
         }
-
-        rowLines.forEach((line) => {
-            currentLines.push(line);
-            if (line.startsWith('CV: http')) {
-                const link = line.replace(/^CV:\s*/, '');
-                currentAnnotations.push(`<< /Type /Annot /Subtype /Link /Rect [${margin} ${y - 2} ${width - margin} ${y + 10}] /Border [0 0 0] /A << /S /URI /URI (${pdfEscape(link)}) >> >>`);
-            }
-            y -= 13;
-        });
+        addPage(pageRows, index + 1, pageGroups.length);
     });
-
-    if (currentLines.length || rows.length === 0) {
-        if (rows.length === 0) currentLines.push('No applications matched the selected filters.');
-        flushPage();
-    }
 
     objects[1] = `<< /Type /Pages /Kids [${pages.map((id) => `${id} 0 R`).join(' ')}] /Count ${pages.length} >>`;
 
@@ -368,7 +557,6 @@ function buildPdfBuffer(applications) {
 
     return Buffer.from(chunks.join(''), 'utf8');
 }
-
 function makeCrcTable() {
     const table = [];
     for (let n = 0; n < 256; n += 1) {
@@ -564,8 +752,8 @@ exports.exportApplicationsExcel = async (req, res) => {
         return sendDownload(
             res,
             buffer,
-            getExportFilename('excel', 'xls'),
-            'application/vnd.ms-excel; charset=utf-8'
+            getExportFilename('excel', 'xlsx'),
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
     } catch (error) {
         console.error('Error in exportApplicationsExcel:', error);
