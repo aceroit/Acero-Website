@@ -10,6 +10,22 @@ const { getAdminPanelUrl, getPublicSiteUrl } = require('../utils/urlHelper');
 
 const SMTP_CACHE_TTL_MS = 60000;
 
+function escapeEmailHtml(value = '') {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatEmailDate(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toISOString().replace('T', ' ').slice(0, 16);
+}
+
 class NotificationService {
     constructor() {
         this.transporter = null;
@@ -744,16 +760,17 @@ class NotificationService {
             const templateName = 'enquiry-submitted'; // template should exist
 
             const data = {
-                fullName: enquiry.fullName || '',
-                email: enquiry.email || '',
-                mobileNumber: enquiry.mobileNumber || '',
-                country: enquiry.country || '',
-                purpose: enquiry.purpose || '',
-                subject: enquiry.subject || '',
-                message: enquiry.message || '',
-                companyName: enquiry.companyName || '',
-                telephoneNumber: enquiry.telephoneNumber || '',
-                countryCode: enquiry.countryCode || ''
+                fullName: escapeEmailHtml(enquiry.fullName || ''),
+                email: escapeEmailHtml(enquiry.email || ''),
+                mobileNumber: escapeEmailHtml(enquiry.mobileNumber || ''),
+                country: escapeEmailHtml(enquiry.country || ''),
+                purpose: escapeEmailHtml(enquiry.purpose || ''),
+                subject: escapeEmailHtml(enquiry.subject || ''),
+                message: escapeEmailHtml(enquiry.message || ''),
+                companyName: escapeEmailHtml(enquiry.companyName || ''),
+                telephoneNumber: escapeEmailHtml(enquiry.telephoneNumber || ''),
+                countryCode: escapeEmailHtml(enquiry.countryCode || ''),
+                submittedAt: escapeEmailHtml(formatEmailDate(enquiry.submittedAt))
             };
 
             return await this.sendEmail(toEmail, subject, templateName, data);
@@ -762,11 +779,61 @@ class NotificationService {
             return false;
         }
     }
+    async sendEnquiryConfirmation(enquiry) {
+        try {
+            if (!enquiry?.email) return false;
+
+            const data = {
+                fullName: escapeEmailHtml(enquiry.fullName || 'there'),
+                subject: escapeEmailHtml(enquiry.subject || ''),
+                purpose: escapeEmailHtml(enquiry.purpose || ''),
+                submittedAt: escapeEmailHtml(formatEmailDate(enquiry.submittedAt)),
+                publicSiteUrl: escapeEmailHtml(getPublicSiteUrl())
+            };
+
+            return await this.sendEmail(
+                enquiry.email,
+                'We received your enquiry - Acero Building Systems',
+                'enquiry-confirmation',
+                data
+            );
+        } catch (error) {
+            console.error('Failed to send enquiry confirmation email:', error);
+            return false;
+        }
+    }
+
 
     /**
      * Notify on application submission
      * @param {Object} application - Application document
      */
+    async sendApplicationConfirmation(application) {
+        try {
+            if (!application?.email) return false;
+
+            const vacancy = await Vacancy.findById(application.vacancyId).lean();
+            const fullName = `${application.firstName || ''} ${application.lastName || ''}`.trim() || 'there';
+            const data = {
+                fullName: escapeEmailHtml(fullName),
+                vacancyTitle: escapeEmailHtml(vacancy?.title || 'the selected position'),
+                department: escapeEmailHtml(vacancy?.department || ''),
+                submittedAt: escapeEmailHtml(formatEmailDate(application.submittedAt)),
+                publicSiteUrl: escapeEmailHtml(getPublicSiteUrl())
+            };
+
+            return await this.sendEmail(
+                application.email,
+                'We received your job application - Acero Building Systems',
+                'application-confirmation',
+                data
+            );
+        } catch (error) {
+            console.error('Failed to send application confirmation email:', error);
+            return false;
+        }
+    }
+
     async notifyApplicationSubmission(application) {
         try {
             // Find vacancy to get configured email
@@ -784,17 +851,19 @@ class NotificationService {
             const templateName = 'application-submitted'; // template should exist
 
             const data = {
-                fullName: `${application.firstName || ''} ${application.lastName || ''}`.trim(),
-                email: application.email || '',
-                mobileNumber: application.mobileNumber || '',
-                country: application.country || '',
-                experienceLevel: application.experienceLevel || '',
-                educationLevel: application.educationLevel || '',
-                hasEngineeringDegree: application.hasEngineeringDegree || '',
-                languages: Array.isArray(application.languages) ? application.languages.join(', ') : '',
-                coverLetter: application.coverLetter || '',
-                vacancyTitle: vacancy?.title || '',
-                department: vacancy?.department || ''
+                fullName: escapeEmailHtml(`${application.firstName || ''} ${application.lastName || ''}`.trim()),
+                email: escapeEmailHtml(application.email || ''),
+                mobileNumber: escapeEmailHtml(application.mobileNumber || ''),
+                country: escapeEmailHtml(application.country || ''),
+                experienceLevel: escapeEmailHtml(application.experienceLevel || ''),
+                educationLevel: escapeEmailHtml(application.educationLevel || ''),
+                hasEngineeringDegree: escapeEmailHtml(application.hasEngineeringDegree || ''),
+                languages: escapeEmailHtml(Array.isArray(application.languages) ? application.languages.join(', ') : ''),
+                coverLetter: escapeEmailHtml(application.coverLetter || ''),
+                vacancyTitle: escapeEmailHtml(vacancy?.title || ''),
+                department: escapeEmailHtml(vacancy?.department || ''),
+                submittedAt: escapeEmailHtml(formatEmailDate(application.submittedAt)),
+                cvUrl: escapeEmailHtml(application.cvFile?.url || '')
             };
 
             return await this.sendEmail(toEmail, subject, templateName, data);

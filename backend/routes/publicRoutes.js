@@ -34,6 +34,7 @@ const Application = require('../models/Application');
 const FormConfiguration = require('../models/FormConfiguration');
 const fileUpload = require('express-fileupload');
 const { saveUploadedFile, getUploadTempDir } = require('../utils/localFileStorage');
+const notificationService = require('../services/notificationService');
 
 /// Simple in-memory cache for public GET APIs
 // Fresh TTL = how long data is considered fresh
@@ -931,6 +932,18 @@ router.post('/enquiries', async (req, res) => {
         enquiry.ipAddress = req.ip || req.connection.remoteAddress;
         await enquiry.save();
 
+        const emailResults = await Promise.allSettled([
+            notificationService.notifyEnquirySubmission(enquiry),
+            notificationService.sendEnquiryConfirmation(enquiry)
+        ]);
+        emailResults.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error(`Enquiry email task ${index + 1} failed:`, result.reason);
+            } else if (result.value === false) {
+                console.warn(`Enquiry email task ${index + 1} did not send. Check SMTP and form notification settings.`);
+            }
+        });
+
         return successResponse(res, 201, 'Enquiry submitted successfully', { 
             enquiryId: enquiry._id 
         });
@@ -968,6 +981,18 @@ router.post('/applications', async (req, res) => {
         application.submittedAt = new Date();
         application.ipAddress = req.ip || req.connection.remoteAddress;
         await application.save();
+
+        const emailResults = await Promise.allSettled([
+            notificationService.notifyApplicationSubmission(application),
+            notificationService.sendApplicationConfirmation(application)
+        ]);
+        emailResults.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error(`Application email task ${index + 1} failed:`, result.reason);
+            } else if (result.value === false) {
+                console.warn(`Application email task ${index + 1} did not send. Check SMTP and form notification settings.`);
+            }
+        });
 
         return successResponse(res, 201, 'Application submitted successfully', { 
             applicationId: application._id 
