@@ -217,7 +217,7 @@ const Applications = () => {
 
   const handleExport = async (format) => {
     const fallbackNames = {
-      excel: `acero-applications-excel-${dayjs().format('YYYY-MM-DD')}.xls`,
+      excel: `acero-applications-excel-${dayjs().format('YYYY-MM-DD')}.xlsx`,
       pdf: `acero-applications-pdf-${dayjs().format('YYYY-MM-DD')}.pdf`,
       zip: `acero-applications-cvs-${dayjs().format('YYYY-MM-DD')}.zip`,
     };

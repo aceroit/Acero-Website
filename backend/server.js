@@ -20,6 +20,7 @@ app.use(
 	cors({
 		origin: "*",
 		credentials: true,
+		exposedHeaders: ["Content-Disposition", "Content-Length"],
 	})
 );
 app.use(express.json());

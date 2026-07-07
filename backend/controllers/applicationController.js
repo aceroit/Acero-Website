@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 const Application = require('../models/Application');
 const Vacancy = require('../models/Vacancy');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
@@ -348,6 +349,120 @@ function wrapText(value, maxLength) {
     return lines.length ? lines : [''];
 }
 
+function getPdfLogoImage() {
+    const candidates = [
+        path.join(__dirname, '..', '..', 'admin-panel', 'public', 'images', 'frontend-logo.png'),
+        path.join(__dirname, '..', '..', 'frontend', 'public', 'Logo', 'Logo.png'),
+    ];
+
+    for (const logoPath of candidates) {
+        try {
+            if (fs.existsSync(logoPath)) {
+                return decodePngForPdf(fs.readFileSync(logoPath));
+            }
+        } catch (error) {
+            console.warn('Failed to load PDF logo:', logoPath, error.message);
+        }
+    }
+
+    return null;
+}
+
+function decodePngForPdf(buffer) {
+    const signature = buffer.slice(0, 8).toString('hex');
+    if (signature !== '89504e470d0a1a0a') return null;
+
+    let offset = 8;
+    let width = 0;
+    let height = 0;
+    let bitDepth = 0;
+    let colorType = 0;
+    const idatParts = [];
+
+    while (offset < buffer.length) {
+        const length = buffer.readUInt32BE(offset);
+        const type = buffer.slice(offset + 4, offset + 8).toString('ascii');
+        const data = buffer.slice(offset + 8, offset + 8 + length);
+
+        if (type === 'IHDR') {
+            width = data.readUInt32BE(0);
+            height = data.readUInt32BE(4);
+            bitDepth = data[8];
+            colorType = data[9];
+        } else if (type === 'IDAT') {
+            idatParts.push(data);
+        } else if (type === 'IEND') {
+            break;
+        }
+
+        offset += 12 + length;
+    }
+
+    if (!width || !height || bitDepth !== 8 || ![2, 6].includes(colorType)) return null;
+
+    const bytesPerPixel = colorType === 6 ? 4 : 3;
+    const inflated = zlib.inflateSync(Buffer.concat(idatParts));
+    const stride = width * bytesPerPixel;
+    const decoded = Buffer.alloc(width * height * bytesPerPixel);
+    let sourceOffset = 0;
+    let targetOffset = 0;
+    let previous = Buffer.alloc(stride);
+
+    function paethPredictor(left, up, upperLeft) {
+        const p = left + up - upperLeft;
+        const pa = Math.abs(p - left);
+        const pb = Math.abs(p - up);
+        const pc = Math.abs(p - upperLeft);
+        if (pa <= pb && pa <= pc) return left;
+        if (pb <= pc) return up;
+        return upperLeft;
+    }
+
+    for (let row = 0; row < height; row += 1) {
+        const filter = inflated[sourceOffset];
+        sourceOffset += 1;
+        const current = Buffer.alloc(stride);
+
+        for (let index = 0; index < stride; index += 1) {
+            const raw = inflated[sourceOffset + index];
+            const left = index >= bytesPerPixel ? current[index - bytesPerPixel] : 0;
+            const up = previous[index] || 0;
+            const upperLeft = index >= bytesPerPixel ? previous[index - bytesPerPixel] : 0;
+
+            if (filter === 0) current[index] = raw;
+            else if (filter === 1) current[index] = (raw + left) & 0xff;
+            else if (filter === 2) current[index] = (raw + up) & 0xff;
+            else if (filter === 3) current[index] = (raw + Math.floor((left + up) / 2)) & 0xff;
+            else if (filter === 4) current[index] = (raw + paethPredictor(left, up, upperLeft)) & 0xff;
+            else throw new Error(`Unsupported PNG filter ${filter}`);
+        }
+
+        current.copy(decoded, targetOffset);
+        previous = current;
+        sourceOffset += stride;
+        targetOffset += stride;
+    }
+
+    const pixels = width * height;
+    const rgb = Buffer.alloc(pixels * 3);
+    const alpha = colorType === 6 ? Buffer.alloc(pixels) : null;
+
+    for (let pixel = 0; pixel < pixels; pixel += 1) {
+        const source = pixel * bytesPerPixel;
+        const target = pixel * 3;
+        rgb[target] = decoded[source];
+        rgb[target + 1] = decoded[source + 1];
+        rgb[target + 2] = decoded[source + 2];
+        if (alpha) alpha[pixel] = decoded[source + 3];
+    }
+
+    return {
+        width,
+        height,
+        rgb: zlib.deflateSync(rgb),
+        alpha: alpha ? zlib.deflateSync(alpha) : null,
+    };
+}
 function buildPdfBuffer(applications) {
     const rows = getExportRows(applications);
     const objects = [];
@@ -365,6 +480,9 @@ function buildPdfBuffer(applications) {
         regular: 3,
         bold: 4,
     };
+    const logoImage = getPdfLogoImage();
+    let logoImageId = null;
+    let logoMaskId = null;
     const columns = [
         { label: '#', key: 'no', x: 30, w: 24, align: 'center' },
         { label: 'Candidate', key: 'name', x: 54, w: 88 },
@@ -375,9 +493,8 @@ function buildPdfBuffer(applications) {
         { label: 'Country', key: 'country', x: 518, w: 68 },
         { label: 'Exp.', key: 'experience', x: 586, w: 52 },
         { label: 'Education', key: 'education', x: 638, w: 65 },
-        { label: 'Status', key: 'status', x: 703, w: 54 },
-        { label: 'CV', key: 'cvUrl', x: 757, w: 40, align: 'center' },
-        { label: 'Applied', key: 'submittedAt', x: 797, w: 45 },
+        { label: 'CV', key: 'cvUrl', x: 703, w: 45, align: 'center' },
+        { label: 'Applied', key: 'submittedAt', x: 748, w: 64 },
     ];
 
     function addObject(content) {
@@ -454,8 +571,15 @@ function buildPdfBuffer(applications) {
 
         commands.push(setColor(184, 23, 37));
         commands.push(rect(0, 526, width, 69));
-        commands.push(drawText(margin, 562, 'ACERO', 24, fonts.bold, [255, 255, 255]));
-        commands.push(drawText(margin, 542, 'Job Applications Export', 14, fonts.bold, [255, 255, 255]));
+        if (logoImageId) {
+            commands.push(setColor(255, 255, 255));
+            commands.push(rect(margin - 6, 542, 138, 42));
+            commands.push('q 120 0 0 41 34 543 cm /Logo Do Q');
+            commands.push(drawText(178, 562, 'Job Applications Export', 14, fonts.bold, [255, 255, 255]));
+        } else {
+            commands.push(drawText(margin, 562, 'ACERO', 24, fonts.bold, [255, 255, 255]));
+            commands.push(drawText(margin, 542, 'Job Applications Export', 14, fonts.bold, [255, 255, 255]));
+        }
         commands.push(drawText(610, 562, `Generated: ${formatDateTime(new Date())}`, 8, fonts.regular, [255, 255, 255]));
         commands.push(drawText(610, 546, `Records: ${rows.length}`, 8, fonts.regular, [255, 255, 255]));
         commands.push(drawText(610, 530, `Page ${pageNumber} of ${totalPages}`, 8, fonts.regular, [255, 255, 255]));
@@ -483,10 +607,10 @@ function buildPdfBuffer(applications) {
 
                 if (column.key === 'cvUrl') {
                     if (row.cvUrl) {
-                        commands.push(drawCenteredText(column.x, y + 13, column.w, 'View', 7.5, fonts.bold, [37, 99, 235]));
-                        annotations.push(`<< /Type /Annot /Subtype /Link /Rect [${column.x + 4} ${y + 8} ${column.x + column.w - 4} ${y + 24}] /Border [0 0 0] /A << /S /URI /URI (${pdfEscape(row.cvUrl)}) >> >>`);
+                        commands.push(drawCenteredText(column.x, y + 20, column.w, 'View', 7.2, fonts.bold, [37, 99, 235]));
+                        annotations.push(`<< /Type /Annot /Subtype /Link /Rect [${column.x + 4} ${y + 15} ${column.x + column.w - 4} ${y + 27}] /Border [0 0 0] /A << /S /URI /URI (${pdfEscape(row.cvUrl)}) >> >>`);
                     } else {
-                        commands.push(drawCenteredText(column.x, y + 13, column.w, '-', 7.5));
+                        commands.push(drawCenteredText(column.x, y + 20, column.w, '-', 7.2));
                     }
                     return;
                 }
@@ -514,7 +638,8 @@ function buildPdfBuffer(applications) {
         const contentId = addObject(`<< /Length ${Buffer.byteLength(stream, 'utf8')} >>\nstream\n${stream}\nendstream`);
         const annotationIds = annotations.map((annotation) => addObject(annotation));
         const pageId = addObject('');
-        objects[pageId - 1] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /Font << /F${fonts.regular} ${fonts.regular} 0 R /F${fonts.bold} ${fonts.bold} 0 R >> >> /Contents ${contentId} 0 R /Annots [${annotationIds.map((id) => `${id} 0 R`).join(' ')}] >>`;
+        const xObjects = logoImageId ? `/XObject << /Logo ${logoImageId} 0 R >>` : '';
+        objects[pageId - 1] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /Font << /F${fonts.regular} ${fonts.regular} 0 R /F${fonts.bold} ${fonts.bold} 0 R >> ${xObjects} >> /Contents ${contentId} 0 R /Annots [${annotationIds.map((id) => `${id} 0 R`).join(' ')}] >>`;
         pages.push(pageId);
     }
 
@@ -522,6 +647,21 @@ function buildPdfBuffer(applications) {
     addObject('');
     addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
     addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+
+    if (logoImage) {
+        if (logoImage.alpha) {
+            logoMaskId = addObject(Buffer.concat([
+                Buffer.from(`<< /Type /XObject /Subtype /Image /Width ${logoImage.width} /Height ${logoImage.height} /ColorSpace /DeviceGray /BitsPerComponent 8 /Filter /FlateDecode /Length ${logoImage.alpha.length} >>\nstream\n`, 'binary'),
+                logoImage.alpha,
+                Buffer.from('\nendstream', 'binary'),
+            ]));
+        }
+        logoImageId = addObject(Buffer.concat([
+            Buffer.from(`<< /Type /XObject /Subtype /Image /Width ${logoImage.width} /Height ${logoImage.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode ${logoMaskId ? `/SMask ${logoMaskId} 0 R` : ''} /Length ${logoImage.rgb.length} >>\nstream\n`, 'binary'),
+            logoImage.rgb,
+            Buffer.from('\nendstream', 'binary'),
+        ]));
+    }
 
     const rowsPerPage = Math.max(1, Math.floor((tableTop - tableBottom - headerHeight) / rowHeight));
     const pageGroups = [];
@@ -543,11 +683,12 @@ function buildPdfBuffer(applications) {
     const offsets = [0];
 
     objects.forEach((object, index) => {
-        offsets[index + 1] = Buffer.byteLength(chunks.join(''), 'utf8');
-        chunks.push(`${index + 1} 0 obj\n${object}\nendobj\n`);
+        offsets[index + 1] = Buffer.byteLength(chunks.join(''), 'binary');
+        const body = Buffer.isBuffer(object) ? object.toString('binary') : object;
+        chunks.push(`${index + 1} 0 obj\n${body}\nendobj\n`);
     });
 
-    const xrefOffset = Buffer.byteLength(chunks.join(''), 'utf8');
+    const xrefOffset = Buffer.byteLength(chunks.join(''), 'binary');
     chunks.push(`xref\n0 ${objects.length + 1}\n`);
     chunks.push('0000000000 65535 f \n');
     for (let i = 1; i <= objects.length; i += 1) {
@@ -555,7 +696,7 @@ function buildPdfBuffer(applications) {
     }
     chunks.push(`trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
 
-    return Buffer.from(chunks.join(''), 'utf8');
+    return Buffer.from(chunks.join(''), 'binary');
 }
 function makeCrcTable() {
     const table = [];
