@@ -56,9 +56,9 @@ const Login = () => {
                     {/* Logo + Heading */}
                     <div className="mb-8">
                         <img
-                            src="images/Logo2.png"
+                            src="images/frontend-logo.png"
                             alt="Company Logo"
-                            className="h-12 object-fill mb-3"
+                            className="h-14 w-auto object-contain mb-3"
                         />
                         <h1 className="text-2xl font-semibold text-red-700">
                             Welcome To Acero

@@ -15,6 +15,34 @@ router.get(
     applicationController.getAllApplications
 );
 
+
+// GET /api/applications/filters - filter option values
+router.get(
+    '/filters',
+    checkPermission('applications', 'read'),
+    applicationController.getApplicationFilters
+);
+
+// GET /api/applications/export/excel - export filtered applications to Excel
+router.get(
+    '/export/excel',
+    checkPermission('applications', 'read'),
+    applicationController.exportApplicationsExcel
+);
+
+// GET /api/applications/export/pdf - export filtered applications to PDF
+router.get(
+    '/export/pdf',
+    checkPermission('applications', 'read'),
+    applicationController.exportApplicationsPdf
+);
+
+// GET /api/applications/export/zip - export filtered application CV files as ZIP
+router.get(
+    '/export/zip',
+    checkPermission('applications', 'read'),
+    applicationController.exportApplicationsZip
+);
 // GET /api/applications/:id - get by id
 router.get(
     '/:id',

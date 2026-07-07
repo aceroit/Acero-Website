@@ -5,6 +5,19 @@ export const getAllApplications = async (params = {}) => {
   return response.data;
 };
 
+export const getApplicationFilters = async () => {
+  const response = await API.get('/applications/filters');
+  return response.data;
+};
+
+export const downloadApplicationsExport = async (format, params = {}) => {
+  const response = await API.get(`/applications/export/${format}`, {
+    params,
+    responseType: 'blob',
+  });
+  return response;
+};
+
 export const getApplication = async (id) => {
   const response = await API.get(`/applications/${id}`);
   return response.data;
@@ -44,5 +57,3 @@ export const archiveApplication = async (id) => {
   const response = await API.put(`/applications/${id}/archive`);
   return response.data;
 };
-
-

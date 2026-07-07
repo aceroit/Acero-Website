@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Card, Tag, Select, Dropdown, Space, DatePicker } from 'antd';
+import { Table, Button, Input, Card, Tag, Select, Dropdown, DatePicker } from 'antd';
 import {
   EditOutlined,
   DeleteOutlined,
@@ -9,6 +9,9 @@ import {
   MoreOutlined,
   FileTextOutlined,
   ProjectOutlined,
+  FileExcelOutlined,
+  FilePdfOutlined,
+  FileZipOutlined,
 } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import ConfirmModal from '../components/common/ConfirmModal';
@@ -23,7 +26,6 @@ const { Search } = Input;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-// Status color mapping
 const getStatusColor = (status) => {
   const colors = {
     new: 'blue',
@@ -35,7 +37,6 @@ const getStatusColor = (status) => {
   return colors[status] || 'default';
 };
 
-// Status display names
 const getStatusLabel = (status) => {
   const labels = {
     new: 'New',
@@ -47,14 +48,37 @@ const getStatusLabel = (status) => {
   return labels[status] || status;
 };
 
+const formatOptionLabel = (value) => {
+  if (!value) return '';
+  return String(value)
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};
+
+const getDownloadName = (response, fallback) => {
+  const disposition = response.headers?.['content-disposition'] || '';
+  const match = disposition.match(/filename="?([^";]+)"?/i);
+  return match?.[1] || fallback;
+};
+
 const Applications = () => {
   const [applications, setApplications] = useState([]);
   const [vacancies, setVacancies] = useState([]);
+  const [filterOptions, setFilterOptions] = useState({
+    countries: [],
+    experienceLevels: [],
+    educationLevels: [],
+  });
   const [loading, setLoading] = useState(false);
   const [vacanciesLoading, setVacanciesLoading] = useState(false);
+  const [exporting, setExporting] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState(null);
   const [vacancyFilter, setVacancyFilter] = useState(null);
+  const [countryFilter, setCountryFilter] = useState(null);
+  const [experienceFilter, setExperienceFilter] = useState(null);
+  const [educationFilter, setEducationFilter] = useState(null);
   const [dateRange, setDateRange] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -67,15 +91,14 @@ const Applications = () => {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
 
-  // Fetch vacancies for filter dropdown
   useEffect(() => {
     const fetchVacancies = async () => {
       setVacanciesLoading(true);
       try {
         const response = await vacancyService.getAllVacancies({
           page: 1,
-          limit: 1000, // Get all vacancies for filter
-          status: 'published', // Only show published vacancies
+          limit: 1000,
+          status: 'published',
         });
         if (response.success) {
           setVacancies(response.data.vacancies || response.data || []);
@@ -86,27 +109,55 @@ const Applications = () => {
         setVacanciesLoading(false);
       }
     };
+
+    const fetchFilterOptions = async () => {
+      try {
+        const response = await applicationService.getApplicationFilters();
+        if (response.success) {
+          setFilterOptions(response.data || {});
+        }
+      } catch (error) {
+        console.error('Failed to fetch application filters:', error);
+      }
+    };
+
     fetchVacancies();
+    fetchFilterOptions();
   }, []);
 
-  // Fetch applications
+  const buildFilterParams = (overrides = {}) => {
+    const params = {
+      search: searchText || undefined,
+      status: statusFilter || undefined,
+      vacancyId: vacancyFilter || undefined,
+      country: countryFilter || undefined,
+      experienceLevel: experienceFilter || undefined,
+      educationLevel: educationFilter || undefined,
+      ...overrides,
+    };
+
+    if (dateRange && dateRange.length === 2) {
+      params.startDate = dateRange[0].startOf('day').toISOString();
+      params.endDate = dateRange[1].endOf('day').toISOString();
+    }
+
+    Object.keys(params).forEach((key) => {
+      if (params[key] === undefined || params[key] === null || params[key] === '') {
+        delete params[key];
+      }
+    });
+
+    return params;
+  };
+
   const fetchApplications = async (params = {}) => {
     setLoading(true);
     try {
-      const queryParams = {
+      const queryParams = buildFilterParams({
         page: pagination.current,
         limit: pagination.pageSize,
-        search: searchText,
-        status: statusFilter,
-        vacancyId: vacancyFilter,
         ...params,
-      };
-
-      // Add date range filters if selected
-      if (dateRange && dateRange.length === 2) {
-        queryParams.startDate = dateRange[0].startOf('day').toISOString();
-        queryParams.endDate = dateRange[1].endOf('day').toISOString();
-      }
+      });
 
       const response = await applicationService.getAllApplications(queryParams);
 
@@ -133,9 +184,17 @@ const Applications = () => {
 
   useEffect(() => {
     fetchApplications();
-  }, [pagination.current, pagination.pageSize, statusFilter, vacancyFilter, dateRange]);
+  }, [
+    pagination.current,
+    pagination.pageSize,
+    statusFilter,
+    vacancyFilter,
+    countryFilter,
+    experienceFilter,
+    educationFilter,
+    dateRange,
+  ]);
 
-  // Handle delete application
   const handleDelete = async () => {
     try {
       const response = await applicationService.deleteApplication(selectedApplication._id);
@@ -150,14 +209,50 @@ const Applications = () => {
     }
   };
 
-  // Handle search
   const handleSearch = (value) => {
     setSearchText(value);
     setPagination((prev) => ({ ...prev, current: 1 }));
-    fetchApplications({ search: value });
+    fetchApplications({ search: value, page: 1 });
   };
 
-  // Table columns
+  const handleExport = async (format) => {
+    const fallbackNames = {
+      excel: `acero-applications-excel-${dayjs().format('YYYY-MM-DD')}.xls`,
+      pdf: `acero-applications-pdf-${dayjs().format('YYYY-MM-DD')}.pdf`,
+      zip: `acero-applications-cvs-${dayjs().format('YYYY-MM-DD')}.zip`,
+    };
+
+    setExporting(format);
+    try {
+      const response = await applicationService.downloadApplicationsExport(format, buildFilterParams());
+      const filename = getDownloadName(response, fallbackNames[format]);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success(`${format.toUpperCase()} export downloaded`);
+    } catch (error) {
+      toast.error(error.response?.data?.message || `Failed to export ${format.toUpperCase()}`);
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const resetFilters = () => {
+    setSearchText('');
+    setStatusFilter(null);
+    setVacancyFilter(null);
+    setCountryFilter(null);
+    setExperienceFilter(null);
+    setEducationFilter(null);
+    setDateRange(null);
+    setPagination((prev) => ({ ...prev, current: 1 }));
+  };
+
   const columns = [
     {
       title: 'Application',
@@ -195,12 +290,12 @@ const Applications = () => {
                 {record.vacancyId.title || 'N/A'}
               </span>
               <span className="text-gray-500 text-xs">
-                {record.vacancyId.department || ''} â€¢ {record.vacancyId.location || ''}
+                {record.vacancyId.department || ''} • {record.vacancyId.location || ''}
               </span>
             </div>
           </div>
         ) : (
-          <span className="text-gray-400">â€”</span>
+          <span className="text-gray-400">—</span>
         )
       ),
     },
@@ -219,7 +314,7 @@ const Applications = () => {
       dataIndex: 'experienceLevel',
       key: 'experienceLevel',
       render: (level) => (
-        <span className="text-gray-700 text-sm">{level || 'â€”'}</span>
+        <span className="text-gray-700 text-sm">{level || '—'}</span>
       ),
     },
     {
@@ -227,7 +322,7 @@ const Applications = () => {
       dataIndex: 'educationLevel',
       key: 'educationLevel',
       render: (level) => (
-        <span className="text-gray-700 text-sm">{level || 'â€”'}</span>
+        <span className="text-gray-700 text-sm">{level || '—'}</span>
       ),
     },
     {
@@ -235,20 +330,13 @@ const Applications = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status) => (
-        <Tag 
+        <Tag
           color={getStatusColor(status)}
           className="px-3 py-1 font-semibold rounded-full"
         >
           {getStatusLabel(status)}
         </Tag>
       ),
-      filters: [
-        { text: 'New', value: 'new' },
-        { text: 'Reviewing', value: 'reviewing' },
-        { text: 'Shortlisted', value: 'shortlisted' },
-        { text: 'Rejected', value: 'rejected' },
-        { text: 'Archived', value: 'archived' },
-      ],
     },
     {
       title: 'Submitted',
@@ -257,10 +345,10 @@ const Applications = () => {
       render: (date) => (
         <div className="flex flex-col text-sm">
           <span className="text-gray-900">
-            {date ? dayjs(date).format('MMM DD, YYYY') : 'â€”'}
+            {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
           </span>
           <span className="text-gray-500 text-xs">
-            {date ? dayjs(date).format('HH:mm') : 'â€”'}
+            {date ? dayjs(date).format('HH:mm') : '—'}
           </span>
         </div>
       ),
@@ -330,7 +418,6 @@ const Applications = () => {
   return (
     <MainLayout>
       <div className="space-y-6 md:space-y-8 p-4 md:p-0">
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">
@@ -340,32 +427,62 @@ const Applications = () => {
               Manage job applications
             </p>
           </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="primary"
+              size="large"
+              icon={<FileExcelOutlined />}
+              loading={exporting === 'excel'}
+              onClick={() => handleExport('excel')}
+              className="bg-emerald-600"
+            >
+              Excel
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              icon={<FilePdfOutlined />}
+              loading={exporting === 'pdf'}
+              onClick={() => handleExport('pdf')}
+              className="bg-violet-600"
+            >
+              PDF
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              icon={<FileZipOutlined />}
+              loading={exporting === 'zip'}
+              onClick={() => handleExport('zip')}
+              className="bg-sky-600"
+            >
+              CV ZIP
+            </Button>
+          </div>
         </div>
 
-        {/* Search and Filters Bar */}
         <Card className="border border-gray-200 shadow-md bg-white">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="flex-1 w-full">
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 xl:grid-cols-[minmax(280px,1fr)_repeat(2,minmax(180px,220px))_minmax(260px,300px)] gap-3">
               <Search
-                placeholder="Search applications by name, email, or vacancy..."
+                placeholder="Search by name, email, phone, country, vacancy..."
                 allowClear
                 enterButton={<SearchOutlined />}
                 size="large"
+                value={searchText}
                 onSearch={handleSearch}
                 onChange={(e) => {
+                  setSearchText(e.target.value);
                   if (!e.target.value) {
                     handleSearch('');
                   }
                 }}
                 className="w-full"
               />
-            </div>
-            <div className="flex gap-2 w-full md:w-auto">
               <Select
-                placeholder="Filter by Status"
+                placeholder="Status"
                 allowClear
                 size="large"
-                style={{ width: 180 }}
                 value={statusFilter}
                 onChange={(value) => {
                   setStatusFilter(value);
@@ -380,10 +497,38 @@ const Applications = () => {
                 <Option value="archived">Archived</Option>
               </Select>
               <Select
-                placeholder="Filter by Vacancy"
+                placeholder="Country"
                 allowClear
                 size="large"
-                style={{ width: 250 }}
+                value={countryFilter}
+                onChange={(value) => {
+                  setCountryFilter(value);
+                  setPagination((prev) => ({ ...prev, current: 1 }));
+                }}
+                suffixIcon={<FilterOutlined />}
+                showSearch
+                optionFilterProp="children"
+              >
+                {(filterOptions.countries || []).map((country) => (
+                  <Option key={country} value={country}>{country}</Option>
+                ))}
+              </Select>
+              <RangePicker
+                size="large"
+                value={dateRange}
+                placeholder={['Start Date', 'End Date']}
+                onChange={(dates) => {
+                  setDateRange(dates);
+                  setPagination((prev) => ({ ...prev, current: 1 }));
+                }}
+                format="YYYY-MM-DD"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-[minmax(240px,1fr)_minmax(180px,220px)_minmax(180px,220px)_auto] gap-3">
+              <Select
+                placeholder="Vacancy"
+                allowClear
+                size="large"
                 value={vacancyFilter}
                 onChange={(value) => {
                   setVacancyFilter(value);
@@ -402,22 +547,44 @@ const Applications = () => {
                   </Option>
                 ))}
               </Select>
-              <RangePicker
+              <Select
+                placeholder="Experience"
+                allowClear
                 size="large"
-                style={{ width: 280 }}
-                placeholder={['Start Date', 'End Date']}
-                onChange={(dates) => {
-                  setDateRange(dates);
+                value={experienceFilter}
+                onChange={(value) => {
+                  setExperienceFilter(value);
                   setPagination((prev) => ({ ...prev, current: 1 }));
                 }}
-                format="YYYY-MM-DD"
-              />
+                suffixIcon={<FilterOutlined />}
+              >
+                {(filterOptions.experienceLevels || []).map((level) => (
+                  <Option key={level} value={level}>{formatOptionLabel(level)}</Option>
+                ))}
+              </Select>
+              <Select
+                placeholder="Education"
+                allowClear
+                size="large"
+                value={educationFilter}
+                onChange={(value) => {
+                  setEducationFilter(value);
+                  setPagination((prev) => ({ ...prev, current: 1 }));
+                }}
+                suffixIcon={<FilterOutlined />}
+              >
+                {(filterOptions.educationLevels || []).map((level) => (
+                  <Option key={level} value={level}>{formatOptionLabel(level)}</Option>
+                ))}
+              </Select>
+              <Button size="large" onClick={resetFilters}>
+                Reset
+              </Button>
             </div>
           </div>
         </Card>
 
-        {/* Applications Table */}
-        <Card 
+        <Card
           className="border border-gray-200 shadow-md bg-white"
           bodyStyle={{ padding: 0 }}
         >
@@ -431,7 +598,7 @@ const Applications = () => {
               ...pagination,
               showSizeChanger: true,
               showQuickJumper: true,
-              showTotal: (total, range) => 
+              showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} applications`,
               pageSizeOptions: ['10', '20', '50', '100'],
               onChange: (page, pageSize) => {
@@ -442,7 +609,7 @@ const Applications = () => {
                 }));
               },
             }}
-            scroll={{ x: 'max-content', y: 'calc(100vh - 380px)' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 420px)' }}
             onRow={(record) => ({
               onClick: () => {
                 if (hasPermission('applications', 'update')) {
@@ -454,7 +621,6 @@ const Applications = () => {
           />
         </Card>
 
-        {/* Delete Confirmation Modal */}
         <ConfirmModal
           open={isDeleteModalOpen}
           title="Delete Application"
@@ -473,4 +639,3 @@ const Applications = () => {
 };
 
 export default Applications;
-
