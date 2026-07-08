@@ -54,6 +54,58 @@ const ROLE_HIERARCHY = {
     admin: 4,
     super_admin: 5
 };
+const RESOURCE_SLUG_MAP = {
+    page: 'pages',
+    pages: 'pages',
+    section: 'sections',
+    sections: 'sections',
+    project: 'projects',
+    projects: 'projects',
+    branch: 'branches',
+    branches: 'branches',
+    customer: 'customers',
+    customers: 'customers',
+    certification: 'certifications',
+    certifications: 'certifications',
+    'company-update': 'company-updates',
+    'company-updates': 'company-updates',
+    'company-update-category': 'company-update-categories',
+    'company-update-categories': 'company-update-categories',
+    brochure: 'brochures',
+    brochures: 'brochures',
+    'building-type': 'building-types',
+    'building-types': 'building-types',
+    industry: 'industries',
+    industries: 'industries',
+    country: 'countries',
+    countries: 'countries',
+    region: 'regions',
+    regions: 'regions',
+    area: 'areas',
+    areas: 'areas',
+    'header-configuration': 'header-configurations',
+    'header-configurations': 'header-configurations',
+    'footer-configuration': 'footer-configurations',
+    'footer-configurations': 'footer-configurations',
+    'website-appearance': 'website-appearance',
+    'smtp-settings': 'smtp-settings',
+    'google-recaptcha': 'google-recaptcha',
+    'google-maps': 'google-maps',
+    vacancy: 'vacancies',
+    vacancies: 'vacancies',
+    enquiry: 'enquiries',
+    enquiries: 'enquiries',
+    application: 'applications',
+    applications: 'applications'
+};
+
+function normalizeWorkflowResourceType(resourceType) {
+    if (typeof resourceType !== 'string') {
+        return resourceType;
+    }
+
+    return RESOURCE_SLUG_MAP[resourceType] || resourceType;
+}
 
 /**
  * Check if a state transition is valid (permission-based)
@@ -136,11 +188,7 @@ async function canTransition(currentStatus, newStatus, userId, resourceType = 'w
 
         // If still no permission, check if user has 'update' permission on the actual resource (pages/sections)
         if (!hasPermission) {
-            // Normalize resource type to plural form
-            let normalizedResourceType = resourceType;
-            if (resourceType === 'page') normalizedResourceType = 'pages';
-            if (resourceType === 'section') normalizedResourceType = 'sections';
-            
+            const normalizedResourceType = normalizeWorkflowResourceType(resourceType);
             const actualResource = await Resource.findOne({ slug: normalizedResourceType, isActive: true }).select('_id');
             if (actualResource) {
                 const hasResourceUpdatePermission = await Permission.hasUserPermission(userId, actualResource._id, 'update');
@@ -154,12 +202,9 @@ async function canTransition(currentStatus, newStatus, userId, resourceType = 'w
     // For review/approve/publish/delete actions, also check permissions on actual resource (pages/sections)
     // This allows users to have permissions on pages/sections resource instead of workflow resource
     if (!hasPermission && (requiredAction === 'review' || requiredAction === 'approve' || requiredAction === 'publish' || requiredAction === 'delete')) {
-        // Normalize resource type to plural form
-        let normalizedResourceType = resourceType;
-        if (resourceType === 'page') normalizedResourceType = 'pages';
-        if (resourceType === 'section') normalizedResourceType = 'sections';
-        
-        // Get actual resource ID (pages or sections)
+        const normalizedResourceType = normalizeWorkflowResourceType(resourceType);
+
+        // Get actual resource ID for the current resource type
         const actualResource = await Resource.findOne({ slug: normalizedResourceType, isActive: true }).select('_id');
         
         if (actualResource) {
@@ -190,7 +235,7 @@ async function canTransition(currentStatus, newStatus, userId, resourceType = 'w
         
         // For review/approve/publish actions, mention both workflow and actual resource
         if (requiredAction === 'review' || requiredAction === 'approve' || requiredAction === 'publish') {
-            const resourceName = (resourceType === 'page' || resourceType === 'pages') ? 'pages' : 'sections';
+            const resourceName = normalizeWorkflowResourceType(resourceType);
             return {
                 isValid: false,
                 message: `You do not have '${requiredAction}' permission to transition from '${currentStatus}' to '${newStatus}'. Your role: ${userRole}. Required permission: '${requiredAction}' on workflow resource OR '${requiredAction}' on ${resourceName} resource. Current status: ${currentStatus}, Target status: ${newStatus}`
@@ -286,17 +331,13 @@ async function getNextPossibleStates(currentStatus, userId, resourceType = 'work
         }
     }
 
-    // Get actual resource ID (pages or sections) for permission checking
+    // Get actual resource ID for permission checking
     let actualResourceId = null;
-    if (resourceType === 'page' || resourceType === 'pages') {
-        const pagesResource = await Resource.findOne({ slug: 'pages' }).select('_id');
-        if (pagesResource) {
-            actualResourceId = pagesResource._id;
-        }
-    } else if (resourceType === 'section' || resourceType === 'sections') {
-        const sectionsResource = await Resource.findOne({ slug: 'sections' }).select('_id');
-        if (sectionsResource) {
-            actualResourceId = sectionsResource._id;
+    const normalizedResourceType = normalizeWorkflowResourceType(resourceType);
+    if (typeof normalizedResourceType === 'string' && normalizedResourceType !== 'workflow') {
+        const actualResource = await Resource.findOne({ slug: normalizedResourceType, isActive: true }).select('_id');
+        if (actualResource) {
+            actualResourceId = actualResource._id;
         }
     }
 

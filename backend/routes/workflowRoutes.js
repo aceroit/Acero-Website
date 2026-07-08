@@ -2,21 +2,61 @@ const express = require('express');
 const router = express.Router();
 const workflowController = require('../controllers/workflowController');
 const { authenticate } = require('../middleware/auth');
-const { checkPermission } = require('../middleware/rbac');
+const { checkAnyPermission } = require('../middleware/rbac');
 const { validateChangeSummary } = require('../utils/validators');
+
+const RESOURCE_PERMISSION_MAP = {
+    page: 'pages',
+    section: 'sections',
+    project: 'projects',
+    branch: 'branches',
+    customer: 'customers',
+    certification: 'certifications',
+    'company-update': 'company-updates',
+    'company-update-category': 'company-update-categories',
+    brochure: 'brochures',
+    'building-type': 'building-types',
+    industry: 'industries',
+    country: 'countries',
+    region: 'regions',
+    area: 'areas',
+    'header-configuration': 'header-configurations',
+    'footer-configuration': 'footer-configurations',
+    'website-appearance': 'website-appearance',
+    'smtp-settings': 'smtp-settings',
+    'google-recaptcha': 'google-recaptcha',
+    'google-maps': 'google-maps',
+    vacancy: 'vacancies',
+};
+
+const normalizeWorkflowResource = (resource) => RESOURCE_PERMISSION_MAP[resource] || resource;
+
+const checkWorkflowRoutePermission = (actions) => {
+    const requiredActions = Array.isArray(actions) ? actions : [actions];
+
+    return (req, res, next) => {
+        const normalizedResource = normalizeWorkflowResource(req.params.resource);
+        const permissions = requiredActions.flatMap((action) => ([
+            { resource: normalizedResource, action },
+            { resource: 'workflow', action },
+        ]));
+
+        return checkAnyPermission(permissions)(req, res, next);
+    };
+};
 
 // Middleware to validate resource parameter
 const validateResource = (req, res, next) => {
     const { resource } = req.params;
     const validResources = [
-        'page', 
-        'section', 
-        'project', 
-        'branch', 
-        'customer', 
-        'certification', 
-        'company-update', 
-        'company-update-category', 
+        'page',
+        'section',
+        'project',
+        'branch',
+        'customer',
+        'certification',
+        'company-update',
+        'company-update-category',
         'brochure',
         'building-type',
         'industry',
@@ -31,14 +71,14 @@ const validateResource = (req, res, next) => {
         'google-maps',
         'vacancy'
     ];
-    
+
     if (!validResources.includes(resource)) {
         return res.status(400).json({
             success: false,
             message: `Invalid resource type. Must be one of: ${validResources.join(', ')}`
         });
     }
-    
+
     next();
 };
 
@@ -46,101 +86,98 @@ const validateResource = (req, res, next) => {
 router.use(authenticate);
 
 // Workflow state transition routes
-// Submit for review (draft → in_review) - Editor+
+// Submit for review (draft -> in_review) - Editor+
 router.post(
     '/:resource/:id/submit',
     validateResource,
-    validateChangeSummary(true), // Require change summary for submit
-    checkPermission('pages', 'update'), // Generic permission check
+    validateChangeSummary(true),
+    checkWorkflowRoutePermission('update'),
     workflowController.submitForReview
 );
 
-// Mark reviewed (in_review → pending_approval) - Reviewer+
+// Mark reviewed (in_review -> pending_approval) - Reviewer+
 router.post(
     '/:resource/:id/review',
     validateResource,
-    checkPermission('pages', 'update'), // Requires reviewer role (reviewers have update permission)
+    checkWorkflowRoutePermission('review'),
     workflowController.markReviewed
 );
 
-// Request changes (in_review/pending_approval → changes_requested) - Reviewer+
+// Request changes (in_review/pending_approval/pending_publish -> changes_requested)
 router.post(
     '/:resource/:id/request-changes',
     validateResource,
-    checkPermission('pages', 'update'), // Requires reviewer role (reviewers have update permission)
+    checkWorkflowRoutePermission(['review', 'approve']),
     workflowController.requestChanges
 );
 
-// Approve content (pending_approval → pending_publish) - Approver+
+// Approve content (pending_approval -> pending_publish) - Approver+
 router.post(
     '/:resource/:id/approve',
     validateResource,
-    checkPermission('pages', 'approve'), // Requires approver role
+    checkWorkflowRoutePermission('approve'),
     workflowController.approveContent
 );
 
-// Reject content (pending_approval → changes_requested) - Approver+
+// Reject content (pending_approval -> changes_requested) - Approver+
 router.post(
     '/:resource/:id/reject',
     validateResource,
-    checkPermission('pages', 'approve'), // Requires approver role
+    checkWorkflowRoutePermission('approve'),
     workflowController.rejectContent
 );
 
-// Publish content (pending_publish → published) - Admin+
+// Publish content (pending_publish -> published) - Admin+
 router.post(
     '/:resource/:id/publish',
     validateResource,
-    checkPermission('pages', 'delete'), // Admin-only action
+    checkWorkflowRoutePermission('publish'),
     workflowController.publishContent
 );
 
-// Unpublish content (published → draft) - Admin+
+// Unpublish content (published -> draft) - Admin+
 router.post(
     '/:resource/:id/unpublish',
     validateResource,
-    checkPermission('pages', 'delete'), // Admin-only action
+    checkWorkflowRoutePermission('publish'),
     workflowController.unpublishContent
 );
 
-// Archive content (published → archived) - Admin+
+// Archive content (published -> archived) - Admin+
 router.post(
     '/:resource/:id/archive',
     validateResource,
-    checkPermission('pages', 'delete'), // Admin-only action
+    checkWorkflowRoutePermission('delete'),
     workflowController.archiveContent
 );
 
-// Restore content (archived → draft) - Admin+
+// Restore content (archived -> draft) - Admin+
 router.post(
     '/:resource/:id/restore',
     validateResource,
-    checkPermission('pages', 'delete'), // Admin-only action
+    checkWorkflowRoutePermission('delete'),
     workflowController.restoreContent
 );
 
 // Version management routes
-// Get version history
 router.get(
     '/:resource/:id/versions',
     validateResource,
-    checkPermission('pages', 'read'),
+    checkWorkflowRoutePermission('read'),
     workflowController.getContentVersions
 );
 
-// Compare versions
 router.get(
     '/:resource/:id/versions/compare',
     validateResource,
-    checkPermission('pages', 'read'),
+    checkWorkflowRoutePermission('read'),
     workflowController.compareVersions
 );
 
-// Restore a previous version
 router.post(
     '/:resource/:id/versions/:version/restore',
     validateResource,
-    checkPermission('pages', 'update'),
+    checkWorkflowRoutePermission('update'),
     workflowController.restoreVersion
 );
 
@@ -148,7 +185,7 @@ router.post(
 router.get(
     '/:resource/:id/available-actions',
     validateResource,
-    checkPermission('pages', 'read'),
+    checkWorkflowRoutePermission('read'),
     workflowController.getAvailableActions
 );
 
