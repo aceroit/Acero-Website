@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Card, Breadcrumb, Spin, Divider, Collapse, Space, Button, Form, Input, Switch, InputNumber } from 'antd';
+import { Card, Breadcrumb, Spin, Divider, Collapse, Space, Button, Form, Input, Switch, InputNumber, Alert } from 'antd';
 import { HomeOutlined, HistoryOutlined, MailOutlined } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import { usePermissions } from '../contexts/PermissionContext';
@@ -257,6 +257,7 @@ const SMTPSettingsEditor = () => {
                 onCancel={handleCancel}
                 loading={loading}
                 isEdit={isEdit}
+                settingsId={id}
               />
             </WorkflowStatusGuard>
           ) : (
@@ -267,6 +268,7 @@ const SMTPSettingsEditor = () => {
               onCancel={handleCancel}
               loading={loading}
               isEdit={isEdit}
+                settingsId={id}
             />
           )}
         </Card>
@@ -328,7 +330,34 @@ const SMTPSettingsEditor = () => {
 };
 
 // SMTP Settings Form Component
-const SMTPSettingsForm = ({ form, initialValues, onSubmit, onCancel, loading, isEdit }) => {
+const SMTPSettingsForm = ({ form, initialValues, onSubmit, onCancel, loading, isEdit, settingsId }) => {
+  const [testEmail, setTestEmail] = useState('');
+  const [testLoading, setTestLoading] = useState(false);
+
+  const handleSendTestEmail = async () => {
+    if (!settingsId) {
+      toast.error('Please save SMTP settings before sending a test email');
+      return;
+    }
+
+    if (!testEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail.trim())) {
+      toast.error('Please enter a valid test email address');
+      return;
+    }
+
+    setTestLoading(true);
+    try {
+      const response = await smtpSettingsService.sendSMTPTestEmail(settingsId, testEmail.trim());
+      if (response.success) {
+        toast.success('Test email sent successfully');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to send test email');
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
   return (
     <Form
       form={form}
@@ -417,8 +446,8 @@ const SMTPSettingsForm = ({ form, initialValues, onSubmit, onCancel, loading, is
 
       <Form.Item name={['secure', 'value']} valuePropName="checked">
         <Switch checkedChildren="Use TLS/SSL" unCheckedChildren="No Encryption" />
-        <span className="ml-2 text-sm text-gray-600">Enable for secure connections (TLS/SSL)</span>
       </Form.Item>
+      <div className="-mt-3 mb-6 text-sm text-gray-600">Enable for secure connections (TLS/SSL)</div>
 
       <Divider>Authentication</Divider>
 
@@ -480,6 +509,38 @@ const SMTPSettingsForm = ({ form, initialValues, onSubmit, onCancel, loading, is
       >
         <Input placeholder="Your Company Name" />
       </Form.Item>
+
+      {isEdit && (
+        <>
+          <Divider>Test SMTP Delivery</Divider>
+          <Alert
+            message="Send Test Email"
+            description="Save the SMTP settings first, then enter an email address here to send a real test email using this saved SMTP configuration."
+            type="info"
+            showIcon
+            className="mb-4"
+          />
+          <div className="flex flex-col md:flex-row gap-3 mb-6">
+            <Input
+              type="email"
+              value={testEmail}
+              onChange={(event) => setTestEmail(event.target.value)}
+              placeholder="Enter test recipient email"
+              disabled={testLoading}
+              onPressEnter={handleSendTestEmail}
+            />
+            <Button
+              icon={<MailOutlined />}
+              loading={testLoading}
+              onClick={handleSendTestEmail}
+              size="large"
+              style={{ height: '44px', borderRadius: '8px', fontWeight: '600' }}
+            >
+              Send Test Email
+            </Button>
+          </div>
+        </>
+      )}
 
       <Form.Item className="mb-0 mt-6">
         <div className="flex justify-end gap-2">

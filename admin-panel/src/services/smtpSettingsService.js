@@ -51,3 +51,15 @@ export const deleteSMTPSettings = async (id) => {
   return response.data;
 };
 
+
+
+/**
+ * Send a test email using saved SMTP settings
+ * @param {string} id - SMTP settings ID
+ * @param {string} email - recipient test email address
+ * @returns {Promise} - Response
+ */
+export const sendSMTPTestEmail = async (id, email) => {
+  const response = await API.post(`/smtp-settings/${id}/test-email`, { email });
+  return response.data;
+};

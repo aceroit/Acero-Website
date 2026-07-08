@@ -64,7 +64,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="font-sans antialiased bg-background text-foreground">
-        <ThemeProvider defaultTheme="dark" storageKey="acero-theme">
+        <ThemeProvider defaultTheme="light" storageKey="acero-theme">
           <AppearanceProvider>
           <RouteScrollToTop />
           <SmoothScroll>{children}</SmoothScroll>

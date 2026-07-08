@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo, Suspense } from "react"
+import { useEffect, useMemo, useRef, useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { CheckCircle2 } from "lucide-react"
@@ -17,57 +17,74 @@ function doRedirect(redirectUrl: string, router: ReturnType<typeof useRouter>) {
   if (redirectUrl.startsWith("http://") || redirectUrl.startsWith("https://")) {
     window.location.href = redirectUrl
   } else {
-    router.push(redirectUrl)
+    router.replace(redirectUrl)
   }
 }
 
 function ThankYouContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const source = (searchParams.get("from") === "career" ? "career" : "contact") as "contact" | "career"
+  const redirectedRef = useRef(false)
+
+  const source = searchParams.get("from") === "career" ? "career" : "contact"
   const { formConfiguration } = useFormConfiguration()
 
   const section = useMemo(() => {
     if (!formConfiguration) return DEFAULT_SECTION
-    const s = source === "career" ? formConfiguration.career : formConfiguration.contact
+
+    const s =
+      source === "career"
+        ? formConfiguration.career
+        : formConfiguration.contact
+
     return s ?? DEFAULT_SECTION
   }, [formConfiguration, source])
 
-  const [countdown, setCountdown] = useState(section.thankYouTimeout)
+  const timeoutSeconds = Number(section.thankYouTimeout || 5)
+  const redirectUrl = section.thankYouRedirectUrl || "/"
+
+  const [countdown, setCountdown] = useState(timeoutSeconds)
 
   useEffect(() => {
-    const timeout = section.thankYouTimeout
-    const redirectUrl = section.thankYouRedirectUrl
-    setCountdown(timeout)
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          doRedirect(redirectUrl, router)
-          return 0
-        }
-        return prev - 1
-      })
+    setCountdown(timeoutSeconds)
+    redirectedRef.current = false
+
+    const countdownTimer = window.setInterval(() => {
+      setCountdown((prev) => Math.max(prev - 1, 0))
     }, 1000)
-    return () => clearInterval(timer)
-  }, [section.thankYouTimeout, section.thankYouRedirectUrl, router])
 
-  const getMessage = () => {
-    if (source === "career") {
-      return {
-        title: "Application Submitted Successfully!",
-        description:
-          "Thank you for your interest in joining Acero Building Systems. We have received your application and will review it shortly.",
-      }
+    const redirectTimer = window.setTimeout(() => {
+      if (redirectedRef.current) return
+
+      redirectedRef.current = true
+      doRedirect(redirectUrl, router)
+    }, timeoutSeconds * 1000)
+
+    return () => {
+      window.clearInterval(countdownTimer)
+      window.clearTimeout(redirectTimer)
     }
-    return {
-      title: "Message Sent Successfully!",
-      description:
-        "Thank you for contacting Acero Building Systems. We have received your message and will get back to you soon.",
-    }
+  }, [timeoutSeconds, redirectUrl, router])
+
+  const message =
+    source === "career"
+      ? {
+          title: "Application Submitted Successfully!",
+          description:
+            "Thank you for your interest in joining Acero Building Systems. We have received your application and will review it shortly.",
+        }
+      : {
+          title: "Message Sent Successfully!",
+          description:
+            "Thank you for contacting Acero Building Systems. We have received your message and will get back to you soon.",
+        }
+
+  const handleManualRedirect = () => {
+    if (redirectedRef.current) return
+
+    redirectedRef.current = true
+    doRedirect(redirectUrl, router)
   }
-
-  const message = getMessage()
 
   return (
     <>
@@ -126,7 +143,8 @@ function ThankYouContent() {
             className="mt-8"
           >
             <button
-              onClick={() => doRedirect(section.thankYouRedirectUrl, router)}
+              type="button"
+              onClick={handleManualRedirect}
               className="text-sm text-steel-red hover:underline"
             >
               Click here if you are not redirected automatically
@@ -141,15 +159,17 @@ function ThankYouContent() {
 
 export default function ThankYouPage() {
   return (
-    <Suspense fallback={
-      <>
-        <Header />
-        <main className="flex min-h-screen items-center justify-center bg-background">
-          <div className="text-muted-foreground">Loading...</div>
-        </main>
-        <Footer />
-      </>
-    }>
+    <Suspense
+      fallback={
+        <>
+          <Header />
+          <main className="flex min-h-screen items-center justify-center bg-background">
+            <div className="text-muted-foreground">Loading...</div>
+          </main>
+          <Footer />
+        </>
+      }
+    >
       <ThankYouContent />
     </Suspense>
   )
