@@ -841,6 +841,7 @@ class NotificationService {
             const activeConfig = await FormConfiguration.getActive();
 
             const toEmail = (vacancy && vacancy.notificationEmail) || activeConfig?.defaultApplicationEmail;
+            console.log('notifyApplicationSubmission: toEmail:', toEmail, 'vacancy:', vacancy, 'activeConfig:', activeConfig);
 
             if (!toEmail) {
                 console.warn('No notification email configured for application submission');

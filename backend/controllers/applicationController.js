@@ -582,7 +582,7 @@ function buildPdfBuffer(applications) {
         }
         commands.push(drawText(610, 562, `Generated: ${formatDateTime(new Date())}`, 8, fonts.regular, [255, 255, 255]));
         commands.push(drawText(610, 546, `Records: ${rows.length}`, 8, fonts.regular, [255, 255, 255]));
-        commands.push(drawText(610, 530, `Page ${pageNumber} of ${totalPages}`, 8, fonts.regular, [255, 255, 255]));
+        // commands.push(drawText(610, 530, `Page ${pageNumber} of ${totalPages}`, 8, fonts.regular, [255, 255, 255]));
 
         commands.push(setColor(248, 250, 252));
         commands.push(rect(margin, 492, width - margin * 2, 22));
