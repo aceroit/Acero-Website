@@ -26,6 +26,57 @@ function formatEmailDate(value) {
     return date.toISOString().replace('T', ' ').slice(0, 16);
 }
 
+
+const STAGED_COMPARE_RESOURCES = new Set(['project', 'vacancy']);
+
+function joinUrl(base, relativePath) {
+    return `${String(base || '').replace(/\/+$/, '')}${relativePath.startsWith('/') ? relativePath : `/${relativePath}`}`;
+}
+
+function getWorkflowResourcePath(resource, resourceId) {
+    if (resource === 'vacancy') {
+        return `/enquiries-applications/vacancies/${resourceId}`;
+    }
+    if (resource === 'project') {
+        return `/projects/${resourceId}`;
+    }
+    return `/${resource}s/${resourceId}`;
+}
+
+function getWorkflowComparePath(resource, resourceId) {
+    if (!STAGED_COMPARE_RESOURCES.has(resource)) {
+        return '';
+    }
+    return `/versions/${resource}/${resourceId}/compare?mode=live-draft`;
+}
+
+function buildCompareButtonRow(compareUrl, color = '#2563eb') {
+    if (!compareUrl) return '';
+    return `
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 16px 0 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${compareUrl}" style="display: inline-block; background-color: #ffffff; color: ${color}; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-weight: 600; font-size: 15px; border: 1px solid ${color};">
+                                            View Changes
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>`;
+}
+
+function getWorkflowLinkData(resource, resourceId, color) {
+    const adminPanelUrl = getAdminPanelUrl();
+    const resourceUrl = joinUrl(adminPanelUrl, getWorkflowResourcePath(resource, resourceId));
+    const comparePath = getWorkflowComparePath(resource, resourceId);
+    const compareUrl = comparePath ? joinUrl(adminPanelUrl, comparePath) : '';
+    return {
+        adminPanelUrl,
+        resourceUrl,
+        compareUrl,
+        compareButtonRow: buildCompareButtonRow(compareUrl, color)
+    };
+}
+
 class NotificationService {
     constructor() {
         this.transporter = null;
@@ -179,8 +230,7 @@ class NotificationService {
                 _id: { $in: reviewerIds }
             }).select('email firstName lastName');
 
-            const adminPanelUrl = getAdminPanelUrl();
-            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+            const { adminPanelUrl, resourceUrl, compareUrl, compareButtonRow } = getWorkflowLinkData(resource, resourceId, '#667eea');
 
             // Build message with change summary if provided
             const baseMessage = `${submitter.firstName} ${submitter.lastName} submitted "${resourceTitle}" for review`;
@@ -216,6 +266,8 @@ class NotificationService {
                         resourceTitle,
                         resourceUrl,
                         adminPanelUrl,
+                        compareUrl,
+                        compareButtonRow,
                         changeSummary: changeSummary || 'No change summary provided'
                     }
                 );
@@ -233,8 +285,7 @@ class NotificationService {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
 
-            const adminPanelUrl = getAdminPanelUrl();
-            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+            const { adminPanelUrl, resourceUrl, compareUrl, compareButtonRow } = getWorkflowLinkData(resource, resourceId, '#3b82f6');
 
             // Build message with change summary if provided
             const baseMessage = `${reviewer.firstName} ${reviewer.lastName} reviewed "${resourceTitle}" and marked it ready for approval`;
@@ -268,6 +319,8 @@ class NotificationService {
                     resourceTitle,
                     resourceUrl,
                     adminPanelUrl,
+                    compareUrl,
+                    compareButtonRow,
                     changeSummary: changeSummary || 'No change summary provided'
                 }
             );
@@ -284,8 +337,7 @@ class NotificationService {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
 
-            const adminPanelUrl = getAdminPanelUrl();
-            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+            const { adminPanelUrl, resourceUrl, compareUrl, compareButtonRow } = getWorkflowLinkData(resource, resourceId, '#10b981');
 
             // Build message with change summary if provided
             const baseMessage = `${approver.firstName} ${approver.lastName} approved "${resourceTitle}" - ready for publishing`;
@@ -325,6 +377,8 @@ class NotificationService {
                     resourceTitle,
                     resourceUrl,
                     adminPanelUrl,
+                    compareUrl,
+                    compareButtonRow,
                     changeSummary: changeSummary || 'No change summary provided'
                 }
             );
@@ -372,12 +426,15 @@ class NotificationService {
                         `Content Ready to Publish: ${resourceTitle}`,
                         'workflow-approved',
                         {
+                            editorName: admin.firstName,
                             adminName: admin.firstName,
                             approverName: `${approver.firstName} ${approver.lastName}`,
                             resourceType: resource,
                             resourceTitle,
                             resourceUrl,
                             adminPanelUrl,
+                            compareUrl,
+                            compareButtonRow,
                             changeSummary: changeSummary || 'No change summary provided'
                         }
                     );
@@ -396,8 +453,7 @@ class NotificationService {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
 
-            const adminPanelUrl = getAdminPanelUrl();
-            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+            const { adminPanelUrl, resourceUrl, compareUrl, compareButtonRow } = getWorkflowLinkData(resource, resourceId, '#f59e0b');
 
             // Build message with change summary if provided
             const baseMessage = `${approver.firstName} ${approver.lastName} requested changes to "${resourceTitle}"`;
@@ -437,7 +493,9 @@ class NotificationService {
                     feedback: feedback || 'No specific feedback provided',
                     changeSummary: changeSummary || 'No change summary provided',
                     resourceUrl,
-                    adminPanelUrl
+                    adminPanelUrl,
+                    compareUrl,
+                    compareButtonRow
                 }
             );
 
@@ -489,6 +547,7 @@ class NotificationService {
                         `Content Rejected: ${resourceTitle}`,
                         'workflow-rejected',
                         {
+                            editorName: admin.firstName,
                             adminName: admin.firstName,
                             approverName: `${approver.firstName} ${approver.lastName}`,
                             resourceType: resource,
@@ -496,7 +555,9 @@ class NotificationService {
                             feedback: feedback || 'No specific feedback provided',
                             changeSummary: changeSummary || 'No change summary provided',
                             resourceUrl,
-                            adminPanelUrl
+                            adminPanelUrl,
+                            compareUrl,
+                            compareButtonRow
                         }
                     );
                 }
@@ -514,8 +575,7 @@ class NotificationService {
             const editor = await User.findById(editorId).select('email firstName lastName');
             if (!editor) return false;
 
-            const adminPanelUrl = getAdminPanelUrl();
-            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+            const { adminPanelUrl, resourceUrl, compareUrl, compareButtonRow } = getWorkflowLinkData(resource, resourceId, '#ef4444');
 
             // Build message with change summary if provided
             const baseMessage = `${reviewer.firstName} ${reviewer.lastName} requested changes to "${resourceTitle}"`;
@@ -555,7 +615,9 @@ class NotificationService {
                     feedback: feedback || 'No specific feedback provided',
                     changeSummary: changeSummary || 'No change summary provided',
                     resourceUrl,
-                    adminPanelUrl
+                    adminPanelUrl,
+                    compareUrl,
+                    compareButtonRow
                 }
             );
 
@@ -573,8 +635,7 @@ class NotificationService {
                 _id: { $in: approverIds }
             }).select('email firstName lastName');
 
-            const adminPanelUrl = getAdminPanelUrl();
-            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+            const { adminPanelUrl, resourceUrl, compareUrl, compareButtonRow } = getWorkflowLinkData(resource, resourceId, '#3b82f6');
 
             // Build message with change summary if provided
             const baseMessage = `${reviewer.firstName} ${reviewer.lastName} reviewed "${resourceTitle}" - ready for approval`;
@@ -604,12 +665,15 @@ class NotificationService {
                     `Content Ready for Approval: ${resourceTitle}`,
                     'workflow-reviewed',
                     {
+                        editorName: approver.firstName,
                         approverName: approver.firstName,
                         reviewerName: `${reviewer.firstName} ${reviewer.lastName}`,
                         resourceType: resource,
                         resourceTitle,
                         resourceUrl,
                         adminPanelUrl,
+                        compareUrl,
+                        compareButtonRow,
                         changeSummary: changeSummary || 'No change summary provided'
                     }
                 );
@@ -687,8 +751,7 @@ class NotificationService {
                 _id: { $in: adminIds }
             }).select('email firstName lastName');
 
-            const adminPanelUrl = getAdminPanelUrl();
-            const resourceUrl = `${adminPanelUrl}/${resource}s/${resourceId}`;
+            const { adminPanelUrl, resourceUrl } = getWorkflowLinkData(resource, resourceId);
             const publicSiteUrl = getPublicSiteUrl();
 
             // Build message with change summary if provided

@@ -48,6 +48,7 @@ const useWorkflowStatus = ({ status, resourceType = 'page', createdBy = null }) 
       page: 'pages',
       section: 'sections',
       project: 'projects',
+      vacancy: 'vacancies',
       'building-type': 'building-types',
       industry: 'industries',
       country: 'countries',

@@ -174,6 +174,14 @@ router.get(
     workflowController.compareVersions
 );
 
+
+router.get(
+    '/:resource/:id/compare-live-draft',
+    validateResource,
+    checkWorkflowRoutePermission('read'),
+    workflowController.compareLiveDraft
+);
+
 router.post(
     '/:resource/:id/versions/:version/restore',
     validateResource,

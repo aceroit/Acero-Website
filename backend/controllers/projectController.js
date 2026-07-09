@@ -1,6 +1,50 @@
 const Project = require('../models/Project');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent } = require('../utils/workflowStatusValidator');
+const {
+    attachActiveRevisions,
+    buildEditableResource,
+    getActiveRevision,
+    stagePublishedUpdate
+} = require('../services/contentRevisionService');
+
+const REVISION_USER_POPULATE = 'createdBy updatedBy reviewedBy approvedBy publishedBy';
+const HOME_PAGE_PROJECTS_MAX = 6;
+const HOME_PAGE_LIMIT_MESSAGE = "Already 6 projects are shown on home page. Remove 'Show on home page' from one project to add this one.";
+
+function populateProjectQuery(query) {
+    return query
+        .populate('buildingType', 'name')
+        .populate('country', 'name code')
+        .populate('region', 'name code')
+        .populate('area', 'name code')
+        .populate('industry', 'name slug logo')
+        .populate('createdBy', 'firstName lastName email')
+        .populate('updatedBy', 'firstName lastName email');
+}
+
+function matchesProjectSearch(project, search) {
+    if (!search) return true;
+    const regex = new RegExp(search, 'i');
+    return regex.test(project.jobNumber || '') || regex.test(project.jobNumberSlug || '');
+}
+
+async function assertHomePageLimit(projectIdToExclude = null) {
+    const homeQuery = {
+        status: 'published',
+        showOnHomePage: true,
+        isActive: true
+    };
+
+    if (projectIdToExclude) {
+        homeQuery._id = { $ne: projectIdToExclude };
+    }
+
+    const homeCount = await Project.countDocuments(homeQuery);
+    if (homeCount >= HOME_PAGE_PROJECTS_MAX) {
+        throw new Error(HOME_PAGE_LIMIT_MESSAGE);
+    }
+}
 
 /**
  * Get all projects (with filters and pagination)
@@ -21,47 +65,36 @@ exports.getAllProjects = async (req, res) => {
             sortOrder = 'asc'
         } = req.query;
 
-        // Build query
         const query = { isActive: true };
-        if (status) query.status = status;
         if (buildingType) query.buildingType = buildingType;
         if (country) query.country = country;
         if (region) query.region = region;
         if (area) query.area = area;
         if (industry) query.industry = industry;
-        if (search) {
-            query.$or = [
-                { jobNumber: new RegExp(search, 'i') },
-                { jobNumberSlug: new RegExp(search, 'i') }
-            ];
-        }
 
-        // Execute query with pagination
-        const skip = (parseInt(page) - 1) * parseInt(limit);
         const sortOptions = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+        const allProjects = await populateProjectQuery(Project.find(query).sort(sortOptions));
+        const mergedProjects = await attachActiveRevisions('project', allProjects, REVISION_USER_POPULATE);
 
-        const [projects, total] = await Promise.all([
-            Project.find(query)
-                .populate('buildingType', 'name')
-                .populate('country', 'name code')
-                .populate('region', 'name code')
-                .populate('area', 'name code')
-                .populate('industry', 'name slug logo')
-                .populate('createdBy', 'firstName lastName email')
-                .populate('updatedBy', 'firstName lastName email')
-                .sort(sortOptions)
-                .skip(skip)
-                .limit(parseInt(limit)),
-            Project.countDocuments(query)
-        ]);
+        const filteredProjects = mergedProjects.filter((project) => {
+            if (status && project.status !== status) {
+                return false;
+            }
+            return matchesProjectSearch(project, search);
+        });
+
+        const currentPage = parseInt(page, 10);
+        const perPage = parseInt(limit, 10);
+        const skip = (currentPage - 1) * perPage;
+        const paginatedProjects = filteredProjects.slice(skip, skip + perPage);
 
         return successResponse(res, 200, 'Projects retrieved successfully', {
-            projects,
+            projects: paginatedProjects,
             pagination: {
-                total,
-                page: parseInt(page),
-                limit: parseInt(limit),
-                totalPages: Math.ceil(total / parseInt(limit))
+                total: filteredProjects.length,
+                page: currentPage,
+                limit: perPage,
+                totalPages: Math.ceil(filteredProjects.length / perPage)
             }
         });
     } catch (error) {
@@ -76,21 +109,19 @@ exports.getAllProjects = async (req, res) => {
 exports.getProjectById = async (req, res) => {
     try {
         const { id } = req.params;
-        
-        const project = await Project.findOne({ _id: id, isActive: true })
-            .populate('buildingType', 'name')
-            .populate('country', 'name code')
-            .populate('region', 'name code')
-            .populate('area', 'name code')
-            .populate('industry', 'name slug logo')
-            .populate('createdBy', 'firstName lastName email')
-            .populate('updatedBy', 'firstName lastName email');
-        
+
+        const project = await populateProjectQuery(Project.findOne({ _id: id, isActive: true }));
         if (!project) {
             return errorResponse(res, 404, 'Project not found');
         }
 
-        return successResponse(res, 200, 'Project retrieved successfully', { project });
+        const revision = await getActiveRevision('project', project._id, REVISION_USER_POPULATE);
+        const editableProject = buildEditableResource(project, revision);
+
+        return successResponse(res, 200, 'Project retrieved successfully', {
+            project: editableProject,
+            activeRevision: editableProject.activeRevision
+        });
     } catch (error) {
         console.error('Error in getProjectById:', error);
         return errorResponse(res, 500, 'Failed to retrieve project', error.message);
@@ -103,11 +134,11 @@ exports.getProjectById = async (req, res) => {
 exports.getProjectBySlug = async (req, res) => {
     try {
         const { slug } = req.params;
-        
+
         const project = await Project.findBySlug(slug)
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
-        
+
         if (!project) {
             return errorResponse(res, 404, 'Project not found');
         }
@@ -119,23 +150,13 @@ exports.getProjectBySlug = async (req, res) => {
     }
 };
 
-const HOME_PAGE_PROJECTS_MAX = 6;
-const HOME_PAGE_LIMIT_MESSAGE = "Already 6 projects are shown on home page. Remove 'Show on home page' from one project to add this one.";
-
 /**
  * Create new project
  */
 exports.createProject = async (req, res) => {
     try {
         if (req.body.showOnHomePage === true) {
-            const homeCount = await Project.countDocuments({
-                status: 'published',
-                showOnHomePage: true,
-                isActive: true
-            });
-            if (homeCount >= HOME_PAGE_PROJECTS_MAX) {
-                return errorResponse(res, 400, HOME_PAGE_LIMIT_MESSAGE);
-            }
+            await assertHomePageLimit();
         }
 
         const projectData = {
@@ -146,13 +167,7 @@ exports.createProject = async (req, res) => {
         const project = new Project(projectData);
         await project.save();
 
-        const populatedProject = await Project.findById(project._id)
-            .populate('buildingType', 'name')
-            .populate('country', 'name code')
-            .populate('region', 'name code')
-            .populate('area', 'name code')
-            .populate('industry', 'name slug logo')
-            .populate('createdBy', 'firstName lastName email');
+        const populatedProject = await populateProjectQuery(Project.findById(project._id));
 
         return successResponse(
             res,
@@ -167,6 +182,9 @@ exports.createProject = async (req, res) => {
         }
         if (error.code === 11000) {
             return errorResponse(res, 400, 'Project with this job number slug already exists');
+        }
+        if (error.message === HOME_PAGE_LIMIT_MESSAGE) {
+            return errorResponse(res, 400, HOME_PAGE_LIMIT_MESSAGE);
         }
         return errorResponse(res, 500, 'Failed to create project', error.message);
     }
@@ -185,38 +203,45 @@ exports.updateProject = async (req, res) => {
             return errorResponse(res, 404, 'Project not found');
         }
 
-        // Check if we're only updating status (allow this even for published projects)
-        const isOnlyStatusUpdate = Object.keys(req.body).length === 1 && req.body.hasOwnProperty('status');
-        
-        // Validate workflow status and permissions using workflowStatusValidator
-        // This checks both permission AND role hierarchy for the current status
-        // Note: Use plural form 'projects' for resource name
+        const isOnlyStatusUpdate = Object.keys(req.body).length === 1 && Object.prototype.hasOwnProperty.call(req.body, 'status');
+
+        if (updateData.showOnHomePage === true && !project.showOnHomePage) {
+            await assertHomePageLimit(id);
+        }
+
+        if (project.status === 'published' && !isOnlyStatusUpdate) {
+            const revision = await stagePublishedUpdate({
+                resource: 'project',
+                liveDoc: project,
+                updateData,
+                userId: req.user._id
+            });
+
+            const populatedProject = await populateProjectQuery(Project.findById(project._id));
+            const populatedRevision = await getActiveRevision('project', project._id, REVISION_USER_POPULATE);
+            const editableProject = buildEditableResource(populatedProject, populatedRevision || revision);
+
+            return successResponse(
+                res,
+                200,
+                'Project changes staged successfully. The published website will keep showing the current live version until this revision is published.',
+                {
+                    project: editableProject,
+                    activeRevision: editableProject.activeRevision
+                }
+            );
+        }
+
         const editValidation = await canEditContent(req.user, project, 'projects', 'update');
         if (!editValidation.canEdit) {
             return errorResponse(res, 403, editValidation.reason || 'You do not have permission to edit this project');
         }
 
-        if (updateData.showOnHomePage === true) {
-            const homeQuery = {
-                status: 'published',
-                showOnHomePage: true,
-                isActive: true,
-                _id: { $ne: id }
-            };
-            const homeCount = await Project.countDocuments(homeQuery);
-            if (homeCount >= HOME_PAGE_PROJECTS_MAX) {
-                return errorResponse(res, 400, HOME_PAGE_LIMIT_MESSAGE);
-            }
-        }
-        
-        // Prevent editing published content directly - must unpublish first
-        // Exception: allow status-only updates (but still checked by workflow validator above)
         if (project.status === 'published' && !isOnlyStatusUpdate) {
             return errorResponse(res, 400, 'Cannot edit published content. Please unpublish first or use workflow actions.');
         }
 
-        // Update project fields
-        Object.keys(updateData).forEach(key => {
+        Object.keys(updateData).forEach((key) => {
             if (updateData[key] !== undefined && key !== '_id' && key !== 'createdBy') {
                 project[key] = updateData[key];
             }
@@ -225,14 +250,7 @@ exports.updateProject = async (req, res) => {
         project.updatedBy = req.user._id;
         await project.save();
 
-        const updatedProject = await Project.findById(project._id)
-            .populate('buildingType', 'name')
-            .populate('country', 'name code')
-            .populate('region', 'name code')
-            .populate('area', 'name code')
-            .populate('industry', 'name slug logo')
-            .populate('createdBy', 'firstName lastName email')
-            .populate('updatedBy', 'firstName lastName email');
+        const updatedProject = await populateProjectQuery(Project.findById(project._id));
 
         return successResponse(
             res,
@@ -247,6 +265,9 @@ exports.updateProject = async (req, res) => {
         }
         if (error.code === 11000) {
             return errorResponse(res, 400, 'Project with this job number slug already exists');
+        }
+        if (error.message === HOME_PAGE_LIMIT_MESSAGE) {
+            return errorResponse(res, 400, HOME_PAGE_LIMIT_MESSAGE);
         }
         return errorResponse(res, 500, 'Failed to update project', error.message);
     }
@@ -264,15 +285,11 @@ exports.deleteProject = async (req, res) => {
             return errorResponse(res, 404, 'Project not found');
         }
 
-        // Validate workflow status and permissions using workflowStatusValidator
-        // This checks both permission AND role hierarchy for the current status
-        // Note: Use plural form 'projects' for resource name
         const deleteValidation = await canDeleteContent(req.user, project, 'projects');
         if (!deleteValidation.canDelete) {
             return errorResponse(res, 403, deleteValidation.reason || 'You do not have permission to delete this project');
         }
 
-        // Soft delete
         project.isActive = false;
         project.updatedBy = req.user._id;
         await project.save();
@@ -288,4 +305,3 @@ exports.deleteProject = async (req, res) => {
         return errorResponse(res, 500, 'Failed to delete project', error.message);
     }
 };
-

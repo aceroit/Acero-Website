@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Card, Breadcrumb, Spin, Space, Button, Form, Input, Select, Switch, Collapse } from 'antd';
-import { HomeOutlined, HistoryOutlined } from '@ant-design/icons';
+import { Card, Breadcrumb, Spin, Space, Button, Form, Input, Select, Switch, Collapse, Alert, Tag } from 'antd';
+import { HomeOutlined, HistoryOutlined, SwapOutlined } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import { usePermissions } from '../contexts/PermissionContext';
 import { WorkflowStatusBadge, WorkflowActions, WorkflowTimeline, WorkflowStatusGuard } from '../components/workflow';
@@ -25,6 +25,8 @@ const VacancyEditor = () => {
   const [vacancy, setVacancy] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
+
+  const isStagedRevision = Boolean(vacancy?.hasActiveRevision && vacancy?.liveStatus === 'published');
 
   const workflowStatus = useWorkflowStatus({
     status: vacancy?.status || 'draft',
@@ -198,8 +200,22 @@ const VacancyEditor = () => {
           </div>
           {isEdit && vacancy && (
             <div className="flex flex-col items-start md:items-end gap-2">
-              <WorkflowStatusBadge status={vacancy.status} size="large" />
-              <Space>
+              <Space wrap>
+                <WorkflowStatusBadge status={vacancy.status} size="large" />
+                {isStagedRevision && <Tag color="green">Live: Published</Tag>}
+                {vacancy?.activeRevision?.revisionNumber && (
+                  <Tag color="gold">Revision #{vacancy.activeRevision.revisionNumber}</Tag>
+                )}
+              </Space>
+              <Space wrap>
+                {isStagedRevision && (
+                  <Button
+                    icon={<SwapOutlined />}
+                    onClick={() => navigate(`/versions/vacancy/${id}/compare?mode=live-draft`)}
+                  >
+                    Compare Live vs Draft
+                  </Button>
+                )}
                 <WorkflowActions
                   resource="vacancy"
                   resourceId={id}
@@ -213,6 +229,15 @@ const VacancyEditor = () => {
             </div>
           )}
         </div>
+
+        {isEdit && isStagedRevision && (
+          <Alert
+            type="info"
+            showIcon
+            message="You are editing a staged revision"
+            description="The website still shows the current published vacancy. These changes stay in workflow until an approver publishes this revision."
+          />
+        )}
 
         <Card className="border border-gray-200 shadow-md bg-white">
           {isEdit && vacancy ? (
@@ -393,5 +418,3 @@ const VacancyForm = ({ form, onSubmit, onCancel, loading, isEdit }) => {
 };
 
 export default VacancyEditor;
-
-

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Card,
   Table,
@@ -20,7 +20,6 @@ import {
   EyeOutlined,
   ReloadOutlined,
   SwapOutlined,
-  FileTextOutlined,
 } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import WorkflowStatusBadge from '../components/workflow/WorkflowStatusBadge';
@@ -34,9 +33,40 @@ dayjs.extend(relativeTime);
 
 const { Title } = Typography;
 
+const RESOURCE_CONFIG = {
+  page: {
+    pluralLabel: 'Pages',
+    listRoute: '/pages',
+    editorRoute: (id) => `/pages/${id}`,
+  },
+  section: {
+    pluralLabel: 'Sections',
+    listRoute: '/sections',
+    editorRoute: (id) => `/sections/${id}`,
+  },
+  project: {
+    pluralLabel: 'Projects',
+    listRoute: '/projects',
+    editorRoute: (id) => `/projects/${id}`,
+  },
+  vacancy: {
+    pluralLabel: 'Vacancies',
+    listRoute: '/enquiries-applications/vacancies',
+    editorRoute: (id) => `/enquiries-applications/vacancies/${id}`,
+  },
+};
+
+const getResourceConfig = (resource) =>
+  RESOURCE_CONFIG[resource] || {
+    pluralLabel: resource ? `${resource.charAt(0).toUpperCase() + resource.slice(1)}s` : 'Resources',
+    listRoute: `/${resource}s`,
+    editorRoute: (id) => `/${resource}s/${id}`,
+  };
+
 const VersionHistory = () => {
   const { resource, id } = useParams();
   const navigate = useNavigate();
+  const resourceConfig = getResourceConfig(resource);
 
   const [versions, setVersions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,8 +116,7 @@ const VersionHistory = () => {
       if (response.success) {
         toast.success(`Version ${version.version} restored successfully`);
         fetchVersions();
-        // Navigate back to the editor
-        navigate(`/${resource}s/${id}`);
+        navigate(resourceConfig.editorRoute(id));
       } else {
         toast.error(response.message || 'Failed to restore version');
       }
@@ -144,7 +173,7 @@ const VersionHistory = () => {
       dataIndex: 'changeSummary',
       key: 'changeSummary',
       ellipsis: true,
-      render: (summary) => summary || '—',
+      render: (summary) => summary || '-',
     },
     {
       title: 'Created By',
@@ -175,11 +204,7 @@ const VersionHistory = () => {
         return (
           <Space size="small">
             <Tooltip title="View Version">
-              <Button
-                size="small"
-                icon={<EyeOutlined />}
-                onClick={() => handleViewVersion(version)}
-              >
+              <Button size="small" icon={<EyeOutlined />} onClick={() => handleViewVersion(version)}>
                 View
               </Button>
             </Tooltip>
@@ -204,17 +229,14 @@ const VersionHistory = () => {
     },
   ];
 
-  // Build breadcrumb
   const breadcrumbItems = [
     {
-      title: (
-        <HomeOutlined onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }} />
-      ),
+      title: <HomeOutlined onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }} />,
     },
     {
       title: (
-        <span onClick={() => navigate(`/${resource}s`)} style={{ cursor: 'pointer' }}>
-          {resource === 'page' ? 'Pages' : 'Sections'}
+        <span onClick={() => navigate(resourceConfig.listRoute)} style={{ cursor: 'pointer' }}>
+          {resourceConfig.pluralLabel}
         </span>
       ),
     },
@@ -241,11 +263,7 @@ const VersionHistory = () => {
             </div>
             <Space>
               {selectedVersions.length === 2 && (
-                <Button
-                  type="primary"
-                  icon={<SwapOutlined />}
-                  onClick={handleCompareVersions}
-                >
+                <Button type="primary" icon={<SwapOutlined />} onClick={handleCompareVersions}>
                   Compare Selected
                 </Button>
               )}
@@ -260,10 +278,7 @@ const VersionHistory = () => {
               <Spin size="large" />
             </div>
           ) : versions.length === 0 ? (
-            <Empty
-              description="No version history available"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
+            <Empty description="No version history available" image={Empty.PRESENTED_IMAGE_SIMPLE} />
           ) : (
             <>
               <div style={{ marginBottom: '16px' }}>
@@ -325,4 +340,3 @@ const VersionHistory = () => {
 };
 
 export default VersionHistory;
-

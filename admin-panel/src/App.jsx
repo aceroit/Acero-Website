@@ -521,7 +521,7 @@ function App() {
           <Route
             path="/versions/:resource/:id"
             element={
-              <ProtectedRoute resource="pages" action="read">
+              <ProtectedRoute>
                 <VersionHistory />
               </ProtectedRoute>
             }
@@ -529,7 +529,7 @@ function App() {
           <Route
             path="/versions/:resource/:id/compare"
             element={
-              <ProtectedRoute resource="pages" action="read">
+              <ProtectedRoute>
                 <VersionCompare />
               </ProtectedRoute>
             }

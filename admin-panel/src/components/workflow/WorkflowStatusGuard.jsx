@@ -44,8 +44,37 @@ const WorkflowStatusGuard = ({
   // Check if user is the creator
   const isCreator = useMemo(() => {
     if (!user || !createdBy) return false;
-    return user._id === createdBy || user.id === createdBy;
+    const userId = user._id ?? user.id;
+    if (!userId) return false;
+    return String(userId) === String(createdBy);
   }, [user, createdBy]);
+
+  const resourceName = useMemo(() => {
+    const map = {
+      page: 'pages',
+      section: 'sections',
+      project: 'projects',
+      vacancy: 'vacancies',
+      'building-type': 'building-types',
+      industry: 'industries',
+      country: 'countries',
+      region: 'regions',
+      area: 'areas',
+      branch: 'branches',
+      customer: 'customers',
+      certification: 'certifications',
+      'company-update': 'company-updates',
+      'company-update-category': 'company-update-categories',
+      brochure: 'brochures',
+      'header-configuration': 'header-configurations',
+      'footer-configuration': 'footer-configurations',
+      'website-appearance': 'website-appearance',
+      'smtp-settings': 'smtp-settings',
+      'google-recaptcha': 'google-recaptcha',
+      'google-maps': 'google-maps',
+    };
+    return map[resourceType] ?? (resourceType ? `${resourceType}s` : 'pages');
+  }, [resourceType]);
 
   // Determine if editing is allowed based on status and permissions
   const canPerformAction = useMemo(() => {
@@ -63,13 +92,13 @@ const WorkflowStatusGuard = ({
       // If status allows editing (draft or changes_requested)
       if (editableStatuses.includes(status)) {
         // Check if user has permission OR is the creator
-        const hasEditPermission = hasPermission(resourceType === 'page' ? 'pages' : 'sections', 'update');
+        const hasEditPermission = hasPermission(resourceName, 'update');
         return hasEditPermission || isCreator;
       }
 
       // If status is restricted, check permission + role hierarchy
       if (restrictedStatuses.includes(status)) {
-        const hasEditPermission = hasPermission(resourceType === 'page' ? 'pages' : 'sections', 'update');
+        const hasEditPermission = hasPermission(resourceName, 'update');
         
         // If user has permission, check role hierarchy (case-insensitive)
         if (hasEditPermission) {
@@ -92,13 +121,13 @@ const WorkflowStatusGuard = ({
 
       // Published and archived - only with permission
       if (status === 'published' || status === 'archived') {
-        return hasPermission(resourceType === 'page' ? 'pages' : 'sections', 'update');
+        return hasPermission(resourceName, 'update');
       }
     }
 
     // For delete action
     if (action === 'delete') {
-      const hasDeletePermission = hasPermission(resourceType === 'page' ? 'pages' : 'sections', 'delete');
+      const hasDeletePermission = hasPermission(resourceName, 'delete');
       
       // If has permission, can delete
       if (hasDeletePermission) {
@@ -141,7 +170,7 @@ const WorkflowStatusGuard = ({
 
     // For modifyTree action (move/reorder)
     if (action === 'modifyTree') {
-      const hasUpdatePermission = hasPermission(resourceType === 'page' ? 'pages' : 'sections', 'update');
+      const hasUpdatePermission = hasPermission(resourceName, 'update');
       
       // Can only modify tree in draft status (unless has permission + appropriate role)
       if (status === 'draft') {
@@ -159,7 +188,7 @@ const WorkflowStatusGuard = ({
     }
 
     return false;
-  }, [status, resourceType, action, hasPermission, isCreator, isAdmin, userRole]);
+  }, [status, resourceType, resourceName, action, hasPermission, isCreator, isAdmin, userRole]);
 
   // Generate message when action is disabled
   const getDisabledMessage = () => {

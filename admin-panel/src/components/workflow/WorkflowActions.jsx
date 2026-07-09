@@ -274,9 +274,9 @@ const WorkflowActions = ({
       return actions;
     }
 
-    // For non-admin users, filter out restricted actions (archive and unpublish)
-    // These actions should only be visible to Admin and Super Admin
-    const restrictedActions = ['archive', 'unpublish'];
+    // For non-admin users, keep archive restricted in the UI.
+    // Unpublish is controlled by backend publish permission, so approvers can use it when allowed.
+    const restrictedActions = ['archive'];
     return actions.filter(action => !restrictedActions.includes(action));
   }, [actions, workflowStatus]);
 
@@ -358,4 +358,3 @@ const WorkflowActions = ({
 };
 
 export default WorkflowActions;
-

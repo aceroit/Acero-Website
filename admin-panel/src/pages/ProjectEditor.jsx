@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Card, Breadcrumb, Spin, Collapse, Space, Button } from 'antd';
-import { HomeOutlined, HistoryOutlined } from '@ant-design/icons';
+import { Card, Breadcrumb, Spin, Collapse, Space, Button, Alert, Tag } from 'antd';
+import { HomeOutlined, HistoryOutlined, SwapOutlined } from '@ant-design/icons';
 import MainLayout from '../components/MainLayout';
 import ProjectForm from '../components/forms/ProjectForm';
 import { usePermissions } from '../contexts/PermissionContext';
@@ -22,6 +22,8 @@ const ProjectEditor = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
+
+  const isStagedRevision = Boolean(project?.hasActiveRevision && project?.liveStatus === 'published');
 
   // Check workflow status permissions
   const workflowStatus = useWorkflowStatus({
@@ -196,8 +198,22 @@ const ProjectEditor = () => {
           </div>
           {isEdit && project && (
             <div className="flex flex-col items-start md:items-end gap-2">
-              <WorkflowStatusBadge status={project.status} size="large" />
-              <Space>
+              <Space wrap>
+                <WorkflowStatusBadge status={project.status} size="large" />
+                {isStagedRevision && <Tag color="green">Live: Published</Tag>}
+                {project?.activeRevision?.revisionNumber && (
+                  <Tag color="gold">Revision #{project.activeRevision.revisionNumber}</Tag>
+                )}
+              </Space>
+              <Space wrap>
+                {isStagedRevision && (
+                  <Button
+                    icon={<SwapOutlined />}
+                    onClick={() => navigate(`/versions/project/${id}/compare?mode=live-draft`)}
+                  >
+                    Compare Live vs Draft
+                  </Button>
+                )}
                 <WorkflowActions
                   resource="project"
                   resourceId={id}
@@ -213,6 +229,14 @@ const ProjectEditor = () => {
         </div>
 
         {/* Form Card */}
+        {isEdit && isStagedRevision && (
+          <Alert
+            type="info"
+            showIcon
+            message="You are editing a staged revision"
+            description="The website still shows the current published project. These changes stay in workflow until an approver publishes this revision."
+          />
+        )}
         <Card className="border border-gray-200 shadow-md bg-white">
           {isEdit && project ? (
             <WorkflowStatusGuard
