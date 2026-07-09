@@ -107,6 +107,122 @@ function normalizeWorkflowResourceType(resourceType) {
     return RESOURCE_SLUG_MAP[resourceType] || resourceType;
 }
 
+async function resolveWorkflowPermissionTargets(resourceType) {
+    const Resource = require('../models/Resource');
+    const mongoose = require('mongoose');
+
+    const normalizedResourceType = normalizeWorkflowResourceType(resourceType);
+    let workflowResourceId = null;
+    let actualResourceId = null;
+
+    if (mongoose.Types.ObjectId.isValid(resourceType) && resourceType.toString().length === 24) {
+        workflowResourceId = new mongoose.Types.ObjectId(resourceType);
+    } else {
+        const [workflowResource, defaultWorkflowResource, actualResource] = await Promise.all([
+            Resource.findOne({
+                $or: [
+                    { slug: resourceType },
+                    { path: resourceType }
+                ]
+            }).select('_id').lean(),
+            Resource.findOne({ slug: 'workflow' }).select('_id').lean(),
+            typeof normalizedResourceType === 'string' && normalizedResourceType !== 'workflow'
+                ? Resource.findOne({ slug: normalizedResourceType, isActive: true }).select('_id').lean()
+                : Promise.resolve(null)
+        ]);
+
+        workflowResourceId = workflowResource?._id || defaultWorkflowResource?._id || null;
+        actualResourceId = actualResource?._id || null;
+    }
+
+    return {
+        workflowResourceId,
+        actualResourceId,
+        normalizedResourceType
+    };
+}
+
+async function loadWorkflowPermissionContext(userId, resourceType, resourceItem = null) {
+    const Permission = require('../models/Permission');
+    const User = require('../models/User');
+    const mongoose = require('mongoose');
+
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const [targets, user] = await Promise.all([
+        resolveWorkflowPermissionTargets(resourceType),
+        User.findById(userId).select('role').populate('role', '_id slug name').lean()
+    ]);
+
+    const roleId = user?.role?._id || user?.role || null;
+    const userRole = user?.role?.slug || user?.role?.name || (typeof user?.role === 'string' ? user.role : 'unknown');
+
+    const rawResourceIds = [targets.workflowResourceId, targets.actualResourceId].filter(Boolean);
+    const uniqueResourceIds = [...new Map(rawResourceIds.map((id) => [id.toString(), id])).values()];
+    const permissionFilters = [{ userId: userObjectId }];
+
+    if (roleId) {
+        permissionFilters.push({ role: roleId });
+    }
+
+    const permissions = uniqueResourceIds.length > 0
+        ? await Permission.find({
+            resource: { $in: uniqueResourceIds },
+            isActive: true,
+            $or: permissionFilters
+        }).select('resource actions').lean()
+        : [];
+
+    const permissionsByResource = new Map();
+    for (const permission of permissions) {
+        const key = permission.resource.toString();
+        const actions = permissionsByResource.get(key) || new Set();
+        for (const action of permission.actions || []) {
+            actions.add(action);
+        }
+        permissionsByResource.set(key, actions);
+    }
+
+    const createdByValue = resourceItem?.createdBy?._id || resourceItem?.createdBy || null;
+    const isCreator = Boolean(createdByValue) && createdByValue.toString() === userId.toString();
+
+    return {
+        ...targets,
+        permissionsByResource,
+        isCreator,
+        userRole
+    };
+}
+
+function hasResolvedPermission(context, resourceId, action) {
+    if (!resourceId) {
+        return false;
+    }
+
+    const actions = context.permissionsByResource.get(resourceId.toString());
+    return Boolean(actions && actions.has(action));
+}
+
+function canUseResolvedPermission(context, action, options = {}) {
+    const {
+        allowActualResource = true,
+        allowCreatorSubmit = false
+    } = options;
+
+    if (hasResolvedPermission(context, context.workflowResourceId, action)) {
+        return true;
+    }
+
+    if (allowCreatorSubmit && context.isCreator) {
+        return true;
+    }
+
+    if (allowActualResource && hasResolvedPermission(context, context.actualResourceId, action)) {
+        return true;
+    }
+
+    return false;
+}
+
 /**
  * Check if a state transition is valid (permission-based)
  * @param {string} currentStatus - Current workflow status
@@ -117,10 +233,6 @@ function normalizeWorkflowResourceType(resourceType) {
  * @returns {Promise<Object>} { isValid: boolean, message: string }
  */
 async function canTransition(currentStatus, newStatus, userId, resourceType = 'workflow', resourceItem = null) {
-    const Permission = require('../models/Permission');
-    const Resource = require('../models/Resource');
-    const mongoose = require('mongoose');
-    
     // Check if current status exists
     if (!STATE_TRANSITIONS[currentStatus]) {
         return {
@@ -138,113 +250,44 @@ async function canTransition(currentStatus, newStatus, userId, resourceType = 'w
         };
     }
 
-    // Get required permission action for this transition
     const requiredAction = allowedTransitions[newStatus];
+    const context = await loadWorkflowPermissionContext(userId, resourceType, resourceItem);
 
-    // Get workflow resource ID (supports slug or ObjectId)
-    let workflowResourceId = null;
-    if (mongoose.Types.ObjectId.isValid(resourceType) && resourceType.toString().length === 24) {
-        workflowResourceId = new mongoose.Types.ObjectId(resourceType);
-    } else {
-        // Try to find workflow resource by slug
-        const workflowResource = await Resource.findOne({ 
-            $or: [
-                { slug: resourceType },
-                { path: resourceType }
-            ]
-        }).select('_id');
-        
-        if (!workflowResource) {
-            // Fallback: try to find 'workflow' resource
-            const defaultWorkflowResource = await Resource.findOne({ slug: 'workflow' }).select('_id');
-            if (defaultWorkflowResource) {
-                workflowResourceId = defaultWorkflowResource._id;
-            } else {
-                return {
-                    isValid: false,
-                    message: `Workflow resource not found. Please create a 'workflow' resource.`
-                };
-            }
-        } else {
-            workflowResourceId = workflowResource._id;
-        }
+    if (!context.workflowResourceId) {
+        return {
+            isValid: false,
+            message: `Workflow resource not found. Please create a 'workflow' resource.`
+        };
     }
 
-    // Check if user has the required permission on workflow resource
-    let hasPermission = await Permission.hasUserPermission(userId, workflowResourceId, requiredAction);
+    const allowCreatorSubmit = requiredAction === 'update'
+        && newStatus === WORKFLOW_STATES.IN_REVIEW
+        && (currentStatus === WORKFLOW_STATES.DRAFT || currentStatus === WORKFLOW_STATES.CHANGES_REQUESTED);
 
-    // Special handling for draft → in_review (submit) and changes_requested → in_review (resubmit):
-    // Also check if user is creator OR has update permission on actual resource
-    if (!hasPermission && requiredAction === 'update' && newStatus === WORKFLOW_STATES.IN_REVIEW && 
-        (currentStatus === WORKFLOW_STATES.DRAFT || currentStatus === WORKFLOW_STATES.CHANGES_REQUESTED)) {
-        // Check if user is the creator
-        if (resourceItem && resourceItem.createdBy) {
-            const createdById = resourceItem.createdBy._id ? resourceItem.createdBy._id.toString() : resourceItem.createdBy.toString();
-            const userIdStr = userId.toString();
-            if (createdById === userIdStr) {
-                hasPermission = true; // Creator can always submit/resubmit their own content
-            }
-        }
-
-        // If still no permission, check if user has 'update' permission on the actual resource (pages/sections)
-        if (!hasPermission) {
-            const normalizedResourceType = normalizeWorkflowResourceType(resourceType);
-            const actualResource = await Resource.findOne({ slug: normalizedResourceType, isActive: true }).select('_id');
-            if (actualResource) {
-                const hasResourceUpdatePermission = await Permission.hasUserPermission(userId, actualResource._id, 'update');
-                if (hasResourceUpdatePermission) {
-                    hasPermission = true;
-                }
-            }
-        }
-    }
-
-    // For review/approve/publish/delete actions, also check permissions on actual resource (pages/sections)
-    // This allows users to have permissions on pages/sections resource instead of workflow resource
-    if (!hasPermission && (requiredAction === 'review' || requiredAction === 'approve' || requiredAction === 'publish' || requiredAction === 'delete')) {
-        const normalizedResourceType = normalizeWorkflowResourceType(resourceType);
-
-        // Get actual resource ID for the current resource type
-        const actualResource = await Resource.findOne({ slug: normalizedResourceType, isActive: true }).select('_id');
-        
-        if (actualResource) {
-            // Check if user has the required action permission on the actual resource
-            // e.g., 'review' permission on pages resource, 'approve' permission on pages resource, or 'publish' permission on pages resource
-            const hasResourcePermission = await Permission.hasUserPermission(userId, actualResource._id, requiredAction);
-            if (hasResourcePermission) {
-                hasPermission = true;
-            }
-        } else {
-            // Log for debugging - resource not found
-            console.warn(`[WorkflowValidator] Actual resource '${normalizedResourceType}' not found for ${requiredAction} check`);
-        }
-    }
+    const hasPermission = canUseResolvedPermission(context, requiredAction, {
+        allowActualResource: true,
+        allowCreatorSubmit
+    });
 
     if (!hasPermission) {
-        const User = require('../models/User');
-        const user = await User.findById(userId).populate('role', 'slug name');
-        const userRole = user?.role?.slug || user?.role || 'unknown';
-        
-        // Provide more helpful error message
         if (currentStatus === WORKFLOW_STATES.DRAFT && newStatus === WORKFLOW_STATES.IN_REVIEW) {
             return {
                 isValid: false,
-                message: `You do not have permission to submit this content for review. Your role: ${userRole}. You need either: (1) 'update' permission on workflow resource, (2) 'update' permission on ${resourceType} resource, or (3) be the creator of this content.`
+                message: `You do not have permission to submit this content for review. Your role: ${context.userRole}. You need either: (1) 'update' permission on workflow resource, (2) 'update' permission on ${resourceType} resource, or (3) be the creator of this content.`
             };
         }
-        
-        // For review/approve/publish actions, mention both workflow and actual resource
+
         if (requiredAction === 'review' || requiredAction === 'approve' || requiredAction === 'publish') {
-            const resourceName = normalizeWorkflowResourceType(resourceType);
+            const resourceName = context.normalizedResourceType;
             return {
                 isValid: false,
-                message: `You do not have '${requiredAction}' permission to transition from '${currentStatus}' to '${newStatus}'. Your role: ${userRole}. Required permission: '${requiredAction}' on workflow resource OR '${requiredAction}' on ${resourceName} resource. Current status: ${currentStatus}, Target status: ${newStatus}`
+                message: `You do not have '${requiredAction}' permission to transition from '${currentStatus}' to '${newStatus}'. Your role: ${context.userRole}. Required permission: '${requiredAction}' on workflow resource OR '${requiredAction}' on ${resourceName} resource. Current status: ${currentStatus}, Target status: ${newStatus}`
             };
         }
-        
+
         return {
             isValid: false,
-            message: `You do not have '${requiredAction}' permission on workflow resource to transition from '${currentStatus}' to '${newStatus}'. Your role: ${userRole}. Required permission: '${requiredAction}' on workflow resource. Current status: ${currentStatus}, Target status: ${newStatus}`
+            message: `You do not have '${requiredAction}' permission on workflow resource to transition from '${currentStatus}' to '${newStatus}'. Your role: ${context.userRole}. Required permission: '${requiredAction}' on workflow resource. Current status: ${currentStatus}, Target status: ${newStatus}`
         };
     }
 
@@ -299,95 +342,27 @@ function getRequiredRoleForTransition(fromStatus, toStatus) {
  * @returns {Promise<Array>} Array of possible next states with required permissions
  */
 async function getNextPossibleStates(currentStatus, userId, resourceType = 'workflow', resourceItem = null) {
-    const Permission = require('../models/Permission');
-    const Resource = require('../models/Resource');
-    const mongoose = require('mongoose');
-    
     if (!STATE_TRANSITIONS[currentStatus]) {
         return [];
     }
 
-    // Get workflow resource ID
-    let workflowResourceId = null;
-    if (mongoose.Types.ObjectId.isValid(resourceType) && resourceType.toString().length === 24) {
-        workflowResourceId = new mongoose.Types.ObjectId(resourceType);
-    } else {
-        const workflowResource = await Resource.findOne({ 
-            $or: [
-                { slug: resourceType },
-                { path: resourceType }
-            ]
-        }).select('_id');
-        
-        if (!workflowResource) {
-            const defaultWorkflowResource = await Resource.findOne({ slug: 'workflow' }).select('_id');
-            if (defaultWorkflowResource) {
-                workflowResourceId = defaultWorkflowResource._id;
-            } else {
-                return [];
-            }
-        } else {
-            workflowResourceId = workflowResource._id;
-        }
+    const context = await loadWorkflowPermissionContext(userId, resourceType, resourceItem);
+    if (!context.workflowResourceId) {
+        return [];
     }
-
-    // Get actual resource ID for permission checking
-    let actualResourceId = null;
-    const normalizedResourceType = normalizeWorkflowResourceType(resourceType);
-    if (typeof normalizedResourceType === 'string' && normalizedResourceType !== 'workflow') {
-        const actualResource = await Resource.findOne({ slug: normalizedResourceType, isActive: true }).select('_id');
-        if (actualResource) {
-            actualResourceId = actualResource._id;
-        }
-    }
-
-    // Check if user is the creator of the resource
-    const isCreator = resourceItem && resourceItem.createdBy && 
-        (resourceItem.createdBy.toString() === userId.toString() || 
-         (resourceItem.createdBy._id && resourceItem.createdBy._id.toString() === userId.toString()));
 
     const allowedTransitions = STATE_TRANSITIONS[currentStatus];
     const possibleStates = [];
 
-    // Check each possible transition
     for (const [nextState, requiredAction] of Object.entries(allowedTransitions)) {
-        let hasPermission = false;
+        const allowCreatorSubmit = requiredAction === 'update'
+            && nextState === WORKFLOW_STATES.IN_REVIEW
+            && (currentStatus === WORKFLOW_STATES.DRAFT || currentStatus === WORKFLOW_STATES.CHANGES_REQUESTED);
 
-        // Check workflow resource permission
-        const hasWorkflowPermission = await Permission.hasUserPermission(userId, workflowResourceId, requiredAction);
-        
-        // For draft → in_review (submit), also check:
-        // 1. If user is creator (can submit their own draft)
-        // 2. If user has 'update' permission on the actual resource (pages/sections)
-        if (currentStatus === WORKFLOW_STATES.DRAFT && nextState === WORKFLOW_STATES.IN_REVIEW && requiredAction === 'update') {
-            // Creator can always submit their own draft
-            if (isCreator) {
-                hasPermission = true;
-            } else if (actualResourceId) {
-                // Check if user has 'update' permission on pages/sections resource
-                const hasResourceUpdatePermission = await Permission.hasUserPermission(userId, actualResourceId, 'update');
-                hasPermission = hasResourceUpdatePermission;
-            } else {
-                // Fallback to workflow permission
-                hasPermission = hasWorkflowPermission;
-            }
-        } else {
-            // For other transitions (review, approve, publish, delete, etc.), check BOTH:
-            // 1. Workflow resource permission (review/approve/publish/delete on workflow resource)
-            // 2. OR actual resource permission (review/approve/publish/delete on pages/sections resource)
-            // This allows users to have permission on either resource
-            if (hasWorkflowPermission) {
-                hasPermission = true;
-            } else if (actualResourceId) {
-                // Check if user has the required action permission on the actual resource
-                // e.g., 'review' permission on pages resource, 'approve' permission on pages resource,
-                // 'publish' permission on pages resource, or 'delete' permission on pages resource
-                const hasResourcePermission = await Permission.hasUserPermission(userId, actualResourceId, requiredAction);
-                hasPermission = hasResourcePermission;
-            } else {
-                hasPermission = false;
-            }
-        }
+        const hasPermission = canUseResolvedPermission(context, requiredAction, {
+            allowActualResource: true,
+            allowCreatorSubmit
+        });
 
         if (hasPermission) {
             possibleStates.push({
