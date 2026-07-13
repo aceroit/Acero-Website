@@ -4,11 +4,12 @@ import { UploadOutlined, DeleteOutlined, FolderOutlined } from '@ant-design/icon
 import * as mediaService from '../../services/mediaService';
 import { toast } from 'react-toastify';
 import MediaPicker from './MediaPicker';
+import { getCmsAssetUrl, normalizeMediaObject } from '../../utils/cmsAssetUrl';
 
 /**
  * Image Upload Component
  * Handles single image upload with preview
- * 
+ *
  * @param {Object} props
  * @param {string} props.value - Current image object { url, publicId, width, height }
  * @param {Function} props.onChange - Callback when image changes (receives image object or null)
@@ -35,7 +36,12 @@ const ImageUpload = ({
   const [previewVisible, setPreviewVisible] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [localPreviewUrl, setLocalPreviewUrl] = useState(null);
-  const [previewMode, setPreviewMode] = useState('remote');
+
+  const normalizedValue = useMemo(() => normalizeMediaObject(value), [value]);
+  const previewSrc = useMemo(
+    () => localPreviewUrl || getCmsAssetUrl(normalizedValue) || '',
+    [localPreviewUrl, normalizedValue]
+  );
 
   useEffect(() => {
     return () => {
@@ -44,30 +50,6 @@ const ImageUpload = ({
       }
     };
   }, [localPreviewUrl]);
-
-  const localMirrorUrl = useMemo(() => {
-    if (!value?.url) return null;
-
-    try {
-      const remoteUrl = new URL(value.url);
-      const uploadsIndex = remoteUrl.pathname.indexOf('/uploads/');
-      if (uploadsIndex === -1) {
-        return null;
-      }
-
-      const apiBase = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/api\/?$/, '');
-      return `${apiBase}${remoteUrl.pathname.substring(uploadsIndex)}`;
-    } catch (error) {
-      return null;
-    }
-  }, [value]);
-
-  const previewSrc = useMemo(() => {
-    if (previewMode === 'local') {
-      return localPreviewUrl || localMirrorUrl || value?.url || null;
-    }
-    return value?.url || localPreviewUrl || localMirrorUrl || null;
-  }, [previewMode, value, localPreviewUrl, localMirrorUrl]);
 
   const setFreshLocalPreview = (file) => {
     if (!file || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') {
@@ -80,20 +62,17 @@ const ImageUpload = ({
       }
       return URL.createObjectURL(file);
     });
-    setPreviewMode('remote');
   };
 
   const handleUpload = async (file) => {
     setFreshLocalPreview(file);
 
-    // Validate file size
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > maxSize) {
       message.error(`File size must be less than ${maxSize}MB`);
       return false;
     }
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       message.error('Please upload an image file');
       return false;
@@ -111,15 +90,14 @@ const ImageUpload = ({
           ? response.data.media[0]
           : response.data.media;
 
-        const imageData = {
-          url: uploadedMedia.url || uploadedMedia.secureUrl,
-          publicId: uploadedMedia.publicId,
+        const imageData = normalizeMediaObject({
+          url: uploadedMedia.url || uploadedMedia.secureUrl || uploadedMedia.secure_url,
+          publicId: uploadedMedia.publicId || uploadedMedia.public_id,
           width: uploadedMedia.width,
           height: uploadedMedia.height,
-        };
+        });
 
         onChange?.(imageData);
-        setPreviewMode('remote');
         message.success('Image uploaded successfully');
       } else {
         throw new Error('Upload failed');
@@ -131,7 +109,7 @@ const ImageUpload = ({
       setUploading(false);
     }
 
-    return false; // Prevent default upload
+    return false;
   };
 
   const handleRemove = () => {
@@ -139,34 +117,32 @@ const ImageUpload = ({
       URL.revokeObjectURL(localPreviewUrl);
     }
     setLocalPreviewUrl(null);
-    setPreviewMode('remote');
     onChange?.(null);
     message.success('Image removed');
   };
 
   const handlePickerSelect = (selectedMedia) => {
     if (selectedMedia && selectedMedia.length > 0) {
-      const media = selectedMedia[0]; // Single selection
-      const imageData = {
-        url: media.secureUrl || media.url,
-        publicId: media.publicId,
+      const media = selectedMedia[0];
+      const imageData = normalizeMediaObject({
+        url: media.secureUrl || media.secure_url || media.url,
+        publicId: media.publicId || media.public_id,
         width: media.width,
         height: media.height,
-        _id: media._id, // Include ID for reference
-      };
+        _id: media._id,
+      });
       if (localPreviewUrl && localPreviewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(localPreviewUrl);
       }
       setLocalPreviewUrl(null);
-      setPreviewMode('remote');
       onChange?.(imageData);
       message.success('Image selected from library');
     }
   };
 
   const getSelectedMediaForPicker = () => {
-    if (!value || !value._id) return [];
-    return [value._id];
+    if (!normalizedValue || !normalizedValue._id) return [];
+    return [normalizedValue._id];
   };
 
   const uploadProps = {
@@ -185,13 +161,12 @@ const ImageUpload = ({
           <span className="text-sm font-medium text-gray-700">{label}</span>
         </div>
       )}
-      
+
       <div className="flex items-start gap-4">
         {previewSrc && (
           <div className="relative">
             <Image
               src={previewSrc}
-              fallback={localPreviewUrl || localMirrorUrl || undefined}
               alt="Preview"
               width={200}
               height={120}
@@ -201,11 +176,6 @@ const ImageUpload = ({
                 onVisibleChange: (visible) => setPreviewVisible(visible),
               }}
               onClick={() => setPreviewVisible(true)}
-              onError={() => {
-                if (localPreviewUrl || localMirrorUrl) {
-                  setPreviewMode('local');
-                }
-              }}
             />
             {!disabled && (
               <Button
@@ -219,7 +189,7 @@ const ImageUpload = ({
             )}
           </div>
         )}
-        
+
         <div className="flex gap-2">
           <Upload {...uploadProps}>
             <Button
@@ -228,7 +198,7 @@ const ImageUpload = ({
               disabled={disabled || uploading}
               size="large"
             >
-              {value?.url || localPreviewUrl ? 'Change Image' : 'Upload Image'}
+              {previewSrc ? 'Change Image' : 'Upload Image'}
             </Button>
           </Upload>
           {showLibraryButton && (
@@ -254,21 +224,15 @@ const ImageUpload = ({
         resourceType="image"
       />
 
-      {previewMode === 'local' && (localPreviewUrl || localMirrorUrl) && value?.url && (
-        <p className="text-xs text-amber-600 mt-2">
-          Previewing the local file in admin. The saved image URL is not reachable from this environment yet.
-        </p>
-      )}
-
       {dimensions && (
         <p className="text-xs text-gray-500 mt-2">
-          Recommended: {dimensions.minWidth}×{dimensions.minHeight}px
-          {dimensions.maxWidth && dimensions.maxHeight && 
-            ` (max: ${dimensions.maxWidth}×${dimensions.maxHeight}px)`
+          Recommended: {dimensions.minWidth}x{dimensions.minHeight}px
+          {dimensions.maxWidth && dimensions.maxHeight &&
+            ` (max: ${dimensions.maxWidth}x${dimensions.maxHeight}px)`
           }
         </p>
       )}
-      
+
       <p className="text-xs text-gray-500 mt-1">
         Max file size: {maxSize}MB
       </p>
@@ -277,4 +241,3 @@ const ImageUpload = ({
 };
 
 export default ImageUpload;
-

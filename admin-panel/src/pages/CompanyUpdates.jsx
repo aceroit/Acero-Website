@@ -20,6 +20,7 @@ import * as companyUpdateService from '../services/companyUpdateService';
 import * as companyUpdateCategoryService from '../services/companyUpdateCategoryService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import { getCmsAssetUrl } from '../utils/cmsAssetUrl';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -197,7 +198,7 @@ const CompanyUpdates = () => {
           <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0 overflow-hidden">
             {record.featureImage?.url ? (
               <img
-                src={record.featureImage.url}
+                src={getCmsAssetUrl(record.featureImage)}
                 alt={record.title}
                 className="w-full h-full object-cover rounded-lg"
               />
@@ -215,7 +216,7 @@ const CompanyUpdates = () => {
               )}
             </div>
             <span className="text-xs text-gray-500 truncate">
-              {record.category?.name || 'Uncategorized'} • {record.heading}
+              {record.category?.name || 'Uncategorized'} â€¢ {record.heading}
             </span>
           </div>
         </div>
@@ -239,7 +240,7 @@ const CompanyUpdates = () => {
       className: 'hidden md:table-cell',
       render: (date) => (
         <span className="text-gray-600 text-xs">
-          {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
+          {date ? dayjs(date).format('MMM DD, YYYY') : 'â€”'}
         </span>
       ),
       sorter: true,
@@ -281,7 +282,7 @@ const CompanyUpdates = () => {
             : creator.email || 'Unknown';
           return <span className="text-gray-700 text-sm truncate block" title={name}>{name}</span>;
         }
-        return <span className="text-gray-400 text-sm">—</span>;
+        return <span className="text-gray-400 text-sm">â€”</span>;
       },
     },
     {
@@ -292,7 +293,7 @@ const CompanyUpdates = () => {
       className: 'hidden md:table-cell',
       render: (date) => (
         <span className="text-gray-600 text-xs">
-          {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
+          {date ? dayjs(date).format('MMM DD, YYYY') : 'â€”'}
         </span>
       ),
       sorter: true,

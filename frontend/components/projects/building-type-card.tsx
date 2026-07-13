@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import Image from "next/image"
+import Image from "@/components/ui/cms-image"
 import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { BuildingType } from "@/utils/projects-data"

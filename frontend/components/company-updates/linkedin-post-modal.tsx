@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import Image from "next/image"
+import Image from "@/components/ui/cms-image"
 import { Heart, MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 

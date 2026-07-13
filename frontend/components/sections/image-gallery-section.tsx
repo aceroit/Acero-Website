@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion"
 import { useRef, useMemo, useState } from "react"
-import Image from "next/image"
+import Image from "@/components/ui/cms-image"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
@@ -45,7 +45,7 @@ export function ImageGallerySection({
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
   const [previewImage, setPreviewImage] = useState<GalleryImage | null>(null)
 
-  // ✅ IMPORTANT FIX: disable preview if links are enabled
+  // âœ… IMPORTANT FIX: disable preview if links are enabled
   const showPreview = imageOrientation === "horizontal" && !enableImageLink
 
   const validImages = useMemo(
@@ -107,7 +107,7 @@ export function ImageGallerySection({
             {validImages.map((image, index) => {
               const hasLink = !!image.link?.trim()
 
-              // ✅ Card UI (single source of truth)
+              // âœ… Card UI (single source of truth)
               const card = (
                 <div
                   role={showPreview ? "button" : undefined}
@@ -161,7 +161,7 @@ export function ImageGallerySection({
                   transition={{ duration: 0.5, delay: index * 0.08 }}
                   className="flex flex-col"
                 >
-                  {/* ✅ CONDITIONAL WRAP (core fix) */}
+                  {/* âœ… CONDITIONAL WRAP (core fix) */}
                   {enableImageLink && hasLink ? (
                     <a
                       href={image.link}

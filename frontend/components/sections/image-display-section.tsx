@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion"
 import { useRef, useMemo, useState } from "react"
-import Image from "next/image"
+import Image from "@/components/ui/cms-image"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"

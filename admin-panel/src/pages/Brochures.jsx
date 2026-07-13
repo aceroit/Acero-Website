@@ -20,6 +20,7 @@ import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as brochureService from '../services/brochureService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import { getCmsAssetUrl } from '../utils/cmsAssetUrl';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -177,7 +178,7 @@ const Brochures = () => {
           <div className="w-16 h-20 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0 overflow-hidden">
             {record.brochureImage?.url ? (
               <Image
-                src={record.brochureImage.url}
+                src={getCmsAssetUrl(record.brochureImage)}
                 alt={record.title}
                 className="w-full h-full object-cover"
                 preview={false}
@@ -202,7 +203,7 @@ const Brochures = () => {
             )}
             {record.downloadLink && (
               <a
-                href={record.downloadLink}
+                href={getCmsAssetUrl(record.downloadLink)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center gap-1"
@@ -260,7 +261,7 @@ const Brochures = () => {
             : creator.email || 'Unknown';
           return <span className="text-gray-700">{name}</span>;
         }
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-gray-400">â€”</span>;
       },
     },
     {
@@ -269,7 +270,7 @@ const Brochures = () => {
       key: 'createdAt',
       render: (date) => (
         <span className="text-gray-600 text-sm">
-          {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
+          {date ? dayjs(date).format('MMM DD, YYYY') : 'â€”'}
         </span>
       ),
       sorter: true,

@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react"
 import { useTheme } from "@/components/theme-provider"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import Image from "next/image"
 import { useHeader } from "@/hooks/use-header"
 import { cn } from "@/lib/utils"
 

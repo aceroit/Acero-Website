@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import Image from "next/image"
+import Image from "@/components/ui/cms-image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -72,7 +72,7 @@ export function InfiniteCarousel({
                   item.link && "cursor-pointer transition-opacity hover:opacity-80"
                 )}
               >
-                {/* No grey tint – keep images original (no grayscale) */}
+                {/* No grey tint â€“ keep images original (no grayscale) */}
                 <div className="relative h-full w-full">
                   <Image
                     src={item.image}

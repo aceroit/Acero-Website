@@ -19,6 +19,7 @@ import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as certificationService from '../services/certificationService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import { getCmsAssetUrl } from '../utils/cmsAssetUrl';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -176,7 +177,7 @@ const Certifications = () => {
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white">
             {record.certificationImage?.url ? (
               <img
-                src={record.certificationImage.url}
+                src={getCmsAssetUrl(record.certificationImage)}
                 alt={record.name}
                 className="w-full h-full object-cover rounded-lg"
               />
@@ -225,7 +226,7 @@ const Certifications = () => {
             </a>
           );
         }
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-gray-400">â€”</span>;
       },
     },
     {
@@ -261,7 +262,7 @@ const Certifications = () => {
             : creator.email || 'Unknown';
           return <span className="text-gray-700">{name}</span>;
         }
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-gray-400">â€”</span>;
       },
     },
     {
@@ -270,7 +271,7 @@ const Certifications = () => {
       key: 'createdAt',
       render: (date) => (
         <span className="text-gray-600 text-sm">
-          {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
+          {date ? dayjs(date).format('MMM DD, YYYY') : 'â€”'}
         </span>
       ),
       sorter: true,

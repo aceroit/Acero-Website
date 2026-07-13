@@ -1,17 +1,17 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Upload, Button, message } from 'antd';
 import { UploadOutlined, DeleteOutlined, FilePdfOutlined } from '@ant-design/icons';
 import * as mediaService from '../../services/mediaService';
 import { toast } from 'react-toastify';
+import { getCmsAssetUrl } from '../../utils/cmsAssetUrl';
 
 /**
- * PDF Upload Component – uploads PDF to Cloudinary (raw) and returns file URL.
- * Used for brochure language PDFs and other document fields.
+ * PDF Upload Component â€“ uploads PDF and returns file URL.
  *
  * @param {Object} props
  * @param {string} props.value - Current file URL (string)
  * @param {Function} props.onChange - Callback when file changes (receives url string or null)
- * @param {string} props.folder - Cloudinary folder (default: 'brochures/pdfs')
+ * @param {string} props.folder - Upload folder (default: 'brochures/pdfs')
  * @param {string} props.label - Label text
  * @param {number} props.maxSize - Max file size in MB (default: 20)
  * @param {boolean} props.disabled - Whether upload is disabled
@@ -25,6 +25,7 @@ const PdfUpload = ({
   disabled = false,
 }) => {
   const [uploading, setUploading] = useState(false);
+  const fileUrl = useMemo(() => getCmsAssetUrl(value), [value]);
 
   const handleUpload = async (file) => {
     const fileExt = (file.name || '').split('.').pop().toLowerCase();
@@ -45,7 +46,7 @@ const PdfUpload = ({
         const media = Array.isArray(response.data.media)
           ? response.data.media[0]
           : response.data.media;
-        const url = media.secureUrl || media.url;
+        const url = getCmsAssetUrl(media.secureUrl || media.secure_url || media.url);
         onChange?.(url);
         message.success('PDF uploaded successfully');
       } else {
@@ -57,7 +58,7 @@ const PdfUpload = ({
     } finally {
       setUploading(false);
     }
-    return false; // prevent default upload
+    return false;
   };
 
   const handleRemove = () => {
@@ -73,10 +74,10 @@ const PdfUpload = ({
         </div>
       )}
       <div className="flex flex-wrap items-center gap-2">
-        {value ? (
+        {fileUrl ? (
           <>
             <a
-              href={value}
+              href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
@@ -110,7 +111,7 @@ const PdfUpload = ({
             disabled={disabled || uploading}
             size="large"
           >
-            {value ? 'Replace PDF' : 'Upload PDF'}
+            {fileUrl ? 'Replace PDF' : 'Upload PDF'}
           </Button>
         </Upload>
       </div>

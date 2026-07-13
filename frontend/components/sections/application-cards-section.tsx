@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion"
 import { useRef, useMemo, useState } from "react"
-import Image from "next/image"
+import Image from "@/components/ui/cms-image"
 import { useRouter } from "next/navigation"
 import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"

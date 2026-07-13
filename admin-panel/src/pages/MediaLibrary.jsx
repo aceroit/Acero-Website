@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Table, Button, Input, Select, Space, Tag, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, PictureOutlined } from '@ant-design/icons';
 import * as mediaLibraryService from '../services/mediaLibraryService';
+import { getCmsAssetUrl } from '../utils/cmsAssetUrl';
 
 const { Option } = Select;
 const { Search } = Input;
@@ -94,7 +95,7 @@ const MediaLibrary = () => {
         if (record.resourceType === 'image') {
           return (
             <img
-              src={url}
+              src={getCmsAssetUrl(url)}
               alt={record.filename}
               style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
             />

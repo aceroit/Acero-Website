@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Upload, Button, Image, message, Input } from 'antd';
 import { UploadOutlined, DeleteOutlined, FolderOutlined } from '@ant-design/icons';
 import * as mediaService from '../../services/mediaService';
 import { toast } from 'react-toastify';
 import MediaPicker from './MediaPicker';
+import { getCmsAssetUrl, normalizeMediaObject } from '../../utils/cmsAssetUrl';
 
 /**
  * Gallery Upload Component
  * Handles multiple image uploads with preview and ordering
- * 
+ *
  * @param {Object} props
  * @param {Array} props.value - Current gallery array [{ url, publicId, width, height, altText, order }]
  * @param {Function} props.onChange - Callback when gallery changes (receives gallery array)
@@ -32,15 +33,18 @@ const GalleryUpload = ({
   const [uploading, setUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
+  const normalizedImages = useMemo(
+    () => (Array.isArray(value) ? value.map((item) => normalizeMediaObject(item)) : []),
+    [value]
+  );
+
   const handleUpload = async (file) => {
-    // Validate file size
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > maxSize) {
       message.error(`File size must be less than ${maxSize}MB`);
       return false;
     }
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       message.error('Please upload an image file');
       return false;
@@ -58,16 +62,16 @@ const GalleryUpload = ({
           ? response.data.media[0]
           : response.data.media;
 
-        const imageData = {
-          url: uploadedMedia.url || uploadedMedia.secureUrl,
-          publicId: uploadedMedia.publicId,
+        const imageData = normalizeMediaObject({
+          url: uploadedMedia.url || uploadedMedia.secureUrl || uploadedMedia.secure_url,
+          publicId: uploadedMedia.publicId || uploadedMedia.public_id,
           width: uploadedMedia.width,
           height: uploadedMedia.height,
           altText: uploadedMedia.altText || file.name,
-          order: value.length,
-        };
+          order: normalizedImages.length,
+        });
 
-        const updatedGallery = [...value, imageData];
+        const updatedGallery = [...normalizedImages, imageData];
         onChange?.(updatedGallery);
         message.success('Image uploaded successfully');
       } else {
@@ -80,47 +84,48 @@ const GalleryUpload = ({
       setUploading(false);
     }
 
-    return false; // Prevent default upload
+    return false;
   };
 
   const handleRemove = (index) => {
-    const updatedGallery = value.filter((_, i) => i !== index);
-    // Reorder remaining images
-    updatedGallery.forEach((img, i) => {
-      img.order = i;
-    });
+    const updatedGallery = normalizedImages
+      .filter((_, i) => i !== index)
+      .map((img, i) => ({ ...img, order: i }));
     onChange?.(updatedGallery);
     message.success('Image removed');
   };
 
   const handleAltTextChange = (index, altText) => {
-    const updatedGallery = [...value];
-    updatedGallery[index] = { ...updatedGallery[index], altText };
+    const updatedGallery = normalizedImages.map((image, i) =>
+      i === index ? { ...image, altText } : image
+    );
     onChange?.(updatedGallery);
   };
 
   const handlePickerSelect = (selectedMedia) => {
     if (selectedMedia && selectedMedia.length > 0) {
-      const newImages = selectedMedia.map((media, index) => ({
-        url: media.secureUrl || media.url,
-        publicId: media.publicId,
-        width: media.width,
-        height: media.height,
-        altText: media.altText || media.filename || `Gallery image ${value.length + index + 1}`,
-        order: value.length + index,
-        _id: media._id, // Include ID for reference
-      }));
-      
-      const updatedGallery = [...value, ...newImages];
+      const newImages = selectedMedia.map((media, index) =>
+        normalizeMediaObject({
+          url: media.secureUrl || media.secure_url || media.url,
+          publicId: media.publicId || media.public_id,
+          width: media.width,
+          height: media.height,
+          altText: media.altText || media.filename || `Gallery image ${normalizedImages.length + index + 1}`,
+          order: normalizedImages.length + index,
+          _id: media._id,
+        })
+      );
+
+      const updatedGallery = [...normalizedImages, ...newImages];
       onChange?.(updatedGallery);
       message.success(`${selectedMedia.length} image(s) selected from library`);
     }
   };
 
   const getSelectedMediaForPicker = () => {
-    return value
-      .filter(img => img._id)
-      .map(img => img._id);
+    return normalizedImages
+      .filter((img) => img?._id)
+      .map((img) => img._id);
   };
 
   const uploadProps = {
@@ -138,9 +143,8 @@ const GalleryUpload = ({
           <span className="text-sm font-medium text-gray-700">{label}</span>
         </div>
       )}
-      
+
       <div className="space-y-4">
-        {/* Upload Buttons */}
         <div className="flex gap-2">
           <Upload {...uploadProps}>
             <Button
@@ -164,13 +168,12 @@ const GalleryUpload = ({
           )}
         </div>
 
-        {/* Gallery Preview */}
-        {value.length > 0 && (
+        {normalizedImages.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {value.map((image, index) => (
-              <div key={index} className="relative border border-gray-200 rounded-lg p-2 bg-white">
+            {normalizedImages.map((image, index) => (
+              <div key={image._id || image.publicId || index} className="relative border border-gray-200 rounded-lg p-2 bg-white">
                 <Image
-                  src={image.url}
+                  src={getCmsAssetUrl(image)}
                   alt={image.altText || `Gallery image ${index + 1}`}
                   className="object-cover rounded"
                   width="100%"
@@ -203,10 +206,10 @@ const GalleryUpload = ({
 
       {dimensions && (
         <p className="text-xs text-gray-500 mt-2">
-          Recommended: {dimensions.minWidth}×{dimensions.minHeight}px
+          Recommended: {dimensions.minWidth}x{dimensions.minHeight}px
         </p>
       )}
-      
+
       <p className="text-xs text-gray-500 mt-1">
         Max file size: {maxSize}MB per image
       </p>
@@ -225,4 +228,3 @@ const GalleryUpload = ({
 };
 
 export default GalleryUpload;
-

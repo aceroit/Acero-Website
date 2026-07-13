@@ -19,6 +19,7 @@ import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as industryService from '../services/industryService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import { getCmsAssetUrl } from '../utils/cmsAssetUrl';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -183,7 +184,7 @@ const Industries = () => {
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0 overflow-hidden">
             {record.logo?.url ? (
               <Image
-                src={record.logo.url}
+                src={getCmsAssetUrl(record.logo)}
                 alt={record.name}
                 className="w-full h-full object-cover"
                 preview={false}
@@ -250,7 +251,7 @@ const Industries = () => {
             : creator.email || 'Unknown';
           return <span className="text-gray-700">{name}</span>;
         }
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-gray-400">â€”</span>;
       },
     },
     {
@@ -259,7 +260,7 @@ const Industries = () => {
       key: 'createdAt',
       render: (date) => (
         <span className="text-gray-600 text-sm">
-          {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
+          {date ? dayjs(date).format('MMM DD, YYYY') : 'â€”'}
         </span>
       ),
       sorter: true,

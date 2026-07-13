@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion"
 import { useRef, useMemo, useState } from "react"
-import Image from "next/image"
+import Image from "@/components/ui/cms-image"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
@@ -82,8 +82,8 @@ export function ProjectsGalleryImagesSection({
               transition={{ duration: 0.5, delay: index * 0.08 }}
               className="relative w-full overflow-hidden rounded-lg transition-all duration-300 [&>img]:block"
             >
-              {/* Native img so container sizes exactly to image (no extra horizontal space) */}
-              <img
+              {/* CMS image uses direct upload URL to preserve original clarity */}
+              <Image
                 src={image.src}
                 alt={image.alt}
                 loading="lazy"
@@ -94,7 +94,7 @@ export function ProjectsGalleryImagesSection({
         </div>
       </div>
 
-      {/* Modal disabled – uncomment to re-enable image preview on click
+      {/* Modal disabled - uncomment to re-enable image preview on click
       <Dialog
         open={!!previewImage}
         onOpenChange={(open) => !open && setPreviewImage(null)}

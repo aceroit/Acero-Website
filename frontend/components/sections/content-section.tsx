@@ -3,8 +3,8 @@
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
 import { useRef, useState, useEffect, useLayoutEffect, useMemo } from "react"
-import Image from "next/image"
 import Link from "next/link"
+import Image from "@/components/ui/cms-image"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
@@ -49,9 +49,7 @@ export function ContentSection({
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
-  // When inlineSvgPath is set, we show the local animated SVG instead of backend image(s)
   const showInlineSvg = Boolean(inlineSvgPath) && layout !== "text-only"
-  // Merge single image + images array when not using inline SVG
   const allImages: Array<{ url: string; imageAlt?: string }> = showInlineSvg
     ? []
     : [
@@ -74,7 +72,6 @@ export function ContentSection({
     return () => mql.removeEventListener("change", handler)
   }, [])
 
-  // Constrain image stack height to content height (so images don’t extend past content)
   useLayoutEffect(() => {
     if (!showVerticalStack) return
     const el = contentRef.current
@@ -162,16 +159,22 @@ export function ContentSection({
         />
       )
     }
+
     const fitClass = imageFit === "cover" ? "object-cover" : "object-contain"
+
+    // Use the normalized CMS asset URL directly for section content images
+    // so high-resolution uploads do not get softened by the Next.js optimizer.
     return (
       <Image
         src={img.url}
         alt={alt}
-        fill
         loading="lazy"
-        className={cn(fitClass, "transition-transform duration-500 group-hover:scale-105")}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        quality={85}
+        decoding="async"
+        className={cn(
+          "absolute inset-0 h-full w-full rounded-2xl",
+          fitClass,
+          "transition-transform duration-500 group-hover:scale-105"
+        )}
       />
     )
   }
@@ -197,7 +200,6 @@ export function ContentSection({
             getLayoutClasses()
           )}
         >
-          {/* Image(s) — vertical stack when 2+ images, single full-height when 1 */}
           {showVerticalStack && (
             <motion.div
               variants={itemVariants}
@@ -236,7 +238,6 @@ export function ContentSection({
             >
               {showInlineSvg && inlineSvgPath ? (
                 <>
-                  {/* Desktop SVG */}
                   <div className="hidden lg:block absolute inset-0 h-full w-full">
                     <InlineAnimatedSvg
                       src={inlineSvgPath}
@@ -244,7 +245,6 @@ export function ContentSection({
                       className="h-full w-full"
                     />
                   </div>
-                  {/* Mobile SVG */}
                   <div className="lg:hidden absolute inset-0 h-full w-full">
                     <InlineAnimatedSvg
                       src={inlineSvgPathMobile || inlineSvgPath}
@@ -259,7 +259,6 @@ export function ContentSection({
             </motion.div>
           )}
 
-          {/* Content */}
           <motion.div
             ref={contentRef}
             variants={itemVariants}
@@ -303,4 +302,3 @@ export function ContentSection({
     </section>
   )
 }
-

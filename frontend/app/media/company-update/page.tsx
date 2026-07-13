@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import Image from "next/image"
+import Image from "@/components/ui/cms-image"
 import Link from "next/link"
 import { Calendar, ArrowRight } from "lucide-react"
 import { Header } from "@/components/header"

@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Image, Checkbox, Tooltip } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import './MediaPickerItem.css';
+import { getCmsAssetUrl, normalizeMediaObject } from '../../utils/cmsAssetUrl';
 
 /**
  * MediaPickerItem Component
  * Individual image card in the media picker grid
- * 
+ *
  * @param {Object} props
  * @param {Object} props.media - Media object
  * @param {boolean} props.selected - Whether this item is selected
@@ -16,9 +17,9 @@ import './MediaPickerItem.css';
 const MediaPickerItem = ({ media, selected, onSelect, multiple = false }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const normalizedMedia = useMemo(() => normalizeMediaObject(media), [media]);
 
   const handleClick = (e) => {
-    // Don't trigger selection if clicking on checkbox
     if (e.target.type === 'checkbox' || e.target.closest('.ant-checkbox')) {
       return;
     }
@@ -38,7 +39,7 @@ const MediaPickerItem = ({ media, selected, onSelect, multiple = false }) => {
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
-  const imageUrl = media.secureUrl || media.url;
+  const imageUrl = getCmsAssetUrl(normalizedMedia);
   const displayName = media.filename || media.originalName || 'Untitled';
 
   return (
@@ -66,13 +67,13 @@ const MediaPickerItem = ({ media, selected, onSelect, multiple = false }) => {
             <span>Failed to load</span>
           </div>
         )}
-        
+
         {selected && (
           <div className="media-picker-item-selected-overlay">
             <CheckCircleOutlined className="selected-icon" />
           </div>
         )}
-        
+
         {multiple && (
           <div className="media-picker-item-checkbox" onClick={(e) => e.stopPropagation()}>
             <Checkbox
@@ -82,7 +83,7 @@ const MediaPickerItem = ({ media, selected, onSelect, multiple = false }) => {
           </div>
         )}
       </div>
-      
+
       <div className="media-picker-item-info">
         <Tooltip title={displayName}>
           <div className="media-picker-item-filename" title={displayName}>
@@ -95,7 +96,7 @@ const MediaPickerItem = ({ media, selected, onSelect, multiple = false }) => {
           )}
           {media.width && media.height && (
             <span className="dimensions">
-              {media.width} × {media.height}
+              {media.width} x {media.height}
             </span>
           )}
         </div>
@@ -105,4 +106,3 @@ const MediaPickerItem = ({ media, selected, onSelect, multiple = false }) => {
 };
 
 export default MediaPickerItem;
-

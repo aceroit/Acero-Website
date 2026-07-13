@@ -2,7 +2,6 @@
 
 import { useMemo } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { useFooter } from "@/hooks/use-footer"
 
 // Default fallback values
@@ -346,7 +345,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 lg:flex-row">
           <div className="text-sm text-center text-muted-foreground lg:text-left">
-            <span>{`© ${copyrightYear} `}</span>
+            <span>{`Copyright ${copyrightYear} `}</span>
             <Link href="/" className="text-[#E10600] hover:text-[#E10600]/80 transition-colors">
               {copyrightParts.companyName}
             </Link>

@@ -19,6 +19,7 @@ import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as customerService from '../services/customerService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import { getCmsAssetUrl } from '../utils/cmsAssetUrl';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -176,7 +177,7 @@ const Customers = () => {
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white">
             {record.customerImage?.url ? (
               <img
-                src={record.customerImage.url}
+                src={getCmsAssetUrl(record.customerImage)}
                 alt={record.name}
                 className="w-full h-full object-cover rounded-lg"
               />
@@ -240,7 +241,7 @@ const Customers = () => {
             : creator.email || 'Unknown';
           return <span className="text-gray-700">{name}</span>;
         }
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-gray-400">â€”</span>;
       },
     },
     {
@@ -249,7 +250,7 @@ const Customers = () => {
       key: 'createdAt',
       render: (date) => (
         <span className="text-gray-600 text-sm">
-          {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
+          {date ? dayjs(date).format('MMM DD, YYYY') : 'â€”'}
         </span>
       ),
       sorter: true,
