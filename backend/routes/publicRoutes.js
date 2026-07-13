@@ -33,7 +33,7 @@ const Enquiry = require('../models/Enquiry');
 const Application = require('../models/Application');
 const FormConfiguration = require('../models/FormConfiguration');
 const fileUpload = require('express-fileupload');
-const { saveUploadedFile, getUploadTempDir } = require('../utils/localFileStorage');
+const { saveUploadedFile, getUploadTempDir, normalizeStoredAssetUrlsForRequest } = require('../utils/localFileStorage');
 const notificationService = require('../services/notificationService');
 
 /// Simple in-memory cache for public GET APIs
@@ -110,6 +110,14 @@ async function refreshPublicCacheInBackground(key, fetchData, freshTtlMs, staleT
     }
 }
 
+
+function withResolvedSectionAssets(sections, req) {
+    const plainSections = Array.isArray(sections)
+        ? sections.map((section) => (section && typeof section.toObject === 'function' ? section.toObject() : section))
+        : sections;
+
+    return normalizeStoredAssetUrlsForRequest(plainSections, req);
+}
 
 async function sendCachedPublicResponse(
     res,
@@ -221,7 +229,7 @@ router.get('/pages/slug/:slug', async (req, res) => {
 
                     return {
                         page,
-                        sections
+                        sections: withResolvedSectionAssets(sections, req)
                     };
                 },
                 2 * 60 * 1000,
@@ -247,7 +255,7 @@ router.get('/pages/slug/:slug', async (req, res) => {
 
         const data = {
             page,
-            sections
+            sections: withResolvedSectionAssets(sections, req)
         };
 
         setPublicCache(cacheKey, data, 2 * 60 * 1000, 30 * 60 * 1000);
@@ -294,7 +302,7 @@ router.get('/pages/by-path', async (req, res) => {
 
         return successResponse(res, 200, 'Page retrieved successfully', {
             page,
-            sections,
+            sections: withResolvedSectionAssets(sections, req),
             breadcrumb
         });
     } catch (error) {
@@ -327,7 +335,7 @@ router.get('/pages/:id/sections', async (req, res) => {
         // Set cache headers (cache for 5 minutes)
         res.set('Cache-Control', 'public, max-age=300');
 
-        return successResponse(res, 200, 'Sections retrieved successfully', { sections });
+        return successResponse(res, 200, 'Sections retrieved successfully', { sections: withResolvedSectionAssets(sections, req) });
     } catch (error) {
         console.error('Error in public getPageSections:', error);
         return errorResponse(res, 500, 'Failed to retrieve sections');

@@ -15,6 +15,91 @@ function getUploadTempDir() {
   return path.resolve(process.env.UPLOAD_TEMP_DIR || path.join(os.tmpdir(), "acero-uploads"))
 }
 
+function getRelativeUploadPath(input = "") {
+  const value = String(input || "").trim()
+
+  if (!value) {
+    return null
+  }
+
+  if (value.startsWith("/uploads/")) {
+    return value.substring("/uploads/".length).replace(/^\\+|^\/+/, "")
+  }
+
+  try {
+    const parsed = new URL(value)
+    const marker = "/uploads/"
+    const markerIndex = parsed.pathname.indexOf(marker)
+
+    if (markerIndex === -1) {
+      return null
+    }
+
+    return parsed.pathname.substring(markerIndex + marker.length).replace(/^\\+|^\/+/, "")
+  } catch (error) {
+    return null
+  }
+}
+
+function buildRequestUploadsBase(req) {
+  const host = req && typeof req.get === "function" ? req.get("host") : null
+  if (!host) {
+    return getPublicUploadBase()
+  }
+
+  const forwardedProto = req.headers && req.headers["x-forwarded-proto"]
+  const protocol = forwardedProto ? String(forwardedProto).split(",")[0].trim() : (req.protocol || "http")
+
+  return `${protocol}://${host}/uploads`
+}
+
+function resolveStoredAssetUrlForRequest(url, req) {
+  if (!url) {
+    return url
+  }
+
+  const relativePath = getRelativeUploadPath(url)
+  if (!relativePath) {
+    return url
+  }
+
+  const uploadRoot = getUploadRoot()
+  const localPath = path.resolve(uploadRoot, relativePath)
+  const relative = path.relative(uploadRoot, localPath)
+
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    return url
+  }
+
+  if (!fs.existsSync(localPath)) {
+    return url
+  }
+
+  const uploadsBase = buildRequestUploadsBase(req).replace(/\/+$/, "")
+  return `${uploadsBase}/${relativePath.replace(/\\/g, "/")}`
+}
+
+function normalizeStoredAssetUrlsForRequest(value, req) {
+  if (typeof value === "string") {
+    return resolveStoredAssetUrlForRequest(value, req)
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeStoredAssetUrlsForRequest(item, req))
+  }
+
+  if (value && Object.prototype.toString.call(value) === "[object Object]") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entryValue]) => [
+        key,
+        normalizeStoredAssetUrlsForRequest(entryValue, req),
+      ])
+    )
+  }
+
+  return value
+}
+
 function getExt(filename = "") {
   return path.extname(filename).toLowerCase()
 }
@@ -121,4 +206,7 @@ module.exports = {
   getUploadRoot,
   getPublicUploadBase,
   getUploadTempDir,
+  getRelativeUploadPath,
+  resolveStoredAssetUrlForRequest,
+  normalizeStoredAssetUrlsForRequest,
 }

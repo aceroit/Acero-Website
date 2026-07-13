@@ -6,6 +6,7 @@
 import { apiGet } from '@/lib/api/client'
 import { API_ENDPOINTS } from '@/lib/api/endpoints'
 import type { PageResponse, Page } from '@/lib/api/types'
+import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 /**
  * Get published page by slug with sections
@@ -16,7 +17,7 @@ export async function getPageBySlug(slug: string): Promise<PageResponse | null> 
     const response = await apiGet<PageResponse>(endpoint)
     
     if (response.success && response.data) {
-      return response.data
+      return normalizeCmsAssetUrls(response.data)
     }
     
     return null
@@ -36,7 +37,7 @@ export async function getPageByPath(path: string): Promise<PageResponse | null> 
     )
     
     if (response.success && response.data) {
-      return response.data
+      return normalizeCmsAssetUrls(response.data)
     }
     
     return null

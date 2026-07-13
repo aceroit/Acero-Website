@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Upload, Button, Image, message } from 'antd';
 import { UploadOutlined, DeleteOutlined, FolderOutlined } from '@ant-design/icons';
 import * as mediaService from '../../services/mediaService';
@@ -34,8 +34,58 @@ const ImageUpload = ({
   const [uploading, setUploading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState(null);
+  const [previewMode, setPreviewMode] = useState('remote');
+
+  useEffect(() => {
+    return () => {
+      if (localPreviewUrl && localPreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(localPreviewUrl);
+      }
+    };
+  }, [localPreviewUrl]);
+
+  const localMirrorUrl = useMemo(() => {
+    if (!value?.url) return null;
+
+    try {
+      const remoteUrl = new URL(value.url);
+      const uploadsIndex = remoteUrl.pathname.indexOf('/uploads/');
+      if (uploadsIndex === -1) {
+        return null;
+      }
+
+      const apiBase = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/api\/?$/, '');
+      return `${apiBase}${remoteUrl.pathname.substring(uploadsIndex)}`;
+    } catch (error) {
+      return null;
+    }
+  }, [value]);
+
+  const previewSrc = useMemo(() => {
+    if (previewMode === 'local') {
+      return localPreviewUrl || localMirrorUrl || value?.url || null;
+    }
+    return value?.url || localPreviewUrl || localMirrorUrl || null;
+  }, [previewMode, value, localPreviewUrl, localMirrorUrl]);
+
+  const setFreshLocalPreview = (file) => {
+    if (!file || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') {
+      return;
+    }
+
+    setLocalPreviewUrl((previousUrl) => {
+      if (previousUrl && previousUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previousUrl);
+      }
+      return URL.createObjectURL(file);
+    });
+    setPreviewMode('remote');
+  };
 
   const handleUpload = async (file) => {
+    setFreshLocalPreview(file);
+
     // Validate file size
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > maxSize) {
@@ -69,6 +119,7 @@ const ImageUpload = ({
         };
 
         onChange?.(imageData);
+        setPreviewMode('remote');
         message.success('Image uploaded successfully');
       } else {
         throw new Error('Upload failed');
@@ -84,6 +135,11 @@ const ImageUpload = ({
   };
 
   const handleRemove = () => {
+    if (localPreviewUrl && localPreviewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(localPreviewUrl);
+    }
+    setLocalPreviewUrl(null);
+    setPreviewMode('remote');
     onChange?.(null);
     message.success('Image removed');
   };
@@ -98,6 +154,11 @@ const ImageUpload = ({
         height: media.height,
         _id: media._id, // Include ID for reference
       };
+      if (localPreviewUrl && localPreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(localPreviewUrl);
+      }
+      setLocalPreviewUrl(null);
+      setPreviewMode('remote');
       onChange?.(imageData);
       message.success('Image selected from library');
     }
@@ -126,10 +187,11 @@ const ImageUpload = ({
       )}
       
       <div className="flex items-start gap-4">
-        {value?.url && (
+        {previewSrc && (
           <div className="relative">
             <Image
-              src={value.url}
+              src={previewSrc}
+              fallback={localPreviewUrl || localMirrorUrl || undefined}
               alt="Preview"
               width={200}
               height={120}
@@ -139,6 +201,11 @@ const ImageUpload = ({
                 onVisibleChange: (visible) => setPreviewVisible(visible),
               }}
               onClick={() => setPreviewVisible(true)}
+              onError={() => {
+                if (localPreviewUrl || localMirrorUrl) {
+                  setPreviewMode('local');
+                }
+              }}
             />
             {!disabled && (
               <Button
@@ -161,7 +228,7 @@ const ImageUpload = ({
               disabled={disabled || uploading}
               size="large"
             >
-              {value?.url ? 'Change Image' : 'Upload Image'}
+              {value?.url || localPreviewUrl ? 'Change Image' : 'Upload Image'}
             </Button>
           </Upload>
           {showLibraryButton && (
@@ -186,6 +253,12 @@ const ImageUpload = ({
         selectedImages={getSelectedMediaForPicker()}
         resourceType="image"
       />
+
+      {previewMode === 'local' && (localPreviewUrl || localMirrorUrl) && value?.url && (
+        <p className="text-xs text-amber-600 mt-2">
+          Previewing the local file in admin. The saved image URL is not reachable from this environment yet.
+        </p>
+      )}
 
       {dimensions && (
         <p className="text-xs text-gray-500 mt-2">

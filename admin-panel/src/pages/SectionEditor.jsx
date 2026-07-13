@@ -11,7 +11,8 @@ import {
   Input,
   Space,
   Alert,
-  Collapse
+  Collapse,
+  Tag
 } from 'antd';
 import { 
   HomeOutlined, 
@@ -47,6 +48,8 @@ const SectionEditor = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [fetchingTypes, setFetchingTypes] = useState(true);
+
+  const isStagedRevision = Boolean(section?.hasActiveRevision && section?.liveStatus === 'published');
 
   // Fetch section types
   useEffect(() => {
@@ -176,21 +179,19 @@ const SectionEditor = () => {
 
       let response;
       if (isEdit) {
-        // Check if section is published - prevent direct edits
-        if (section?.status === 'published') {
-          toast.error('Cannot edit published content. Please unpublish first or use workflow actions.');
-          setLoading(false);
-          return;
-        }
-        
         response = await sectionService.updateSection(sectionId, sectionData);
       } else {
         response = await sectionService.createSection(pageId, sectionData);
       }
 
       if (response.success) {
-        toast.success(isEdit ? 'Section updated successfully' : 'Section created successfully');
-        navigate(`/pages/${pageId}/sections`);
+        toast.success(response.message || (isEdit ? 'Section updated successfully' : 'Section created successfully'));
+
+        if (isEdit) {
+          await fetchSection();
+        } else {
+          navigate(`/pages/${pageId}/sections`);
+        }
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || 
@@ -317,7 +318,13 @@ const SectionEditor = () => {
           </div>
           {isEdit && section && (
             <div className="flex flex-col items-start md:items-end gap-2">
-              <WorkflowStatusBadge status={section.status} size="large" />
+              <Space wrap>
+                <WorkflowStatusBadge status={section.status} size="large" />
+                {isStagedRevision && <Tag color="green">Live: Published</Tag>}
+                {section?.activeRevision?.revisionNumber && (
+                  <Tag color="gold">Revision #{section.activeRevision.revisionNumber}</Tag>
+                )}
+              </Space>
               <WorkflowActions
                 resource="section"
                 resourceId={sectionId}
@@ -330,6 +337,15 @@ const SectionEditor = () => {
             </div>
           )}
         </div>
+
+        {isEdit && isStagedRevision && (
+          <Alert
+            type="info"
+            showIcon
+            message="You are editing a staged revision"
+            description="The website still shows the current published section. Your new image or content changes stay in workflow until this revision is published."
+          />
+        )}
 
         {/* Form Card */}
         <Card className="border border-gray-200 shadow-md bg-white">

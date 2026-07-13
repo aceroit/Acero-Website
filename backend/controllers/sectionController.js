@@ -5,6 +5,21 @@ const ActivityLog = require('../models/ActivityLog');
 const sectionValidator = require('../services/sectionValidator');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canCreateSection, canEditContent, canDeleteContent, canModifyTree } = require('../utils/workflowStatusValidator');
+const {
+    attachActiveRevisions,
+    buildEditableResource,
+    getActiveRevision,
+    stagePublishedUpdate
+} = require('../services/contentRevisionService');
+
+const REVISION_USER_POPULATE = 'createdBy updatedBy reviewedBy approvedBy publishedBy';
+
+function populateSectionQuery(query) {
+    return query
+        .populate('pageId', 'title slug path status createdBy')
+        .populate('createdBy', 'firstName lastName email')
+        .populate('updatedBy', 'firstName lastName email');
+}
 
 /**
  * Get all sections for a specific page
@@ -20,9 +35,12 @@ exports.getPageSections = async (req, res) => {
             return errorResponse(res, 404, 'Page not found');
         }
 
-        const sections = await Section.getPageSections(pageId, includeHidden === 'true');
+        const sections = await populateSectionQuery(
+            Section.find(includeHidden === 'true' ? { pageId } : { pageId, isVisible: true }).sort({ order: 1 })
+        );
+        const mergedSections = await attachActiveRevisions('section', sections, REVISION_USER_POPULATE);
 
-        return successResponse(res, 200, 'Sections retrieved successfully', { sections });
+        return successResponse(res, 200, 'Sections retrieved successfully', { sections: mergedSections });
     } catch (error) {
         console.error('Error in getPageSections:', error);
         return errorResponse(res, 500, 'Failed to retrieve sections', error.message);
@@ -36,20 +54,21 @@ exports.getSectionById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const section = await Section.findById(id)
-            .populate('pageId', 'title slug path')
-            .populate('createdBy', 'firstName lastName email')
-            .populate('updatedBy', 'firstName lastName email');
+        const section = await populateSectionQuery(Section.findById(id));
 
         if (!section) {
             return errorResponse(res, 404, 'Section not found');
         }
 
+        const revision = await getActiveRevision('section', section._id, REVISION_USER_POPULATE);
+        const editableSection = buildEditableResource(section, revision);
+
         // Get section type details
-        const sectionType = await sectionValidator.getFieldSchema(section.sectionTypeSlug);
+        const sectionType = await sectionValidator.getFieldSchema(editableSection.sectionTypeSlug);
 
         return successResponse(res, 200, 'Section retrieved successfully', { 
-            section,
+            section: editableSection,
+            activeRevision: editableSection.activeRevision,
             fieldSchema: sectionType
         });
     } catch (error) {
@@ -205,27 +224,16 @@ exports.updateSection = async (req, res) => {
             }
         }
         
-        // Validate workflow status and permissions using workflowStatusValidator
-        // This checks both permission AND role hierarchy for the current status
-        // Only check this if we haven't already blocked above
-        if (!restrictedSectionStatuses.includes(section.status) || isOnlyStatusUpdate) {
-            const editValidation = await canEditContent(req.user, section, 'sections', 'update');
-            if (!editValidation.canEdit) {
-                return errorResponse(res, 403, editValidation.reason || 'You do not have permission to edit this section');
-            }
-        }
-        
-        // Prevent editing published content directly - must unpublish first
-        // Exception: allow status-only updates (but still checked by workflow validator above)
-        if (section.status === 'published' && !isOnlyStatusUpdate) {
-            return errorResponse(res, 400, 'Cannot edit published content. Please unpublish first or use workflow actions.');
+        const editValidation = await canEditContent(req.user, section, 'sections', 'update');
+        if (!editValidation.canEdit) {
+            return errorResponse(res, 403, editValidation.reason || 'You do not have permission to edit this section');
         }
 
         // Store old data for version comparison
         const oldData = section.toObject();
 
         // If content is being updated, validate it
-        if (content) {
+        if (content !== undefined) {
             const validation = await sectionValidator.validateSectionContent(
                 section.sectionTypeSlug, 
                 content
@@ -239,7 +247,42 @@ exports.updateSection = async (req, res) => {
                     validation.errors
                 );
             }
+        }
 
+        if (section.status === 'published' && !isOnlyStatusUpdate) {
+            const updateData = {};
+
+            if (content !== undefined) {
+                updateData.content = content;
+                updateData.version = (section.version || 1) + 1;
+            }
+            if (isVisible !== undefined) updateData.isVisible = isVisible;
+            if (cssClasses !== undefined) updateData.cssClasses = cssClasses;
+            if (customStyles !== undefined) updateData.customStyles = customStyles;
+
+            const revision = await stagePublishedUpdate({
+                resource: 'section',
+                liveDoc: section,
+                updateData,
+                userId: req.user._id
+            });
+
+            const populatedSection = await populateSectionQuery(Section.findById(section._id));
+            const populatedRevision = await getActiveRevision('section', section._id, REVISION_USER_POPULATE);
+            const editableSection = buildEditableResource(populatedSection, populatedRevision || revision);
+
+            return successResponse(
+                res,
+                200,
+                'Section changes staged successfully. The published website will keep showing the current live version until this revision is published.',
+                {
+                    section: editableSection,
+                    activeRevision: editableSection.activeRevision
+                }
+            );
+        }
+
+        if (content !== undefined) {
             section.content = content;
             section.version += 1;
         }
@@ -296,10 +339,7 @@ exports.updateSection = async (req, res) => {
             }
         });
 
-        const updatedSection = await Section.findById(section._id)
-            .populate('pageId', 'title slug path')
-            .populate('createdBy', 'firstName lastName email')
-            .populate('updatedBy', 'firstName lastName email');
+        const updatedSection = await populateSectionQuery(Section.findById(section._id));
 
         return successResponse(res, 200, 'Section updated successfully', { section: updatedSection });
     } catch (error) {

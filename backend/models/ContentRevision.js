@@ -6,7 +6,7 @@ const contentRevisionSchema = new mongoose.Schema({
     resource: {
         type: String,
         required: [true, 'Resource type is required'],
-        enum: ['project', 'vacancy'],
+        enum: ['project', 'vacancy', 'section'],
         index: true,
         trim: true
     },

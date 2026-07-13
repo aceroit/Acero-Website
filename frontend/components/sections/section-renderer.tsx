@@ -35,6 +35,7 @@ import { getIconComponent } from '@/lib/utils/icon-mapper'
 import { getPebApplicationSvgPath } from '@/utils/peb-application-svg'
 import { getConventionalSteelApplicationImagePath } from '@/utils/conventional-steel-application-images'
 import { getPortaCabinImagePath } from '@/utils/porta-cabin-icons'
+import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 interface SectionRendererProps {
   sections: Section[]
@@ -44,6 +45,41 @@ interface SectionRendererProps {
 /** Match "Why Acero" section by title (flexible: "Why Acero?", "Why Acero - ...", etc.) */
 function isWhyAceroTitle(title: string): boolean {
   return (title || '').trim().toLowerCase().includes('why acero')
+}
+
+function getSectionIdValue(value: unknown): string | null {
+  if (typeof value === 'string' && value.trim()) {
+    return value
+  }
+
+  if (!value || typeof value !== 'object') {
+    return null
+  }
+
+  const record = value as {
+    $oid?: unknown
+    buffer?: { data?: unknown }
+    toString?: () => string
+  }
+
+  if (typeof record.$oid === 'string' && record.$oid.trim()) {
+    return record.$oid
+  }
+
+  if (Array.isArray(record.buffer?.data)) {
+    return record.buffer.data
+      .map((byte) => Number(byte).toString(16).padStart(2, '0'))
+      .join('')
+  }
+
+  if (typeof record.toString === 'function') {
+    const stringValue = record.toString()
+    if (stringValue && stringValue !== '[object Object]') {
+      return stringValue
+    }
+  }
+
+  return null
 }
 
 /**
@@ -57,8 +93,11 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
       {sections
         .filter((section) => section.isVisible)
         .sort((a, b) => a.order - b.order)
-        .map((section) => {
-          const { sectionTypeSlug, content } = section
+        .map((section, index) => {
+          const { sectionTypeSlug } = section
+          const content = normalizeCmsAssetUrls(section.content) as Record<string, unknown>
+          const resolvedSectionId = getSectionIdValue(section._id)
+          const sectionKey = resolvedSectionId || `${sectionTypeSlug}-${section.order}-${index}`
 
           try {
             switch (sectionTypeSlug) {
@@ -69,7 +108,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <HeroCarousel
-                    key={section._id}
+                    key={sectionKey}
                     slides={slides}
                     autoPlay={autoPlay}
                     interval={interval}
@@ -105,7 +144,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <ContentSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     paragraphs={paragraphs}
                     cta={cta}
@@ -127,7 +166,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <StatsDisplay
-                    key={section._id}
+                    key={sectionKey}
                     stats={stats}
                     columns={columns}
                   />
@@ -146,8 +185,8 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 // Use DynamicInfiniteCarousel which handles fetching certificates/customers
                 return (
                   <DynamicInfiniteCarousel
-                    key={section._id}
-                    sectionId={section._id}
+                    key={sectionKey}
+                    sectionId={resolvedSectionId || sectionKey}
                     title={title}
                     staticItems={items}
                     speed={speed}
@@ -168,8 +207,8 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 // Use DynamicProjectsSection which fetches from backend
                 return (
                   <DynamicProjectsSection
-                    key={section._id}
-                    sectionId={section._id}
+                    key={sectionKey}
+                    sectionId={resolvedSectionId || sectionKey}
                     staticProjects={projects}
                     title={title}
                     subtitle={subtitle}
@@ -195,8 +234,8 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 // Use DynamicCompanyUpdatesSection which fetches from backend. On home, use home endpoint (max 3).
                 return (
                   <DynamicCompanyUpdatesSection
-                    key={section._id}
-                    sectionId={section._id}
+                    key={sectionKey}
+                    sectionId={resolvedSectionId || sectionKey}
                     forHome={isHomePage}
                     staticUpdates={updates}
                     title={title}
@@ -213,7 +252,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <HeroImageSection
-                    key={section._id}
+                    key={sectionKey}
                     image={image}
                     title={title}
                     overlay={overlay}
@@ -231,7 +270,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <PremiumVideoSection
-                    key={section._id}
+                    key={sectionKey}
                     videoId={videoId}
                     title={title}
                     autoplay={autoplay}
@@ -257,7 +296,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <ImageGallerySection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     paragraph={paragraph}
                     images={images}
@@ -272,7 +311,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const title = (content.title as string) || ''
                 // Why Acero: show animated SVG (desktop + mobile) instead of feature cards
                 if (isWhyAceroTitle(title)) {
-                  return <WhyAceroSvgSection key={section._id} />
+                  return <WhyAceroSvgSection key={sectionKey} />
                 }
                 const featuresData = (content.features as Array<{
                   icon?: string
@@ -289,7 +328,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <FeaturesSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     features={features}
                     columns={columns}
@@ -307,7 +346,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <ProductCardSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     paragraphs={paragraphs}
                     image={image}
@@ -324,7 +363,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <ProductsGridSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     subtitle={subtitle}
                   />
@@ -344,7 +383,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <ImageModalGallery
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     items={items}
                     columns={columns}
@@ -371,7 +410,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 type TabbedTabs = ComponentProps<typeof TabbedComparisonSection>['tabs']
                 return (
                   <TabbedComparisonSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     subtitle={subtitle}
                     tabs={tabs as TabbedTabs}
@@ -391,7 +430,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <FlipCardSection
-                    key={section._id}
+                    key={sectionKey}
                     cards={cards}
                     columns={columns}
                   />
@@ -402,7 +441,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const title = (content.title as string) || ''
                 // Why Acero: show animated SVG instead of advantage cards
                 if (isWhyAceroTitle(title)) {
-                  return <WhyAceroSvgSection key={section._id} />
+                  return <WhyAceroSvgSection key={sectionKey} />
                 }
                 const advantagesData = (content.advantages as Array<{
                   id: string
@@ -429,7 +468,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <AdvantagesGridSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title || undefined}
                     advantages={advantages}
                     columns={columns}
@@ -461,7 +500,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <ApplicationCardsSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     subtitle={subtitle}
                     applications={applications}
@@ -472,14 +511,14 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               }
 
               case 'why_acero_svg': {
-                return <WhyAceroSvgSection key={section._id} />
+                return <WhyAceroSvgSection key={sectionKey} />
               }
 
               case 'circular_advantages': {
                 const title = (content.title as string) || ''
                 // Why Acero: show animated SVG (desktop + mobile) instead of info cards
                 if (isWhyAceroTitle(title)) {
-                  return <WhyAceroSvgSection key={section._id} />
+                  return <WhyAceroSvgSection key={sectionKey} />
                 }
 
                 const centerText = (content.centerText as string) || 'ACERO'
@@ -501,7 +540,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <CircularAdvantagesSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     centerText={centerText}
                     advantages={advantages}
@@ -511,7 +550,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
               case 'peb_advantage_svg':
               case 'peb-advantage-svg': {
-                return <PebAdvantageSvgSection key={section._id} />
+                return <PebAdvantageSvgSection key={sectionKey} />
               }
 
               case 'certificates_grid': {
@@ -526,7 +565,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <CertificatesGridSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     paragraphs={paragraphs}
                     certificates={certificates}
@@ -555,7 +594,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <VideoCardsSection
-                    key={section._id}
+                    key={sectionKey}
                     videos={videos}
                     onVideoClick={(video) => {
                       window.open(
@@ -579,7 +618,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <ImageDisplaySection
-                    key={section._id}
+                    key={sectionKey}
                     image={image}
                     imageAlt={imageAlt}
                     mobileImage={mobileImage}
@@ -606,7 +645,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <HoverCardSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     subtitle={subtitle}
                     cards={cards}
@@ -625,7 +664,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <ComparisonTableSection
-                    key={section._id}
+                    key={sectionKey}
                     title={title}
                     factors={factors}
                     systems={systems}
@@ -643,7 +682,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
                 return (
                   <CtaSection
-                    key={section._id}
+                    key={sectionKey}
                     heading={heading}
                     description={description}
                     buttonText={buttonText}

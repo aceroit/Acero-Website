@@ -1,6 +1,6 @@
 const ContentRevision = require('../models/ContentRevision');
 
-const STAGED_RESOURCES = new Set(['project', 'vacancy']);
+const STAGED_RESOURCES = new Set(['project', 'vacancy', 'section']);
 const SYSTEM_FIELDS = new Set(['_id', '__v', 'status', 'publishedAt', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', 'isActive']);
 
 function supportsRevisions(resource) {
