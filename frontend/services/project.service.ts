@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from '@/lib/api/endpoints'
 import { apiGet } from '@/lib/api/client'
+import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 interface FilterParams {
   industry?: string
@@ -49,6 +50,8 @@ interface Project {
   jobNumber: string
   jobNumberSlug: string
   typeSlug: string
+  title?: string
+  description?: string
   thumbnailImage?: {
     url: string
     publicId?: string
@@ -93,7 +96,6 @@ interface FilterOptions {
   areas: Array<{ name: string; code: string; region?: string }>
 }
 
-
 /**
  * Get published industries with optional location filters
  */
@@ -110,7 +112,7 @@ export async function getPublishedIndustries(filters?: FilterParams): Promise<In
     const result = await apiGet<{ industries: Industry[]; count: number }>(endpoint)
 
     if (result.success && result.data) {
-      return result.data.industries || []
+      return normalizeCmsAssetUrls(result.data.industries || [])
     }
 
     return []
@@ -139,13 +141,12 @@ export async function getBuildingTypesByIndustry(
     const result = await apiGet<{ buildingTypes: BuildingType[]; count: number }>(endpoint)
 
     if (result.success && result.data) {
-      const buildingTypes = result.data.buildingTypes || []
-      // Debug: Log received building types
-      console.log('Received building types from API:', buildingTypes.map(bt => ({ 
-        name: bt.name, 
-        slug: bt.slug, 
+      const buildingTypes = normalizeCmsAssetUrls(result.data.buildingTypes || [])
+      console.log('Received building types from API:', buildingTypes.map((bt) => ({
+        name: bt.name,
+        slug: bt.slug,
         hasSlug: !!bt.slug,
-        _id: bt._id 
+        _id: bt._id,
       })))
       return buildingTypes
     }
@@ -178,7 +179,7 @@ export async function getProjectsByBuildingType(
     const result = await apiGet<{ projects: Project[]; count: number }>(endpoint)
 
     if (result.success && result.data) {
-      return result.data.projects || []
+      return normalizeCmsAssetUrls(result.data.projects || [])
     }
 
     return []
@@ -206,7 +207,7 @@ export async function getAllProjects(filters?: FilterParams): Promise<Project[]>
     const result = await apiGet<{ projects: Project[]; count: number }>(endpoint)
 
     if (result.success && result.data) {
-      return result.data.projects || []
+      return normalizeCmsAssetUrls(result.data.projects || [])
     }
 
     return []
@@ -224,7 +225,7 @@ export async function getFeaturedProjects(): Promise<Project[]> {
     const result = await apiGet<{ projects: Project[]; count: number }>(API_ENDPOINTS.PUBLIC_PROJECTS)
 
     if (result.success && result.data) {
-      return result.data.projects || []
+      return normalizeCmsAssetUrls(result.data.projects || [])
     }
 
     return []
@@ -242,7 +243,7 @@ export async function getHomePageProjects(): Promise<Project[]> {
     const result = await apiGet<{ projects: Project[]; count: number }>(API_ENDPOINTS.PUBLIC_PROJECTS_HOME)
 
     if (result.success && result.data) {
-      return result.data.projects || []
+      return normalizeCmsAssetUrls(result.data.projects || [])
     }
 
     return []
@@ -293,5 +294,4 @@ export async function getFilterOptions(filters?: FilterParams): Promise<FilterOp
   }
 }
 
-// Export types for use in components
 export type { Industry, BuildingType, Project, ProjectImage, FilterOptions, FilterParams }

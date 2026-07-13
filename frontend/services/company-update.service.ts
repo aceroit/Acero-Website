@@ -1,5 +1,6 @@
 import { apiGet } from '@/lib/api/client'
 import { API_ENDPOINTS } from '@/lib/api/endpoints'
+import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 export interface CompanyUpdateResponse {
   success: boolean
@@ -81,8 +82,7 @@ export async function getHomePageCompanyUpdates(): Promise<CompanyUpdate[]> {
   try {
     const response = await apiGet<CompanyUpdateResponse>(API_ENDPOINTS.PUBLIC_COMPANY_UPDATES_HOME)
     if (response.success && response.data) {
-      const updates = response.data.companyUpdates || []
-      return updates
+      return normalizeCmsAssetUrls(response.data.companyUpdates || [])
     }
     return []
   } catch (error) {
@@ -97,10 +97,9 @@ export async function getHomePageCompanyUpdates(): Promise<CompanyUpdate[]> {
 export async function getCompanyUpdates(): Promise<CompanyUpdate[]> {
   try {
     const response = await apiGet<CompanyUpdateResponse>('/api/public/company-updates')
-    
+
     if (response.success && response.data) {
-      const updates = response.data.companyUpdates || []
-      // Log for debugging
+      const updates = normalizeCmsAssetUrls(response.data.companyUpdates || [])
       console.log('Fetched company updates:', updates.length)
       if (updates.length > 0) {
         console.log('Sample update:', {
@@ -116,7 +115,7 @@ export async function getCompanyUpdates(): Promise<CompanyUpdate[]> {
       }
       return updates
     }
-    
+
     return []
   } catch (error) {
     console.error('Error fetching company updates:', error)
@@ -132,11 +131,11 @@ export async function getCompanyUpdateBySlug(slug: string): Promise<CompanyUpdat
     const response = await apiGet<{ success: boolean; message: string; data: { companyUpdate: CompanyUpdate } }>(
       `/api/public/company-updates/slug/${slug}`
     )
-    
+
     if (response.success && response.data) {
-      return response.data.companyUpdate
+      return normalizeCmsAssetUrls(response.data.companyUpdate)
     }
-    
+
     return null
   } catch (error) {
     console.error('Error fetching company update by slug:', error)

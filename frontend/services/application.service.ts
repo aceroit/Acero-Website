@@ -1,4 +1,5 @@
 import { apiPost } from '@/lib/api/client'
+import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 export interface CVFile {
   url: string
@@ -38,7 +39,11 @@ export async function uploadCV(file: File): Promise<CVFile> {
   const formData = new FormData()
   formData.append('file', file)
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    'http://localhost:4000'
+
   const response = await fetch(`${baseUrl}/api/public/upload-cv`, {
     method: 'POST',
     body: formData,
@@ -51,7 +56,7 @@ export async function uploadCV(file: File): Promise<CVFile> {
 
   const data = await response.json()
   if (data.success && data.data?.cvFile) {
-    return data.data.cvFile
+    return normalizeCmsAssetUrls(data.data.cvFile)
   }
 
   throw new Error('Invalid response from server')
@@ -68,15 +73,14 @@ export async function submitApplication(
       '/api/public/applications',
       applicationData
     )
-    
+
     if (!response.success) {
       throw new Error(response.message || 'Failed to submit application')
     }
-    
+
     return response
   } catch (error) {
     console.error('Error submitting application:', error)
     throw error
   }
 }
-

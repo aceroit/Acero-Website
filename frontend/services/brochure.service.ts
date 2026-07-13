@@ -1,4 +1,5 @@
 import { apiGet } from '@/lib/api/client'
+import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 export interface BrochureResponse {
   success: boolean
@@ -37,11 +38,11 @@ export interface Brochure {
 export async function getBrochures(): Promise<Brochure[]> {
   try {
     const response = await apiGet<BrochureResponse>('/api/public/brochures')
-    
+
     if (response.success && response.data) {
-      return response.data.brochures || []
+      return normalizeCmsAssetUrls(response.data.brochures || [])
     }
-    
+
     return []
   } catch (error) {
     console.error('Error fetching brochures:', error)

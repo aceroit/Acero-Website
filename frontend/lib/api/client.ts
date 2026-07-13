@@ -7,19 +7,16 @@ import { ApiResponse } from './types'
 
 // Get base URL from environment variable
 const getBaseUrl = (): string => {
-  if (typeof window !== 'undefined') {
-    // Client-side: use environment variable
-    return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'
-  } else {
-    // Server-side: use environment variable or default
-    return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'
-  }
+  return (
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    'http://localhost:4000'
+  )
 }
 
 // Get full API URL
 const getApiUrl = (): string => {
   const baseUrl = getBaseUrl()
-  // Remove trailing slash if present
   const cleanBaseUrl = baseUrl.replace(/\/$/, '')
   return `${cleanBaseUrl}`
 }
@@ -53,7 +50,6 @@ export async function apiRequest<T>(
     const data: ApiResponse<T> = await response.json()
     return data
   } catch (error) {
-    // Handle network errors or other fetch errors
     if (error instanceof Error) {
       console.error(`API request failed for ${endpoint}:`, error.message)
       return {
@@ -111,4 +107,3 @@ export async function apiDelete<T>(endpoint: string): Promise<ApiResponse<T>> {
     method: 'DELETE',
   })
 }
-

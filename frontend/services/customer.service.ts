@@ -1,4 +1,5 @@
 import { apiGet } from '@/lib/api/client'
+import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 export interface CustomerResponse {
   success: boolean
@@ -33,16 +34,14 @@ export interface Customer {
 export async function getCustomers(): Promise<Customer[]> {
   try {
     const response = await apiGet<CustomerResponse>('/api/public/customers')
-    
+
     if (response.success && response.data) {
-      const customers = response.data.customers || []
-      return customers
+      return normalizeCmsAssetUrls(response.data.customers || [])
     }
-    
+
     return []
   } catch (error) {
     console.error('Error fetching customers:', error)
     throw error
   }
 }
-

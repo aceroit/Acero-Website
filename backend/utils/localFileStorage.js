@@ -41,16 +41,8 @@ function getRelativeUploadPath(input = "") {
   }
 }
 
-function buildRequestUploadsBase(req) {
-  const host = req && typeof req.get === "function" ? req.get("host") : null
-  if (!host) {
-    return getPublicUploadBase()
-  }
-
-  const forwardedProto = req.headers && req.headers["x-forwarded-proto"]
-  const protocol = forwardedProto ? String(forwardedProto).split(",")[0].trim() : (req.protocol || "http")
-
-  return `${protocol}://${host}/uploads`
+function buildRequestUploadsBase() {
+  return getPublicUploadBase()
 }
 
 function resolveStoredAssetUrlForRequest(url, req) {

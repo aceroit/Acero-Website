@@ -1,4 +1,5 @@
 import { apiGet } from '@/lib/api/client'
+import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 export interface CertificateResponse {
   success: boolean
@@ -33,16 +34,14 @@ export interface Certificate {
 export async function getCertificates(): Promise<Certificate[]> {
   try {
     const response = await apiGet<CertificateResponse>('/api/public/certifications')
-    
+
     if (response.success && response.data) {
-      const certificates = response.data.certifications || []
-      return certificates
+      return normalizeCmsAssetUrls(response.data.certifications || [])
     }
-    
+
     return []
   } catch (error) {
     console.error('Error fetching certificates:', error)
     throw error
   }
 }
-

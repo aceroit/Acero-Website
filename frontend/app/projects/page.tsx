@@ -11,6 +11,7 @@ import { useIndustries, useAllProjects } from "@/hooks/use-projects"
 import { usePage } from "@/hooks/use-page"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
+import { getCmsAssetUrl } from "@/utils/cms-asset-url"
 import { cn } from "@/lib/utils"
 
 function ProjectsContent() {
@@ -26,55 +27,32 @@ function ProjectsContent() {
   const country = countryParam && countryParam !== "all" ? countryParam : undefined
   const industry = industryParam && industryParam !== "all" ? industryParam : undefined
 
-  // Determine if any filter is active
   const hasActiveFilters = !!(area || region || country || industry)
 
-  // Fetch page with sections from CMS
   const { page, sections, isLoading: pageLoading } = usePage("projects")
-
-  // Fetch industries from backend (for default view with no filters)
   const { industries: backendIndustries, isLoading: industriesLoading } = useIndustries({
     country,
     region,
     area,
   })
-
-  // Fetch all projects when any filter is active
   const { projects, isLoading: projectsLoading } = useAllProjects(
     hasActiveFilters ? { country, region, area, industry } : undefined
   )
 
   const isLoading = pageLoading || (hasActiveFilters ? projectsLoading : industriesLoading)
 
-  // Get spacing values from appearance
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
-  // Transform backend industries data to match frontend component expectations
-  const getLogoUrl = (logo: any): string | null => {
-  if (!logo) return null
+  const industries = backendIndustries
+    .filter((ind) => ind.slug)
+    .map((ind) => ({
+      name: ind.name,
+      slug: ind.slug || "",
+      logo: getCmsAssetUrl(ind.logo) || null,
+      projectCount: ind.projectCount || 0,
+    }))
 
-  if (typeof logo === "string") {
-    return logo
-  }
-
-  if (typeof logo === "object") {
-    return logo.url || logo.secure_url || logo.path || null
-  }
-
-  return null
-}
-
-const industries = backendIndustries
-  .filter((ind) => ind.slug)
-  .map((ind) => ({
-    name: ind.name,
-    slug: ind.slug || "",
-    logo: getLogoUrl(ind.logo),
-    projectCount: ind.projectCount || 0,
-  }))
-
-  // Separate sections by type
   const heroSection = sections.find((s) => s.sectionTypeSlug === "hero_image")
   const projectsGridSection = sections.find((s) => s.sectionTypeSlug === "projects_grid_with_filters")
   const otherSections = sections.filter(
@@ -85,21 +63,17 @@ const industries = backendIndustries
     <>
       <Header />
       <main className="min-h-screen bg-background">
-        {/* Render sections from CMS */}
         {isLoading ? (
           <div className="py-12 text-center">
             <p className="text-lg text-muted-foreground">Loading...</p>
           </div>
         ) : (
           <>
-            {/* Render hero section from CMS */}
             {heroSection && <SectionRenderer sections={[heroSection]} />}
 
-            {/* Render projects grid section with filters */}
             {projectsGridSection && (
               <section className={cn("border-t border-border bg-background", spacing.sectionPadding)}>
                 <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
-                  {/* Section Title from CMS */}
                   {projectsGridSection.content?.title && (
                     <div className="mb-12 text-center">
                       <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
@@ -113,16 +87,13 @@ const industries = backendIndustries
                     </div>
                   )}
 
-                  {/* Filters */}
                   {projectsGridSection.content?.showFilters !== false && (
                     <div className="mb-12">
                       <ProjectFilters />
                     </div>
                   )}
 
-                  {/* Grid: Industries (no filters) or Projects (filters active) */}
                   {hasActiveFilters ? (
-                    // Show project cards when any filter is applied
                     projectsLoading ? (
                       <div className="py-12 text-center">
                         <p className="text-lg text-muted-foreground">Loading projects...</p>
@@ -131,7 +102,6 @@ const industries = backendIndustries
                       <ProjectsGridSection projects={projects} noSection />
                     )
                   ) : (
-                    // Show industry cards when no filters are active (default view)
                     industriesLoading ? (
                       <div className="py-12 text-center">
                         <p className="text-lg text-muted-foreground">Loading industries...</p>
@@ -144,7 +114,6 @@ const industries = backendIndustries
               </section>
             )}
 
-            {/* Render other sections */}
             {otherSections.length > 0 && <SectionRenderer sections={otherSections} />}
           </>
         )}
@@ -161,4 +130,3 @@ export default function ProjectsPage() {
     </Suspense>
   )
 }
-
