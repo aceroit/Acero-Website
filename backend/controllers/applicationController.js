@@ -963,7 +963,10 @@ exports.getApplicationById = async (req, res) => {
 exports.createApplication = async (req, res) => {
     try {
         const applicationData = {
-            ...req.body
+            ...req.body,
+            mobileNumber: req.body.mobileNumber && String(req.body.mobileNumber).trim()
+                ? String(req.body.mobileNumber).trim()
+                : null
         };
 
         const application = new Application(applicationData);
@@ -995,7 +998,16 @@ exports.createApplication = async (req, res) => {
 exports.updateApplication = async (req, res) => {
     try {
         const { id } = req.params;
-        const updateData = req.body;
+        const updateData = {
+            ...req.body,
+            ...(Object.prototype.hasOwnProperty.call(req.body, 'mobileNumber')
+                ? {
+                    mobileNumber: req.body.mobileNumber && String(req.body.mobileNumber).trim()
+                        ? String(req.body.mobileNumber).trim()
+                        : null
+                }
+                : {})
+        };
 
         const application = await Application.findOne({ _id: id, isActive: true });
         if (!application) {
@@ -1167,3 +1179,4 @@ exports.archiveApplication = async (req, res) => {
         return errorResponse(res, 500, 'Failed to archive application', error.message);
     }
 };
+

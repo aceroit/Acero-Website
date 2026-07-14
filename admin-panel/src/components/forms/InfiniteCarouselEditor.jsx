@@ -26,6 +26,19 @@ const InfiniteCarouselEditor = ({ value = {}, onChange, form }) => {
           />
         </Form.Item>
 
+        <Form.Item
+          name={['content', 'subtitle']}
+          label="Section Subtitle"
+          tooltip="Optional subtitle displayed below the title"
+        >
+          <Input.TextArea
+            placeholder="Add a short subtitle for this section"
+            rows={3}
+            maxLength={300}
+            showCount
+          />
+        </Form.Item>
+
         {/* Carousel Items */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">

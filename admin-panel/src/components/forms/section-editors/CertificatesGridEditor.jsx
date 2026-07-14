@@ -68,6 +68,13 @@ const CertificatesGridEditor = ({ value = {}, onChange, form }) => {
         >
           <Input placeholder="e.g., Quality Policy" size="large" maxLength={200} />
         </Form.Item>
+        <Form.Item
+          name={['content', 'subtitle']}
+          label="Section Subtitle"
+          tooltip="Optional subtitle displayed below the title"
+        >
+          <TextArea placeholder="Add a short subtitle for this section" rows={3} size="large" maxLength={300} showCount />
+        </Form.Item>
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">

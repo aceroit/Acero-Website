@@ -7,6 +7,7 @@ import { useCustomers } from '@/hooks/use-customers'
 interface DynamicInfiniteCarouselProps {
   sectionId: string
   title?: string
+  subtitle?: string
   staticItems?: Array<{ image: string; alt: string; link?: string }>
   speed?: 'slow' | 'medium' | 'fast'
   direction?: 'left' | 'right'
@@ -33,6 +34,7 @@ interface DynamicInfiniteCarouselProps {
 export function DynamicInfiniteCarousel({
   sectionId,
   title,
+  subtitle,
   staticItems,
   speed = 'medium',
   direction = 'left',
@@ -97,10 +99,19 @@ export function DynamicInfiniteCarousel({
         className={`border-t border-border ${bgClass} py-16 lg:py-24`}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          {title && (
-            <h2 className="mb-12 text-center text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-              {title}
-            </h2>
+          {(title || subtitle) && (
+            <div className="mb-12 text-center">
+              {title && (
+                <h2 className={`text-4xl font-bold tracking-tight text-foreground md:text-5xl${subtitle ? ' mb-4' : ''}`}>
+                  {title}
+                </h2>
+              )}
+              {subtitle && (
+                <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground md:text-xl">
+                  {subtitle}
+                </p>
+              )}
+            </div>
           )}
           <div className="flex items-center justify-center py-12">
             <div className="text-muted-foreground">Loading...</div>
@@ -115,17 +126,26 @@ export function DynamicInfiniteCarousel({
     return null
   }
 
-  // Render with title wrapper if title exists
-  if (title) {
+  // Render with title/subtitle wrapper if present
+  if (title || subtitle) {
     return (
       <section
         key={sectionId}
         className={`border-t border-border ${bgClass} py-16 lg:py-24`}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <h2 className="mb-12 text-center text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            {title}
-          </h2>
+          <div className="mb-12 text-center">
+            {title && (
+              <h2 className={`text-4xl font-bold tracking-tight text-foreground md:text-5xl${subtitle ? ' mb-4' : ''}`}>
+                {title}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground md:text-xl">
+                {subtitle}
+              </p>
+            )}
+          </div>
           <InfiniteCarousel
             items={items}
             speed={speed}

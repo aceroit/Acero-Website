@@ -214,12 +214,12 @@ const PageForm = ({
         <Form.Item
           name="metaTitle"
           label="Meta Title"
-          tooltip="SEO title (recommended: 50-60 characters)"
+          tooltip="SEO title (recommended: 60-80 characters)"
         >
           <Input 
             placeholder="Enter meta title" 
             size="large"
-            maxLength={60}
+            maxLength={80}
             showCount
           />
         </Form.Item>
@@ -227,13 +227,13 @@ const PageForm = ({
         <Form.Item
           name="metaDescription"
           label="Meta Description"
-          tooltip="SEO description (recommended: 150-160 characters)"
+          tooltip="SEO description (recommended: 160-250 characters)"
         >
           <TextArea 
             placeholder="Enter meta description" 
             size="large"
             rows={3}
-            maxLength={160}
+            maxLength={350}
             showCount
           />
         </Form.Item>

@@ -18,6 +18,7 @@ interface Certificate {
 
 interface CertificatesGridSectionProps {
   title: string
+  subtitle?: string
   paragraphs: string[]
   certificates: Certificate[]
   className?: string
@@ -25,6 +26,7 @@ interface CertificatesGridSectionProps {
 
 export function CertificatesGridSection({
   title,
+  subtitle,
   paragraphs,
   certificates,
   className,
@@ -69,27 +71,30 @@ export function CertificatesGridSection({
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {/* Title */}
-          <motion.h2
-            variants={itemVariants}
-            className="mb-6 text-center text-4xl font-bold tracking-tight text-foreground md:text-5xl"
-          >
-            {title}
-          </motion.h2>
+          {/* Header */}
+          <motion.div variants={itemVariants} className="mb-12 text-center">
+            <h2 className={`text-center text-4xl font-bold tracking-tight text-foreground md:text-5xl${subtitle || paragraphs.length > 0 ? ' mb-4' : ''}`}>
+              {title}
+            </h2>
 
-          {/* Paragraphs */}
-          <motion.div
-            variants={itemVariants}
-            className="mx-auto mb-12 max-w-4xl space-y-4 text-center"
-          >
-            {paragraphs.map((paragraph, index) => (
-              <p
-                key={index}
-                className="text-lg leading-relaxed text-muted-foreground"
-              >
-                {paragraph}
+            {subtitle && (
+              <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground md:text-xl">
+                {subtitle}
               </p>
-            ))}
+            )}
+
+            {paragraphs.length > 0 && (
+              <div className="mx-auto mt-4 max-w-4xl space-y-4 text-center">
+                {paragraphs.map((paragraph, index) => (
+                  <p
+                    key={index}
+                    className="text-lg leading-relaxed text-muted-foreground"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            )}
           </motion.div>
 
           {/* Certificates Grid */}

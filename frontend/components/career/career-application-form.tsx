@@ -107,9 +107,6 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address"
     }
-    if (!formData.mobileNumber.trim()) {
-      newErrors.mobileNumber = "Mobile number is required"
-    }
     if (!formData.country.trim()) {
       newErrors.country = "Country is required"
     }
@@ -170,7 +167,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
-        mobileNumber: formData.mobileNumber.trim(),
+        mobileNumber: formData.mobileNumber.trim() || undefined,
         country: formData.country.trim(),
         experienceLevel: formData.experienceLevel,
         educationLevel: formData.educationLevel,
@@ -338,7 +335,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                   htmlFor="mobileNumber"
                   className="text-sm font-medium text-foreground"
                 >
-                  Mobile Number <span className="text-destructive">*</span>
+                  Mobile Number
                 </Label>
                 <Input
                   id="mobileNumber"
@@ -573,11 +570,13 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                 CV File <span className="text-destructive">*</span>
               </Label>
               <p className="mb-4 text-xs text-muted-foreground">
-                Only pdf, doc, jpeg, jpg, png – max size 2 MB
+                Only PDF file allowed - max size 2 MB
               </p>
               <FileUpload
                 value={formData.cvFile}
                 onChange={(file) => setFormData({ ...formData, cvFile: file })}
+                accept="application/pdf,.pdf"
+                acceptedLabel=".pdf only"
                 error={errors.cvFile}
               />
             </div>
@@ -604,4 +603,9 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
     </div>
   )
 }
+
+
+
+
+
 

@@ -226,6 +226,17 @@ const extendedSectionTypes = [
                 order: 0
             },
             {
+                name: 'subtitle',
+                type: 'textarea',
+                label: 'Subtitle',
+                placeholder: 'Optional subtitle shown below the section title',
+                required: false,
+                validation: {
+                    maxLength: 300
+                },
+                order: 1
+            },
+            {
                 name: 'items',
                 type: 'json',
                 label: 'Carousel Items',
@@ -234,7 +245,7 @@ const extendedSectionTypes = [
                 validation: {
                     minItems: 1
                 },
-                order: 1
+                order: 2
             },
             {
                 name: 'speed',
@@ -247,7 +258,7 @@ const extendedSectionTypes = [
                     { label: 'Medium', value: 'medium' },
                     { label: 'Fast', value: 'fast' }
                 ],
-                order: 2
+                order: 3
             },
             {
                 name: 'direction',
@@ -259,7 +270,7 @@ const extendedSectionTypes = [
                     { label: 'Left', value: 'left' },
                     { label: 'Right', value: 'right' }
                 ],
-                order: 3
+                order: 4
             },
             {
                 name: 'pauseOnHover',
@@ -267,7 +278,7 @@ const extendedSectionTypes = [
                 label: 'Pause on Hover',
                 required: false,
                 defaultValue: true,
-                order: 4
+                order: 5
             },
             {
                 name: 'itemClassName',
@@ -275,7 +286,7 @@ const extendedSectionTypes = [
                 label: 'Item CSS Classes',
                 helpText: 'CSS classes for carousel items (e.g., "h-20 w-32 md:h-24 md:w-40" for certifications, "h-16 w-32 md:h-20 md:w-40" for customers)',
                 required: false,
-                order: 5
+                order: 6
             }
         ],
         previewComponent: 'InfiniteCarousel',
@@ -1430,6 +1441,17 @@ const extendedSectionTypes = [
                 order: 0
             },
             {
+                name: 'subtitle',
+                type: 'textarea',
+                label: 'Subtitle',
+                placeholder: 'Optional subtitle shown below the section title',
+                required: false,
+                validation: {
+                    maxLength: 300
+                },
+                order: 1
+            },
+            {
                 name: 'paragraphs',
                 type: 'array',
                 label: 'Content Paragraphs',
@@ -1438,7 +1460,7 @@ const extendedSectionTypes = [
                 validation: {
                     minItems: 1
                 },
-                order: 1
+                order: 2
             },
             {
                 name: 'certificates',
@@ -1449,7 +1471,7 @@ const extendedSectionTypes = [
                 validation: {
                     minItems: 1
                 },
-                order: 2
+                order: 3
             }
         ],
         previewComponent: 'CertificatesGridSection',

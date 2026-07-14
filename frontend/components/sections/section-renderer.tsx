@@ -176,6 +176,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               case 'infinite_carousel': {
                 const items = (content.items as Array<{ image: string; alt: string; link?: string }>) || []
                 const title = (content.title as string) || undefined
+                const subtitle = (content.subtitle as string) || (content.description as string) || undefined
                 const speed = (content.speed as 'slow' | 'medium' | 'fast') || 'medium'
                 const direction = (content.direction as 'left' | 'right') || 'left'
                 const pauseOnHover = (content.pauseOnHover as boolean) ?? true
@@ -188,6 +189,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     key={sectionKey}
                     sectionId={resolvedSectionId || sectionKey}
                     title={title}
+                    subtitle={subtitle}
                     staticItems={items}
                     speed={speed}
                     direction={direction}
@@ -201,7 +203,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               case 'projects_grid': {
                 const projects = (content.projects as Project[]) || []
                 const title = (content.title as string) || ''
-                const subtitle = (content.subtitle as string) || undefined
+                const subtitle = (content.subtitle as string) || (content.description as string) || undefined
                 const columns = (content.columns as 3 | 4) || 3
 
                 // Use DynamicProjectsSection which fetches from backend
@@ -228,7 +230,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   link?: string
                 }>) || []
                 const title = (content.title as string) || ''
-                const subtitle = (content.subtitle as string) || undefined
+                const subtitle = (content.subtitle as string) || (content.description as string) || undefined
                 const columns = (content.columns as 3 | 4) || 3
 
                 // Use DynamicCompanyUpdatesSection which fetches from backend. On home, use home endpoint (max 3).
@@ -359,7 +361,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
               case 'products_grid': {
                 const title = (content.title as string) || undefined
-                const subtitle = (content.subtitle as string) || undefined
+                const subtitle = (content.subtitle as string) || (content.description as string) || undefined
 
                 return (
                   <ProductsGridSection
@@ -555,6 +557,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
 
               case 'certificates_grid': {
                 const title = (content.title as string) || ''
+                const subtitle = (content.subtitle as string) || (content.description as string) || undefined
                 const paragraphs = (content.paragraphs as string[]) || []
                 const certificates = (content.certificates as Array<{
                   name: string
@@ -567,6 +570,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   <CertificatesGridSection
                     key={sectionKey}
                     title={title}
+                    subtitle={subtitle}
                     paragraphs={paragraphs}
                     certificates={certificates}
                   />
@@ -576,6 +580,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               case 'video_cards': {
                 const rawVideos = (content.videos as Array<{
                   youtubeId: string
+                  youtubeUrl?: string
                   title?: string
                   description?: string
                 }>) || []
@@ -584,6 +589,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   .map((v, i) => ({
                     _id: v.youtubeId || String(i),
                     youtubeId: v.youtubeId,
+                    youtubeUrl: v.youtubeUrl,
                     title: v.title || 'Video',
                     description: v.description,
                     order: i,
@@ -598,7 +604,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     videos={videos}
                     onVideoClick={(video) => {
                       window.open(
-                        `https://www.youtube.com/watch?v=${video.youtubeId}`,
+                        video.youtubeUrl || `https://www.youtube.com/watch?v=${video.youtubeId}`,
                         '_blank'
                       )
                     }}
@@ -705,4 +711,5 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
     </>
   )
 }
+
 

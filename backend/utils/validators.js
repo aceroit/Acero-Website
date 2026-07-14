@@ -120,11 +120,11 @@ exports.validateCreatePage = [
     body('metaTitle')
         .optional()
         .trim()
-        .isLength({ max: 60 }).withMessage('Meta title must not exceed 60 characters'),
+        .isLength({ max: 120 }).withMessage('Meta title must not exceed 120 characters'),
     body('metaDescription')
         .optional()
         .trim()
-        .isLength({ max: 160 }).withMessage('Meta description must not exceed 160 characters'),
+        .isLength({ max: 400 }).withMessage('Meta description must not exceed 400 characters'),
     body('showInMenu')
         .optional()
         .isBoolean().withMessage('showInMenu must be a boolean'),
@@ -143,11 +143,11 @@ exports.validateUpdatePage = [
     body('metaTitle')
         .optional()
         .trim()
-        .isLength({ max: 60 }).withMessage('Meta title must not exceed 60 characters'),
+        .isLength({ max: 120 }).withMessage('Meta title must not exceed 120 characters'),
     body('metaDescription')
         .optional()
         .trim()
-        .isLength({ max: 160 }).withMessage('Meta description must not exceed 160 characters'),
+        .isLength({ max: 400 }).withMessage('Meta description must not exceed 400 characters'),
     body('showInMenu')
         .optional()
         .isBoolean().withMessage('showInMenu must be a boolean'),

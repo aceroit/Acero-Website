@@ -14,7 +14,7 @@ export interface ApplicationData {
   firstName: string
   lastName: string
   email: string
-  mobileNumber: string
+  mobileNumber?: string
   country: string
   experienceLevel: string
   educationLevel: string

@@ -68,11 +68,11 @@ export function CompanyUpdatesSection({
           transition={{ duration: 0.6 }}
           className="mb-16 text-center"
         >
-          <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+          <h2 className={`text-4xl font-bold tracking-tight text-foreground md:text-5xl${subtitle ? ' mb-4' : ''}`}>
             {title}
           </h2>
           {subtitle && (
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground md:text-xl">
               {subtitle}
             </p>
           )}

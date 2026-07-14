@@ -158,8 +158,8 @@ const seedHomepage = async () => {
                 sectionTypeSlug: 'products_grid',
                 order: 3,
                 content: {
-                    title: null, // No title needed - component handles it
-                    subtitle: null,
+                    title: 'Our Products',
+                    subtitle: 'Comprehensive steel building solutions designed for industrial, commercial and infrastructure projects.',
                 },
             },
             {
@@ -168,6 +168,7 @@ const seedHomepage = async () => {
                 order: 4,
                 content: {
                     title: 'Our Quality Certifications',
+                    subtitle: 'Certified quality standards that reflect our commitment to engineering excellence and reliable delivery.',
                     items: [
                         { image: '/images/certifications/iso-9001.png', alt: 'ISO 9001' },
                         { image: '/images/certifications/iso-14001.png', alt: 'ISO 14001' },
@@ -223,6 +224,7 @@ const seedHomepage = async () => {
                 order: 6,
                 content: {
                     title: 'Our Customers',
+                    subtitle: 'Trusted by leading companies across the UAE, India and global markets.',
                     items: [
                         { image: '/images/customers/customer-1.png', alt: 'Customer 1' },
                         { image: '/images/customers/customer-2.png', alt: 'Customer 2' },

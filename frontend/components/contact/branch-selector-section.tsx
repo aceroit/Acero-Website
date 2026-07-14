@@ -48,8 +48,7 @@ export function BranchSelectorSection() {
     >
       <div className="space-y-6 text-center">
         <h2 className="text-4xl font-bold uppercase tracking-tight text-foreground md:text-5xl lg:text-6xl">
-          Our Branches
-        </h2>
+          Our Locations        </h2>
         <div className="mx-auto h-1 w-24 bg-gradient-to-r from-transparent via-steel-red to-transparent" />
         <p className="mx-auto max-w-2xl text-lg text-muted-foreground md:text-xl">
           Select a country to view our branch locations

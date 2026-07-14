@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useId, useState } from 'react'
 import ReactSelect, { 
   Props as SelectProps, 
   components,
@@ -33,8 +33,21 @@ export function CustomSelect({
   placeholder = 'Select...',
   size = 'default',
   className,
+  instanceId,
+  inputId,
+  menuPortalTarget,
   ...props
 }: CustomSelectProps) {
+
+    const generatedId = useId().replace(/:/g, '')
+  const stableInstanceId = instanceId || `custom-select-${generatedId}`
+  const stableInputId = inputId || `${stableInstanceId}-input`
+
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   const selectedOption = options.find(opt => opt.value === value)
 
   const controlHeight = size === 'sm' ? '32px' : size === 'md' ? '48px' : size === 'lg' ? '56px' : '36px'
@@ -187,8 +200,10 @@ export function CustomSelect({
 
   return (
     <ReactSelect<CustomSelectOption>
-      {...props}
-      options={options}
+  {...props}
+  instanceId={stableInstanceId}
+  inputId={stableInputId}
+  options={options}
       value={selectedOption}
       onChange={(option) => {
         if (option && onValueChange) {
@@ -205,7 +220,8 @@ export function CustomSelect({
       className={cn('react-select-container', className)}
       classNamePrefix="react-select"
       menuPlacement="auto"
-      menuPortalTarget={typeof window !== "undefined" ? document.body : null}
+      menuPortalTarget={mounted ? (menuPortalTarget || document.body) : undefined}
+menuPosition="fixed"
       isSearchable={false}
     />
   )

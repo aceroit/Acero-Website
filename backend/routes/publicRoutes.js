@@ -971,6 +971,9 @@ router.post('/enquiries', async (req, res) => {
 router.post('/applications', async (req, res) => {
     try {
         const payload = req.body || {};
+        payload.mobileNumber = payload.mobileNumber && String(payload.mobileNumber).trim()
+            ? String(payload.mobileNumber).trim()
+            : null;
         
         // Validate required fields
         if (!payload.vacancyId) {
@@ -1025,12 +1028,12 @@ router.post('/upload-cv', uploadMiddleware, async (req, res) => {
         }
 
         const file = req.files.file;
-        const fileExt = file.name.split('.').pop().toLowerCase();
+        const fileExt = '.' + String(file.name || '').split('.').pop().toLowerCase();
+        const mimeType = String(file.mimetype || file.mimeType || '').toLowerCase();
 
-        // Validate file type (PDF, DOC, DOCX, JPEG, JPG, PNG)
-        const allowedTypes = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];
-        if (!allowedTypes.includes(fileExt)) {
-            return errorResponse(res, 400, 'Invalid file type. Allowed: PDF, DOC, DOCX, JPEG, JPG, PNG');
+        // Validate file type (PDF only)
+        if (fileExt !== '.pdf' || mimeType !== 'application/pdf') {
+            return errorResponse(res, 400, 'Only PDF files are allowed.');
         }
 
         // Validate file size (max 2MB)
@@ -1414,4 +1417,7 @@ router.get('/google-maps', async (req, res) => {
 });
 
 module.exports = router;
+
+
+
 

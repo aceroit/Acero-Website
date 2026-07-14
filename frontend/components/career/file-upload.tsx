@@ -9,6 +9,7 @@ interface FileUploadProps {
   value: File | null
   onChange: (file: File | null) => void
   accept?: string
+  acceptedLabel?: string
   maxSize?: number // in MB
   className?: string
   error?: string
@@ -17,13 +18,15 @@ interface FileUploadProps {
 export function FileUpload({
   value,
   onChange,
-  accept = ".pdf,.doc,.docx,.jpeg,.jpg,.png",
+  accept = "application/pdf,.pdf",
+  acceptedLabel = ".pdf only",
   maxSize = 2,
   className,
   error,
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [dragActive, setDragActive] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
 
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return bytes + " B"
@@ -32,14 +35,14 @@ export function FileUpload({
   }
 
   const validateFile = (file: File): string | null => {
-    // Check file type
-    const acceptedTypes = accept.split(",").map((type) => type.trim())
-    const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
-    if (!acceptedTypes.includes(fileExtension)) {
-      return `File type not allowed. Accepted types: ${accept}`
+    const fileExtension = "." + (file.name.split(".").pop()?.toLowerCase() || "")
+    const fileMimeType = (file.type || "").toLowerCase()
+    const isPdf = fileExtension === ".pdf" || fileMimeType === "application/pdf"
+
+    if (!isPdf) {
+      return "Only PDF files are allowed."
     }
 
-    // Check file size (maxSize in MB)
     const maxSizeBytes = maxSize * 1024 * 1024
     if (file.size > maxSizeBytes) {
       return `File size exceeds ${maxSize} MB limit`
@@ -50,16 +53,21 @@ export function FileUpload({
 
   const handleFileChange = (file: File | null) => {
     if (!file) {
+      setLocalError(null)
       onChange(null)
       return
     }
 
-    const error = validateFile(file)
-    if (error) {
-      // Could show error toast here
+    const validationError = validateFile(file)
+    if (validationError) {
+      setLocalError(validationError)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
       return
     }
 
+    setLocalError(null)
     onChange(file)
   }
 
@@ -87,11 +95,14 @@ export function FileUpload({
   }
 
   const handleRemove = () => {
+    setLocalError(null)
     onChange(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
   }
+
+  const displayError = localError || error
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -137,7 +148,7 @@ export function FileUpload({
             "relative cursor-pointer rounded-lg border-2 border-dashed border-border bg-card p-8 text-center transition-colors",
             dragActive && "border-steel-red/50 bg-steel-red/5",
             !dragActive && "hover:border-steel-red/50",
-            error && "border-destructive"
+            displayError && "border-destructive"
           )}
         >
           <Upload className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
@@ -145,13 +156,13 @@ export function FileUpload({
             Click to upload or drag and drop
           </p>
           <p className="text-xs text-muted-foreground">
-            {accept} (max {maxSize} MB)
+            {acceptedLabel} (max {maxSize} MB)
           </p>
         </div>
       )}
 
-      {error && (
-        <p className="text-xs text-destructive">{error}</p>
+      {displayError && (
+        <p className="text-xs text-destructive">{displayError}</p>
       )}
     </div>
   )

@@ -58,8 +58,8 @@ const applicationSchema = new mongoose.Schema({
     },
     mobileNumber: {
         type: String,
-        required: [true, 'Mobile number is required'],
-        trim: true
+        trim: true,
+        default: null
     },
     country: {
         type: String,
@@ -215,4 +215,5 @@ applicationSchema.statics.getByStatus = async function(status) {
 const Application = mongoose.model('Application', applicationSchema);
 
 module.exports = Application;
+
 
