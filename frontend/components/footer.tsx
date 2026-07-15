@@ -187,7 +187,7 @@ export function Footer() {
                 style={{ maxHeight: "48px" }}
               />
               <img
-                src="/Logo/Logo-white.png"
+                src="/Logo/Logo-White.png"
                 alt="Acero Logo"
                 className="hidden h-12 w-auto object-contain dark:block"
                 style={{ maxHeight: "48px" }}
@@ -395,3 +395,4 @@ export function Footer() {
     </footer>
   )
 }
+
