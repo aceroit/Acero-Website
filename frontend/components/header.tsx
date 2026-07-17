@@ -1,10 +1,11 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useMemo } from "react"
 import { useTheme } from "@/components/theme-provider"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { useHeader } from "@/hooks/use-header"
+import { GetQuoteDialog } from "@/components/get-quote-dialog"
 import { cn } from "@/lib/utils"
 
 // Default fallback values
@@ -43,6 +44,7 @@ const defaultCtaButton = { text: "Get Quote", href: "/contact-us" }
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [expandedMobileDropdown, setExpandedMobileDropdown] = useState<string | null>(null)
   const { theme, toggleTheme } = useTheme()
@@ -129,7 +131,8 @@ export function Header() {
   }, [])
 
   return (
-    <motion.header
+    <>
+      <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -259,12 +262,13 @@ export function Header() {
           )}
 
           {/* CTA Button */}
-          <Link
-            href={ctaButton.href}
+          <button
+            type="button"
+            onClick={() => setIsQuoteDialogOpen(true)}
             className="hidden bg-[#B61F24] px-6 py-2.5 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-[#B61F24]/90 sm:block"
           >
             {ctaButton.text}
-          </Link>
+          </button>
 
           {/* Mobile Menu Toggle */}
           <button
@@ -379,19 +383,34 @@ export function Header() {
                 transition={{ delay: navLinks.length * 0.05 }}
                 className="pt-4"
               >
-                <Link
-                  href={ctaButton.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block bg-[#B61F24] px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider text-white"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    setIsQuoteDialogOpen(true)
+                  }}
+                  className="block w-full bg-[#B61F24] px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider text-white"
                 >
                   {ctaButton.text}
-                </Link>
+                </button>
               </motion.div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </motion.header>
+
+      <GetQuoteDialog
+        open={isQuoteDialogOpen}
+        onOpenChange={setIsQuoteDialogOpen}
+      />
+    </>
   )
 }
+
+
+
+
+
+
 

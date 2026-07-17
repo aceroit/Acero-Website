@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react'
-import { getVacancies, type Vacancy } from '@/services/vacancy.service'
+import { getVacancies, type Vacancy, type VacancyQueryOptions } from '@/services/vacancy.service'
 
 interface UseVacanciesReturn {
   vacancies: Vacancy[]
@@ -10,20 +10,32 @@ interface UseVacanciesReturn {
   refetch: () => Promise<void>
 }
 
-// Simple cache
-let vacanciesCache: Vacancy[] | null = null
-let vacanciesCacheTime: number = 0
+interface VacancyCacheEntry {
+  data: Vacancy[]
+  timestamp: number
+}
+
+const vacancyCache = new Map<string, VacancyCacheEntry>()
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
-export function useVacancies(): UseVacanciesReturn {
-  const [vacancies, setVacancies] = useState<Vacancy[]>(vacanciesCache || [])
-  const [isLoading, setIsLoading] = useState(!vacanciesCache)
+function getCacheKey(options: VacancyQueryOptions = {}) {
+  return JSON.stringify({ featured: options.featured ?? 'all' })
+}
+
+export function useVacancies(options: VacancyQueryOptions = {}): UseVacanciesReturn {
+  const cacheKey = getCacheKey(options)
+  const cachedEntry = vacancyCache.get(cacheKey)
+
+  const [vacancies, setVacancies] = useState<Vacancy[]>(cachedEntry?.data || [])
+  const [isLoading, setIsLoading] = useState(!cachedEntry)
   const [error, setError] = useState<string | null>(null)
 
   const fetchVacancies = useCallback(async () => {
+    const cached = vacancyCache.get(cacheKey)
     const now = Date.now()
-    if (vacanciesCache && now - vacanciesCacheTime < CACHE_DURATION) {
-      setVacancies(vacanciesCache)
+
+    if (cached && now - cached.timestamp < CACHE_DURATION) {
+      setVacancies(cached.data)
       setIsLoading(false)
       return
     }
@@ -32,9 +44,11 @@ export function useVacancies(): UseVacanciesReturn {
     setError(null)
 
     try {
-      const data = await getVacancies()
-      vacanciesCache = data
-      vacanciesCacheTime = Date.now()
+      const data = await getVacancies(options)
+      vacancyCache.set(cacheKey, {
+        data,
+        timestamp: Date.now(),
+      })
       setVacancies(data)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch vacancies'
@@ -43,7 +57,7 @@ export function useVacancies(): UseVacanciesReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [cacheKey, options])
 
   useEffect(() => {
     fetchVacancies()
@@ -56,4 +70,3 @@ export function useVacancies(): UseVacanciesReturn {
     refetch: fetchVacancies,
   }
 }
-

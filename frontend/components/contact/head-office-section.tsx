@@ -13,7 +13,7 @@ export function HeadOfficeSection() {
     {
       icon: MapPin,
       title: "Location",
-      content: "United Arab Emirates, Dubai, Jebel Ali Industrial Area 1",
+      content: "Jebel Ali Industrial Area, Dubai, United Arab Emirates",
     },
     {
       icon: Phone,

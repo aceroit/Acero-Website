@@ -4,13 +4,19 @@ export interface EnquiryData {
   purpose: 'general' | 'sales' | 'support' | 'partnership' | 'other'
   fullName: string
   companyName?: string
-  mobileNumber: string
+  mobileNumber?: string
   email: string
   country: string
   countryCode?: string
   telephoneNumber?: string
   subject: string
   message: string
+}
+
+export interface GetQuoteData {
+  fullName: string
+  email: string
+  mobileNumber?: string
 }
 
 export interface EnquiryResponse {
@@ -44,3 +50,25 @@ export async function submitEnquiry(
   }
 }
 
+/**
+ * Submit header Get Quote popup request
+ */
+export async function submitGetQuote(
+  quoteData: GetQuoteData
+): Promise<EnquiryResponse> {
+  try {
+    const response = await apiPost<EnquiryResponse>(
+      '/api/public/get-quote',
+      quoteData
+    )
+
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to submit quote request')
+    }
+
+    return response
+  } catch (error) {
+    console.error('Error submitting quote request:', error)
+    throw error
+  }
+}

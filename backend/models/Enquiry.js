@@ -18,6 +18,12 @@ const enquirySchema = new mongoose.Schema({
         default: 'new',
         index: true
     },
+    submissionType: {
+        type: String,
+        enum: ['contact', 'get_quote'],
+        default: 'contact',
+        index: true
+    },
     isActive: {
         type: Boolean,
         default: true,
@@ -43,8 +49,8 @@ const enquirySchema = new mongoose.Schema({
     },
     mobileNumber: {
         type: String,
-        required: [true, 'Mobile number is required'],
-        trim: true
+        trim: true,
+        default: null
     },
     email: {
         type: String,
@@ -61,8 +67,8 @@ const enquirySchema = new mongoose.Schema({
     },
     country: {
         type: String,
-        required: [true, 'Country is required'],
-        trim: true
+        trim: true,
+        default: null
     },
     countryCode: {
         type: String,
@@ -93,7 +99,7 @@ const enquirySchema = new mongoose.Schema({
         default: null,
         validate: {
             validator: function(v) {
-                if (!v) return true; // Optional field
+                if (!v) return true;
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
             },
             message: 'Please enter a valid email address'
@@ -174,4 +180,3 @@ enquirySchema.statics.getByStatus = async function(status) {
 const Enquiry = mongoose.model('Enquiry', enquirySchema);
 
 module.exports = Enquiry;
-

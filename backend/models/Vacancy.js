@@ -147,11 +147,10 @@ vacancySchema.index({ title: 1, department: 1 });
 // Compound index for public queries (status, featured, isActive)
 vacancySchema.index({ status: 1, featured: 1, isActive: 1 });
 
-// Static method to get published vacancies
+// Static method to get published active vacancies
 vacancySchema.statics.getPublished = async function(filters = {}) {
     const query = {
         status: 'published',
-        featured: true,
         isActive: true,
         ...filters
     };

@@ -25,6 +25,7 @@ import {
 import { useVacancies } from "@/hooks/use-vacancies"
 import { uploadCV, submitApplication, type CVFile } from "@/services/application.service"
 import { cn } from "@/lib/utils"
+import type { Vacancy } from "@/services/vacancy.service"
 
 // Inline type definitions (temporary)
 interface CareerFormData {
@@ -55,7 +56,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const router = useRouter()
   const { toast } = useToast()
-  const { vacancies, isLoading: vacanciesLoading } = useVacancies()
+  const { vacancies: dropdownVacancies, isLoading: vacanciesLoading } = useVacancies({ featured: false })
+  const { vacancies: featuredVacancies } = useVacancies({ featured: true })
   const [submitting, setSubmitting] = useState(false)
   const [uploadingCV, setUploadingCV] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
@@ -74,6 +76,14 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
     coverLetter: "",
     cvFile: null,
   })
+
+  const selectedVacancy =
+    dropdownVacancies.find((vacancy) => vacancy._id === formData.vacancyId) ||
+    featuredVacancies.find((vacancy) => vacancy._id === formData.vacancyId)
+  const vacancyOptions: Vacancy[] =
+    selectedVacancy && selectedVacancy.featured
+      ? [selectedVacancy, ...dropdownVacancies.filter((vacancy) => vacancy._id !== selectedVacancy._id)]
+      : dropdownVacancies
 
   // Update vacancyId when selectedVacancyId prop changes
   useEffect(() => {
@@ -246,7 +256,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         onSubmit={handleSubmit}
         className="w-full space-y-8"
       >
-        {/* Section 1: Personal Information */}
+
+        {/* Section 2: Personal Information */}
         <motion.div
           variants={sectionVariants}
           className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
@@ -358,8 +369,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
             </div>
           </div>
         </motion.div>
-
-        {/* Section 2: Job Details, Experience & Education (one card) */}
+        {/* Section 3: Experience & Education */}
         <motion.div
           variants={sectionVariants}
           className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
@@ -372,7 +382,6 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
               </h2>
             </div>
             <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
-              {/* Job Details */}
               <div className="space-y-2">
                 <Label htmlFor="vacancyId" className="text-sm font-medium text-foreground">
                   Current Vacancies Applied For <span className="text-destructive">*</span>
@@ -381,12 +390,12 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                   value={formData.vacancyId}
                   onValueChange={(value) => setFormData({ ...formData, vacancyId: value })}
                   options={
-                    vacancies.length === 0 && !vacanciesLoading
+                    vacancyOptions.length === 0 && !vacanciesLoading
                       ? [{ value: "no-vacancies", label: "No vacancies available", isDisabled: true }]
-                      : vacancies.map((vacancy) => ({
-                        value: vacancy._id,
-                        label: `${vacancy.title} - ${vacancy.department}`,
-                      }))
+                      : vacancyOptions.map((vacancy) => ({
+                          value: vacancy._id,
+                          label: `${vacancy.title} - ${vacancy.department}`,
+                        }))
                   }
                   placeholder={vacanciesLoading ? "Loading vacancies..." : "Select a vacancy"}
                   isDisabled={vacanciesLoading}
@@ -397,7 +406,6 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                   <p className="text-xs text-destructive">{errors.vacancyId}</p>
                 )}
               </div>
-              {/* Experience */}
               <div className="space-y-2">
                 <Label htmlFor="experienceLevel" className="text-sm font-medium text-foreground">
                   Experience Level <span className="text-destructive">*</span>
@@ -419,64 +427,31 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                   <p className="text-xs text-destructive">{errors.experienceLevel}</p>
                 )}
               </div>
-              {/* Education */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="educationLevel" className="text-sm font-medium text-foreground">
-                    Level of Education <span className="text-destructive">*</span>
-                  </Label>
-                  <CustomSelect
-                    value={formData.educationLevel}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, educationLevel: value })
-                    }
-                    options={educationLevels.map((level) => ({
-                      value: level.value,
-                      label: level.label,
-                    }))}
-                    placeholder="Select education level"
-                    size="md"
-                    className={cn("w-full", errors.educationLevel && "border-destructive")}
-                  />
-                  {errors.educationLevel && (
-                    <p className="text-xs text-destructive">{errors.educationLevel}</p>
-                  )}
-                </div>
-                {/* Engineering Degree – commented out for now */}
-                {/* <div className="space-y-2">
-                <Label className="text-sm font-medium text-foreground">
-                  Engineering Degree <span className="text-destructive">*</span>
+              <div className="space-y-2">
+                <Label htmlFor="educationLevel" className="text-sm font-medium text-foreground">
+                  Level of Education <span className="text-destructive">*</span>
                 </Label>
-                <RadioGroup
-                  value={formData.hasEngineeringDegree}
+                <CustomSelect
+                  value={formData.educationLevel}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, hasEngineeringDegree: value })
+                    setFormData({ ...formData, educationLevel: value })
                   }
-                  className="flex flex-row gap-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="engineering-yes" />
-                    <Label htmlFor="engineering-yes" className="cursor-pointer text-sm font-normal text-foreground">
-                      Yes
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="engineering-no" />
-                    <Label htmlFor="engineering-no" className="cursor-pointer text-sm font-normal text-foreground">
-                      No
-                    </Label>
-                  </div>
-                </RadioGroup>
-                {errors.hasEngineeringDegree && (
-                  <p className="text-xs text-destructive">{errors.hasEngineeringDegree}</p>
+                  options={educationLevels.map((level) => ({
+                    value: level.value,
+                    label: level.label,
+                  }))}
+                  placeholder="Select education level"
+                  size="md"
+                  className={cn("w-full", errors.educationLevel && "border-destructive")}
+                />
+                {errors.educationLevel && (
+                  <p className="text-xs text-destructive">{errors.educationLevel}</p>
                 )}
-              </div> */}
               </div>
             </div>
           </div>
         </motion.div>
-
-        {/* Section 3: Languages */}
+        {/* Section 4: Languages */}
         <motion.div
           variants={sectionVariants}
           className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
@@ -517,7 +492,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
           </div>
         </motion.div>
 
-        {/* Section 4: Cover Letter */}
+        {/* Section 5: Cover Letter */}
         <motion.div
           variants={sectionVariants}
           className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
@@ -553,7 +528,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
           </div>
         </motion.div>
 
-        {/* Section 5: CV Upload */}
+        {/* Section 6: CV Upload */}
         <motion.div
           variants={sectionVariants}
           className="group relative overflow-hidden rounded-xl border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-steel-red/30 hover:shadow-xl md:p-10"
@@ -583,7 +558,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
           </div>
         </motion.div>
 
-        {/* Section 6: Submission */}
+        {/* Section 7: Submission */}
         <motion.div
           variants={sectionVariants}
           className="flex justify-center pt-8"
@@ -603,6 +578,8 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
     </div>
   )
 }
+
+
 
 
 

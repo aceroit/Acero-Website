@@ -35,6 +35,9 @@ export function ComparisonTableSection({
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+  const showRackingLegend = /factors to consider while selecting the right racking system/i.test(
+    title
+  )
 
   return (
     <section
@@ -107,8 +110,25 @@ export function ComparisonTableSection({
             </TableBody>
           </table>
         </motion.div>
+
+        {showRackingLegend ? (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-4 space-y-1 text-sm text-muted-foreground"
+          >
+            <p>
+              <span className="font-semibold text-foreground">LIFO</span>: Last In First Out
+            </p>
+            <p>
+              <span className="font-semibold text-foreground">SKU</span>: Stock Keeping Unit
+            </p>
+          </motion.div>
+        ) : null}
       </div>
     </section>
   )
 }
+
 

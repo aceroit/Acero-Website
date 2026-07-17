@@ -1,12 +1,12 @@
-import { Card, Form, Input } from 'antd';
+import { Card } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 /**
- * Editor for PEB Advantage SVG section.
- * This section shows the "Advantages of PEB" title and desktop/mobile SVGs on the frontend.
- * No required fields; optional svgUrl overrides the default graphic.
+ * Editor for PEB advantages section.
+ * The frontend now renders icon cards with pop-up details automatically.
+ * No configuration is required in the admin for this section.
  */
-const PebAdvantageSvgEditor = ({ value = {}, onChange, form }) => {
+const PebAdvantageSvgEditor = () => {
   return (
     <div className="peb-advantage-svg-editor">
       <Card className="border border-gray-200 shadow-sm bg-white mb-6">
@@ -15,25 +15,12 @@ const PebAdvantageSvgEditor = ({ value = {}, onChange, form }) => {
           <div>
             <p className="font-medium text-gray-800 mb-1">Advantages of PEB section</p>
             <p className="text-sm text-gray-600">
-              This section displays the &quot;Advantages of PEB&quot; title and the PEB advantages graphic
-              (desktop and mobile SVGs) on the frontend. No configuration is required—the default graphic
-              is used automatically. Optionally override the SVG URL below if you use a custom graphic.
+              This section now displays the Advantages of PEB content as icon cards with a detailed pop-up on the frontend.
+              The icons, titles, and descriptions are handled automatically, so no extra configuration is required here.
             </p>
           </div>
         </div>
       </Card>
-
-      <Form.Item
-        name={['content', 'svgUrl']}
-        label="SVG URL (optional)"
-        tooltip="Leave blank to use the default Advantages of PEB graphic. Set a URL to use a custom SVG."
-      >
-        <Input
-          placeholder="e.g. /svgs/peb-advantage.svg"
-          size="large"
-          allowClear
-        />
-      </Form.Item>
     </div>
   );
 };

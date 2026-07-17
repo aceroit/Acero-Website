@@ -871,16 +871,17 @@ router.get('/projects/slug/:slug', async (req, res) => {
 });
 
 /**
- * GET /api/public/vacancies - Get published and featured vacancies
+ * GET /api/public/vacancies - Get published active vacancies
  * No authentication required
  */
 router.get('/vacancies', async (req, res) => {
     try {
-        const { page = 1, limit = 20, department, type, search } = req.query;
+        const { page = 1, limit = 20, department, type, featured, search } = req.query;
 
         const filters = {};
         if (department) filters.department = department;
         if (type) filters.type = type;
+        if (featured !== undefined) filters.featured = featured === 'true';
         if (search) {
             filters.$or = [
                 { title: new RegExp(search, 'i') },
@@ -904,6 +905,18 @@ router.get('/vacancies', async (req, res) => {
     }
 });
 
+const PUBLIC_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PUBLIC_PHONE_REGEX = /^[0-9+\-\s()]{6,20}$/;
+
+function normalizeRequiredPublicField(value) {
+    return String(value || '').trim();
+}
+
+function normalizeOptionalPublicField(value) {
+    const normalized = String(value || '').trim();
+    return normalized || null;
+}
+
 /**
  * POST /api/public/enquiries - Submit an enquiry (Contact Us)
  * No authentication required
@@ -911,31 +924,51 @@ router.get('/vacancies', async (req, res) => {
 router.post('/enquiries', async (req, res) => {
     try {
         const payload = req.body || {};
-        
-        // Validate required fields
-        if (!payload.purpose) {
+
+        const normalizedPayload = {
+            submissionType: 'contact',
+            purpose: normalizeRequiredPublicField(payload.purpose),
+            fullName: normalizeRequiredPublicField(payload.fullName),
+            companyName: normalizeOptionalPublicField(payload.companyName),
+            mobileNumber: normalizeRequiredPublicField(payload.mobileNumber),
+            email: normalizeRequiredPublicField(payload.email).toLowerCase(),
+            country: normalizeRequiredPublicField(payload.country),
+            countryCode: normalizeOptionalPublicField(payload.countryCode),
+            telephoneNumber: normalizeOptionalPublicField(payload.telephoneNumber),
+            subject: normalizeRequiredPublicField(payload.subject),
+            message: normalizeRequiredPublicField(payload.message),
+            notificationEmail: normalizeOptionalPublicField(payload.notificationEmail)
+        };
+
+        if (!normalizedPayload.purpose) {
             return errorResponse(res, 400, 'Purpose is required');
         }
-        if (!payload.fullName || !payload.fullName.trim()) {
+        if (!normalizedPayload.fullName) {
             return errorResponse(res, 400, 'Full name is required');
         }
-        if (!payload.email || !payload.email.trim()) {
+        if (!normalizedPayload.email) {
             return errorResponse(res, 400, 'Email is required');
         }
-        if (!payload.mobileNumber || !payload.mobileNumber.trim()) {
+        if (!PUBLIC_EMAIL_REGEX.test(normalizedPayload.email)) {
+            return errorResponse(res, 400, 'Please enter a valid email address');
+        }
+        if (!normalizedPayload.mobileNumber) {
             return errorResponse(res, 400, 'Mobile number is required');
         }
-        if (!payload.country || !payload.country.trim()) {
+        if (!PUBLIC_PHONE_REGEX.test(normalizedPayload.mobileNumber)) {
+            return errorResponse(res, 400, 'Please enter a valid mobile number');
+        }
+        if (!normalizedPayload.country) {
             return errorResponse(res, 400, 'Country is required');
         }
-        if (!payload.subject || !payload.subject.trim()) {
+        if (!normalizedPayload.subject) {
             return errorResponse(res, 400, 'Subject is required');
         }
-        if (!payload.message || !payload.message.trim()) {
+        if (!normalizedPayload.message) {
             return errorResponse(res, 400, 'Message is required');
         }
 
-        const enquiry = new Enquiry(payload);
+        const enquiry = new Enquiry(normalizedPayload);
         enquiry.submittedAt = new Date();
         enquiry.ipAddress = req.ip || req.connection.remoteAddress;
         await enquiry.save();
@@ -946,14 +979,14 @@ router.post('/enquiries', async (req, res) => {
         ]);
         emailResults.forEach((result, index) => {
             if (result.status === 'rejected') {
-                console.error(`Enquiry email task ${index + 1} failed:`, result.reason);
+                console.error('Enquiry email task ' + (index + 1) + ' failed:', result.reason);
             } else if (result.value === false) {
-                console.warn(`Enquiry email task ${index + 1} did not send. Check SMTP and form notification settings.`);
+                console.warn('Enquiry email task ' + (index + 1) + ' did not send. Check SMTP and form notification settings.');
             }
         });
 
-        return successResponse(res, 201, 'Enquiry submitted successfully', { 
-            enquiryId: enquiry._id 
+        return successResponse(res, 201, 'Enquiry submitted successfully', {
+            enquiryId: enquiry._id
         });
     } catch (error) {
         console.error('Error in public submitEnquiry:', error);
@@ -964,6 +997,73 @@ router.post('/enquiries', async (req, res) => {
     }
 });
 
+/**
+ * POST /api/public/get-quote - Submit Get Quote popup request
+ * No authentication required
+ */
+router.post('/get-quote', async (req, res) => {
+    try {
+        const payload = req.body || {};
+
+        const fullName = normalizeRequiredPublicField(payload.fullName);
+        const email = normalizeRequiredPublicField(payload.email).toLowerCase();
+        const mobileNumber = normalizeOptionalPublicField(payload.mobileNumber);
+
+        if (!fullName) {
+            return errorResponse(res, 400, 'Full name is required');
+        }
+        if (!email) {
+            return errorResponse(res, 400, 'Email is required');
+        }
+        if (!PUBLIC_EMAIL_REGEX.test(email)) {
+            return errorResponse(res, 400, 'Please enter a valid email address');
+        }
+        if (mobileNumber && !PUBLIC_PHONE_REGEX.test(mobileNumber)) {
+            return errorResponse(res, 400, 'Please enter a valid mobile number');
+        }
+
+        const enquiry = new Enquiry({
+            submissionType: 'get_quote',
+            purpose: 'sales',
+            fullName,
+            companyName: null,
+            mobileNumber,
+            email,
+            country: null,
+            countryCode: null,
+            telephoneNumber: null,
+            subject: 'Get Quote Request',
+            message: 'Website header Get Quote popup submitted.',
+            notificationEmail: null
+        });
+
+        enquiry.submittedAt = new Date();
+        enquiry.ipAddress = req.ip || req.connection.remoteAddress;
+        await enquiry.save();
+
+        const emailResults = await Promise.allSettled([
+            notificationService.notifyEnquirySubmission(enquiry),
+            notificationService.sendEnquiryConfirmation(enquiry)
+        ]);
+        emailResults.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error('Get quote email task ' + (index + 1) + ' failed:', result.reason);
+            } else if (result.value === false) {
+                console.warn('Get quote email task ' + (index + 1) + ' did not send. Check SMTP and form notification settings.');
+            }
+        });
+
+        return successResponse(res, 201, 'Quote request submitted successfully', {
+            enquiryId: enquiry._id
+        });
+    } catch (error) {
+        console.error('Error in public submitGetQuote:', error);
+        if (error.name === 'ValidationError') {
+            return errorResponse(res, 400, 'Validation error', error.message);
+        }
+        return errorResponse(res, 500, 'Failed to submit quote request', error.message);
+    }
+});
 /**
  * POST /api/public/applications - Submit a job application (Career page)
  * No authentication required
@@ -1417,6 +1517,7 @@ router.get('/google-maps', async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 

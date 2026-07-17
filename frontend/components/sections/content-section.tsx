@@ -22,6 +22,7 @@ interface ContentSectionProps {
   image?: string
   imageAlt?: string
   images?: Array<{ url: string; imageAlt?: string }>
+  mobileImage?: string
   /** When set, render this local SVG inline (so animations run) instead of backend image. Used e.g. for "Reliability, Excellence, Trust" on Who we are. */
   inlineSvgPath?: string
   /** Optional mobile-specific SVG path. If set, used on screens < lg breakpoint. */
@@ -39,6 +40,7 @@ export function ContentSection({
   image,
   imageAlt,
   images,
+  mobileImage,
   inlineSvgPath,
   inlineSvgPathMobile,
   layout = "image-right",
@@ -49,6 +51,7 @@ export function ContentSection({
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
+  const isReliabilitySection = title.trim() === "Reliability, Excellence, Trust"
   const showInlineSvg = Boolean(inlineSvgPath) && layout !== "text-only"
   const allImages: Array<{ url: string; imageAlt?: string }> = showInlineSvg
     ? []
@@ -58,6 +61,7 @@ export function ContentSection({
       ].filter((i) => i?.url)
   const showVerticalStack = allImages.length > 1 && layout !== "text-only"
   const showSingleImage = (allImages.length === 1 || showInlineSvg) && layout !== "text-only"
+  const hasMobileImageOverride = Boolean(mobileImage) && !showInlineSvg && allImages.length === 1
   const ref = useRef(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [contentHeight, setContentHeight] = useState<number | null>(null)
@@ -160,7 +164,11 @@ export function ContentSection({
       )
     }
 
-    const fitClass = imageFit === "cover" ? "object-cover" : "object-contain"
+    const fitClass = isReliabilitySection
+      ? "object-contain"
+      : imageFit === "cover"
+        ? "object-cover"
+        : "object-contain"
 
     // Use the normalized CMS asset URL directly for section content images
     // so high-resolution uploads do not get softened by the Next.js optimizer.
@@ -173,7 +181,8 @@ export function ContentSection({
         className={cn(
           "absolute inset-0 h-full w-full rounded-2xl",
           fitClass,
-          "transition-transform duration-500 group-hover:scale-105"
+          "transition-transform duration-500 group-hover:scale-105",
+          isReliabilitySection && "object-center p-2 sm:p-0"
         )}
       />
     )
@@ -229,7 +238,13 @@ export function ContentSection({
               variants={itemVariants}
               className={cn(
                 "group relative w-full overflow-hidden rounded-2xl",
-                showInlineSvg ? "aspect-[610/660] lg:aspect-[4/3] border border-border bg-muted/20" : "aspect-[4/3]",
+                showInlineSvg
+                  ? "aspect-[610/660] lg:aspect-[4/3] border border-border bg-muted/20"
+                  : isReliabilitySection
+                    ? hasMobileImageOverride
+                      ? "aspect-square sm:aspect-[4/3]"
+                      : "aspect-[5/4] sm:aspect-[4/3]"
+                    : "aspect-[4/3]",
                 layout === "image-center"
                   ? "mx-auto lg:mx-0 self-center"
                   : "self-center lg:self-stretch",
@@ -251,6 +266,15 @@ export function ContentSection({
                       alt={title}
                       className="h-full w-full"
                     />
+                  </div>
+                </>
+              ) : hasMobileImageOverride ? (
+                <>
+                  <div className="hidden lg:block absolute inset-0 h-full w-full">
+                    {renderMedia(allImages[0], allImages[0].imageAlt || title)}
+                  </div>
+                  <div className="lg:hidden absolute inset-0 h-full w-full">
+                    {renderMedia({ url: mobileImage!, imageAlt: imageAlt ?? title }, imageAlt || title)}
                   </div>
                 </>
               ) : (
@@ -302,3 +326,7 @@ export function ContentSection({
     </section>
   )
 }
+
+
+
+

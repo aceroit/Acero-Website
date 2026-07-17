@@ -47,6 +47,10 @@ function isWhyAceroTitle(title: string): boolean {
   return (title || '').trim().toLowerCase().includes('why acero')
 }
 
+function isReliabilityTitle(title: string): boolean {
+  return (title || '').trim() === 'Reliability, Excellence, Trust'
+}
+
 function getSectionIdValue(value: unknown): string | null {
   if (typeof value === 'string' && value.trim()) {
     return value
@@ -122,6 +126,9 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const cta = content.cta as { label: string; href: string } | undefined
                 const image = (content.image as string) || undefined
                 const imageAlt = (content.imageAlt as string) || undefined
+                const mobileImage =
+                  (content.mobileImage as string) ||
+                  (isReliabilityTitle(title) ? '/images/who-we-are/reliability-mobile.png' : undefined)
                 const rawImages = content.images as Array<{ url?: string; imageAlt?: string }> | undefined
                 const images =
                   Array.isArray(rawImages) && rawImages.length >= 1
@@ -132,15 +139,6 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const layout = (content.layout as 'image-left' | 'image-right' | 'image-center' | 'text-only' | 'split') || 'image-right'
                 const imageFit = (content.imageFit as 'contain' | 'cover') || 'contain'
                 const variant = (content.variant as 'default' | 'accent' | 'muted') || 'default'
-                // Who we are "Reliability, Excellence, Trust" section: use local animated SVG so CSS animations run
-                const inlineSvgPath =
-                  title.trim() === 'Reliability, Excellence, Trust'
-                    ? '/svgs/Reliability.svg'
-                    : undefined
-                const inlineSvgPathMobile =
-                  title.trim() === 'Reliability, Excellence, Trust'
-                    ? '/svgs/Reliability-mobile.svg'
-                    : undefined
 
                 return (
                   <ContentSection
@@ -151,8 +149,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     image={image}
                     imageAlt={imageAlt}
                     images={images}
-                    inlineSvgPath={inlineSvgPath}
-                    inlineSvgPathMobile={inlineSvgPathMobile}
+                    mobileImage={mobileImage}
                     layout={layout}
                     imageFit={imageFit}
                     variant={variant}
@@ -711,5 +708,8 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
     </>
   )
 }
+
+
+
 
 

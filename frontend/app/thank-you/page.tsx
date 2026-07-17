@@ -25,12 +25,19 @@ function ThankYouContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectedRef = useRef(false)
+  const sourceParam = searchParams.get("from")
 
-  const source = searchParams.get("from") === "career" ? "career" : "contact"
+  const source =
+    sourceParam === "career"
+      ? "career"
+      : sourceParam === "quote"
+        ? "quote"
+        : "contact"
   const { formConfiguration } = useFormConfiguration()
 
   const section = useMemo(() => {
     if (!formConfiguration) return DEFAULT_SECTION
+    if (source === "quote") return formConfiguration.contact ?? DEFAULT_SECTION
 
     const s =
       source === "career"

@@ -15,9 +15,13 @@ interface VacanciesSectionProps {
 }
 
 export function VacanciesSection({ onApplyNow }: VacanciesSectionProps) {
-  const { vacancies, isLoading, error } = useVacancies()
+  const { vacancies, isLoading, error } = useVacancies({ featured: true })
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
+  const featuredVacancies = useMemo(
+    () => vacancies.filter((vacancy) => vacancy.featured),
+    [vacancies]
+  )
 
   if (isLoading) {
     return (
@@ -43,7 +47,7 @@ export function VacanciesSection({ onApplyNow }: VacanciesSectionProps) {
     )
   }
 
-  if (vacancies.length === 0) {
+  if (featuredVacancies.length === 0) {
     return null
   }
 
@@ -69,7 +73,7 @@ export function VacanciesSection({ onApplyNow }: VacanciesSectionProps) {
 
         {/* Vacancies Grid */}
         <div className={cn("grid md:grid-cols-2 lg:grid-cols-3", spacing.gridGap)}>
-          {vacancies.map((vacancy, index) => (
+          {featuredVacancies.map((vacancy, index) => (
             <VacancyCard
               key={vacancy._id}
               vacancy={vacancy}
