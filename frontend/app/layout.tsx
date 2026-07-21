@@ -22,19 +22,20 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Acero | Premium Steel Manufacturing UAE",
+  title: "Acero | Steel Building Manufacturer |Global | PEB | Engineering Services",
   description:
-    "Leading steel manufacturing company in the UAE. Delivering premium quality steel products with industrial excellence and modern innovation.",
+    "Acero designs, manufactures and supplies custom pre-engineered steel buildings, conventional steel buildings, racking systems, porta cabins and steel building accessories, from our UAE and India. Serving over 100 countries with a capacity of 150,000 MT/year.",
   generator: "v0.app",
   keywords: [
-    "steel manufacturing",
-    "UAE",
-    "industrial",
-    "steel products",
-    "premium steel",
-    "construction materials",
     "Acero",
-    "Dubai steel",
+    "steel building manufacturer",
+    "PEB buildings",
+    "conventional steel buildings",
+    "warehousing racking",
+    "porta cabins",
+    "steel building",
+    "steel structure building",
+    "pre engineered buildings"
   ],
   authors: [{ name: "Acero Steel Manufacturing" }],
   icons: {
