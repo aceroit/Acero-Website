@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Card, 
@@ -49,6 +49,7 @@ const RolePermissions = () => {
   const [savingPermissions, setSavingPermissions] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [initialUserPermissions, setInitialUserPermissions] = useState({});
+  const [roleBasePermissions, setRoleBasePermissions] = useState({});
 
   // Fetch role details
   const fetchRole = async () => {
@@ -143,18 +144,33 @@ const RolePermissions = () => {
       const rolePerms = roleRes?.data?.permissions || roleRes?.permissions || {};
       const userPerms = userRes?.data?.permissions || userRes?.permissions || {};
       const roleForm = permissionsToFormData(rolePerms, list);
-      const userForm = permissionsToFormData(userPerms, list);
-      // Base = all role permissions toggled on; then overlay user-specific overrides
-      const merged = { ...roleForm };
-      Object.keys(userForm).forEach((k) => { merged[k] = userForm[k]; });
-      // Ensure every resource+action has a value: missing -> use role or true for role perm
+      const userOverrideSlugs = new Set(
+        Object.keys(userPerms).map((resourceKey) => {
+          const permission = userPerms[resourceKey];
+          if (permission?.resource && typeof permission.resource === 'object' && permission.resource.slug) {
+            return permission.resource.slug;
+          }
+          return resourceKey;
+        })
+      );
+
+      const merged = {};
       list.forEach((r) => {
         const slug = typeof r === 'object' ? r.slug : r;
+        const userOverride = userPerms[slug];
+        const userActions = Array.isArray(userOverride?.actions) ? userOverride.actions : [];
+
         Object.values(ACTIONS).forEach((action) => {
           const key = `${slug}_${action}`;
-          if (merged[key] === undefined) merged[key] = !!roleForm[key];
+          if (userOverrideSlugs.has(slug)) {
+            merged[key] = userActions.includes(action);
+          } else {
+            merged[key] = !!roleForm[key];
+          }
         });
       });
+
+      setRoleBasePermissions(JSON.parse(JSON.stringify(roleForm)));
       setUserPermissions(merged);
       setInitialUserPermissions(JSON.parse(JSON.stringify(merged)));
     } catch (error) {
@@ -230,29 +246,31 @@ const RolePermissions = () => {
     
     setSavingPermissions(true);
     try {
-      // Transform permissions to API format
+      // Only persist user-specific overrides that differ from the role base.
+      // This supports removing inherited permissions without them snapping back on reload.
       const permissionsArray = [];
-      
-      Object.keys(userPermissions).forEach((key) => {
-        if (key.includes('_') && userPermissions[key]) {
-          const lastUnderscoreIndex = key.lastIndexOf('_');
-          const resource = key.substring(0, lastUnderscoreIndex);
-          const action = key.substring(lastUnderscoreIndex + 1);
-          
-          const validActions = Object.values(ACTIONS);
-          if (validActions.includes(action)) {
-            let permEntry = permissionsArray.find((p) => p.resource === resource);
-            if (!permEntry) {
-              permEntry = {
-                resource,
-                actions: [],
-                conditions: {},
-                isActive: true,
-              };
-              permissionsArray.push(permEntry);
-            }
-            permEntry.actions.push(action);
-          }
+
+      resources.forEach((resourceItem) => {
+        const resourceSlug = typeof resourceItem === 'object' ? resourceItem.slug : resourceItem;
+        const currentActions = Object.values(ACTIONS).filter(
+          (action) => !!userPermissions[`${resourceSlug}_${action}`]
+        );
+        const roleActions = Object.values(ACTIONS).filter(
+          (action) => !!roleBasePermissions[`${resourceSlug}_${action}`]
+        );
+
+        const roleActionSet = new Set(roleActions);
+        const hasChanged =
+          currentActions.length !== roleActions.length ||
+          currentActions.some((action) => !roleActionSet.has(action));
+
+        if (hasChanged) {
+          permissionsArray.push({
+            resource: resourceSlug,
+            actions: currentActions,
+            conditions: {},
+            isActive: true,
+          });
         }
       });
 

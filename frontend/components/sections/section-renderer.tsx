@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type { ComponentProps } from 'react'
 import type { Section } from '@/lib/api/types'
@@ -359,12 +359,20 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
               case 'products_grid': {
                 const title = (content.title as string) || undefined
                 const subtitle = (content.subtitle as string) || (content.description as string) || undefined
+                const products = (content.products as Array<{
+                  id?: string
+                  title?: string
+                  image?: string
+                  imageAlt?: string
+                  link?: string
+                }>) || []
 
                 return (
                   <ProductsGridSection
                     key={sectionKey}
                     title={title}
                     subtitle={subtitle}
+                    products={products}
                   />
                 )
               }
@@ -708,6 +716,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
     </>
   )
 }
+
 
 
 

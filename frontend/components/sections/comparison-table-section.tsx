@@ -122,6 +122,9 @@ export function ComparisonTableSection({
               <span className="font-semibold text-foreground">LIFO</span>: Last In First Out
             </p>
             <p>
+              <span className="font-semibold text-foreground">FIFO</span>: First In First Out
+            </p>
+            <p>
               <span className="font-semibold text-foreground">SKU</span>: Stock Keeping Unit
             </p>
           </motion.div>

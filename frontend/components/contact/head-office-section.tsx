@@ -20,7 +20,7 @@ export function HeadOfficeSection() {
       title: "Contact",
       content: (
         <>
-          Contact: +97148931000
+          Contact: +971 4 893 1000
           <br />
           Email: info@acero.ae
         </>
@@ -29,7 +29,7 @@ export function HeadOfficeSection() {
     {
       icon: Clock,
       title: "Working Hours",
-      content: "Monday - Friday: 8:00AM - 5:30PM",
+      content: "Monday–Friday: 8:00 AM–5:30 PM",
     },
   ]
 

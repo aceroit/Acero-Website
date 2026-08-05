@@ -29,7 +29,7 @@ export const branchesData: Branch[] = [
     location: "Dubai",
     country: "UAE",
     email: "info@acero.ae",
-    phone: "+97148931000",
+    phone: "+971 4 893 1000",
     address: "Jebel Ali Industrial Area 1, Dubai, United Arab Emirates",
     logo: "/images/branches/dubai-logo.png",
     coordinates: { lat: 24.9848, lng: 55.0962 },

@@ -88,9 +88,9 @@ export function StatsDisplay({
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
 
-  // Make stats responsive: on small screens stack, on medium+ show in a single row
+  // Make stats responsive: on mobile show compact two-column cards, then expand on larger screens
   const gridCols = columns === 4 
-    ? "grid-cols-2 md:grid-cols-4" 
+    ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-4" 
     : "grid-cols-1 sm:grid-cols-3"
 
   return (
@@ -111,22 +111,25 @@ export function StatsDisplay({
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={stat.sublabel ? "pt-4" : ""}
+              className={stat.sublabel ? "pt-8 sm:pt-4" : ""}
             >
               {/* Premium Card with Floating Red Banner */}
-              <div className="relative h-full rounded-xl border border-border bg-card shadow-lg">
+              <div className="relative h-full min-h-[156px] rounded-xl border border-border bg-card shadow-lg sm:min-h-[184px]">
                 {/* Floating Red Banner - positioned half outside the card */}
                 {stat.sublabel && (
-                  <div className="absolute -top-4 inset-x-3 z-10">
-                    <div className="rounded-md bg-steel-red px-4 py-2 shadow-lg text-center">
-                      <p className="text-xs font-semibold tracking-wide text-white md:text-sm">
+                  <div className="absolute -top-5 left-1/2 z-10 w-[calc(100%-2rem)] max-w-[132px] -translate-x-1/2 sm:inset-x-3 sm:left-auto sm:w-auto sm:max-w-none sm:translate-x-0">
+                    <div className="rounded-md bg-steel-red px-3 py-2 shadow-lg text-center sm:px-4 sm:py-2.5">
+                      <p className="text-[11px] font-semibold leading-snug text-white sm:text-sm">
                         {stat.sublabel}
                       </p>
                     </div>
                   </div>
                 )}
                 {/* Content */}
-                <div className="px-6 py-6 text-center">
+                <div className={cn(
+                  "px-4 pb-5 text-center sm:px-6 sm:pb-6",
+                  stat.sublabel ? "pt-14 sm:pt-8" : "pt-6 sm:pt-6",
+                )}>
                   {stat.icon && (
                     <div className="mb-4 flex justify-center">
                       <div className="rounded-full bg-gradient-to-br from-steel-red/10 to-steel-red/5 p-3">
@@ -134,12 +137,12 @@ export function StatsDisplay({
                       </div>
                     </div>
                   )}
-                  <div className="mb-2">
-                    <p className="text-4xl font-extrabold text-foreground md:text-5xl">
+                  <div className="mb-2 sm:mb-3">
+                    <p className="text-3xl font-extrabold leading-none text-foreground sm:text-4xl md:text-5xl">
                       <AnimatedCounter value={stat.value} isInView={isInView} />
                     </p>
                   </div>
-                  <p className="text-sm font-semibold uppercase tracking-widest text-foreground md:text-base">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground sm:text-sm sm:tracking-[0.32em] md:text-base">
                     {stat.label}
                   </p>
                 </div>
@@ -151,4 +154,7 @@ export function StatsDisplay({
     </section>
   )
 }
+
+
+
 

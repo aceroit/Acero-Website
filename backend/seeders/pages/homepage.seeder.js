@@ -1,4 +1,4 @@
-const path = require('path');
+﻿const path = require('path');
 
 // Load environment variables FIRST, before requiring database config
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
@@ -63,9 +63,9 @@ const seedHomepage = async () => {
                 isActive: true,
                 createdBy: user._id,
             });
-            console.log('✓ Created homepage page');
+            console.log('âœ“ Created homepage page');
         } else {
-            console.log('✓ Homepage page already exists');
+            console.log('âœ“ Homepage page already exists');
         }
 
         // Step 2: Create Sections (in order)
@@ -156,10 +156,39 @@ const seedHomepage = async () => {
             {
                 // Section 4: Products Grid
                 sectionTypeSlug: 'products_grid',
-                order: 3,
-                content: {
+                order: 3,                content: {
                     title: 'Our Products',
                     subtitle: 'Comprehensive steel building solutions designed for industrial, commercial and infrastructure projects.',
+                    products: [
+                        {
+                            id: 'peb',
+                            title: 'PEB',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769157366/acero-cms/products/lpupgr1rmihi5tioxxse.jpg',
+                            imageAlt: 'PEB steel structure',
+                            link: '/products/peb'
+                        },
+                        {
+                            id: 'conventional-steel',
+                            title: 'Conventional Steel',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769157770/acero-cms/products/cvzl5ivsk3ykofyurdik.png',
+                            imageAlt: 'Conventional steel building frame',
+                            link: '/products/conventional-steel'
+                        },
+                        {
+                            id: 'racking-systems',
+                            title: 'Racking Systems',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769157787/acero-cms/products/ryrxjiyqotf3gd7eyshn.jpg',
+                            imageAlt: 'Industrial racking system',
+                            link: '/products/racking-systems'
+                        },
+                        {
+                            id: 'porta-cabins',
+                            title: 'Porta Cabins',
+                            image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769157806/acero-cms/products/zwkb8gz7dqlijnvpkyxn.jpg',
+                            imageAlt: 'Porta cabin building',
+                            link: '/products/porta-cabins'
+                        }
+                    ]
                 },
             },
             {
@@ -302,7 +331,7 @@ const seedHomepage = async () => {
                     createdBy: user._id,
                 });
                 sectionsCreated++;
-                console.log(`✓ Created section ${sectionData.order + 1}: ${sectionData.sectionTypeSlug}`);
+                console.log(`âœ“ Created section ${sectionData.order + 1}: ${sectionData.sectionTypeSlug}`);
             } else {
                 // Update content if section exists
                 // If preserveImages is true, merge content but keep existing images
@@ -335,7 +364,7 @@ const seedHomepage = async () => {
                 section.isVisible = true;
                 await section.save();
                 sectionsUpdated++;
-                console.log(`✓ Updated section ${sectionData.order + 1}: ${sectionData.sectionTypeSlug}`);
+                console.log(`âœ“ Updated section ${sectionData.order + 1}: ${sectionData.sectionTypeSlug}`);
             }
         }
 
@@ -346,11 +375,11 @@ const seedHomepage = async () => {
         console.log(`Sections skipped: ${sectionsSkipped}`);
         console.log(`Total sections: ${sectionsData.length}\n`);
 
-        console.log('✓ Homepage seeding completed successfully!');
+        console.log('âœ“ Homepage seeding completed successfully!');
         console.log('\nNote: All sections are in draft status. Publish them via the admin panel when ready.');
         process.exit(0);
     } catch (error) {
-        console.error('✗ Error seeding homepage:', error);
+        console.error('âœ— Error seeding homepage:', error);
         process.exit(1);
     }
 };
@@ -361,4 +390,5 @@ if (require.main === module) {
 }
 
 module.exports = seedHomepage;
+
 

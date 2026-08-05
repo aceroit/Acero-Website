@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Select, Switch, DatePicker, ColorPicker, Upload, Button , Space} from 'antd';
+﻿import { Form, Input, InputNumber, Select, Switch, DatePicker, ColorPicker, Upload, Button , Space} from 'antd';
 import { 
   UploadOutlined, 
   PlusOutlined, 
@@ -19,6 +19,7 @@ import ImageGalleryEditor from './section-editors/ImageGalleryEditor';
 import FeaturesGridEditor from './section-editors/FeaturesGridEditor';
 // Product page editors
 import ProductCardEditor from './section-editors/ProductCardEditor';
+import ProductsGridEditor from './section-editors/ProductsGridEditor';
 import ImageModalGalleryEditor from './section-editors/ImageModalGalleryEditor';
 import ApplicationCardsEditor from './section-editors/ApplicationCardsEditor';
 import CircularAdvantagesEditor from './section-editors/CircularAdvantagesEditor';
@@ -533,6 +534,12 @@ const DynamicSectionForm = ({
           return null;
         }
         
+        // Special handling for products_grid products field
+        if (sectionType?.slug === 'products_grid' && fieldName === 'products') {
+          // This will be handled by ProductsGridEditor
+          return null;
+        }
+        
         // Special handling for image_modal_gallery items field
         if (sectionType?.slug === 'image_modal_gallery' && fieldName === 'items') {
           // This will be handled by ImageModalGalleryEditor
@@ -788,6 +795,21 @@ const DynamicSectionForm = ({
     );
   }
 
+  // Special handling for products_grid section type - use custom editor
+  if (sectionType.slug === 'products_grid') {
+    return (
+      <ProductsGridEditor
+        value={initialContent}
+        onChange={(newContent) => {
+          form.setFieldsValue({
+            content: newContent,
+          });
+        }}
+        form={form}
+      />
+    );
+  }
+
   // Special handling for image_modal_gallery section type - use custom editor
   if (sectionType.slug === 'image_modal_gallery') {
     return (
@@ -985,4 +1007,5 @@ const DynamicSectionForm = ({
 };
 
 export default DynamicSectionForm;
+
 

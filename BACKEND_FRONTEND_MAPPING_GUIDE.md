@@ -165,7 +165,7 @@ frontend/
 
 **Mapping**:
 - Brand info: Logo, description
-- Contact info: Phone (+97148931000), email, address
+- Contact info: Phone (+971 4 893 1000), email, address
 - Social links: LinkedIn, Twitter, Instagram, YouTube
 - Quick links, Products links, Media links
 - Copyright text and year

@@ -1,4 +1,4 @@
-const path = require('path');
+﻿const path = require('path');
 
 // Load environment variables FIRST, before requiring database config
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
@@ -18,7 +18,7 @@ const extendedSectionTypes = [
         name: 'Hero Carousel',
         slug: 'hero_carousel',
         description: 'Full-screen hero carousel with multiple slides, auto-play functionality, and navigation controls. Perfect for homepage banners showcasing key company messages.',
-        icon: '🎠',
+        icon: 'ðŸŽ ',
         category: 'Headers',
         isSystem: true,
         fields: [
@@ -63,7 +63,7 @@ const extendedSectionTypes = [
         name: 'Hero Image',
         slug: 'hero_image',
         description: 'Simple hero section with background image and centered title. Used for page headers.',
-        icon: '🖼️',
+        icon: 'ðŸ–¼ï¸',
         category: 'Headers',
         isSystem: true,
         fields: [
@@ -103,7 +103,7 @@ const extendedSectionTypes = [
         name: 'Content with Image',
         slug: 'content_with_image',
         description: 'Content section with optional image, paragraphs, and call-to-action button. Supports multiple layout options.',
-        icon: '📄',
+        icon: 'ðŸ“„',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -134,7 +134,7 @@ const extendedSectionTypes = [
                 name: 'image',
                 type: 'image',
                 label: 'Image',
-                helpText: 'Optional image to display alongside content. Recommended: 1200×800 px (3:2) so it fits the column and content height without overlap.',
+                helpText: 'Optional image to display alongside content. Recommended: 1200Ã—800 px (3:2) so it fits the column and content height without overlap.',
                 required: false,
                 order: 2
             },
@@ -149,7 +149,7 @@ const extendedSectionTypes = [
                 name: 'images',
                 type: 'json',
                 label: 'Additional Images',
-                helpText: 'Optional array for multiple images: [{"url": "...", "imageAlt": "..."}]. When 2+ images exist, they appear in a vertical stack. Recommended per image: 1200×500 px for a perfect fit and no overlap.',
+                helpText: 'Optional array for multiple images: [{"url": "...", "imageAlt": "..."}]. When 2+ images exist, they appear in a vertical stack. Recommended per image: 1200Ã—500 px for a perfect fit and no overlap.',
                 required: false,
                 order: 3.5
             },
@@ -172,7 +172,7 @@ const extendedSectionTypes = [
                 name: 'imageFit',
                 type: 'select',
                 label: 'Image Fit',
-                helpText: 'Contain: show full image (no cropping)—use for diagrams/infographics. Cover: fill the box (may crop)—use for photos.',
+                helpText: 'Contain: show full image (no cropping)â€”use for diagrams/infographics. Cover: fill the box (may crop)â€”use for photos.',
                 required: false,
                 defaultValue: 'contain',
                 options: [
@@ -210,7 +210,7 @@ const extendedSectionTypes = [
         name: 'Infinite Carousel',
         slug: 'infinite_carousel',
         description: 'Infinite scrolling carousel for logos, certifications, or customer logos. Supports multiple speed and direction options.',
-        icon: '♾️',
+        icon: 'â™¾ï¸',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -296,7 +296,7 @@ const extendedSectionTypes = [
         name: 'Projects Grid',
         slug: 'projects_grid',
         description: 'Display projects in a grid layout with images, titles, descriptions, and links. Used for showcasing company projects.',
-        icon: '🏗️',
+        icon: 'ðŸ—ï¸',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -353,7 +353,7 @@ const extendedSectionTypes = [
         name: 'Company Updates',
         slug: 'company_updates',
         description: 'Display company updates/news in a grid layout. Used on homepage to showcase latest company news.',
-        icon: '📰',
+        icon: 'ðŸ“°',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -410,7 +410,7 @@ const extendedSectionTypes = [
         name: 'Product Card',
         slug: 'product_card',
         description: 'Product card section with image, title, paragraphs, and CTA button. Used for product pages.',
-        icon: '📦',
+        icon: 'ðŸ“¦',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -478,7 +478,7 @@ const extendedSectionTypes = [
         name: 'Products Grid',
         slug: 'products_grid',
         description: 'Products grid section with 4 horizontal cards matching projects card design. Displays PEB, Conventional Steel, Racking Systems, and Porta Cabins.',
-        icon: '📦',
+        icon: 'ðŸ“¦',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -492,8 +492,7 @@ const extendedSectionTypes = [
                     maxLength: 200
                 },
                 order: 0
-            },
-            {
+            },            {
                 name: 'subtitle',
                 type: 'textarea',
                 label: 'Subtitle',
@@ -502,6 +501,17 @@ const extendedSectionTypes = [
                     maxLength: 300
                 },
                 order: 1
+            },
+            {
+                name: 'products',
+                type: 'json',
+                label: 'Product Cards',
+                helpText: 'Manage the home page product cards with image, title, alt text, and link.',
+                required: false,
+                validation: {
+                    minItems: 1
+                },
+                order: 2
             }
         ],
         previewComponent: 'ProductsGridSection',
@@ -511,7 +521,7 @@ const extendedSectionTypes = [
         name: 'Image Modal Gallery',
         slug: 'image_modal_gallery',
         description: 'Image gallery with modal functionality for viewing larger images. Used for product types, project galleries, etc.',
-        icon: '🖼️',
+        icon: 'ðŸ–¼ï¸',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -556,7 +566,7 @@ const extendedSectionTypes = [
         name: 'Image Display',
         slug: 'image_display',
         description: 'Single image display section. Used for showcasing a single product image or diagram.',
-        icon: '🖼️',
+        icon: 'ðŸ–¼ï¸',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -602,7 +612,7 @@ const extendedSectionTypes = [
         name: 'Application Cards',
         slug: 'application_cards',
         description: 'Grid of application icons with titles and descriptions. Used for showcasing product applications.',
-        icon: '🎯',
+        icon: 'ðŸŽ¯',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -667,7 +677,7 @@ const extendedSectionTypes = [
         name: 'Circular Advantages',
         slug: 'circular_advantages',
         description: 'Circular/round advantages display with icons and text. Used for showcasing product benefits.',
-        icon: '⭕',
+        icon: 'â­•',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -711,7 +721,7 @@ const extendedSectionTypes = [
         name: 'PEB Advantages Graphic',
         slug: 'peb_advantage_svg',
         description: 'Displays only the PEB advantages SVG graphic with no section wrapper. Used on PEB page for the advantages diagram.',
-        icon: '📐',
+        icon: 'ðŸ“',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -731,7 +741,7 @@ const extendedSectionTypes = [
         name: 'Premium Video',
         slug: 'premium_video',
         description: 'Premium video section with YouTube embed, autoplay, and muted options. Used for company videos.',
-        icon: '🎬',
+        icon: 'ðŸŽ¬',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -786,7 +796,7 @@ const extendedSectionTypes = [
         name: 'Image Gallery',
         slug: 'image_gallery',
         description: 'Image gallery section with title, paragraph, and grid of images. Used for showcasing photos, engineering work, etc.',
-        icon: '🖼️',
+        icon: 'ðŸ–¼ï¸',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -843,8 +853,8 @@ const extendedSectionTypes = [
                 required: false,
                 defaultValue: 'horizontal',
                 options: [
-                    { label: 'Horizontal (2 rows × 3 columns)', value: 'horizontal' },
-                    { label: 'Vertical (3 rows × 2 columns)', value: 'vertical' }
+                    { label: 'Horizontal (2 rows Ã— 3 columns)', value: 'horizontal' },
+                    { label: 'Vertical (3 rows Ã— 2 columns)', value: 'vertical' }
                 ],
                 order: 4
             }
@@ -856,7 +866,7 @@ const extendedSectionTypes = [
         name: 'Features Grid',
         slug: 'features_grid',
         description: 'Grid of feature cards with icons, titles, and descriptions. Used for showcasing company features, benefits, etc.',
-        icon: '⭐',
+        icon: 'â­',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -902,7 +912,7 @@ const extendedSectionTypes = [
         name: 'Brochure Cards',
         slug: 'brochure_cards',
         description: 'Grid of brochure cards with images and titles. Used for literature/media pages.',
-        icon: '📚',
+        icon: 'ðŸ“š',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -925,7 +935,7 @@ const extendedSectionTypes = [
         name: 'Video Cards',
         slug: 'video_cards',
         description: 'Grid of video cards with thumbnails and titles. Used for video/media pages.',
-        icon: '🎥',
+        icon: 'ðŸŽ¥',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -948,7 +958,7 @@ const extendedSectionTypes = [
         name: 'Company Updates List',
         slug: 'company_updates_list',
         description: 'List view of company updates with featured update and list of all updates. Used for company update page.',
-        icon: '📋',
+        icon: 'ðŸ“‹',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -979,7 +989,7 @@ const extendedSectionTypes = [
         name: 'LinkedIn Posts',
         slug: 'linkedin_posts',
         description: 'Section displaying LinkedIn posts in a grid or list. Used for company update page.',
-        icon: '💼',
+        icon: 'ðŸ’¼',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -1002,7 +1012,7 @@ const extendedSectionTypes = [
         name: 'Career Application Form',
         slug: 'career_application_form',
         description: 'Career/job application form with file upload for CV. Used for career page.',
-        icon: '📝',
+        icon: 'ðŸ“',
         category: 'Forms',
         isSystem: true,
         fields: [
@@ -1022,7 +1032,7 @@ const extendedSectionTypes = [
         name: 'Head Office Section',
         slug: 'head_office_section',
         description: 'Display head office information with address, contact details, and map. Used for contact page.',
-        icon: '🏢',
+        icon: 'ðŸ¢',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1042,7 +1052,7 @@ const extendedSectionTypes = [
         name: 'Branch Selector',
         slug: 'branch_selector',
         description: 'Accordion-style branch selector showing all company branches. Used for contact page.',
-        icon: '📍',
+        icon: 'ðŸ“',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1065,7 +1075,7 @@ const extendedSectionTypes = [
         name: 'Contact Form',
         slug: 'contact_form',
         description: 'Contact form with purpose, name, email, phone, subject, and message fields. Used for contact page.',
-        icon: '✉️',
+        icon: 'âœ‰ï¸',
         category: 'Forms',
         isSystem: true,
         fields: [
@@ -1085,7 +1095,7 @@ const extendedSectionTypes = [
         name: 'Full Width Map',
         slug: 'full_width_map',
         description: 'Full-width Google Maps embed. Used for contact page to show location.',
-        icon: '🗺️',
+        icon: 'ðŸ—ºï¸',
         category: 'Media',
         isSystem: true,
         fields: [
@@ -1105,7 +1115,7 @@ const extendedSectionTypes = [
         name: 'Thank You Content',
         slug: 'thank_you_content',
         description: 'Thank you page content with message and optional CTA. Used for thank you page after form submission.',
-        icon: '✅',
+        icon: 'âœ…',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1147,7 +1157,7 @@ const extendedSectionTypes = [
         name: 'Projects Grid with Filters',
         slug: 'projects_grid_with_filters',
         description: 'Projects grid with filtering capabilities by industry, building type, country, region, area. Used for projects page.',
-        icon: '🔍',
+        icon: 'ðŸ”',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1161,8 +1171,7 @@ const extendedSectionTypes = [
                     maxLength: 200
                 },
                 order: 0
-            },
-            {
+            },            {
                 name: 'subtitle',
                 type: 'textarea',
                 label: 'Subtitle',
@@ -1171,6 +1180,17 @@ const extendedSectionTypes = [
                     maxLength: 300
                 },
                 order: 1
+            },
+            {
+                name: 'products',
+                type: 'json',
+                label: 'Product Cards',
+                helpText: 'Manage the home page product cards with image, title, alt text, and link.',
+                required: false,
+                validation: {
+                    minItems: 1
+                },
+                order: 2
             },
             {
                 name: 'filterConfig',
@@ -1188,7 +1208,7 @@ const extendedSectionTypes = [
         name: 'Tabbed Comparison',
         slug: 'tabbed_comparison',
         description: 'Tabbed comparison section with multiple comparison tables. Used for PEB comparison page to compare different building systems.',
-        icon: '📊',
+        icon: 'ðŸ“Š',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1233,7 +1253,7 @@ const extendedSectionTypes = [
         name: 'Flip Card',
         slug: 'flip_card',
         description: 'Interactive flip cards that reveal content on hover. Used for showcasing product types, racking systems, porta cabins, etc.',
-        icon: '🔄',
+        icon: 'ðŸ”„',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1279,7 +1299,7 @@ const extendedSectionTypes = [
         name: 'Comparison Table',
         slug: 'comparison_table',
         description: 'Simple comparison table showing factors vs different systems. Used for comparing racking systems, products, etc.',
-        icon: '📋',
+        icon: 'ðŸ“‹',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1324,7 +1344,7 @@ const extendedSectionTypes = [
         name: 'Hover Card',
         slug: 'hover_card',
         description: 'Cards with hover effect revealing description overlay. Used for accessories, product features, etc.',
-        icon: '🃏',
+        icon: 'ðŸƒ',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1337,8 +1357,7 @@ const extendedSectionTypes = [
                     maxLength: 200
                 },
                 order: 0
-            },
-            {
+            },            {
                 name: 'subtitle',
                 type: 'textarea',
                 label: 'Subtitle',
@@ -1347,6 +1366,17 @@ const extendedSectionTypes = [
                     maxLength: 300
                 },
                 order: 1
+            },
+            {
+                name: 'products',
+                type: 'json',
+                label: 'Product Cards',
+                helpText: 'Manage the home page product cards with image, title, alt text, and link.',
+                required: false,
+                validation: {
+                    minItems: 1
+                },
+                order: 2
             },
             {
                 name: 'cards',
@@ -1379,7 +1409,7 @@ const extendedSectionTypes = [
         name: 'Advantages Grid',
         slug: 'advantages_grid',
         description: 'Grid of advantages with icons and titles. Used for showcasing product benefits, porta cabin advantages, etc.',
-        icon: '✨',
+        icon: 'âœ¨',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1425,7 +1455,7 @@ const extendedSectionTypes = [
         name: 'Certificates Grid',
         slug: 'certificates_grid',
         description: 'Grid display of certificates with images and names. Includes title and paragraphs. Used for manufacturing/quality pages.',
-        icon: '🏆',
+        icon: 'ðŸ†',
         category: 'Content',
         isSystem: true,
         fields: [
@@ -1522,16 +1552,16 @@ const seedExtendedSectionTypes = async () => {
                     { new: true }
                 );
                 updatedCount++;
-                console.log(`✓ Updated: ${sectionTypeData.icon} ${sectionTypeData.name} (${sectionTypeData.slug})`);
+                console.log(`âœ“ Updated: ${sectionTypeData.icon} ${sectionTypeData.name} (${sectionTypeData.slug})`);
             } else {
                 // Insert new section type
                 await SectionType.create(sectionTypeData);
                 insertedCount++;
-                console.log(`✓ Created: ${sectionTypeData.icon} ${sectionTypeData.name} (${sectionTypeData.slug})`);
+                console.log(`âœ“ Created: ${sectionTypeData.icon} ${sectionTypeData.name} (${sectionTypeData.slug})`);
             }
         }
 
-        console.log(`\n✓ Successfully processed ${extendedSectionTypes.length} extended section types:`);
+        console.log(`\nâœ“ Successfully processed ${extendedSectionTypes.length} extended section types:`);
         console.log(`  - Updated: ${updatedCount}`);
         console.log(`  - Created: ${insertedCount}\n`);
 
@@ -1549,4 +1579,5 @@ if (require.main === module) {
 }
 
 module.exports = { seedExtendedSectionTypes, extendedSectionTypes };
+
 
