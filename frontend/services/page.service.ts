@@ -5,7 +5,7 @@
 
 import { apiGet } from '@/lib/api/client'
 import { API_ENDPOINTS } from '@/lib/api/endpoints'
-import type { PageResponse, Page } from '@/lib/api/types'
+import type { PageResponse } from '@/lib/api/types'
 import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 
 /**
@@ -14,12 +14,12 @@ import { normalizeCmsAssetUrls } from '@/utils/cms-asset-url'
 export async function getPageBySlug(slug: string): Promise<PageResponse | null> {
   try {
     const endpoint = `${API_ENDPOINTS.PUBLIC_PAGE_BY_SLUG}/${slug}`
-    const response = await apiGet<PageResponse>(endpoint)
-    
+    const response = await apiGet<PageResponse>(endpoint, { cache: 'no-store' })
+
     if (response.success && response.data) {
       return normalizeCmsAssetUrls(response.data)
     }
-    
+
     return null
   } catch (error) {
     console.error('Error fetching page by slug:', error)
@@ -33,17 +33,17 @@ export async function getPageBySlug(slug: string): Promise<PageResponse | null> 
 export async function getPageByPath(path: string): Promise<PageResponse | null> {
   try {
     const response = await apiGet<PageResponse>(
-      `${API_ENDPOINTS.PUBLIC_PAGE_BY_PATH}?path=${encodeURIComponent(path)}`
+      `${API_ENDPOINTS.PUBLIC_PAGE_BY_PATH}?path=${encodeURIComponent(path)}`,
+      { cache: 'no-store' }
     )
-    
+
     if (response.success && response.data) {
       return normalizeCmsAssetUrls(response.data)
     }
-    
+
     return null
   } catch (error) {
     console.error('Error fetching page by path:', error)
     return null
   }
 }
-

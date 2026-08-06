@@ -6,6 +6,7 @@ const pageTreeService = require('../services/pageTreeService');
 const headerPageSyncService = require('../services/headerPageSyncService');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent, canModifyTree, canModifyTreeBatch } = require('../utils/workflowStatusValidator');
+const { clearPublicCache } = require('../services/publicContentCache');
 
 /**
  * Get all pages (flat list with filters and pagination)
@@ -189,6 +190,8 @@ exports.createPage = async (req, res) => {
                 // Don't fail the request if sync fails
             }
         }
+
+        clearPublicCache('page created');
 
         return successResponse(res, 201, 'Page created successfully', { page: populatedPage });
     } catch (error) {
@@ -426,6 +429,8 @@ exports.updatePage = async (req, res) => {
                 // Don't fail the request if sync fails
             }
         }
+
+        clearPublicCache('page updated');
 
         return successResponse(res, 200, 'Page updated successfully', { page: updatedPage });
     } catch (error) {
@@ -679,4 +684,5 @@ exports.getPageBreadcrumb = async (req, res) => {
         return errorResponse(res, 500, 'Failed to retrieve breadcrumb', error.message);
     }
 };
+
 

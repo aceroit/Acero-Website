@@ -19,6 +19,7 @@ const User = require('../models/User');
 const Role = require('../models/Role');
 const notificationService = require('../services/notificationService');
 const headerPageSyncService = require('../services/headerPageSyncService');
+const { clearPublicCache } = require('../services/publicContentCache');
 const {
     buildEditableResource,
     resolveWorkflowSubject,
@@ -840,6 +841,10 @@ exports.publishContent = async (req, res) => {
             metadata: { action: 'publish_content' }
         });
 
+        if (resource === 'page') {
+            clearPublicCache('page published');
+        }
+
         try {
             await notificationService.notifyWorkflowPublished(
                 resource,
@@ -941,6 +946,10 @@ exports.unpublishContent = async (req, res) => {
             }
         }
 
+        if (resource === 'page') {
+            clearPublicCache('page unpublished');
+        }
+
         return successResponse(
             res,
             200,
@@ -1016,6 +1025,10 @@ exports.archiveContent = async (req, res) => {
             metadata: { action: 'archive_content' }
         });
 
+        if (resource === 'page') {
+            clearPublicCache('page archived');
+        }
+
         return successResponse(
             res,
             200,
@@ -1089,6 +1102,10 @@ exports.restoreContent = async (req, res) => {
             },
             metadata: { action: 'restore_content' }
         });
+
+        if (resource === 'page') {
+            clearPublicCache('page restored');
+        }
 
         return successResponse(
             res,
@@ -1361,3 +1378,4 @@ exports.getAvailableActions = async (req, res) => {
         return errorResponse(res, 500, 'Failed to get available actions', error.message);
     }
 };
+

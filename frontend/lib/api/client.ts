@@ -67,9 +67,10 @@ export async function apiRequest<T>(
 /**
  * GET request helper
  */
-export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
+export async function apiGet<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
   return apiRequest<T>(endpoint, {
     method: 'GET',
+    ...options,
   })
 }
 
