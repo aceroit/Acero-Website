@@ -1,10 +1,11 @@
 /**
  * Public API routes. No authentication required.
  *
- * Listed content contract: List and detail endpoints for branches, customers,
+ * Listed content contract: Most list and detail endpoints for branches, customers,
  * certifications, company-updates, brochures, and company-update-categories
  * return only records with status: 'published', featured: true, and isActive: true
- * (where applicable). Models implement getPublished() with this contract.
+ * (where applicable). Project listing endpoints use published + active records, with
+ * featured available as an optional filter.
  */
 const express = require('express');
 const router = express.Router();
@@ -36,6 +37,12 @@ const fileUpload = require('express-fileupload');
 const { saveUploadedFile, getUploadTempDir, normalizeStoredAssetUrlsForRequest } = require('../utils/localFileStorage');
 const notificationService = require('../services/notificationService');
 const { getPublicCache, setPublicCache, refreshPublicCacheInBackground } = require('../services/publicContentCache');
+const {
+    enquiryRateLimit,
+    getQuoteRateLimit,
+    applicationRateLimit,
+    uploadCvRateLimit
+} = require('../middleware/publicRateLimit');
 
 function withResolvedSectionAssets(sections, req) {
     const plainSections = Array.isArray(sections)
@@ -325,7 +332,6 @@ router.get('/industries', async (req, res) => {
             // Find projects matching location filters to get industries
             const projectFilters = {
                 status: 'published',
-                featured: true,
                 isActive: true
             };
             
@@ -399,8 +405,7 @@ router.get('/industries', async (req, res) => {
                 const projectCount = await Project.countDocuments({
                     industry: industry._id,
                     status: 'published',
-                    featured: true,
-                    isActive: true,
+                        isActive: true,
                     ...locationFilters,
                 });
                 return {
@@ -459,7 +464,6 @@ router.get('/building-types', async (req, res) => {
         const projectFilters = { 
             industry: industryDoc._id,
             status: 'published',
-            featured: true,
             isActive: true
         };
         
@@ -483,7 +487,7 @@ router.get('/building-types', async (req, res) => {
             isActive: true
         });
         const publishedProjectsForIndustry = await Project.countDocuments(projectFilters);
-        console.log(`Industry "${industry}" (${industryDoc._id}): Total projects: ${totalProjectsForIndustry}, Published/Featured: ${publishedProjectsForIndustry}`);
+        console.log(`Industry "${industry}" (${industryDoc._id}): Total projects: ${totalProjectsForIndustry}, Published/Public: ${publishedProjectsForIndustry}`);
         
         // Get unique building type IDs from matching projects
         const buildingTypeIds = await Project.find(projectFilters).distinct('buildingType');
@@ -538,8 +542,7 @@ router.get('/building-types', async (req, res) => {
                     industry: industryDoc._id,
                     buildingType: buildingType._id,
                     status: 'published',
-                    featured: true,
-                    isActive: true,
+                        isActive: true,
                     ...locationFilters,
                 });
                 const buildingTypeObj = buildingType.toObject();
@@ -591,13 +594,13 @@ router.get('/projects/home', async (req, res) => {
 });
 
 /**
- * GET /api/public/projects - Get published and featured projects (Projects listing page)
+ * GET /api/public/projects - Get published active projects (Projects listing page)
  * Query params: industry (slug), buildingType (slug), country, region, area
  * No authentication required
  */
 router.get('/projects', async (req, res) => {
     try {
-        const { industry, buildingType, country, region, area } = req.query;
+        const { industry, buildingType, country, region, area, featured } = req.query;
         
         const filters = {};
         
@@ -631,6 +634,10 @@ router.get('/projects', async (req, res) => {
             }
         }
         
+        if (featured !== undefined) {
+            filters.featured = featured === 'true';
+        }
+
         // Handle location filters
         if (country) {
             const countryDoc = await Country.findOne({ code: country.toUpperCase(), isActive: true });
@@ -667,7 +674,7 @@ router.get('/projects', async (req, res) => {
  */
 router.get('/filter-options', async (req, res) => {
     try {
-        const { industry, buildingType, country, region, area } = req.query;
+        const { industry, buildingType, country, region, area, featured } = req.query;
         
         // Resolve references to get ObjectIds efficiently
         let industryDoc, buildingTypeDoc, countryDoc, regionDoc, areaDoc;
@@ -681,7 +688,7 @@ router.get('/filter-options', async (req, res) => {
 
         // Function to build query excluding a specific facet
         const buildQuery = (excludeFacet) => {
-            const query = { status: 'published', featured: true, isActive: true };
+            const query = { status: 'published', isActive: true };
             if (industryDoc && excludeFacet !== 'industry') query.industry = industryDoc._id;
             if (buildingTypeDoc && excludeFacet !== 'buildingType') query.buildingType = buildingTypeDoc._id;
             if (countryDoc && excludeFacet !== 'country') query.country = countryDoc._id;
@@ -763,7 +770,7 @@ router.get('/filter-options', async (req, res) => {
 });
 
 /**
- * GET /api/public/projects/slug/:slug - Get published and featured project by slug
+ * GET /api/public/projects/slug/:slug - Get published active project by slug
  * No authentication required
  */
 router.get('/projects/slug/:slug', async (req, res) => {
@@ -773,7 +780,6 @@ router.get('/projects/slug/:slug', async (req, res) => {
         const project = await Project.findOne({
             jobNumberSlug: slug,
             status: 'published',
-            featured: true,
             isActive: true
         })
             .populate('buildingType', 'name')
@@ -847,7 +853,7 @@ function normalizeOptionalPublicField(value) {
  * POST /api/public/enquiries - Submit an enquiry (Contact Us)
  * No authentication required
  */
-router.post('/enquiries', async (req, res) => {
+router.post('/enquiries', enquiryRateLimit, async (req, res) => {
     try {
         const payload = req.body || {};
 
@@ -927,7 +933,7 @@ router.post('/enquiries', async (req, res) => {
  * POST /api/public/get-quote - Submit Get Quote popup request
  * No authentication required
  */
-router.post('/get-quote', async (req, res) => {
+router.post('/get-quote', getQuoteRateLimit, async (req, res) => {
     try {
         const payload = req.body || {};
 
@@ -994,7 +1000,7 @@ router.post('/get-quote', async (req, res) => {
  * POST /api/public/applications - Submit a job application (Career page)
  * No authentication required
  */
-router.post('/applications', async (req, res) => {
+router.post('/applications', applicationRateLimit, async (req, res) => {
     try {
         const payload = req.body || {};
         payload.mobileNumber = payload.mobileNumber && String(payload.mobileNumber).trim()
@@ -1047,7 +1053,7 @@ router.post('/applications', async (req, res) => {
  * POST /api/public/upload-cv - Upload CV file for job application
  * No authentication required
  */
-router.post('/upload-cv', uploadMiddleware, async (req, res) => {
+router.post('/upload-cv', uploadCvRateLimit, uploadMiddleware, async (req, res) => {
     try {
         if (!req.files || !req.files.file) {
             return errorResponse(res, 400, 'No file uploaded');
@@ -1249,7 +1255,6 @@ router.get('/company-updates/slug/:slug', async (req, res) => {
         const companyUpdate = await CompanyUpdate.findOne({
             slug: slug,
             status: 'published',
-            featured: true,
             isActive: true
         })
             .populate('category', 'name slug');
@@ -1443,6 +1448,11 @@ router.get('/google-maps', async (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
+
 
 
 

@@ -218,11 +218,11 @@ export async function getAllProjects(filters?: FilterParams): Promise<Project[]>
 }
 
 /**
- * Get published and featured projects (for Projects listing page; uses filters)
+ * Get featured projects when explicitly requested
  */
 export async function getFeaturedProjects(): Promise<Project[]> {
   try {
-    const result = await apiGet<{ projects: Project[]; count: number }>(API_ENDPOINTS.PUBLIC_PROJECTS)
+    const result = await apiGet<{ projects: Project[]; count: number }>(`${API_ENDPOINTS.PUBLIC_PROJECTS}?featured=true`)
 
     if (result.success && result.data) {
       return normalizeCmsAssetUrls(result.data.projects || [])
@@ -295,3 +295,7 @@ export async function getFilterOptions(filters?: FilterParams): Promise<FilterOp
 }
 
 export type { Industry, BuildingType, Project, ProjectImage, FilterOptions, FilterParams }
+
+
+
+

@@ -15,6 +15,9 @@ const PORT = process.env.PORT || 3000;
 // Connecting to database
 connectDB()
 
+// Trust the reverse proxy so req.ip resolves correctly on Hostinger/Nginx.
+app.set('trust proxy', 1);
+
 // Middlewares
 app.use(
 	cors({

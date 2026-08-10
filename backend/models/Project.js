@@ -241,11 +241,10 @@ projectSchema.pre('save', async function() {
     }
 });
 
-// Static method to get published projects (used for Projects listing page; featured only)
+// Static method to get published projects (used for Projects listing page)
 projectSchema.statics.getPublished = async function(filters = {}) {
     const query = {
         status: 'published',
-        featured: true,
         isActive: true,
         ...filters
     };
@@ -342,4 +341,7 @@ projectSchema.methods.getLocationPath = async function() {
 const Project = mongoose.model('Project', projectSchema);
 
 module.exports = Project;
+
+
+
 
