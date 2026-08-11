@@ -14,6 +14,7 @@ import { useCompanyUpdates } from "@/hooks/use-company-updates"
 import { usePage } from "@/hooks/use-page"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
+import { getCmsAssetUrl } from "@/utils/cms-asset-url"
 import { cn } from "@/lib/utils"
 import type { CompanyUpdate } from "@/services/company-update.service"
 
@@ -115,10 +116,15 @@ export default function CompanyUpdatePage() {
   // Fetch company updates from backend
   const { companyUpdates, isLoading: updatesLoading } = useCompanyUpdates()
   
-  // Fetch Company Updates page for hero image
-  const { sections, isLoading: pageLoading } = usePage("company-update")
+  // Fetch Company Updates page for hero content
+  const { page, sections, isLoading: pageLoading } = usePage("company-update")
   const heroSection = sections.find((s) => s.sectionTypeSlug === "hero_image")
-  const heroImage = heroSection?.content?.image as string | undefined
+  const heroContent = (heroSection?.content || {}) as Record<string, unknown>
+  const heroImage = getCmsAssetUrl(heroContent.image, "/images/projects/hero.jpg") || "/images/projects/hero.jpg"
+  const heroTitle =
+    typeof heroContent.title === "string" && heroContent.title.trim()
+      ? heroContent.title.trim()
+      : page?.title || "Company Update"
 
   // Get spacing values from appearance
   const { appearance } = useAppearance()
@@ -193,8 +199,8 @@ export default function CompanyUpdatePage() {
       <Header />
       <main className="min-h-screen bg-background">
         <HeroImageSection
-          image={heroImage || "/images/projects/hero.jpg"}
-          title="Company Update"
+          image={heroImage}
+          title={heroTitle}
         />
         {updatesLoading ? (
           <div className="py-12 text-center">
