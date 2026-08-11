@@ -10,6 +10,7 @@ export default function PEBComparisonPage() {
   const { sections, isLoading, error } = usePage("peb-comparison")
   const heroSection = sections.find((section) => section.sectionTypeSlug === "hero_image")
   const heroImage = heroSection?.content?.image as string | undefined
+  const heroTitle = heroSection?.content?.title as string | undefined
   const remainingSections = sections.filter((section) => section.sectionTypeSlug !== "hero_image")
 
   return (
@@ -34,6 +35,7 @@ export default function PEBComparisonPage() {
           <>
             <HeroImageSection
               image={heroImage || "/placeholder.jpg"}
+              title={heroTitle}
               overlay
             />
             {remainingSections.length > 0 && <SectionRenderer sections={remainingSections} />}
