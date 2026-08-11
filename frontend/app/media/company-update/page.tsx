@@ -100,7 +100,7 @@ function transformCompanyUpdate(update: CompanyUpdate) {
     content: update.description || "",
     additionalImages,
     linkedInPosts,
-    publishedAt: update.publishedAt || update.createdAt || new Date().toISOString(),
+    publishedAt: update.eventDate || update.publishedAt || update.createdAt || new Date().toISOString(),
     order: 0,
     featured: update.featured || false,
     status: update.status || "published",
@@ -136,10 +136,10 @@ export default function CompanyUpdatePage() {
       return []
     }
     
-    // Sort by publishedAt (most recent first)
+    // Sort by event date first so admin date changes are reflected on the listing page
     const sorted = [...companyUpdates].sort((a, b) => {
-      const dateA = new Date(a.publishedAt || a.createdAt || 0).getTime()
-      const dateB = new Date(b.publishedAt || b.createdAt || 0).getTime()
+      const dateA = new Date(a.eventDate || a.publishedAt || a.createdAt || 0).getTime()
+      const dateB = new Date(b.eventDate || b.publishedAt || b.createdAt || 0).getTime()
       return dateB - dateA
     })
     

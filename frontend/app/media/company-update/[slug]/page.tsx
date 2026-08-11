@@ -55,7 +55,7 @@ function transformCompanyUpdate(update: CompanyUpdate) {
     excerpt: update.shortDescription || update.description?.substring(0, 200) || "",
     content: update.description || "",
     additionalImages,
-    publishedAt: update.publishedAt || update.createdAt || new Date().toISOString(),
+    publishedAt: update.eventDate || update.publishedAt || update.createdAt || new Date().toISOString(),
     order: 0,
     featured: update.featured || false,
     status: update.status || "published",
