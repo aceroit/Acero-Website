@@ -78,7 +78,7 @@ export function ProjectCard({ project, index = 0, className }: ProjectCardProps)
 
           {/* Desktop keeps hover reveal; mobile shows the label by default */}
           <div
-            className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/85 via-black/35 to-transparent p-4 opacity-100 transition-opacity duration-300 md:p-0 md:opacity-0 group-hover:md:opacity-100"
+            className="absolute inset-0 flex items-center justify-center bg-black/45 p-4 opacity-100 transition-opacity duration-300 md:bg-gradient-to-t md:from-black/80 md:via-black/50 md:to-transparent md:p-0 md:opacity-0 group-hover:md:opacity-100"
             aria-hidden
           >
             <h3 className="max-w-full text-center text-base font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">
