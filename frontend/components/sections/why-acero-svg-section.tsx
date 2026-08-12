@@ -60,14 +60,14 @@ const WHY_ACERO_ITEMS: WhyAceroItem[] = [
     title: "Sustainability",
     image: "/images/why-acero/sustainability.png",
     description:
-      "We are committed to environment friendly practices. Our PEB's are designed to be energy-efficient, reducing the carbon footprint of your construction project. We prioritize sustainable materials and methods to contribute to a greener future.",
+      "We are committed to environment friendly practices. Our PEBs are designed to be energy-efficient, reducing the carbon footprint of your construction project. We prioritize sustainable materials and methods to contribute to a greener future.",
   },
   {
     id: "customization",
     title: "Customization",
     image: "/images/why-acero/customization.png",
     description:
-      "We understand that each project is unique. At Acero, we offer customized PEBS tailored to your specific requirements. Our design and engineering team works closely with our customers to ensure that the final product aligns with their vision.",
+      "We understand that each project is unique. At Acero, we offer customized PEBs tailored to your specific requirements. Our design and engineering team works closely with our customers to ensure that the final product aligns with their vision.",
   },
 ]
 
