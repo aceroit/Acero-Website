@@ -7,6 +7,12 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { Industry } from "@/utils/projects-data"
 
+const mobileOverlayStyle = { backgroundColor: "rgba(0, 0, 0, 0.45)" }
+const desktopOverlayStyle = {
+  background:
+    "linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0))",
+}
+
 interface IndustryCardProps {
   industry: Industry
   index?: number
@@ -62,10 +68,20 @@ unoptimized
 
           {/* Desktop keeps hover reveal; mobile shows the label by default */}
           <div
-            className="absolute inset-0 flex items-center justify-center bg-black/45 p-4 opacity-100 transition-opacity duration-300 md:bg-gradient-to-t md:from-black/80 md:via-black/50 md:to-transparent md:p-0 md:opacity-0 group-hover:md:opacity-100"
+            className="absolute inset-0 flex items-center justify-center p-4 md:hidden"
+            style={mobileOverlayStyle}
             aria-hidden
           >
-            <h3 className="max-w-full text-center text-base font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">
+            <h3 className="max-w-full text-center text-base font-bold tracking-tight text-steel-white drop-shadow-md">
+              {industry.name}
+            </h3>
+          </div>
+          <div
+            className="absolute inset-0 hidden items-center justify-center opacity-0 transition-opacity duration-300 md:flex group-hover:md:opacity-100"
+            style={desktopOverlayStyle}
+            aria-hidden
+          >
+            <h3 className="max-w-full text-center text-2xl font-bold tracking-tight text-steel-white drop-shadow-md">
               {industry.name}
             </h3>
           </div>

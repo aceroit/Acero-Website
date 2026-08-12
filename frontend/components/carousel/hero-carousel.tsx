@@ -6,6 +6,15 @@ import Image from "@/components/ui/cms-image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+const heroOverlayStyle = {
+  background:
+    "linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7))",
+}
+
+const arrowOverlayStyle = {
+  backgroundColor: "rgba(0, 0, 0, 0.3)",
+}
+
 export interface HeroCarouselSlide {
   image: string
   title: string
@@ -80,7 +89,7 @@ export function HeroCarousel({
               quality={90}
             />
             {/* Dark Overlay for Text Readability */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+            <div className="absolute inset-0" style={heroOverlayStyle} />
           </div>
 
           {/* Centered Content */}
@@ -110,14 +119,16 @@ export function HeroCarousel({
       {/* Navigation Arrows */}
       <button
         onClick={goToPrevious}
-        className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-steel-white/30 bg-black/30 p-2 text-steel-white backdrop-blur-sm transition-all hover:bg-black/50 hover:border-steel-white/50 lg:left-8 lg:p-3"
+        className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-steel-white/30 p-2 text-steel-white backdrop-blur-sm transition-all hover:border-steel-white/50 lg:left-8 lg:p-3"
+        style={arrowOverlayStyle}
         aria-label="Previous slide"
       >
         <ChevronLeft className="h-5 w-5 lg:h-8 lg:w-8" />
       </button>
       <button
         onClick={goToNext}
-        className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-steel-white/30 bg-black/30 p-2 text-steel-white backdrop-blur-sm transition-all hover:bg-black/50 hover:border-steel-white/50 lg:right-8 lg:p-3"
+        className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-steel-white/30 p-2 text-steel-white backdrop-blur-sm transition-all hover:border-steel-white/50 lg:right-8 lg:p-3"
+        style={arrowOverlayStyle}
         aria-label="Next slide"
       >
         <ChevronRight className="h-5 w-5 lg:h-8 lg:w-8" />

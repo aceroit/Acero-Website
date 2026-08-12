@@ -4,6 +4,11 @@ import { motion } from "framer-motion"
 import Image from "@/components/ui/cms-image"
 import { cn } from "@/lib/utils"
 
+const heroOverlayStyle = {
+  background:
+    "linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7))",
+}
+
 interface HeroImageSectionProps {
   image: string
   title?: string
@@ -43,7 +48,7 @@ export function HeroImageSection({
           quality={90}
         />
         {overlay && (
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" />
+          <div className="absolute inset-0" style={heroOverlayStyle} />
         )}
         {title && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -73,7 +78,7 @@ export function HeroImageSection({
           quality={90}
         />
         {overlay && (
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" />
+          <div className="absolute inset-0" style={heroOverlayStyle} />
         )}
         {title && (
           <div className="absolute inset-0 flex items-center justify-center">

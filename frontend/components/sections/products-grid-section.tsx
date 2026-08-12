@@ -8,6 +8,11 @@ import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
 import CmsImage from "@/components/ui/cms-image"
 
+const desktopCardOverlayStyle = {
+  background:
+    "linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0))",
+}
+
 interface Product {
   id: string
   title: string
@@ -78,7 +83,17 @@ function ProductCard({
       )}
 
       <div
-        className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-100 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100"
+        className="absolute inset-0 flex flex-col items-center justify-center gap-2 lg:hidden"
+        style={desktopCardOverlayStyle}
+        aria-hidden
+      >
+        <span className="text-center text-xl font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">
+          {product.title}
+        </span>
+      </div>
+      <div
+        className="absolute inset-0 hidden flex-col items-center justify-center gap-2 opacity-0 transition-opacity duration-300 lg:flex lg:group-hover:opacity-100"
+        style={desktopCardOverlayStyle}
         aria-hidden
       >
         <span className="text-center text-xl font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">

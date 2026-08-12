@@ -16,6 +16,11 @@ import {
 } from "@/components/ui/carousel"
 import AutoPlay from "embla-carousel-autoplay"
 
+const desktopCardOverlayStyle = {
+  background:
+    "linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0))",
+}
+
 export interface Project {
   id: string
   title: string
@@ -60,7 +65,19 @@ function ProjectCard({
 
       {/* Industry name (and title) overlay - always visible on mobile, hover on desktop */}
       <div
-        className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-100 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100"
+        className="absolute inset-0 flex flex-col items-center justify-center gap-2 lg:hidden"
+        style={desktopCardOverlayStyle}
+        aria-hidden
+      >
+        {project.category && (
+          <span className="text-center text-xl font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">
+            {project.category}
+          </span>
+        )}
+      </div>
+      <div
+        className="absolute inset-0 hidden flex-col items-center justify-center gap-2 opacity-0 transition-opacity duration-300 lg:flex lg:group-hover:opacity-100"
+        style={desktopCardOverlayStyle}
         aria-hidden
       >
         {project.category && (
