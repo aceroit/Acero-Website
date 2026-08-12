@@ -138,8 +138,8 @@ export function Header() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-background/95 backdrop-blur-lg border-b border-border shadow-sm"
-          : "bg-background/80 backdrop-blur-sm"
+          ? "border-b border-border bg-background shadow-sm"
+          : "bg-background/85 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80"
       }`}
     >
       <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4 lg:px-8">

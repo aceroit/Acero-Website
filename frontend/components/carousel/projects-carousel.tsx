@@ -97,17 +97,17 @@ export function ProjectsCarousel({
                     quality={90}
                   />
                   
-                  {/* Hover Overlay with Industry - Only show on this specific card */}
+                  {/* Desktop keeps hover reveal; mobile shows industry label by default */}
                   <div className={cn(
-                    "absolute inset-0 flex items-center justify-center transition-all duration-500",
-                    isHovered ? "bg-black/75 backdrop-blur-[2px]" : "bg-black/0"
+                    "absolute inset-0 flex items-end justify-start p-4 transition-all duration-500 md:items-center md:justify-center md:p-0",
+                    isHovered ? "bg-black/75 backdrop-blur-[2px]" : "bg-black/0 md:bg-black/0"
                   )}>
                     {project.industry && (
                       <div className={cn(
-                        "transition-all duration-500 ease-out",
-                        isHovered ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-90 translate-y-4"
+                        "transition-all duration-500 ease-out opacity-100 scale-100 translate-y-0 md:opacity-0 md:scale-90 md:translate-y-4",
+                        isHovered && "md:opacity-100 md:scale-100 md:translate-y-0"
                       )}>
-                        <span className="inline-block bg-gradient-to-br from-steel-red via-red-800 to-red-900 px-6 py-3 text-base md:text-lg font-extrabold uppercase tracking-[0.3em] text-steel-white shadow-[0_8px_32px_rgba(225,6,0,0.4)] border-2 border-steel-white/30 backdrop-blur-md transform hover:scale-105 transition-transform duration-300">
+                        <span className="inline-block max-w-full bg-gradient-to-br from-steel-red via-red-800 to-red-900 px-4 py-2 text-sm font-extrabold uppercase tracking-[0.2em] text-steel-white shadow-[0_8px_32px_rgba(225,6,0,0.4)] border-2 border-steel-white/30 backdrop-blur-md transition-transform duration-300 md:px-6 md:py-3 md:text-lg md:tracking-[0.3em] md:hover:scale-105">
                           <span className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{project.industry}</span>
                         </span>
                       </div>

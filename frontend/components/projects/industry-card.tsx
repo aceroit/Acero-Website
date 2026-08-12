@@ -60,12 +60,12 @@ unoptimized
             <div className="absolute inset-0 bg-muted" aria-hidden />
           )}
 
-          {/* Name overlay - visible only on hover */}
+          {/* Desktop keeps hover reveal; mobile shows the label by default */}
           <div
-            className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/85 via-black/35 to-transparent p-4 opacity-100 transition-opacity duration-300 md:p-0 md:opacity-0 group-hover:md:opacity-100"
             aria-hidden
           >
-            <h3 className="text-center text-xl font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">
+            <h3 className="max-w-full text-center text-base font-bold tracking-tight text-steel-white drop-shadow-md md:text-2xl">
               {industry.name}
             </h3>
           </div>
