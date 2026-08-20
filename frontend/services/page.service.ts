@@ -1,6 +1,8 @@
 /**
  * Page Service
- * Handles fetching page and sections data from the API
+ * Handles fetching published CMS pages and their sections from the public API.
+ * The returned data feeds SectionRenderer, so asset URLs are normalized here at
+ * the API boundary instead of inside every page component.
  */
 
 import { apiGet } from '@/lib/api/client'

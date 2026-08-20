@@ -1,6 +1,8 @@
 // src/services/api.js
 import axios from "axios";
 
+// Shared Axios client for the admin panel. All admin services import this so
+// token refresh, permission errors, and the VITE_API_URL base stay consistent.
 const API = axios.create({
     baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000/api",
     headers: {

@@ -2,6 +2,9 @@ const DEFAULT_UPLOAD_BASE = 'http://localhost:4000/uploads'
 const DEFAULT_SITE_ORIGIN = 'http://localhost:3000'
 const DEFAULT_API_ORIGIN = 'http://localhost:4000'
 
+// Central URL normalizer for every CMS/admin uploaded asset rendered by the Next frontend.
+// DB values may be full URLs, /uploads paths, legacy migrated paths, or bare publicIds.
+// Components should call getCmsAssetUrl/normalizeCmsAssetUrls instead of building URLs inline.
 const DIRECT_ASSET_KEYS = new Set([
   'image',
   'imageUrl',
@@ -316,6 +319,8 @@ function normalizeCmsAssetUrlsInternal<T>(
 }
 
 export function normalizeCmsAssetUrls<T>(value: T): T {
+  // Public API responses often contain nested section content. Normalize the
+  // whole object once at the service boundary so rendering components stay simple.
   return normalizeCmsAssetUrlsInternal(value)
 }
 

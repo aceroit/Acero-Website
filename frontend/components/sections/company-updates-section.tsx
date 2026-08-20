@@ -4,7 +4,7 @@ import { motion, useInView } from "framer-motion"
 import { useRef, useMemo } from "react"
 import Image from "@/components/ui/cms-image"
 import Link from "next/link"
-import { Calendar, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
@@ -26,15 +26,6 @@ interface CompanyUpdatesSectionProps {
   columns?: 3 | 4
   limitOnMobile?: boolean
   className?: string
-}
-
-function formatDate(date: Date | string): string {
-  const dateObj = typeof date === "string" ? new Date(date) : date
-  return dateObj.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
 }
 
 export function CompanyUpdatesSection({
@@ -113,13 +104,6 @@ function UpdateCard({ update }: { update: CompanyUpdate }) {
         />
         {/* Overlay on hover */}
         <div className="absolute inset-0 bg-steel-red/0 transition-colors duration-300 group-hover:bg-steel-red/10" />
-        {/* Date Badge */}
-        <div className="absolute left-4 top-4 flex items-center gap-2 bg-steel-red px-3 py-1.5">
-          <Calendar className="h-3 w-3 text-steel-white" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-steel-white">
-            {formatDate(update.date)}
-          </span>
-        </div>
         {/* Category Badge */}
         {update.category && (
           <div className="absolute right-4 top-4">
@@ -157,4 +141,3 @@ function UpdateCard({ update }: { update: CompanyUpdate }) {
 
   return cardContent
 }
-

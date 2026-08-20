@@ -87,9 +87,12 @@ function getSectionIdValue(value: unknown): string | null {
 }
 
 /**
- * SectionRenderer
- * Dynamically renders sections based on sectionTypeSlug
- * Maps backend section types to frontend components
+ * Central CMS section dispatcher.
+ *
+ * Backend Sections store content JSON plus a SectionType slug. This renderer is
+ * the frontend bridge that maps each slug to the React component that knows how
+ * to display that content. When adding a CMS section type, update the backend
+ * SectionType/admin editor and add a matching branch here.
  */
 export function SectionRenderer({ sections, isHomePage = false }: SectionRendererProps) {
   return (
@@ -99,6 +102,8 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
         .sort((a, b) => a.order - b.order)
         .map((section, index) => {
           const { sectionTypeSlug } = section
+          // Normalize URLs before reading content so all section components receive
+          // browser-ready Hostinger/local asset URLs, including old migrated values.
           const content = normalizeCmsAssetUrls(section.content) as Record<string, unknown>
           const resolvedSectionId = getSectionIdValue(section._id)
           const sectionKey = resolvedSectionId || `${sectionTypeSlug}-${section.order}-${index}`
@@ -248,6 +253,8 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const image = (content.image as string) || ''
                 const title = (content.title as string) || ''
                 const overlay = (content.overlay as boolean) ?? true
+                const imageFit = (content.imageFit as 'cover' | 'contain') || 'cover'
+                const imagePosition = (content.imagePosition as 'center' | 'top' | 'bottom') || 'center'
 
                 return (
                   <HeroImageSection
@@ -255,6 +262,8 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                     image={image}
                     title={title}
                     overlay={overlay}
+                    imageFit={imageFit}
+                    imagePosition={imagePosition}
                     fullHeight={isHomePage}
                   />
                 )

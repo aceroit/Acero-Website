@@ -38,7 +38,8 @@ const { Option } = Select;
 
 /**
  * Dynamic Section Form Component
- * Renders form fields dynamically based on section type field schema
+ * Renders generic fields from the backend SectionType schema. Complex section
+ * types use dedicated editors below, but the saved shape is still section.content.
  */
 const DynamicSectionForm = ({
   sectionType,

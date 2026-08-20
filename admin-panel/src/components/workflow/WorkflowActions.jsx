@@ -20,7 +20,9 @@ import FeedbackModal from './FeedbackModal';
 
 /**
  * Workflow Actions Component
- * Displays available workflow action buttons based on current status and user permissions
+ * Displays workflow buttons from backend-approved transitions.
+ * The backend remains the source of truth; this component only maps allowed
+ * status transitions to labels/icons and calls the matching workflow service.
  * 
  * @param {Object} props
  * @param {string} props.resource - Resource type ('page' or 'section')

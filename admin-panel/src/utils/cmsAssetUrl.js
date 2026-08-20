@@ -1,6 +1,9 @@
 const DEFAULT_UPLOAD_BASE = 'http://localhost:4000/uploads';
 const DEFAULT_SITE_URL = 'http://localhost:3000';
 
+// Admin-side asset URL normalizer. Vite uses import.meta.env, so keep this
+// separate from the Next frontend helper even though the migration rules match.
+// Use this for previews, media library cards, and uploaded file links.
 function trimTrailingSlash(value) {
   return String(value || '').replace(/\/+$/, '');
 }

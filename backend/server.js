@@ -1,4 +1,5 @@
-// Initial Imports
+// Backend entry point for the Acero CMS API.
+// Keep infrastructure middleware here, and keep feature behavior inside routes/services.
 const express = require('express');
 const app = express();
 const dotenv = require("dotenv");
@@ -18,7 +19,8 @@ connectDB()
 // Trust the reverse proxy so req.ip resolves correctly on Hostinger/Nginx.
 app.set('trust proxy', 1);
 
-// Middlewares
+// Global middleware. The API is consumed by the admin panel and public frontend,
+// so CORS also exposes download headers used by export endpoints.
 app.use(
 	cors({
 		origin: "*",
@@ -29,6 +31,8 @@ app.use(
 app.use(express.json());
 
 const uploadRoot = getUploadRoot();
+// Local media serving for development. On Hostinger, Nginx serves the same
+// UPLOAD_ROOT folder publicly as PUBLIC_UPLOAD_BASE.
 app.use("/uploads", express.static(uploadRoot));
 
 
@@ -36,7 +40,8 @@ app.use("/uploads", express.static(uploadRoot));
 const { activityLogger } = require('./middleware/logger');
 app.use(activityLogger);
 
-// Routes
+// Route groups. Admin/authenticated CMS routes sit under their resource names;
+// public website content and form submissions are grouped under /api/public.
 app.use('/api/auth', authRoutes);
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/permissions', require('./routes/permissionRoutes'));

@@ -71,6 +71,9 @@ import ParentRouteRedirect from "./components/common/ParentRouteRedirect";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// Admin route map. Authentication, permissions, and notifications wrap every
+// protected CMS screen; individual ProtectedRoute entries enforce resource/action
+// permissions from the backend role-permission system.
 function App() {
   return (
     <AuthProvider>

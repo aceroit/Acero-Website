@@ -13,18 +13,30 @@ interface HeroImageSectionProps {
   image: string
   title?: string
   overlay?: boolean
+  imageFit?: "cover" | "contain"
+  imagePosition?: "center" | "top" | "bottom"
   /** When false (inner pages e.g. Who We Are), hero uses 75% height below header. When true (home), full height. */
   fullHeight?: boolean
   className?: string
+}
+
+const imagePositionClass = {
+  center: "object-center",
+  top: "object-top",
+  bottom: "object-bottom",
 }
 
 export function HeroImageSection({
   image,
   title,
   overlay = true,
+  imageFit = "cover",
+  imagePosition = "center",
   fullHeight = false,
   className,
 }: HeroImageSectionProps) {
+  const objectPositionClass = imagePositionClass[imagePosition] || imagePositionClass.center
+
   return (
     <section
       className={cn(
@@ -66,14 +78,25 @@ export function HeroImageSection({
         )}
       </div>
 
-      {/* Desktop: Fixed height with object-cover */}
-      <div className="hidden md:block absolute inset-0">
+      {/* Desktop: fixed-height banner. Designed artwork can use contain so key text is not cropped. */}
+      <div className="hidden md:block absolute inset-0 bg-neutral-950">
+        {imageFit === "contain" && (
+          <Image
+            src={image}
+            alt=""
+            fill
+            priority
+            aria-hidden="true"
+            className={cn("object-cover opacity-45 blur-xl scale-105", objectPositionClass)}
+            sizes="100vw"
+          />
+        )}
         <Image
           src={image}
           alt={title || "Hero image"}
           fill
           priority
-          className="object-cover"
+          className={cn(imageFit === "contain" ? "object-contain" : "object-cover", objectPositionClass)}
           sizes="100vw"
           quality={90}
         />

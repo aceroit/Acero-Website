@@ -18,6 +18,9 @@ function getClientIp(req) {
     );
 }
 
+// Lightweight in-memory limiter for public submit endpoints. It protects local
+// and single-instance Hostinger deployments from repeated form submissions.
+// For multi-server hosting, replace the Map with Redis or another shared store.
 function createRateLimitMiddleware({
     windowMs,
     maxRequests,

@@ -94,6 +94,33 @@ const extendedSectionTypes = [
                 required: false,
                 defaultValue: true,
                 order: 2
+            },
+            {
+                name: 'imageFit',
+                type: 'select',
+                label: 'Image Fit',
+                helpText: 'Use Cover for photo banners. Use Contain for designed banners or artwork that must not be cropped.',
+                required: false,
+                defaultValue: 'cover',
+                options: [
+                    { label: 'Cover (fill banner, may crop)', value: 'cover' },
+                    { label: 'Contain (show full image)', value: 'contain' }
+                ],
+                order: 3
+            },
+            {
+                name: 'imagePosition',
+                type: 'select',
+                label: 'Image Position',
+                helpText: 'Controls the focal point when Cover is selected.',
+                required: false,
+                defaultValue: 'center',
+                options: [
+                    { label: 'Center', value: 'center' },
+                    { label: 'Top', value: 'top' },
+                    { label: 'Bottom', value: 'bottom' }
+                ],
+                order: 4
             }
         ],
         previewComponent: 'HeroImageSection',

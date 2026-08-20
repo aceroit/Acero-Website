@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import Image from "@/components/ui/cms-image"
 import Link from "next/link"
-import { Calendar, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { HeroImageSection } from "@/components/sections/hero-image-section"
@@ -125,6 +125,8 @@ export default function CompanyUpdatePage() {
     typeof heroContent.title === "string" && heroContent.title.trim()
       ? heroContent.title.trim()
       : page?.title || "Company Update"
+  const heroImageFit = (heroContent.imageFit as "cover" | "contain") || "cover"
+  const heroImagePosition = (heroContent.imagePosition as "center" | "top" | "bottom") || "center"
 
   // Get spacing values from appearance
   const { appearance } = useAppearance()
@@ -201,6 +203,8 @@ export default function CompanyUpdatePage() {
         <HeroImageSection
           image={heroImage}
           title={heroTitle}
+          imageFit={heroImageFit}
+          imagePosition={heroImagePosition}
         />
         {updatesLoading ? (
           <div className="py-12 text-center">
@@ -282,15 +286,6 @@ interface VerticalUpdateCardProps {
 }
 
 function VerticalUpdateCard({ update, onReadMore, index }: VerticalUpdateCardProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
-
   const isImageLeft = index % 2 === 0
 
   return (
@@ -324,13 +319,6 @@ function VerticalUpdateCard({ update, onReadMore, index }: VerticalUpdateCardPro
             />
             {/* Overlay on hover */}
             <div className="absolute inset-0 bg-steel-red/0 transition-colors duration-300 group-hover:bg-steel-red/10" />
-            {/* Date Badge */}
-            <div className="absolute left-4 top-4 flex items-center gap-2 bg-steel-red px-3 py-1.5">
-              <Calendar className="h-3 w-3 text-steel-white" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-steel-white">
-                {formatDate(update.publishedAt)}
-              </span>
-            </div>
           </div>
 
           {/* Content */}
@@ -376,15 +364,6 @@ interface UpdateCardProps {
 }
 
 function UpdateCard({ update, onReadMore }: UpdateCardProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
-
   const handleClick = () => {
     onReadMore(update)
   }
@@ -415,13 +394,6 @@ function UpdateCard({ update, onReadMore }: UpdateCardProps) {
             />
             {/* Overlay on hover */}
             <div className="absolute inset-0 bg-steel-red/0 transition-colors duration-300 group-hover:bg-steel-red/10" />
-            {/* Date Badge */}
-            <div className="absolute left-4 top-4 flex items-center gap-2 bg-steel-red px-3 py-1.5">
-              <Calendar className="h-3 w-3 text-steel-white" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-steel-white">
-                {formatDate(update.publishedAt)}
-              </span>
-            </div>
           </div>
 
           {/* Content */}

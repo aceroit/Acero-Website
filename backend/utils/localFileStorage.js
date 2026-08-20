@@ -3,6 +3,11 @@ const path = require("path")
 const crypto = require("crypto")
 const os = require("os")
 
+// Upload storage contract:
+// - UPLOAD_ROOT is the physical folder where files are written.
+// - PUBLIC_UPLOAD_BASE is the browser URL that exposes that folder.
+// Local example: D:/Acero-Website/uploads -> http://localhost:4000/uploads
+// Hostinger example: /var/www/cms/acero-uploads -> https://acerogroup.co/uploads
 function getUploadRoot() {
   return path.resolve(process.env.UPLOAD_ROOT || path.join(__dirname, "..", "uploads"))
 }
@@ -45,6 +50,9 @@ function buildRequestUploadsBase() {
   return getPublicUploadBase()
 }
 
+// Some database records may contain URLs saved in a different environment
+// (localhost, API host, or a migrated path). If the referenced file exists under
+// the current UPLOAD_ROOT, rewrite it to the current PUBLIC_UPLOAD_BASE.
 function resolveStoredAssetUrlForRequest(url, req) {
   if (!url) {
     return url
@@ -71,6 +79,9 @@ function resolveStoredAssetUrlForRequest(url, req) {
   return `${uploadsBase}/${relativePath.replace(/\\/g, "/")}`
 }
 
+// Recursively normalize asset URLs before API responses leave the backend.
+// This keeps existing nested section content compatible after the Cloudinary to
+// Hostinger/local-storage migration.
 function normalizeStoredAssetUrlsForRequest(value, req) {
   if (typeof value === "string") {
     return resolveStoredAssetUrlForRequest(value, req)
@@ -152,6 +163,8 @@ async function saveUploadedFile(file, folder = "uploads") {
   assertInsideUploadRoot(targetDir)
   fs.mkdirSync(targetDir, { recursive: true })
 
+  // Save with a generated filename but retain originalName for admin display
+  // and downloadable exports.
   const originalName = file.name || file.originalname || "file"
   const ext = getExt(originalName)
   const mimeType = getMimeType(ext)

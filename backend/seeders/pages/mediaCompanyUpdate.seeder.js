@@ -51,6 +51,8 @@ const seedMediaCompanyUpdate = async () => {
                 content: {
                     image: '/placeholder.jpg',
                     title: 'Company Update',
+                    imageFit: 'cover',
+                    imagePosition: 'center',
                 },
             },
             {

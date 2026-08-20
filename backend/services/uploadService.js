@@ -4,12 +4,20 @@ const Media = require('../models/Media');
 const { saveUploadedFile, getUploadRoot, getPublicUploadBase } = require('../utils/localFileStorage');
 
 /**
- * Upload Service
- * Centralized file upload service using local storage
+ * Local media upload service.
+ *
+ * Admin uploads create both:
+ * 1. A physical file under UPLOAD_ROOT.
+ * 2. A Media document with publicId/url/secureUrl for admin previews and frontend rendering.
+ *
+ * Keep provider-specific URL handling out of components. New uploads should use
+ * local Hostinger paths, while frontend/admin helpers handle old migrated values.
  */
 
 
 function getStorageFolder(folder = 'media') {
+    // Prefix all CMS-managed files so uploaded media, career CVs, and migrated
+    // files can share one public /uploads folder without colliding.
     const prefix = process.env.MEDIA_FOLDER_PREFIX || 'acero-cms';
     const cleanFolder = String(folder || 'media')
         .replace(/^\/+|\/+$/g, '')

@@ -170,11 +170,21 @@ const SectionEditor = () => {
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
+      // Custom section editors such as PEB Comparison use deeply nested Form.List
+      // fields. Reading the full form state here ensures those nested values are
+      // included even when a field was registered dynamically by the editor.
+      const fullValues = form.getFieldsValue(true);
+      const submittedValues = {
+        ...fullValues,
+        ...values,
+        content: fullValues.content || values.content || {},
+      };
+
       const sectionData = {
-        sectionTypeSlug: values.sectionTypeSlug,
-        content: values.content || {},
-        isVisible: values.isVisible !== undefined ? values.isVisible : true,
-        cssClasses: values.cssClasses?.trim() || '',
+        sectionTypeSlug: submittedValues.sectionTypeSlug || selectedSectionType?.slug || section?.sectionTypeSlug,
+        content: submittedValues.content || {},
+        isVisible: submittedValues.isVisible !== undefined ? submittedValues.isVisible : true,
+        cssClasses: submittedValues.cssClasses?.trim() || '',
       };
 
       let response;
@@ -212,6 +222,11 @@ const SectionEditor = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmitFailed = ({ errorFields }) => {
+    const firstError = errorFields?.[0]?.errors?.[0];
+    toast.error(firstError || 'Please complete the required section fields before updating.');
   };
 
   const handleCancel = () => {
@@ -353,6 +368,8 @@ const SectionEditor = () => {
             form={form}
             layout="vertical"
             onFinish={handleSubmit}
+            onFinishFailed={handleSubmitFailed}
+            scrollToFirstError={{ behavior: 'smooth', block: 'center' }}
             initialValues={{
               isVisible: true,
               cssClasses: '',

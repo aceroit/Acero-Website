@@ -1,5 +1,7 @@
 const ContentRevision = require('../models/ContentRevision');
 
+// Published projects/vacancies/sections stay live while editors work on a staged
+// draft. Approval/publish applies the active revision back onto the live document.
 const STAGED_RESOURCES = new Set(['project', 'vacancy', 'section']);
 const SYSTEM_FIELDS = new Set(['_id', '__v', 'status', 'publishedAt', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', 'isActive']);
 
@@ -144,6 +146,8 @@ async function stagePublishedUpdate({ resource, liveDoc, updateData, userId }) {
     let revision = await getActiveRevision(resource, liveDoc._id);
 
     if (!revision) {
+        // First edit to a published item starts from the current live state, so
+        // reviewers can compare liveSnapshot vs draftData before approval.
         revision = new ContentRevision({
             resource,
             liveResourceId: liveDoc._id,
@@ -225,6 +229,8 @@ async function resolveWorkflowSubject({ resource, id, Model, populate = '' }) {
 }
 
 async function applyRevisionToLive({ liveDoc, revision, userId }) {
+    // Publish is the only step that mutates the live document. Until this runs,
+    // the public frontend continues to show the previously published content.
     const draftData = cloneValue(revision.draftData || {});
 
     Object.keys(draftData).forEach((key) => {

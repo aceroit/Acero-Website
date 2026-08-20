@@ -51,6 +51,8 @@ const seedProductsPebComparison = async () => {
                 content: {
                     image: '/images/peb-comparison/hero.jpg',
                     title: 'Pre-Engineered Steel Building vs Conventional Steel',
+                    imageFit: 'cover',
+                    imagePosition: 'center',
                 },
             },
             {

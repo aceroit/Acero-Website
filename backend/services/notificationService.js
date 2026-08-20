@@ -10,6 +10,8 @@ const { getAdminPanelUrl, getPublicSiteUrl } = require('../utils/urlHelper');
 
 const SMTP_CACHE_TTL_MS = 60000;
 
+// All outbound email templates pass user-entered values through this helper.
+// Keep it in place for any future form/workflow templates.
 function escapeEmailHtml(value = '') {
     return String(value || '')
         .replace(/&/g, '&amp;')
@@ -168,6 +170,8 @@ class NotificationService {
     }
 
     async getTransporterAndFrom() {
+        // SMTP settings are managed from the admin panel. Cache briefly so public
+        // forms do not query settings on every submission, but updates still take effect quickly.
         const now = Date.now();
         if (this._smtpCache && this._smtpCacheExpiry > now) {
             return this._smtpCache;

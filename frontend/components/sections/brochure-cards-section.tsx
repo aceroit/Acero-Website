@@ -67,42 +67,42 @@ export function BrochureCardsSection({
       )}
     >
       <div className={cn("mx-auto px-6 lg:px-8", spacing.containerMaxWidth)}>
-        <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", spacing.gridGap)}>
+        <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6", spacing.gridGap)}>
           {brochures.map((brochure, index) => (
             <motion.div
               key={brochure._id}
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="group cursor-pointer"
+              className={cn(
+                "group h-full cursor-pointer lg:col-span-2",
+                brochures.length === 5 && index === 3 && "lg:col-start-2",
+                brochures.length === 5 && index === 4 && "lg:col-start-4"
+              )}
               onClick={() => onBrochureClick(brochure)}
             >
-              <div className="relative h-full overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 hover:border-steel-red/50 hover:shadow-lg">
-                {/* Title at the top */}
-                <div className="border-b border-border bg-card p-4">
-                  <h3 className="text-lg font-semibold text-foreground line-clamp-2">
+              <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-steel-red/40 hover:shadow-lg">
+                <div className="border-b border-border bg-card px-5 py-3">
+                  <h3 className="line-clamp-2 min-h-[2.75rem] text-lg font-bold leading-tight text-foreground">
                     {brochure.title}
                   </h3>
                 </div>
 
-                {/* Brochure Image */}
-                <div className="relative aspect-[3/4] w-full overflow-hidden bg-secondary">
+                <div className="relative aspect-[5/7] w-full overflow-hidden bg-secondary">
                   <Image
                     src={brochure.brochureImage.url}
                     alt={brochure.title}
                     fill
                     loading="lazy"
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
-                    quality={85}
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 380px"
+                    quality={90}
                   />
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
+                  <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                 </div>
 
-                {/* Instruction text below image */}
-                <div className="border-t border-border bg-card p-4">
-                  <p className="text-sm text-muted-foreground text-center">
+                <div className="mt-auto border-t border-border bg-card px-5 py-4">
+                  <p className="text-center text-base text-muted-foreground transition-colors group-hover:text-steel-red">
                     Click to view
                   </p>
                 </div>

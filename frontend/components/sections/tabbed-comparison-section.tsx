@@ -286,7 +286,7 @@ export function TabbedComparisonSection({
 
                     {/* Tab-specific text below table */}
                     {tab.textBelowTable && (
-                      <p className="mt-6 text-center text-sm leading-relaxed text-muted-foreground md:text-base">
+                      <p className="mt-6 text-left text-sm leading-relaxed text-muted-foreground md:text-base">
                         {tab.textBelowTable}
                       </p>
                     )}

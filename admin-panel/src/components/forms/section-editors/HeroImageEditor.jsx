@@ -1,4 +1,4 @@
-import { Card, Input, Form, Switch } from 'antd';
+import { Card, Input, Form, Select, Switch } from 'antd';
 import ImageUpload from '../../common/ImageUpload';
 import './HeroImageEditor.css';
 
@@ -60,6 +60,39 @@ const HeroImageEditor = ({ value = {}, onChange, form }) => {
             initialValue={true}
           >
             <Switch size="default" />
+          </Form.Item>
+
+          <Form.Item
+            name={['content', 'imageFit']}
+            label="Image Fit"
+            tooltip="Use Cover for photo banners. Use Contain for designed banners or artwork that must not be cropped. Leave blank to use the page default."
+          >
+            <Select
+              size="large"
+              allowClear
+              placeholder="Use page default"
+              options={[
+                { label: 'Cover (fill banner, may crop)', value: 'cover' },
+                { label: 'Contain (show full image)', value: 'contain' }
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name={['content', 'imagePosition']}
+            label="Image Position"
+            tooltip="Controls the focal point when Cover is selected. Leave blank to use center."
+          >
+            <Select
+              size="large"
+              allowClear
+              placeholder="Use center"
+              options={[
+                { label: 'Center', value: 'center' },
+                { label: 'Top', value: 'top' },
+                { label: 'Bottom', value: 'bottom' }
+              ]}
+            />
           </Form.Item>
         </Card>
       </div>
