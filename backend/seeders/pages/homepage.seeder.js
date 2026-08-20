@@ -120,6 +120,7 @@ const seedHomepage = async () => {
                     ],
                     image: 'https://res.cloudinary.com/dwaw2hfch/image/upload/v1769155248/acero-cms/hero/yckoqubyvqzcnplrbmch.jpg',
                     imageAlt: 'Complete Steel Building Solutions',
+                    imageFit: 'contain',
                     layout: 'image-right',
                     cta: {
                         label: 'Learn More',

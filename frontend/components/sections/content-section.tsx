@@ -181,7 +181,7 @@ export function ContentSection({
         className={cn(
           "absolute inset-0 h-full w-full rounded-2xl",
           fitClass,
-          "transition-transform duration-500 group-hover:scale-105",
+          imageFit === "cover" && "transition-transform duration-500 group-hover:scale-105",
           isReliabilitySection && "object-center p-2 sm:p-0"
         )}
       />
@@ -240,11 +240,11 @@ export function ContentSection({
                 "group relative w-full overflow-hidden rounded-2xl",
                 showInlineSvg
                   ? "aspect-[610/660] lg:aspect-[4/3] border border-border bg-muted/20"
-                  : isReliabilitySection
-                    ? hasMobileImageOverride
-                      ? "aspect-square sm:aspect-[4/3]"
-                      : "aspect-[5/4] sm:aspect-[4/3]"
-                    : "aspect-[4/3]",
+                    : isReliabilitySection
+                      ? hasMobileImageOverride
+                        ? "aspect-square sm:aspect-[4/3]"
+                        : "aspect-[5/4] sm:aspect-[4/3]"
+                    : "aspect-[3/2]",
                 layout === "image-center"
                   ? "mx-auto lg:mx-0 self-center"
                   : "self-center lg:self-stretch",
