@@ -497,6 +497,7 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                 const subtitle = (content.subtitle as string) || ''
                 const columns = (content.columns as number) || undefined
                 const clickBehavior = (content.clickBehavior as 'modal' | 'redirect' | 'both') || 'both'
+                const usesConventionalSteelImages = title?.toLowerCase().includes('conventional steel')
                 const applicationsData = (content.applications as Array<{
                   id: string
                   name: string
@@ -509,7 +510,9 @@ export function SectionRenderer({ sections, isHomePage = false }: SectionRendere
                   id: application.id,
                   name: application.name,
                   icon: getIconComponent(application.icon),
-                  svgPath: getPebApplicationSvgPath(application.name) || getConventionalSteelApplicationImagePath(application.name),
+                  svgPath: usesConventionalSteelImages
+                    ? getConventionalSteelApplicationImagePath(application.name) || getPebApplicationSvgPath(application.name)
+                    : getPebApplicationSvgPath(application.name) || getConventionalSteelApplicationImagePath(application.name),
                   description: application.description,
                   redirectUrl: application.redirectUrl,
                 }))
