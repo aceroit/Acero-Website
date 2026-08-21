@@ -12,6 +12,12 @@ import { toast } from 'react-toastify';
 
 const { Panel } = Collapse;
 
+const normalizeSwitchValue = (value, defaultValue = true) => {
+  if (value === undefined || value === null) return defaultValue;
+  if (typeof value === 'string') return value === 'true';
+  return value === true;
+};
+
 const GoogleMapsEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -86,14 +92,14 @@ const GoogleMapsEditor = () => {
       // Transform form values to match backend schema
       const submitData = {
         title: values.title || 'Google Maps',
-        featured: values.featured || false,
+        featured: normalizeSwitchValue(values.featured, false),
         apiKey: {
           value: values.apiKey?.value || null,
-          isFieldActive: values.apiKey?.isFieldActive !== false
+          isFieldActive: normalizeSwitchValue(values.apiKey?.isFieldActive, true)
         },
         enabled: {
-          value: values.enabled?.value !== false,
-          isFieldActive: values.enabled?.isFieldActive !== false
+          value: normalizeSwitchValue(values.enabled?.value, true),
+          isFieldActive: normalizeSwitchValue(values.enabled?.isFieldActive, true)
         }
       };
 
@@ -353,18 +359,32 @@ const GoogleMapsForm = ({ form, initialValues, onSubmit, onCancel, loading, isEd
 
       <Divider>Maps Configuration</Divider>
 
-      <Form.Item name={['enabled', 'isFieldActive']} valuePropName="checked">
+      <Form.Item
+        name={['enabled', 'isFieldActive']}
+        label="Enabled Field"
+        valuePropName="checked"
+        tooltip="Controls whether the Google Maps enabled setting is active in this configuration."
+      >
         <Switch checkedChildren="Enabled Field Active" unCheckedChildren="Enabled Field Inactive" />
       </Form.Item>
 
-      <Form.Item name={['enabled', 'value']} valuePropName="checked">
+      <Form.Item
+        name={['enabled', 'value']}
+        label="Google Maps Status"
+        valuePropName="checked"
+        help="Turn this on to allow the published Google Maps API key to be used by the website."
+      >
         <Switch checkedChildren="Maps Enabled" unCheckedChildren="Maps Disabled" />
-        <span className="ml-2 text-sm text-gray-600">Enable or disable Google Maps functionality</span>
       </Form.Item>
 
       <Divider>API Key</Divider>
 
-      <Form.Item name={['apiKey', 'isFieldActive']} valuePropName="checked">
+      <Form.Item
+        name={['apiKey', 'isFieldActive']}
+        label="API Key Field"
+        valuePropName="checked"
+        tooltip="Controls whether this API key field is active in this configuration."
+      >
         <Switch checkedChildren="API Key Active" unCheckedChildren="API Key Inactive" />
       </Form.Item>
 
