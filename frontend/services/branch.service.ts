@@ -46,6 +46,56 @@ interface BranchesApiResponse {
   count: number
 }
 
+function extractCoordinatesFromGoogleLink(googleLink?: string | null): { lat: number; lng: number } | null {
+  if (!googleLink) return null
+
+  const value = googleLink.trim()
+  if (!value) return null
+
+  const coordinatePairPattern = /(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/
+
+  try {
+    const parsedUrl = new URL(value)
+    const queryValue = parsedUrl.searchParams.get('q') || parsedUrl.searchParams.get('query')
+    const queryMatch = queryValue?.match(coordinatePairPattern)
+
+    if (queryMatch) {
+      return {
+        lat: Number(queryMatch[1]),
+        lng: Number(queryMatch[2]),
+      }
+    }
+  } catch {
+    // Some copied Google Maps values are iframe snippets or partial URLs, so fall through to regex parsing.
+  }
+
+  const atMatch = value.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/)
+  if (atMatch) {
+    return {
+      lat: Number(atMatch[1]),
+      lng: Number(atMatch[2]),
+    }
+  }
+
+  const embedMatch = value.match(/!2d(-?\d+(?:\.\d+)?)!3d(-?\d+(?:\.\d+)?)/)
+  if (embedMatch) {
+    return {
+      lat: Number(embedMatch[2]),
+      lng: Number(embedMatch[1]),
+    }
+  }
+
+  const plainMatch = value.match(coordinatePairPattern)
+  if (plainMatch) {
+    return {
+      lat: Number(plainMatch[1]),
+      lng: Number(plainMatch[2]),
+    }
+  }
+
+  return null
+}
+
 function transformBranch(api: ApiBranch): Branch {
   const location = [api.state, api.city].filter(Boolean).join(', ') || api.city || ''
   return {
@@ -59,7 +109,7 @@ function transformBranch(api: ApiBranch): Branch {
     address: api.address ?? '',
     logo: api.logo?.url ?? null,
     googleLink: api.googleLink,
-    coordinates: null, // Backend Branch has no lat/lng; use googleLink for "Open in Maps"
+    coordinates: extractCoordinatesFromGoogleLink(api.googleLink),
   }
 }
 
