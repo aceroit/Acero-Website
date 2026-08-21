@@ -50,7 +50,7 @@ export function ApplicationCardsSection({
   const router = useRouter()
 
   const isClickable = clickBehavior === 'modal' || clickBehavior === 'redirect' || clickBehavior === 'both'
-  console.log(applications)
+
   const handleCardClick = (application: Application) => {
     if (clickBehavior === 'redirect' && application.redirectUrl) {
       router.push(application.redirectUrl)

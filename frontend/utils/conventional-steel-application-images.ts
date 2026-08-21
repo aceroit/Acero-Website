@@ -1,19 +1,23 @@
 /**
  * Maps Conventional Steel application names (from backend) to local image filenames
- * in public/Conventional Stell Application/
+ * in public/images/conventional-steel-applications/.
+ *
+ * The old folder name contained spaces and a typo ("Conventional Stell Application"),
+ * which made deployment easy to break on Linux servers. These safe lowercase paths
+ * are stable for both local Next.js and Hostinger builds.
  */
 
-const CS_APPLICATION_IMAGE_BASE = `/${encodeURIComponent('Conventional Stell Application')}`
+const CS_APPLICATION_IMAGE_BASE = '/images/conventional-steel-applications'
 
 const APPLICATION_NAME_TO_FILENAME: Record<string, string> = {
-  'Pipe Racks': 'Pipe Racks - Copy.png',
-  'Equipment': 'Equipment - Copy.png',
-  'Desalination Plant': 'Desalination Plant - Copy.png',
-  'Petrochemical Plant': 'Petrochemical plant - Copy.png',
-  'Steel Mill': 'Steel Mill - Copy.png',
-  'Bridge Structure': 'Bridge Strucutre - Copy.png',
-  'Cement Plant': 'Cement Plant - Copy.png',
-  'Oil and Gas': 'Oil and Gas - Copy.png',
+  'Pipe Racks': 'pipe-racks.png',
+  'Equipment': 'equipment.png',
+  'Desalination Plant': 'desalination-plant.png',
+  'Petrochemical Plant': 'petrochemical-plant.png',
+  'Steel Mill': 'steel-mill.png',
+  'Bridge Structure': 'bridge-structure.png',
+  'Cement Plant': 'cement-plant.png',
+  'Oil and Gas': 'oil-and-gas.png',
 }
 
 /**
@@ -25,5 +29,5 @@ export function getConventionalSteelApplicationImagePath(applicationName: string
   if (!trimmed) return null
   const filename = APPLICATION_NAME_TO_FILENAME[trimmed]
   if (!filename) return null
-  return `${CS_APPLICATION_IMAGE_BASE}/${encodeURIComponent(filename)}`
+  return `${CS_APPLICATION_IMAGE_BASE}/${filename}`
 }
