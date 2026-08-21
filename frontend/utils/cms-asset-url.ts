@@ -50,6 +50,19 @@ const UPLOAD_PUBLIC_ID_PREFIXES = [
   'all/',
 ]
 
+const FRONTEND_PUBLIC_ASSET_PREFIXES = [
+  '/images/',
+  'images/',
+  '/Logo/',
+  'Logo/',
+  '/Application%20of%20%20PEB/',
+  'Application%20of%20%20PEB/',
+  '/Application of  PEB/',
+  'Application of  PEB/',
+  '/placeholder',
+  'placeholder',
+]
+
 const ASSET_EXTENSION_PATTERN =
   /\.(avif|bmp|doc|docx|gif|ico|jpe?g|mp4|mov|mpeg|mpg|pdf|png|ppt|pptx|svg|txt|webm|webp|xls|xlsx)$/i
 
@@ -192,6 +205,11 @@ function looksLikeUploadPublicId(value: string): boolean {
   return normalizedValue.includes('/') && ASSET_EXTENSION_PATTERN.test(normalizedValue)
 }
 
+function looksLikeFrontendPublicAsset(value: string): boolean {
+  const normalizedValue = value.replace(/\\/g, '/')
+  return FRONTEND_PUBLIC_ASSET_PREFIXES.some((prefix) => normalizedValue.startsWith(prefix))
+}
+
 function extractAssetCandidate(value: unknown): string | null {
   if (typeof value === 'string') {
     return value
@@ -277,12 +295,16 @@ export function getImageUrl(input?: string | null): string {
     return buildUploadUrl(relativeUploadPath)
   }
 
-  if (looksLikeUploadPublicId(value)) {
-    return buildUploadUrl(value)
+  if (looksLikeFrontendPublicAsset(value)) {
+    return value.startsWith('/') ? value : `/${value}`
   }
 
   if (value.startsWith('/')) {
     return value
+  }
+
+  if (looksLikeUploadPublicId(value)) {
+    return buildUploadUrl(value)
   }
 
   return value
