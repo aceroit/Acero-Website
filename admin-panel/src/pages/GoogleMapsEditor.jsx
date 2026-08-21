@@ -42,17 +42,22 @@ const GoogleMapsEditor = () => {
     try {
       const response = await googleMapsService.getGoogleMaps(id);
       if (response.success) {
-        setMapsConfig(response.data.googleMaps);
+        const maps = response.data?.googleMaps || response.data?.map || response.data?.maps;
+        if (!maps) {
+          throw new Error('Google Maps configuration not found in API response');
+        }
+
+        setMapsConfig(maps);
         form.setFieldsValue({
-          title: response.data.googleMaps.title,
-          featured: response.data.googleMaps.featured === true || response.data.googleMaps.featured === 'true',
+          title: maps.title,
+          featured: maps.featured === true || maps.featured === 'true',
           apiKey: {
-            value: response.data.googleMaps.apiKey?.value || '',
-            isFieldActive: response.data.googleMaps.apiKey?.isFieldActive !== false
+            value: maps.apiKey?.value || '',
+            isFieldActive: maps.apiKey?.isFieldActive !== false
           },
           enabled: {
-            value: response.data.googleMaps.enabled?.value !== false,
-            isFieldActive: response.data.googleMaps.enabled?.isFieldActive !== false
+            value: maps.enabled?.value !== false,
+            isFieldActive: maps.enabled?.isFieldActive !== false
           }
         });
       } else {
@@ -104,7 +109,12 @@ const GoogleMapsEditor = () => {
         if (isEdit) {
           fetchGoogleMaps();
         } else {
-          navigate(`/website-configurations/maps/${response.data.googleMaps._id}`);
+          const maps = response.data?.googleMaps || response.data?.map || response.data?.maps;
+          if (maps?._id) {
+            navigate(`/website-configurations/maps/${maps._id}`);
+          } else {
+            navigate('/website-configurations/maps');
+          }
         }
       }
     } catch (error) {

@@ -79,6 +79,8 @@ const GoogleMaps = () => {
       if (response.success) {
         const list = Array.isArray(response.data?.googleMaps)
           ? response.data.googleMaps
+          : Array.isArray(response.data?.maps)
+            ? response.data.maps
           : Array.isArray(response.data)
             ? response.data
             : Array.isArray(response.data?.data)

@@ -38,6 +38,7 @@ exports.getAllMaps = async (req, res) => {
 
         return successResponse(res, 200, 'Google Maps settings retrieved successfully', {
             maps: items,
+            googleMaps: items,
             pagination: {
                 total,
                 page: parseInt(page),
@@ -63,7 +64,7 @@ exports.getMapById = async (req, res) => {
             return errorResponse(res, 404, 'Google Maps settings not found');
         }
 
-        return successResponse(res, 200, 'Google Maps settings retrieved successfully', { map: item });
+        return successResponse(res, 200, 'Google Maps settings retrieved successfully', { map: item, maps: item, googleMaps: item });
     } catch (error) {
         console.error('Error in getMapById:', error);
         return errorResponse(res, 500, 'Failed to retrieve Google Maps settings', error.message);
@@ -80,7 +81,7 @@ exports.createMap = async (req, res) => {
         const populated = await GoogleMaps.findById(item._id)
             .populate('createdBy', 'firstName lastName email');
 
-        return successResponse(res, 201, 'Google Maps settings created successfully', { map: populated });
+        return successResponse(res, 201, 'Google Maps settings created successfully', { map: populated, maps: populated, googleMaps: populated });
     } catch (error) {
         console.error('Error in createMap:', error);
         if (error.name === 'ValidationError') {
@@ -124,7 +125,7 @@ exports.updateMap = async (req, res) => {
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
-        return successResponse(res, 200, 'Google Maps settings updated successfully', { map: updated });
+        return successResponse(res, 200, 'Google Maps settings updated successfully', { map: updated, maps: updated, googleMaps: updated });
     } catch (error) {
         console.error('Error in updateMap:', error);
         if (error.name === 'ValidationError') {
@@ -152,7 +153,7 @@ exports.deleteMap = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
-        return successResponse(res, 200, 'Google Maps settings deleted successfully', { map: { _id: item._id, isActive: false } });
+        return successResponse(res, 200, 'Google Maps settings deleted successfully', { map: { _id: item._id, isActive: false }, maps: { _id: item._id, isActive: false }, googleMaps: { _id: item._id, isActive: false } });
     } catch (error) {
         console.error('Error in deleteMap:', error);
         return errorResponse(res, 500, 'Failed to delete Google Maps settings', error.message);
