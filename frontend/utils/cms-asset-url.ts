@@ -47,6 +47,7 @@ const UPLOAD_PUBLIC_ID_PREFIXES = [
   'acero-cms/',
   'career-applications/',
   'uploads/',
+  'all/',
 ]
 
 const ASSET_EXTENSION_PATTERN =
@@ -131,6 +132,41 @@ function extractUploadsRelativePath(value: string): string | null {
   }
 
   return parsed.pathname.substring(markerIndex + marker.length).replace(/^\/+/, '')
+}
+
+function extractLegacyUploadRelativePath(value: string): string | null {
+  const normalizedValue = value.replace(/\\/g, '/')
+  const lowerValue = normalizedValue.toLowerCase()
+
+  const relativePrefixes = [
+    '/public/uploads/',
+    'public/uploads/',
+    '/storage/app/public/',
+    'storage/app/public/',
+  ]
+
+  for (const prefix of relativePrefixes) {
+    if (lowerValue.startsWith(prefix)) {
+      return normalizedValue.slice(prefix.length).replace(/^\/+/, '')
+    }
+  }
+
+  const parsed = parseUrl(normalizedValue)
+  if (!parsed) {
+    return null
+  }
+
+  const legacyPathMarkers = ['/public/uploads/', '/storage/app/public/']
+  const lowerPathname = parsed.pathname.toLowerCase()
+
+  for (const marker of legacyPathMarkers) {
+    const markerIndex = lowerPathname.indexOf(marker)
+    if (markerIndex !== -1) {
+      return parsed.pathname.substring(markerIndex + marker.length).replace(/^\/+/, '')
+    }
+  }
+
+  return null
 }
 
 function buildUploadUrl(relativePath: string): string {
@@ -221,6 +257,11 @@ export function getImageUrl(input?: string | null): string {
     return '/placeholder.svg'
   }
 
+  const legacyUploadPath = extractLegacyUploadRelativePath(value)
+  if (legacyUploadPath) {
+    return buildUploadUrl(legacyUploadPath)
+  }
+
   if (value.startsWith('http://') || value.startsWith('https://')) {
     const relativeUploadPath = extractUploadsRelativePath(value)
 
@@ -236,12 +277,12 @@ export function getImageUrl(input?: string | null): string {
     return buildUploadUrl(relativeUploadPath)
   }
 
-  if (value.startsWith('/')) {
-    return value
-  }
-
   if (looksLikeUploadPublicId(value)) {
     return buildUploadUrl(value)
+  }
+
+  if (value.startsWith('/')) {
+    return value
   }
 
   return value

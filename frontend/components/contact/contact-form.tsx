@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { submitEnquiry, type EnquiryData } from "@/services/enquiry.service"
+import { getRecaptchaToken } from "@/services/recaptcha.service"
 import { cn } from "@/lib/utils"
 import {
   countriesWithDialCodes,
@@ -110,6 +111,7 @@ export function ContactForm() {
     setSubmitting(true)
 
     try {
+      const recaptchaToken = await getRecaptchaToken("contact_submit")
       const enquiryData: EnquiryData = {
         purpose: formData.purpose as 'general' | 'sales' | 'support' | 'partnership' | 'other',
         fullName: formData.fullName.trim(),
@@ -121,6 +123,7 @@ export function ContactForm() {
         telephoneNumber: formData.telephoneNumber.trim() || undefined,
         subject: formData.subject.trim(),
         message: formData.message.trim(),
+        recaptchaToken,
       }
 
       await submitEnquiry(enquiryData)

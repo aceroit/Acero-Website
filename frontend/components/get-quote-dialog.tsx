@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { submitGetQuote } from "@/services/enquiry.service"
+import { getRecaptchaToken } from "@/services/recaptcha.service"
 
 interface GetQuoteDialogProps {
   open: boolean
@@ -96,10 +97,12 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
     setSubmitting(true)
 
     try {
+      const recaptchaToken = await getRecaptchaToken("get_quote_submit")
       await submitGetQuote({
         fullName: formData.fullName.trim(),
         email: formData.email.trim().toLowerCase(),
         mobileNumber: formData.mobileNumber.trim() || undefined,
+        recaptchaToken,
       })
 
 

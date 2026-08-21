@@ -22,6 +22,7 @@ export interface ApplicationData {
   languages: string[]
   coverLetter: string
   cvFile: CVFile
+  recaptchaToken?: string | null
 }
 
 export interface ApplicationResponse {

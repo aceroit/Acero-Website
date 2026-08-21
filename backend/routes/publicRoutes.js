@@ -43,6 +43,7 @@ const {
     applicationRateLimit,
     uploadCvRateLimit
 } = require('../middleware/publicRateLimit');
+const { verifyRecaptchaForRequest } = require('../utils/recaptchaVerifier');
 
 function withResolvedSectionAssets(sections, req) {
     const plainSections = Array.isArray(sections)
@@ -856,6 +857,10 @@ function normalizeOptionalPublicField(value) {
 router.post('/enquiries', enquiryRateLimit, async (req, res) => {
     try {
         const payload = req.body || {};
+        const recaptchaResult = await verifyRecaptchaForRequest(req, 'contact_submit');
+        if (!recaptchaResult.success) {
+            return errorResponse(res, 400, recaptchaResult.message);
+        }
 
         const normalizedPayload = {
             submissionType: 'contact',
@@ -936,6 +941,10 @@ router.post('/enquiries', enquiryRateLimit, async (req, res) => {
 router.post('/get-quote', getQuoteRateLimit, async (req, res) => {
     try {
         const payload = req.body || {};
+        const recaptchaResult = await verifyRecaptchaForRequest(req, 'get_quote_submit');
+        if (!recaptchaResult.success) {
+            return errorResponse(res, 400, recaptchaResult.message);
+        }
 
         const fullName = normalizeRequiredPublicField(payload.fullName);
         const email = normalizeRequiredPublicField(payload.email).toLowerCase();
@@ -1003,6 +1012,14 @@ router.post('/get-quote', getQuoteRateLimit, async (req, res) => {
 router.post('/applications', applicationRateLimit, async (req, res) => {
     try {
         const payload = req.body || {};
+        const recaptchaResult = await verifyRecaptchaForRequest(req, 'career_application_submit');
+        if (!recaptchaResult.success) {
+            return errorResponse(res, 400, recaptchaResult.message);
+        }
+        delete payload.recaptchaToken;
+        delete payload.captchaToken;
+        delete payload['g-recaptcha-response'];
+
         payload.mobileNumber = payload.mobileNumber && String(payload.mobileNumber).trim()
             ? String(payload.mobileNumber).trim()
             : null;
@@ -1426,10 +1443,17 @@ router.get('/website-appearance', async (req, res) => {
 router.get('/google-recaptcha', async (req, res) => {
     try {
         const recaptcha = await GoogleReCaptcha.getPublished();
-        if (recaptcha) {
-            recaptcha.secretKey = undefined;
-        }
-        return successResponse(res, 200, 'Published Google ReCaptcha settings retrieved successfully', { recaptcha });
+        const publicRecaptcha = recaptcha ? {
+            _id: recaptcha._id,
+            title: recaptcha.title,
+            status: recaptcha.status,
+            featured: recaptcha.featured,
+            siteKey: recaptcha.siteKey,
+            version: recaptcha.version,
+            enabled: recaptcha.enabled,
+        } : null;
+
+        return successResponse(res, 200, 'Published Google ReCaptcha settings retrieved successfully', { recaptcha: publicRecaptcha });
     } catch (error) {
         console.error('Error in public getGoogleReCaptcha:', error);
         return errorResponse(res, 500, 'Failed to retrieve Google ReCaptcha settings');

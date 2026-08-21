@@ -79,6 +79,8 @@ const GoogleReCaptchas = () => {
       if (response.success) {
         const list = Array.isArray(response.data?.googleReCaptchas)
           ? response.data.googleReCaptchas
+          : Array.isArray(response.data?.recaptchas)
+            ? response.data.recaptchas
           : Array.isArray(response.data)
             ? response.data
             : Array.isArray(response.data?.data)

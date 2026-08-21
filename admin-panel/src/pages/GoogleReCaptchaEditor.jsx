@@ -43,25 +43,30 @@ const GoogleReCaptchaEditor = () => {
     try {
       const response = await googleReCaptchaService.getGoogleReCaptcha(id);
       if (response.success) {
-        setRecaptchaConfig(response.data.googleReCaptcha);
+        const recaptcha = response.data?.googleReCaptcha || response.data?.recaptcha;
+        if (!recaptcha) {
+          throw new Error('Google ReCaptcha configuration not found in API response');
+        }
+
+        setRecaptchaConfig(recaptcha);
         form.setFieldsValue({
-          title: response.data.googleReCaptcha.title,
-          featured: response.data.googleReCaptcha.featured === true || response.data.googleReCaptcha.featured === 'true',
+          title: recaptcha.title,
+          featured: recaptcha.featured === true || recaptcha.featured === 'true',
           siteKey: {
-            value: response.data.googleReCaptcha.siteKey?.value || '',
-            isFieldActive: response.data.googleReCaptcha.siteKey?.isFieldActive !== false
+            value: recaptcha.siteKey?.value || '',
+            isFieldActive: recaptcha.siteKey?.isFieldActive !== false
           },
           secretKey: {
-            value: response.data.googleReCaptcha.secretKey?.value || '',
-            isFieldActive: response.data.googleReCaptcha.secretKey?.isFieldActive !== false
+            value: recaptcha.secretKey?.value || '',
+            isFieldActive: recaptcha.secretKey?.isFieldActive !== false
           },
           version: {
-            value: response.data.googleReCaptcha.version?.value || 'v3',
-            isFieldActive: response.data.googleReCaptcha.version?.isFieldActive !== false
+            value: recaptcha.version?.value || 'v3',
+            isFieldActive: recaptcha.version?.isFieldActive !== false
           },
           enabled: {
-            value: response.data.googleReCaptcha.enabled?.value !== false,
-            isFieldActive: response.data.googleReCaptcha.enabled?.isFieldActive !== false
+            value: recaptcha.enabled?.value !== false,
+            isFieldActive: recaptcha.enabled?.isFieldActive !== false
           }
         });
       } else {
@@ -121,7 +126,12 @@ const GoogleReCaptchaEditor = () => {
         if (isEdit) {
           fetchGoogleReCaptcha();
         } else {
-          navigate(`/website-configurations/recaptcha/${response.data.googleReCaptcha._id}`);
+          const recaptcha = response.data?.googleReCaptcha || response.data?.recaptcha;
+          if (recaptcha?._id) {
+            navigate(`/website-configurations/recaptcha/${recaptcha._id}`);
+          } else {
+            navigate('/website-configurations/recaptcha');
+          }
         }
       }
     } catch (error) {

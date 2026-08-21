@@ -24,6 +24,7 @@ import {
 } from "@/lib/countries"
 import { useVacancies } from "@/hooks/use-vacancies"
 import { uploadCV, submitApplication, type CVFile } from "@/services/application.service"
+import { getRecaptchaToken } from "@/services/recaptcha.service"
 import { cn } from "@/lib/utils"
 import type { Vacancy } from "@/services/vacancy.service"
 
@@ -170,6 +171,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
       setUploadingCV(true)
       const cvFileData = await uploadCV(formData.cvFile)
       setUploadingCV(false)
+      const recaptchaToken = await getRecaptchaToken("career_application_submit")
 
       // Step 2: Submit application
       const applicationData = {
@@ -185,6 +187,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         languages: formData.languages,
         coverLetter: formData.coverLetter.trim(),
         cvFile: cvFileData,
+        recaptchaToken,
       }
 
       await submitApplication(applicationData)

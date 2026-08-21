@@ -105,14 +105,20 @@ export function StatsDisplay({
           transition={{ duration: 0.6 }}
           className={cn("grid", spacing.gridGap, gridCols)}
         >
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={stat.sublabel ? "pt-8 sm:pt-4" : ""}
-            >
+          {stats.map((stat, index) => {
+            const valueSizeClass =
+              index === 2
+                ? "text-3xl sm:text-[2.35rem] md:text-[2.75rem]"
+                : "text-3xl sm:text-4xl md:text-5xl"
+
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className={stat.sublabel ? "pt-8 sm:pt-4" : ""}
+              >
               {/* Premium Card with Floating Red Banner */}
               <div className="relative h-full min-h-[156px] rounded-xl border border-border bg-card shadow-lg sm:min-h-[184px]">
                 {/* Floating Red Banner - positioned half outside the card */}
@@ -138,7 +144,7 @@ export function StatsDisplay({
                     </div>
                   )}
                   <div className="mb-2 sm:mb-3">
-                    <p className="text-3xl font-extrabold leading-none text-foreground sm:text-4xl md:text-5xl">
+                    <p className={cn("font-extrabold leading-none text-foreground", valueSizeClass)}>
                       <AnimatedCounter value={stat.value} isInView={isInView} />
                     </p>
                   </div>
@@ -147,8 +153,9 @@ export function StatsDisplay({
                   </p>
                 </div>
               </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </motion.div>
       </div>
     </section>

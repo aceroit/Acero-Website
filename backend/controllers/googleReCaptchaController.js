@@ -38,6 +38,7 @@ exports.getAllReCaptcha = async (req, res) => {
 
         return successResponse(res, 200, 'Google ReCaptcha settings retrieved successfully', {
             recaptchas: items,
+            googleReCaptchas: items,
             pagination: {
                 total,
                 page: parseInt(page),
@@ -63,7 +64,7 @@ exports.getReCaptchaById = async (req, res) => {
             return errorResponse(res, 404, 'Google ReCaptcha settings not found');
         }
 
-        return successResponse(res, 200, 'Google ReCaptcha settings retrieved successfully', { recaptcha: item });
+        return successResponse(res, 200, 'Google ReCaptcha settings retrieved successfully', { recaptcha: item, googleReCaptcha: item });
     } catch (error) {
         console.error('Error in getReCaptchaById:', error);
         return errorResponse(res, 500, 'Failed to retrieve ReCaptcha settings', error.message);
@@ -80,7 +81,7 @@ exports.createReCaptcha = async (req, res) => {
         const populated = await GoogleReCaptcha.findById(item._id)
             .populate('createdBy', 'firstName lastName email');
 
-        return successResponse(res, 201, 'Google ReCaptcha settings created successfully', { recaptcha: populated });
+        return successResponse(res, 201, 'Google ReCaptcha settings created successfully', { recaptcha: populated, googleReCaptcha: populated });
     } catch (error) {
         console.error('Error in createReCaptcha:', error);
         if (error.name === 'ValidationError') {
@@ -124,7 +125,7 @@ exports.updateReCaptcha = async (req, res) => {
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
-        return successResponse(res, 200, 'Google ReCaptcha settings updated successfully', { recaptcha: updated });
+        return successResponse(res, 200, 'Google ReCaptcha settings updated successfully', { recaptcha: updated, googleReCaptcha: updated });
     } catch (error) {
         console.error('Error in updateReCaptcha:', error);
         if (error.name === 'ValidationError') {
@@ -152,7 +153,7 @@ exports.deleteReCaptcha = async (req, res) => {
         item.updatedBy = req.user._id;
         await item.save();
 
-        return successResponse(res, 200, 'Google ReCaptcha settings deleted successfully', { recaptcha: { _id: item._id, isActive: false } });
+        return successResponse(res, 200, 'Google ReCaptcha settings deleted successfully', { recaptcha: { _id: item._id, isActive: false }, googleReCaptcha: { _id: item._id, isActive: false } });
     } catch (error) {
         console.error('Error in deleteReCaptcha:', error);
         return errorResponse(res, 500, 'Failed to delete ReCaptcha settings', error.message);

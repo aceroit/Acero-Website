@@ -11,12 +11,14 @@ export interface EnquiryData {
   telephoneNumber?: string
   subject: string
   message: string
+  recaptchaToken?: string | null
 }
 
 export interface GetQuoteData {
   fullName: string
   email: string
   mobileNumber?: string
+  recaptchaToken?: string | null
 }
 
 export interface EnquiryResponse {

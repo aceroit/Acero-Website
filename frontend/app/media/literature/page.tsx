@@ -36,16 +36,30 @@ export default function MediaLiteraturePage() {
     languages: brochure.languages || [], // Handle missing languages field
   }))
 
+  const openPdf = (url: string) => {
+    window.open(url, "_blank", "noopener,noreferrer")
+  }
+
   const handleBrochureClick = (brochure: Brochure) => {
-    // Only show modal if brochure has languages
-    if (brochure.languages && brochure.languages.length > 0) {
+    const languages = brochure.languages || []
+
+    if (languages.length > 1) {
       setSelectedBrochure(brochure)
       setIsModalOpen(true)
-    } else if (brochure.downloadLink) {
-      // If no languages but has download link, open it
-      window.open(brochure.downloadLink, "_blank")
+      return
+    }
+
+    if (languages.length === 1) {
+      const [language] = languages
+      if (language.fileUrl) {
+        openPdf(language.fileUrl)
+        return
+      }
+    }
+
+    if (brochure.downloadLink) {
+      openPdf(brochure.downloadLink)
     } else {
-      // Show toast if no languages or download link
       toast({
         title: "No Download Available",
         description: "This brochure is not available for download at the moment.",
@@ -56,7 +70,8 @@ export default function MediaLiteraturePage() {
 
   const handleLanguageClick = (language: BrochureLanguage) => {
     if (language.fileUrl) {
-      window.open(language.fileUrl, "_blank")
+      openPdf(language.fileUrl)
+      setIsModalOpen(false)
     } else {
       toast({
         title: "Coming Soon",
