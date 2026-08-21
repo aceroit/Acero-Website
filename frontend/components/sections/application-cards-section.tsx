@@ -127,17 +127,13 @@ export function ApplicationCardsSection({
                 onClick={isClickable ? () => handleCardClick(application) : undefined}
               >
                 <div className="group flex h-full flex-col items-center justify-center rounded-lg border border-border bg-card p-4 text-center transition-all hover:border-steel-red/50 hover:bg-card/50 md:p-6">
-                  <div className="mb-3 flex h-12 w-12 shrink-0 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 md:h-12 md:w-18">
+                  <div className="mb-4 flex h-20 w-20 shrink-0 items-center justify-center text-steel-red transition-colors group-hover:text-steel-red/80 md:h-24 md:w-24">
                     {application.svgPath ? (
-                      <div className="relative h-18 w-18">
-                        <Image
-                          src={application.svgPath}
-                          alt={application.name}
-                          fill
-                          className="object-contain"
-                          sizes="56px"
-                        />
-                      </div>
+                      <Image
+                        src={application.svgPath}
+                        alt={application.name}
+                        className="h-16 w-16 object-contain md:h-20 md:w-20"
+                      />
                     ) : (
                       application.icon
                     )}
