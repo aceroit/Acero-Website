@@ -24,11 +24,7 @@ export const uploadMedia = async (files, options = {}) => {
   if (options.description) formData.append('description', options.description);
   if (options.altText) formData.append('altText', options.altText);
 
-  const response = await API.post('/media/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  const response = await API.post('/media/upload', formData);
   return response.data;
 };
 

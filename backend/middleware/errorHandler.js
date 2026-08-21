@@ -5,6 +5,15 @@
 const errorHandler = (err, req, res, next) => {
     console.error('Error:', err);
 
+    // Body parser limit errors happen before route handlers, usually when a
+    // CMS save request accidentally carries large media data instead of URLs.
+    if (err.type === 'entity.too.large') {
+        return res.status(413).json({
+            success: false,
+            message: `Request payload is too large. The current JSON request limit is ${process.env.JSON_BODY_LIMIT || '10mb'}. Please upload media through the media uploader and save only the returned URL.`
+        });
+    }
+
     // Mongoose validation error
     if (err.name === 'ValidationError') {
         const errors = Object.values(err.errors).map(e => e.message);
@@ -48,7 +57,7 @@ const errorHandler = (err, req, res, next) => {
     }
 
     // Default error
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || err.status || 500;
     const message = err.message || 'Internal Server Error';
 
     res.status(statusCode).json({

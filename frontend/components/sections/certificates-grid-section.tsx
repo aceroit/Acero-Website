@@ -6,8 +6,9 @@ import Image from "@/components/ui/cms-image"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
 import { getSpacingValues } from "@/utils/spacing"
+import { getCmsAssetUrl } from "@/utils/cms-asset-url"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { X } from "lucide-react"
+import { ExternalLink, X } from "lucide-react"
 
 interface Certificate {
   name: string
@@ -36,6 +37,7 @@ export function CertificatesGridSection({
   const { appearance } = useAppearance()
   const spacing = useMemo(() => getSpacingValues(appearance), [appearance])
   const [selectedImage, setSelectedImage] = useState<{ src: string; alt: string } | null>(null)
+  const selectedImageUrl = selectedImage ? getCmsAssetUrl(selectedImage.src, selectedImage.src) : ""
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -99,7 +101,7 @@ export function CertificatesGridSection({
 
           {/* Certificates Grid */}
           <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3", spacing.gridGap)}>
-            {certificates.map((certificate, index) => (
+            {certificates.map((certificate) => (
               <motion.div
                 key={certificate.name}
                 variants={itemVariants}
@@ -110,13 +112,13 @@ export function CertificatesGridSection({
                   className="group relative overflow-hidden rounded-lg border border-border bg-card p-6 transition-all hover:border-steel-red/50 hover:shadow-lg md:p-8 cursor-pointer"
                   onClick={() => setSelectedImage({ src: certificate.image, alt: certificate.imageAlt })}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-secondary">
                     <Image
                       src={certificate.image}
                       alt={certificate.imageAlt}
                       fill
                       loading="lazy"
-                      className="object-contain transition-transform duration-700 group-hover:scale-105"
+                      className="object-contain"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
                       quality={85}
                     />
@@ -145,24 +147,45 @@ export function CertificatesGridSection({
 
       {/* Image Zoom Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl border-none bg-transparent p-0 shadow-none">
-          <button
-            onClick={() => setSelectedImage(null)}
-            className="absolute -top-10 right-0 z-50 rounded-full bg-white/10 p-2 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-            aria-label="Close"
-          >
-            <X className="h-6 w-6" />
-          </button>
+        <DialogContent
+          showCloseButton={false}
+          className="max-h-[92vh] w-[96vw] max-w-6xl overflow-hidden rounded-xl border border-border bg-background p-0 shadow-2xl"
+        >
           {selectedImage && (
-            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-white">
-              <Image
-                src={selectedImage.src}
-                alt={selectedImage.alt}
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, 900px"
-                quality={95}
-              />
+            <div className="flex max-h-[92vh] flex-col bg-background">
+              <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {selectedImage.alt}
+                </p>
+                <div className="flex shrink-0 items-center gap-2">
+                  {selectedImageUrl && (
+                    <a
+                      href={selectedImageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:border-steel-red hover:text-steel-red"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Open full size
+                    </a>
+                  )}
+                  <button
+                    onClick={() => setSelectedImage(null)}
+                    className="rounded-md border border-border p-2 text-foreground transition-colors hover:border-steel-red hover:text-steel-red"
+                    aria-label="Close"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-auto bg-white p-3 md:p-6">
+                <Image
+                  src={selectedImage.src}
+                  alt={selectedImage.alt}
+                  loading="eager"
+                  className="mx-auto h-auto w-full max-w-[1100px] object-contain"
+                />
+              </div>
             </div>
           )}
         </DialogContent>
@@ -170,4 +193,3 @@ export function CertificatesGridSection({
     </section>
   )
 }
-

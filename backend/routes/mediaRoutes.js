@@ -5,15 +5,31 @@ const { authenticate, authorize } = require('../middleware/auth');
 const fileUpload = require('express-fileupload');
 const { getUploadTempDir } = require('../utils/localFileStorage');
 
+function formatBytes(bytes) {
+    if (!bytes) return '0 Bytes';
+    const units = ['Bytes', 'KB', 'MB', 'GB'];
+    const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+    return `${Math.round((bytes / Math.pow(1024, index)) * 100) / 100} ${units[index]}`;
+}
+
+const maxMediaUploadSize = parseInt(
+    process.env.MAX_MEDIA_UPLOAD_SIZE || process.env.MAX_VIDEO_SIZE || 104857600,
+    10
+);
+
 // Configure file upload middleware
 const uploadMiddleware = fileUpload({
     useTempFiles: true,
     tempFileDir: getUploadTempDir(),
     limits: {
-        fileSize: parseInt(process.env.MAX_VIDEO_SIZE || 104857600) // 100MB max
+        fileSize: maxMediaUploadSize
     },
     abortOnLimit: true,
-    createParentPath: true
+    createParentPath: true,
+    limitHandler: (req, res) => res.status(413).json({
+        success: false,
+        message: `File upload too large. Maximum upload request size is ${formatBytes(maxMediaUploadSize)}.`
+    })
 });
 
 /**

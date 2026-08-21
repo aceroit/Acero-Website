@@ -28,7 +28,13 @@ app.use(
 		exposedHeaders: ["Content-Disposition", "Content-Length"],
 	})
 );
-app.use(express.json());
+
+// CMS section updates can contain deeply nested content and media metadata.
+// Files themselves still go through multipart /api/media/upload, but the
+// follow-up JSON save may be larger than Express' small default body limit.
+const jsonBodyLimit = process.env.JSON_BODY_LIMIT || '10mb';
+app.use(express.json({ limit: jsonBodyLimit }));
+app.use(express.urlencoded({ extended: true, limit: jsonBodyLimit }));
 
 const uploadRoot = getUploadRoot();
 // Local media serving for development. On Hostinger, Nginx serves the same

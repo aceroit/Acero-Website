@@ -86,7 +86,22 @@ exports.uploadMedia = async (req, res) => {
         );
     } catch (error) {
         console.error('Upload media error:', error);
-        return errorResponse(res, 500, 'Failed to upload media', error.message);
+        const validationMessages = [
+            'File type',
+            'File size',
+            'No file provided',
+            'No files provided'
+        ];
+        const isValidationError = validationMessages.some((message) =>
+            error.message?.includes(message)
+        );
+
+        return errorResponse(
+            res,
+            isValidationError ? 400 : 500,
+            isValidationError ? error.message : 'Failed to upload media',
+            error.message
+        );
     }
 };
 

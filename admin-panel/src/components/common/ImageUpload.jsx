@@ -6,6 +6,21 @@ import { toast } from 'react-toastify';
 import MediaPicker from './MediaPicker';
 import { getCmsAssetUrl, normalizeMediaObject } from '../../utils/cmsAssetUrl';
 
+function getUploadErrorMessage(error, maxSize) {
+  const status = error?.response?.status;
+  const serverMessage = error?.response?.data?.message;
+
+  if (serverMessage) {
+    return serverMessage;
+  }
+
+  if (status === 413) {
+    return `Upload rejected because the request is too large. Images up to ${maxSize}MB are allowed by the form, so please check the backend/proxy upload limit.`;
+  }
+
+  return error?.message || 'Failed to upload image';
+}
+
 /**
  * Image Upload Component
  * Handles single image upload with preview
@@ -64,6 +79,15 @@ const ImageUpload = ({
     });
   };
 
+  const clearLocalPreview = () => {
+    setLocalPreviewUrl((previousUrl) => {
+      if (previousUrl && previousUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previousUrl);
+      }
+      return null;
+    });
+  };
+
   const handleUpload = async (file) => {
     setFreshLocalPreview(file);
 
@@ -98,13 +122,15 @@ const ImageUpload = ({
         });
 
         onChange?.(imageData);
+        clearLocalPreview();
         message.success('Image uploaded successfully');
       } else {
         throw new Error('Upload failed');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error(error.response?.data?.message || 'Failed to upload image');
+      clearLocalPreview();
+      toast.error(getUploadErrorMessage(error, maxSize));
     } finally {
       setUploading(false);
     }
@@ -113,10 +139,7 @@ const ImageUpload = ({
   };
 
   const handleRemove = () => {
-    if (localPreviewUrl && localPreviewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(localPreviewUrl);
-    }
-    setLocalPreviewUrl(null);
+    clearLocalPreview();
     onChange?.(null);
     message.success('Image removed');
   };
