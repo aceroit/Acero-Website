@@ -125,8 +125,8 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!left-3 !right-3 !top-1/2 !w-auto !max-w-none !translate-x-0 !-translate-y-1/2 max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-2xl border-border/60 px-5 py-6 sm:!left-1/2 sm:!right-auto sm:!w-full sm:!max-w-xl sm:!-translate-x-1/2 sm:rounded-3xl sm:px-8 sm:py-7">
-        <DialogHeader className="space-y-3 text-left">
+      <DialogContent className="!left-3 !right-3 !top-4 !bottom-auto !w-auto !max-w-none !translate-x-0 !translate-y-0 max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain rounded-2xl border-border/60 px-5 py-5 sm:!left-1/2 sm:!right-auto sm:!top-1/2 sm:!bottom-auto sm:!w-full sm:!max-w-xl sm:!-translate-x-1/2 sm:!-translate-y-1/2 sm:max-h-[calc(100dvh-1.5rem)] sm:rounded-3xl sm:px-8 sm:py-7">
+        <DialogHeader className="space-y-2 text-left sm:space-y-3">
           <DialogTitle className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Request a Quote
           </DialogTitle>
@@ -136,8 +136,8 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="mt-2 space-y-5">
-          <div className="space-y-2.5">
+        <form onSubmit={handleSubmit} className="mt-2 space-y-4 sm:space-y-5">
+          <div className="space-y-2 sm:space-y-2.5">
             <Label htmlFor="quote-full-name" className="text-sm font-semibold text-foreground">
               Name <span className="text-destructive">*</span>
             </Label>
@@ -147,14 +147,14 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
                 id="quote-full-name"
                 value={formData.fullName}
                 onChange={(event) => setFormData((prev) => ({ ...prev, fullName: event.target.value }))}
-                className={cn("h-12 pl-10", errors.fullName && "border-destructive")}
+                className={cn("h-11 pl-10 sm:h-12", errors.fullName && "border-destructive")}
                 placeholder="Enter your name"
               />
             </div>
             {errors.fullName ? <p className="text-xs text-destructive">{errors.fullName}</p> : null}
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2 sm:space-y-2.5">
             <Label htmlFor="quote-email" className="text-sm font-semibold text-foreground">
               Email <span className="text-destructive">*</span>
             </Label>
@@ -165,14 +165,14 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
                 type="email"
                 value={formData.email}
                 onChange={(event) => setFormData((prev) => ({ ...prev, email: event.target.value }))}
-                className={cn("h-12 pl-10", errors.email && "border-destructive")}
+                className={cn("h-11 pl-10 sm:h-12", errors.email && "border-destructive")}
                 placeholder="Enter your email"
               />
             </div>
             {errors.email ? <p className="text-xs text-destructive">{errors.email}</p> : null}
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2 sm:space-y-2.5">
             <Label htmlFor="quote-mobile" className="text-sm font-semibold text-foreground">
               Mobile
             </Label>
@@ -182,7 +182,7 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
                 id="quote-mobile"
                 value={formData.mobileNumber}
                 onChange={(event) => setFormData((prev) => ({ ...prev, mobileNumber: event.target.value }))}
-                className={cn("h-12 pl-10", errors.mobileNumber && "border-destructive")}
+                className={cn("h-11 pl-10 sm:h-12", errors.mobileNumber && "border-destructive")}
                 placeholder="Enter your mobile number"
               />
             </div>
@@ -192,7 +192,7 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
             ) : null}
           </div>
 
-          <Button type="submit" className="h-12 w-full text-sm font-semibold uppercase tracking-wider" disabled={submitting}>
+          <Button type="submit" className="h-11 w-full text-sm font-semibold uppercase tracking-wider sm:h-12" disabled={submitting}>
             {submitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
