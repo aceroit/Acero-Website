@@ -125,7 +125,7 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-xl overflow-y-auto rounded-2xl border-border/60 px-5 py-6 sm:w-full sm:rounded-3xl sm:px-8 sm:py-7">
+      <DialogContent className="!left-3 !right-3 !top-1/2 !w-auto !max-w-none !translate-x-0 !-translate-y-1/2 max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-2xl border-border/60 px-5 py-6 sm:!left-1/2 sm:!right-auto sm:!w-full sm:!max-w-xl sm:!-translate-x-1/2 sm:rounded-3xl sm:px-8 sm:py-7">
         <DialogHeader className="space-y-3 text-left">
           <DialogTitle className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Request a Quote
