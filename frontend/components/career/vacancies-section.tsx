@@ -138,8 +138,8 @@ function VacancyCard({ vacancy, index, onApplyNow }: VacancyCardProps) {
         </div>
 
         {/* Type Badge */}
-        <div className="mb-4">
-          <span className="inline-flex items-center rounded-full bg-steel-red/10 px-3 py-1 text-xs font-semibold text-steel-red">
+        <div className="mb-4 flex">
+          <span className="inline-flex w-fit max-w-full items-center whitespace-nowrap rounded-full bg-steel-red px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-steel-white shadow-sm sm:text-xs">
             {vacancy.type}
           </span>
         </div>
@@ -175,7 +175,7 @@ function VacancyCard({ vacancy, index, onApplyNow }: VacancyCardProps) {
         )}
 
         {/* Footer */}
-        <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Calendar className="h-3.5 w-3.5" />
             <span>{formatDate(vacancy.publishedAt)}</span>

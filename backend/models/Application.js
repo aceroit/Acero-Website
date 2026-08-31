@@ -61,6 +61,11 @@ const applicationSchema = new mongoose.Schema({
         trim: true,
         default: null
     },
+    countryCode: {
+        type: String,
+        trim: true,
+        default: null
+    },
     country: {
         type: String,
         required: [true, 'Country is required'],

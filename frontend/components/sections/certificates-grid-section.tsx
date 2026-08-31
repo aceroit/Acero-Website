@@ -149,10 +149,10 @@ export function CertificatesGridSection({
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
         <DialogContent
           showCloseButton={false}
-          className="max-h-[92vh] w-[96vw] max-w-6xl overflow-hidden rounded-xl border border-border bg-background p-0 shadow-2xl"
+          className="!left-3 !right-3 !top-4 !bottom-4 !w-auto !max-w-none !translate-x-0 !translate-y-0 overflow-hidden rounded-xl border border-border bg-background p-0 shadow-2xl sm:!left-1/2 sm:!right-auto sm:!top-1/2 sm:!bottom-auto sm:!w-[96vw] sm:!max-w-6xl sm:!-translate-x-1/2 sm:!-translate-y-1/2 sm:max-h-[92vh]"
         >
           {selectedImage && (
-            <div className="flex max-h-[92vh] flex-col bg-background">
+            <div className="flex h-full flex-col bg-background sm:max-h-[92vh]">
               <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
                 <p className="truncate text-sm font-semibold text-foreground">
                   {selectedImage.alt}
@@ -163,10 +163,10 @@ export function CertificatesGridSection({
                       href={selectedImageUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:border-steel-red hover:text-steel-red"
+                      className="inline-flex items-center gap-2 rounded-md border border-border px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:border-steel-red hover:text-steel-red sm:px-3"
                     >
                       <ExternalLink className="h-4 w-4" />
-                      Open full size
+                      <span className="hidden sm:inline">Open full size</span>
                     </a>
                   )}
                   <button
@@ -178,7 +178,7 @@ export function CertificatesGridSection({
                   </button>
                 </div>
               </div>
-              <div className="overflow-auto bg-white p-3 md:p-6">
+              <div className="min-h-0 flex-1 overflow-auto bg-white p-3 md:p-6">
                 <Image
                   src={selectedImage.src}
                   alt={selectedImage.alt}

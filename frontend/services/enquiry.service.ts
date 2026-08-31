@@ -17,6 +17,8 @@ export interface EnquiryData {
 export interface GetQuoteData {
   fullName: string
   email: string
+  country?: string
+  countryCode?: string
   mobileNumber?: string
   recaptchaToken?: string | null
 }

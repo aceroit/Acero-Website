@@ -948,6 +948,8 @@ router.post('/get-quote', getQuoteRateLimit, async (req, res) => {
 
         const fullName = normalizeRequiredPublicField(payload.fullName);
         const email = normalizeRequiredPublicField(payload.email).toLowerCase();
+        const country = normalizeOptionalPublicField(payload.country);
+        const countryCode = normalizeOptionalPublicField(payload.countryCode);
         const mobileNumber = normalizeOptionalPublicField(payload.mobileNumber);
 
         if (!fullName) {
@@ -970,8 +972,8 @@ router.post('/get-quote', getQuoteRateLimit, async (req, res) => {
             companyName: null,
             mobileNumber,
             email,
-            country: null,
-            countryCode: null,
+            country: country || null,
+            countryCode,
             telephoneNumber: null,
             subject: 'Get Quote Request',
             message: 'Website header Get Quote popup submitted.',
@@ -1023,6 +1025,7 @@ router.post('/applications', applicationRateLimit, async (req, res) => {
         payload.mobileNumber = payload.mobileNumber && String(payload.mobileNumber).trim()
             ? String(payload.mobileNumber).trim()
             : null;
+        payload.countryCode = normalizeOptionalPublicField(payload.countryCode);
         
         // Validate required fields
         if (!payload.vacancyId) {

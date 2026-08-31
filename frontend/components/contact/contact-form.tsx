@@ -419,12 +419,12 @@ export function ContactForm() {
       {/* Section 4: Submit */}
       <motion.div
         variants={sectionVariants}
-        className="flex justify-center pt-12"
+        className="flex justify-center pt-8 md:pt-12"
       >
         <Button
           type="submit"
           disabled={submitting}
-          className="group relative h-16 overflow-hidden bg-gradient-to-r from-steel-red to-steel-red/90 px-10 text-base font-bold uppercase tracking-wider text-steel-white shadow-2xl shadow-steel-red/30 transition-all hover:from-steel-red/95 hover:to-steel-red/85 hover:shadow-2xl hover:shadow-steel-red/40 disabled:opacity-50 lg:h-20 lg:px-20 lg:text-lg"
+          className="group relative h-12 w-full max-w-xs overflow-hidden bg-gradient-to-r from-steel-red to-steel-red/90 px-6 text-sm font-bold uppercase tracking-wider text-steel-white shadow-xl shadow-steel-red/25 transition-all hover:from-steel-red/95 hover:to-steel-red/85 hover:shadow-2xl hover:shadow-steel-red/40 disabled:opacity-50 sm:h-14 sm:max-w-sm sm:px-10 sm:text-base lg:h-20 lg:max-w-none lg:w-auto lg:px-20 lg:text-lg"
         >
           <span className="relative z-10">
             {submitting ? "Submitting..." : "Send Message"}

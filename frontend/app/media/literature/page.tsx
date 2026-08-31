@@ -9,6 +9,7 @@ import { BrochureLanguageModal } from "@/components/media/brochure-language-moda
 import { useBrochures } from "@/hooks/use-brochures"
 import { usePage } from "@/hooks/use-page"
 import { useToast } from "@/hooks/use-toast"
+import { getBrochurePdfPath } from "@/utils/friendly-file-url"
 import type { Brochure } from "@/services/brochure.service"
 
 interface BrochureLanguage {
@@ -52,13 +53,13 @@ export default function MediaLiteraturePage() {
     if (languages.length === 1) {
       const [language] = languages
       if (language.fileUrl) {
-        openPdf(language.fileUrl)
+        openPdf(getBrochurePdfPath(brochure, language))
         return
       }
     }
 
     if (brochure.downloadLink) {
-      openPdf(brochure.downloadLink)
+      openPdf(getBrochurePdfPath(brochure))
     } else {
       toast({
         title: "No Download Available",
@@ -70,7 +71,11 @@ export default function MediaLiteraturePage() {
 
   const handleLanguageClick = (language: BrochureLanguage) => {
     if (language.fileUrl) {
-      openPdf(language.fileUrl)
+      if (selectedBrochure) {
+        openPdf(getBrochurePdfPath(selectedBrochure, language))
+      } else {
+        openPdf(language.fileUrl)
+      }
       setIsModalOpen(false)
     } else {
       toast({

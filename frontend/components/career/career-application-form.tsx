@@ -34,6 +34,7 @@ interface CareerFormData {
   lastName: string
   email: string
   mobileNumber: string
+  countryCode: string
   country: string
   vacancyId: string
   experienceLevel: string
@@ -68,6 +69,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
     lastName: "",
     email: "",
     mobileNumber: "",
+    countryCode: "",
     country: "",
     vacancyId: selectedVacancyId || "",
     experienceLevel: "",
@@ -180,6 +182,7 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
         mobileNumber: formData.mobileNumber.trim() || undefined,
+        countryCode: formData.countryCode || getDialCodeForCountry(formData.country) || undefined,
         country: formData.country.trim(),
         experienceLevel: formData.experienceLevel,
         educationLevel: formData.educationLevel,
@@ -331,7 +334,13 @@ export function CareerApplicationForm({ selectedVacancyId }: CareerApplicationFo
                 </Label>
                 <CustomSelect
                   value={formData.country}
-                  onValueChange={(value) => setFormData({ ...formData, country: value })}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      country: value,
+                      countryCode: getDialCodeForCountry(value),
+                    })
+                  }
                   options={countriesWithDialCodes.map((c) => ({
                     value: c.value,
                     label: `${c.label}${c.dialCode ? ` (${c.dialCode})` : ""}`,

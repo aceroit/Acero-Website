@@ -66,6 +66,7 @@ import Enquiries from "./pages/Enquiries";
 import EnquiryEditor from "./pages/EnquiryEditor";
 import Applications from "./pages/Applications";
 import ApplicationEditor from "./pages/ApplicationEditor";
+import ApplicationCvViewer from "./pages/ApplicationCvViewer";
 import FormConfigurationEditor from "./pages/FormConfigurationEditor";
 import ParentRouteRedirect from "./components/common/ParentRouteRedirect";
 import { ToastContainer } from "react-toastify";
@@ -771,6 +772,14 @@ function App() {
             element={
               <ProtectedRoute resource="applications" action="read">
                 <Applications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/enquiries-applications/applications/:id/cv"
+            element={
+              <ProtectedRoute resource="applications" action="read">
+                <ApplicationCvViewer />
               </ProtectedRoute>
             }
           />

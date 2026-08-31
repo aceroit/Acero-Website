@@ -10,6 +10,11 @@ import dayjs from 'dayjs';
 
 const { TextArea } = Input;
 
+const getFilenameFromDisposition = (disposition) => {
+  const match = String(disposition || '').match(/filename="?([^"]+)"?/i);
+  return match?.[1] || '';
+};
+
 const ApplicationEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -150,19 +155,37 @@ const ApplicationEditor = () => {
   };
 
   const handleViewCV = () => {
-    if (application?.cvFile?.url) {
-      window.open(application.cvFile.url, '_blank');
-    }
+    if (!application?._id) return;
+
+    window.open(
+      `/enquiries-applications/applications/${application._id}/cv`,
+      '_blank',
+      'noopener,noreferrer'
+    );
   };
 
-  const handleDownloadCV = () => {
-    if (application?.cvFile?.url) {
+  const handleDownloadCV = async () => {
+    if (!application?._id) return;
+
+    try {
+      const response = await applicationService.downloadApplicationCv(application._id);
+      const blob = new Blob([response.data], {
+        type: response.headers?.['content-type'] || application.cvFile?.mimeType || 'application/pdf',
+      });
+      const filename =
+        getFilenameFromDisposition(response.headers?.['content-disposition']) ||
+        application.cvFile?.filename ||
+        'cv.pdf';
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = application.cvFile.url;
-      link.download = application.cvFile.filename || 'cv.pdf';
+      link.href = url;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to download CV');
     }
   };
 

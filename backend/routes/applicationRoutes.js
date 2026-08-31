@@ -43,6 +43,23 @@ router.get(
     checkPermission('applications', 'read'),
     applicationController.exportApplicationsZip
 );
+
+// GET /api/applications/:id/cv - open an application CV with a friendly filename
+router.get(
+    '/:id/cv',
+    checkPermission('applications', 'read'),
+    validateId,
+    applicationController.viewApplicationCv
+);
+
+// GET /api/applications/:id/cv/download - download an application CV with a friendly filename
+router.get(
+    '/:id/cv/download',
+    checkPermission('applications', 'read'),
+    validateId,
+    applicationController.downloadApplicationCv
+);
+
 // GET /api/applications/:id - get by id
 router.get(
     '/:id',

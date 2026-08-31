@@ -5,34 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Get Quote Request</title>
 </head>
-<body style="margin:0; padding:0; background:#f4f6f8; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
-    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f4f6f8; padding:28px 12px;">
+<body style="margin:0; padding:0; background:#ffffff; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff; padding:28px 12px;">
         <tr>
             <td align="center">
-                <table width="720" cellpadding="0" cellspacing="0" role="presentation" style="max-width:720px; width:100%; background:#ffffff; border:1px solid #e5e7eb; border-radius:20px; overflow:hidden;">
+                <table width="720" cellpadding="0" cellspacing="0" role="presentation" style="max-width:720px; width:100%; background:#ffffff; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden;">
+                    {{emailHeader}}
                     <tr>
-                        <td align="center" style="background:#b81725; color:#ffffff; padding:30px 32px 26px;">
-                            <img src="cid:acero-logo" alt="Acero Building Systems" style="display:block; width:180px; max-width:100%; height:auto; margin:0 auto 18px; border:0; outline:none; text-decoration:none;">
-                            <div style="font-size:20px; line-height:1.4; font-weight:700; letter-spacing:.3px; margin:0;">New Get Quote Request</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding:34px 32px 36px;">
-                            <p style="font-size:15px; line-height:1.8; margin:0 0 16px; color:#374151;">A visitor submitted the Get Quote popup from the website header. The sales team can follow up using the details below.</p>
-                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate; border-spacing:0; margin-top:22px; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden;">
+                        <td style="padding:30px 30px 34px;">
+                            <h1 style="font-size:24px; line-height:1.3; margin:0 0 22px; color:#111827;">New Get Quote Request</h1>
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate; border-spacing:0; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden;">
                                 <tr><td style="width:210px; padding:13px 16px; border-bottom:1px solid #e5e7eb; background:#f8fafc; font-weight:700; font-size:13px; color:#111827;">Name</td><td style="padding:13px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#374151;">{{fullName}}</td></tr>
                                 <tr><td style="width:210px; padding:13px 16px; border-bottom:1px solid #e5e7eb; background:#f8fafc; font-weight:700; font-size:13px; color:#111827;">Email</td><td style="padding:13px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#374151;">{{email}}</td></tr>
+                                <tr><td style="width:210px; padding:13px 16px; border-bottom:1px solid #e5e7eb; background:#f8fafc; font-weight:700; font-size:13px; color:#111827;">Country</td><td style="padding:13px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#374151;">{{countryDisplay}}</td></tr>
                                 <tr><td style="width:210px; padding:13px 16px; border-bottom:1px solid #e5e7eb; background:#f8fafc; font-weight:700; font-size:13px; color:#111827;">Mobile</td><td style="padding:13px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#374151;">{{mobileNumberDisplay}}</td></tr>
                                 <tr><td style="width:210px; padding:13px 16px; border-bottom:1px solid #e5e7eb; background:#f8fafc; font-weight:700; font-size:13px; color:#111827;">Request Type</td><td style="padding:13px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#374151;">Get Quote</td></tr>
                                 <tr><td style="width:210px; padding:13px 16px; border-bottom:1px solid #e5e7eb; background:#f8fafc; font-weight:700; font-size:13px; color:#111827;">Submitted At</td><td style="padding:13px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; color:#374151;">{{submittedAt}}</td></tr>
                                 <tr><td style="width:210px; padding:13px 16px; background:#f8fafc; font-weight:700; font-size:13px; color:#111827;">Notes</td><td style="padding:13px 16px; font-size:13px; color:#374151;">{{message}}</td></tr>
                             </table>
-                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top:24px;"><tr><td align="center"><a href="{{adminListUrl}}" style="display:inline-block; background:#b81725; color:#ffffff; text-decoration:none; padding:13px 28px; border-radius:999px; font-size:14px; font-weight:700; letter-spacing:.3px;">Open Enquiries in Admin</a></td></tr></table>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="background:#111827; color:#ffffff; padding:18px 32px; font-size:12px; text-align:center;">Copyright (c) 2026 Acero Building Systems. All rights reserved.</td>
-                    </tr>
+                    {{emailFooter}}
                 </table>
             </td>
         </tr>

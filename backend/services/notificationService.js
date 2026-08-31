@@ -6,9 +6,15 @@ const User = require('../models/User');
 const FormConfiguration = require('../models/FormConfiguration');
 const Vacancy = require('../models/Vacancy');
 const SMTPSettings = require('../models/SMTPSettings');
+const FooterConfiguration = require('../models/FooterConfiguration');
 const { getAdminPanelUrl, getPublicSiteUrl } = require('../utils/urlHelper');
 
 const SMTP_CACHE_TTL_MS = 60000;
+const DEFAULT_EMAIL_SOCIAL_LINKS = [
+    { platform: 'Facebook', href: 'https://www.facebook.com/p/Acero-Building-Systems-100086609227894/' },
+    { platform: 'YouTube', href: 'https://www.youtube.com/@acerobuildingsystems7602' },
+    { platform: 'LinkedIn', href: 'https://ae.linkedin.com/company/acero-building-systems' }
+];
 
 // All outbound email templates pass user-entered values through this helper.
 // Keep it in place for any future form/workflow templates.
@@ -50,6 +56,48 @@ function getEmailDisplayValue(value, fallback = 'Not provided') {
     return normalized || fallback;
 }
 
+const EMAIL_COUNTRY_DIAL_CODES = {
+    'bahrain': '+973',
+    'bangladesh': '+880',
+    'egypt': '+20',
+    'india': '+91',
+    'kuwait': '+965',
+    'oman': '+968',
+    'pakistan': '+92',
+    'philippines': '+63',
+    'qatar': '+974',
+    'saudi arabia': '+966',
+    'united arab emirates': '+971',
+    'uae': '+971',
+    'united kingdom': '+44',
+    'united states': '+1'
+};
+
+function getCountryDialCode(country) {
+    return EMAIL_COUNTRY_DIAL_CODES[String(country || '').trim().toLowerCase()] || '';
+}
+
+function normalizePhoneForComparison(value) {
+    return String(value || '').replace(/[^\d+]/g, '');
+}
+
+function getMobileNumberDisplay(mobileNumber, countryCode, country) {
+    const mobile = getEmailDisplayValue(mobileNumber, '');
+    if (!mobile) return 'Not provided';
+
+    const code = getEmailDisplayValue(countryCode || getCountryDialCode(country), '');
+    if (!code) return mobile;
+
+    const normalizedMobile = normalizePhoneForComparison(mobile);
+    const normalizedCode = normalizePhoneForComparison(code);
+
+    if (normalizedCode && normalizedMobile.startsWith(normalizedCode)) {
+        return mobile;
+    }
+
+    return code + ' ' + mobile;
+}
+
 function getPurposeLabel(value) {
     const labels = {
         general: 'General Inquiry',
@@ -73,15 +121,24 @@ function getApplicationAdminListUrl() {
     return joinUrl(getAdminPanelUrl(), '/enquiries-applications/applications');
 }
 
+function getApplicationAdminCvUrl(application) {
+    if (!application?._id || !application?.cvFile?.url) {
+        return '';
+    }
+
+    return joinUrl(getAdminPanelUrl(), `/enquiries-applications/applications/${application._id}/cv`);
+}
+
 function getEmailLogoUrl() {
-    return joinUrl(getAdminPanelUrl(), '/images/logo-small.png');
+    return joinUrl(getPublicSiteUrl(), '/Logo/Logo.png');
 }
 
 function getEmailLogoAttachmentPath() {
     const candidates = [
-        path.join(__dirname, '..', '..', 'admin-panel', 'public', 'images', 'logo-small.png'),
-        path.join(__dirname, '..', '..', 'frontend', 'public', 'Logo', 'Logo-white.png'),
-        path.join(__dirname, '..', '..', 'admin-panel', 'public', 'images', 'frontend-logo.png')
+        path.join(__dirname, '..', '..', 'frontend', 'public', 'Logo', 'Logo.png'),
+        path.join(__dirname, '..', '..', 'admin-panel', 'public', 'images', 'frontend-logo.png'),
+        path.join(__dirname, '..', '..', 'admin-panel', 'public', 'images', 'Logo.png'),
+        path.join(__dirname, '..', '..', 'admin-panel', 'public', 'images', 'logo-small.png')
     ];
 
     for (const candidate of candidates) {
@@ -94,6 +151,116 @@ function getEmailLogoAttachmentPath() {
     }
 
     return '';
+}
+
+function getSocialIconKey(platform = '') {
+    const normalized = String(platform).trim().toLowerCase();
+    if (normalized.includes('linkedin') || normalized.includes('linkdin') || normalized.includes('linked in')) {
+        return 'linkedin';
+    }
+    if (normalized.includes('facebook')) {
+        return 'facebook';
+    }
+    if (normalized.includes('instagram')) {
+        return 'instagram';
+    }
+    if (normalized.includes('youtube')) {
+        return 'youtube';
+    }
+    if (normalized.includes('twitter') || normalized === 'x') {
+        return 'x';
+    }
+    return 'generic';
+}
+
+function getEmailSocialIconAttachmentPath(iconKey) {
+    const candidate = path.join(__dirname, '..', 'templates', 'emails', 'assets', `social-${iconKey}.png`);
+    try {
+        require('fs').accessSync(candidate);
+        return candidate;
+    } catch (error) {
+        return '';
+    }
+}
+
+function normalizeSocialLinks(footer) {
+    const configuredLinks = Array.isArray(footer?.socialLinks)
+        ? footer.socialLinks
+            .filter((link) => link?.isFieldActive && link?.href && link.href !== '#')
+            .map((link) => ({
+                platform: getEmailDisplayValue(link.platform, 'Social'),
+                href: link.href
+            }))
+        : [];
+
+    return configuredLinks.length > 0 ? configuredLinks : DEFAULT_EMAIL_SOCIAL_LINKS;
+}
+
+function buildEmailHeader() {
+    return `
+                    <tr>
+                        <td align="left" style="background:#ffffff; padding:20px 30px 16px; border-bottom:1px solid #e5e7eb;">
+                            <img src="cid:acero-logo" alt="Acero Building Systems" width="132" height="45" style="display:block; width:132px; max-width:132px; height:45px; border:0; outline:none; text-decoration:none;">
+                        </td>
+                    </tr>`;
+}
+
+function buildEmailFooter(publicSiteUrl, socialLinks) {
+    const linksHtml = socialLinks.map((social) => {
+        const platform = escapeEmailHtml(social.platform);
+        const href = escapeEmailHtml(social.href);
+        const iconKey = getSocialIconKey(social.platform);
+        const iconCid = `social-${iconKey}`;
+
+        return `
+                                            <td width="54" align="center" style="width:54px; padding:0 0 0 8px;">
+                                                <a href="${href}" target="_blank" rel="noopener noreferrer" title="${platform}" style="text-decoration:none;">
+                                                    <img src="cid:${iconCid}" alt="${platform}" width="44" height="44" style="display:block; width:44px; max-width:44px; height:44px; border:0; outline:none; text-decoration:none;">
+                                                </a>
+                                            </td>`;
+    }).join('');
+
+    return `
+                    <tr>
+                        <td style="background:#f8fafc; padding:22px 30px; border-top:1px solid #e5e7eb;">
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                <tr>
+                                    <td align="left" style="vertical-align:middle;">
+                                        <a href="${publicSiteUrl}" style="text-decoration:none;" target="_blank" rel="noopener noreferrer">
+                                            <img src="cid:acero-logo" alt="Acero Building Systems" width="118" height="41" style="display:block; width:118px; max-width:118px; height:41px; border:0; outline:none; text-decoration:none;">
+                                        </a>
+                                        <div style="margin-top:8px; font-size:12px; line-height:1.6; color:#6b7280;">
+                                            <a href="${publicSiteUrl}" style="color:#6b7280; text-decoration:none;" target="_blank" rel="noopener noreferrer">${publicSiteUrl}</a>
+                                        </div>
+                                    </td>
+                                    <td align="right" style="vertical-align:middle; white-space:nowrap;">
+                                        <table cellpadding="0" cellspacing="0" role="presentation" align="right">
+                                            <tr>${linksHtml}
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>`;
+}
+
+async function getEmailTemplateData() {
+    const publicSiteUrl = escapeEmailHtml(getPublicSiteUrl());
+    let footer = null;
+
+    try {
+        footer = await FooterConfiguration.getPublished();
+    } catch (error) {
+        console.warn('Failed to load footer configuration for email branding:', error.message);
+    }
+
+    return {
+        publicSiteUrl,
+        emailLogoUrl: escapeEmailHtml(getEmailLogoUrl()),
+        emailHeader: buildEmailHeader(),
+        emailFooter: buildEmailFooter(publicSiteUrl, normalizeSocialLinks(footer))
+    };
 }
 const STAGED_COMPARE_RESOURCES = new Set(['project', 'vacancy']);
 
@@ -241,7 +408,10 @@ class NotificationService {
                 return false;
             }
 
-            const html = this.replacePlaceholders(template, data);
+            const html = this.replacePlaceholders(template, {
+                ...(await getEmailTemplateData()),
+                ...data
+            });
 
             const mailOptions = {
                 from: from || `${process.env.EMAIL_FROM_NAME || 'Acero CMS'} <${process.env.EMAIL_FROM || 'noreply@acero.com'}>`,
@@ -250,17 +420,35 @@ class NotificationService {
                 html
             };
 
+            const attachments = [];
+
             if (html.includes('cid:acero-logo')) {
                 const logoPath = getEmailLogoAttachmentPath();
                 if (logoPath) {
-                    mailOptions.attachments = [
-                        {
-                            filename: 'acero-logo.png',
-                            path: logoPath,
-                            cid: 'acero-logo'
-                        }
-                    ];
+                    attachments.push({
+                        filename: 'acero-logo.png',
+                        path: logoPath,
+                        cid: 'acero-logo'
+                    });
                 }
+            }
+
+            ['linkedin', 'facebook', 'instagram', 'youtube', 'x', 'generic'].forEach((iconKey) => {
+                const cid = `social-${iconKey}`;
+                if (!html.includes(`cid:${cid}`)) return;
+
+                const iconPath = getEmailSocialIconAttachmentPath(iconKey);
+                if (!iconPath) return;
+
+                attachments.push({
+                    filename: `${cid}.png`,
+                    path: iconPath,
+                    cid
+                });
+            });
+
+            if (attachments.length > 0) {
+                mailOptions.attachments = attachments;
             }
 
             const info = await transport.sendMail(mailOptions);
@@ -909,12 +1097,15 @@ class NotificationService {
 
             const templateName = isQuote ? 'get-quote-submitted' : 'enquiry-submitted';
             const submittedAt = escapeEmailHtml(formatEmailDate(enquiry.submittedAt));
-            const mobileNumberDisplay = escapeEmailHtml(getEmailDisplayValue(enquiry.mobileNumber));
+            const mobileNumberDisplay = escapeEmailHtml(
+                getMobileNumberDisplay(enquiry.mobileNumber, enquiry.countryCode, enquiry.country)
+            );
 
             const data = isQuote
                 ? {
                     fullName: escapeEmailHtml(enquiry.fullName || ''),
                     email: escapeEmailHtml(enquiry.email || ''),
+                    countryDisplay: escapeEmailHtml(getEmailDisplayValue(enquiry.country)),
                     mobileNumberDisplay,
                     submittedAt,
                     message: escapeEmailHtml(getEmailDisplayValue(enquiry.message, 'Website header Get Quote popup submitted.')),
@@ -952,7 +1143,10 @@ class NotificationService {
                 email: escapeEmailHtml(enquiry.email || ''),
                 subject: escapeEmailHtml(enquiry.subject || ''),
                 purpose: escapeEmailHtml(getPurposeLabel(enquiry.purpose)),
-                mobileNumberDisplay: escapeEmailHtml(getEmailDisplayValue(enquiry.mobileNumber)),
+                countryDisplay: escapeEmailHtml(getEmailDisplayValue(enquiry.country)),
+                mobileNumberDisplay: escapeEmailHtml(
+                    getMobileNumberDisplay(enquiry.mobileNumber, enquiry.countryCode, enquiry.country)
+                ),
                 submittedAt: escapeEmailHtml(formatEmailDate(enquiry.submittedAt)),
                 publicSiteUrl: escapeEmailHtml(getPublicSiteUrl()),
                 emailLogoUrl: escapeEmailHtml(getEmailLogoUrl())
@@ -986,7 +1180,9 @@ class NotificationService {
                 fullName: escapeEmailHtml(fullName),
                 vacancyTitle: escapeEmailHtml(vacancy?.title || 'the selected position'),
                 department: escapeEmailHtml(getEmailDisplayValue(vacancy?.department)),
-                mobileNumberDisplay: escapeEmailHtml(getEmailDisplayValue(application.mobileNumber)),
+                mobileNumberDisplay: escapeEmailHtml(
+                    getMobileNumberDisplay(application.mobileNumber, application.countryCode, application.country)
+                ),
                 submittedAt: escapeEmailHtml(formatEmailDate(application.submittedAt)),
                 publicSiteUrl: escapeEmailHtml(getPublicSiteUrl()),
                 emailLogoUrl: escapeEmailHtml(getEmailLogoUrl())
@@ -1027,7 +1223,9 @@ class NotificationService {
             const data = {
                 fullName: escapeEmailHtml(fullName),
                 email: escapeEmailHtml(application.email || ''),
-                mobileNumberDisplay: escapeEmailHtml(getEmailDisplayValue(application.mobileNumber)),
+                mobileNumberDisplay: escapeEmailHtml(
+                    getMobileNumberDisplay(application.mobileNumber, application.countryCode, application.country)
+                ),
                 countryDisplay: escapeEmailHtml(getEmailDisplayValue(application.country)),
                 vacancyTitle: escapeEmailHtml(vacancy?.title || ''),
                 department: escapeEmailHtml(getEmailDisplayValue(vacancy?.department)),
@@ -1041,7 +1239,7 @@ class NotificationService {
                 ),
                 coverLetterDisplay: escapeEmailHtml(getEmailDisplayValue(application.coverLetter)),
                 submittedAt: escapeEmailHtml(formatEmailDate(application.submittedAt)),
-                cvUrl: escapeEmailHtml(application.cvFile?.url || ''),
+                cvUrl: escapeEmailHtml(getApplicationAdminCvUrl(application)),
                 adminListUrl: escapeEmailHtml(getApplicationAdminListUrl())
             };
 

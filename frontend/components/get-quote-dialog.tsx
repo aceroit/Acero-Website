@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { countriesWithDialCodes, getDialCodeForCountry } from "@/lib/countries"
 import { submitGetQuote } from "@/services/enquiry.service"
 import { getRecaptchaToken } from "@/services/recaptcha.service"
 
@@ -26,6 +27,8 @@ interface GetQuoteDialogProps {
 interface QuoteFormData {
   fullName: string
   email: string
+  country: string
+  countryCode: string
   mobileNumber: string
 }
 
@@ -38,10 +41,24 @@ interface QuoteFormErrors {
 const INITIAL_FORM_DATA: QuoteFormData = {
   fullName: "",
   email: "",
+  country: "United Arab Emirates",
+  countryCode: "+971",
   mobileNumber: "",
 }
 
-const MOBILE_NUMBER_REGEX = /^[0-9+\-\s()]{6,20}$/
+const MOBILE_NUMBER_REGEX = /^[0-9\-\s()]{6,20}$/
+const COUNTRY_OPTIONS = countriesWithDialCodes
+  .filter((country) => country.dialCode)
+  .map((country) => ({
+    value: country.value,
+    label: country.label,
+  }))
+  .sort((first, second) => first.label.localeCompare(second.label))
+
+const CODE_FIELD_CLASSES = cn(
+  "h-12 w-24 shrink-0 cursor-default rounded-md border border-input bg-muted/50 px-3",
+  "text-center text-sm font-semibold text-foreground shadow-sm outline-none sm:w-28"
+)
 
 export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
   const router = useRouter()
@@ -98,10 +115,13 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
 
     try {
       const recaptchaToken = await getRecaptchaToken("get_quote_submit")
+      const mobileNumber = formData.mobileNumber.trim()
       await submitGetQuote({
         fullName: formData.fullName.trim(),
         email: formData.email.trim().toLowerCase(),
-        mobileNumber: formData.mobileNumber.trim() || undefined,
+        country: mobileNumber ? formData.country : undefined,
+        countryCode: mobileNumber ? formData.countryCode : undefined,
+        mobileNumber: mobileNumber ? `${formData.countryCode} ${mobileNumber}` : undefined,
         recaptchaToken,
       })
 
@@ -176,15 +196,45 @@ export function GetQuoteDialog({ open, onOpenChange }: GetQuoteDialogProps) {
             <Label htmlFor="quote-mobile" className="text-sm font-semibold text-foreground">
               Mobile
             </Label>
-            <div className="relative">
-              <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <select
+              id="quote-country"
+              aria-label="Country"
+              value={formData.country}
+              onChange={(event) => {
+                const country = event.target.value
+                setFormData((prev) => ({
+                  ...prev,
+                  country,
+                  countryCode: getDialCodeForCountry(country) || prev.countryCode,
+                }))
+              }}
+              className="h-12 w-full rounded-md border border-input bg-background px-3 text-sm font-medium text-foreground shadow-sm outline-none transition-colors focus:border-ring focus:ring-2 focus:ring-ring/20"
+            >
+              {COUNTRY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <div className="flex min-w-0 gap-2">
               <Input
-                id="quote-mobile"
-                value={formData.mobileNumber}
-                onChange={(event) => setFormData((prev) => ({ ...prev, mobileNumber: event.target.value }))}
-                className={cn("h-11 pl-10 sm:h-12", errors.mobileNumber && "border-destructive")}
-                placeholder="Enter your mobile number"
+                aria-label="Country code"
+                readOnly
+                tabIndex={-1}
+                value={formData.countryCode}
+                className={CODE_FIELD_CLASSES}
               />
+              <div className="relative min-w-0 flex-1">
+                <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="quote-mobile"
+                  type="tel"
+                  value={formData.mobileNumber}
+                  onChange={(event) => setFormData((prev) => ({ ...prev, mobileNumber: event.target.value }))}
+                  className={cn("h-12 pl-10", errors.mobileNumber && "border-destructive")}
+                  placeholder="Mobile number"
+                />
+              </div>
             </div>
             <p className="text-xs text-muted-foreground">Optional, but helpful if you want a quicker callback.</p>
             {errors.mobileNumber ? (

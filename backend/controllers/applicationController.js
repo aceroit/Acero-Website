@@ -6,6 +6,7 @@ const Vacancy = require('../models/Vacancy');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const notificationService = require('../services/notificationService');
 const { getUploadRoot } = require('../utils/localFileStorage');
+const { getAdminPanelUrl } = require('../utils/urlHelper');
 
 function escapeRegExp(value = '') {
     return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -48,7 +49,10 @@ function getSubmittedDate(application) {
 }
 
 function getCvUrl(application) {
-    return application.cvFile?.url || '';
+    if (!application.cvFile?.url || !application._id) return '';
+
+    const adminBaseUrl = getAdminPanelUrl().replace(/\/+$/, '');
+    return `${adminBaseUrl}/enquiries-applications/applications/${application._id}/cv`;
 }
 
 function getCvRelativePath(application) {
@@ -92,6 +96,10 @@ function getCvExtension(application) {
     }
 
     return '.pdf';
+}
+
+function getCvDownloadFilename(application) {
+    return `${sanitizeFilename(getApplicationName(application))}${getCvExtension(application)}`;
 }
 
 function formatDateTime(value) {
@@ -220,6 +228,21 @@ function sendDownload(res, buffer, filename, contentType) {
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Length', buffer.length);
     return res.send(buffer);
+}
+
+function sendCvFile(res, application, disposition = 'inline') {
+    const cvPath = getCvLocalPath(application);
+    if (!cvPath || !fs.existsSync(cvPath)) {
+        return errorResponse(res, 404, 'CV file not found');
+    }
+
+    const filename = getCvDownloadFilename(application);
+    const stat = fs.statSync(cvPath);
+
+    res.setHeader('Content-Type', application.cvFile?.mimeType || 'application/pdf');
+    res.setHeader('Content-Disposition', `${disposition}; filename="${filename}"`);
+    res.setHeader('Content-Length', stat.size);
+    return fs.createReadStream(cvPath).pipe(res);
 }
 
 function buildExcelBuffer(applications) {
@@ -932,6 +955,34 @@ exports.exportApplicationsZip = async (req, res) => {
     } catch (error) {
         console.error('Error in exportApplicationsZip:', error);
         return errorResponse(res, 500, 'Failed to export application CVs', error.message);
+    }
+};
+
+exports.viewApplicationCv = async (req, res) => {
+    try {
+        const application = await Application.findOne({ _id: req.params.id, isActive: true });
+        if (!application) {
+            return errorResponse(res, 404, 'Application not found');
+        }
+
+        return sendCvFile(res, application, 'inline');
+    } catch (error) {
+        console.error('Error in viewApplicationCv:', error);
+        return errorResponse(res, 500, 'Failed to open CV file', error.message);
+    }
+};
+
+exports.downloadApplicationCv = async (req, res) => {
+    try {
+        const application = await Application.findOne({ _id: req.params.id, isActive: true });
+        if (!application) {
+            return errorResponse(res, 404, 'Application not found');
+        }
+
+        return sendCvFile(res, application, 'attachment');
+    } catch (error) {
+        console.error('Error in downloadApplicationCv:', error);
+        return errorResponse(res, 500, 'Failed to download CV file', error.message);
     }
 };
 

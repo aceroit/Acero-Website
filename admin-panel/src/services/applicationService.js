@@ -18,6 +18,20 @@ export const downloadApplicationsExport = async (format, params = {}) => {
   return response;
 };
 
+export const viewApplicationCv = async (id) => {
+  const response = await API.get(`/applications/${id}/cv`, {
+    responseType: 'blob',
+  });
+  return response;
+};
+
+export const downloadApplicationCv = async (id) => {
+  const response = await API.get(`/applications/${id}/cv/download`, {
+    responseType: 'blob',
+  });
+  return response;
+};
+
 export const getApplication = async (id) => {
   const response = await API.get(`/applications/${id}`);
   return response.data;
