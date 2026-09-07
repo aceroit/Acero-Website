@@ -90,7 +90,9 @@ exports.uploadMedia = async (req, res) => {
             'File type',
             'File size',
             'No file provided',
-            'No files provided'
+            'No files provided',
+            'already exists',
+            'Please rename the file'
         ];
         const isValidationError = validationMessages.some((message) =>
             error.message?.includes(message)

@@ -1094,8 +1094,13 @@ router.post('/upload-cv', uploadCvRateLimit, uploadMiddleware, async (req, res) 
             return errorResponse(res, 400, 'File size exceeds 2MB limit');
         }
 
-        // Save CV locally under UPLOAD_ROOT/career-applications/cv
-        const savedFile = await saveUploadedFile(file, 'career-applications/cv');
+        // Public applicants often upload generic names like cv.pdf. Keep CV
+        // storage unique while the admin/email download routes present a
+        // candidate-friendly filename.
+        const savedFile = await saveUploadedFile(file, 'career-applications/cv', {
+            namingStrategy: 'generated',
+            rejectDuplicateFilename: false
+        });
 
         return successResponse(res, 201, 'CV uploaded successfully', {
             cvFile: {

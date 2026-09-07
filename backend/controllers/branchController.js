@@ -1,6 +1,7 @@
 const Branch = require('../models/Branch');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent } = require('../utils/workflowStatusValidator');
+const { clearPublicCache } = require('../services/publicContentCache');
 
 /**
  * Get all branches (with filters and pagination)
@@ -112,6 +113,7 @@ exports.createBranch = async (req, res) => {
 
         const branch = new Branch(branchData);
         await branch.save();
+        clearPublicCache('branch created');
 
         const populatedBranch = await Branch.findById(branch._id)
             .populate('country', 'name code')
@@ -172,6 +174,7 @@ exports.updateBranch = async (req, res) => {
 
         branch.updatedBy = req.user._id;
         await branch.save();
+        clearPublicCache('branch updated');
 
         const updatedBranch = await Branch.findById(branch._id)
             .populate('country', 'name code')
@@ -218,6 +221,7 @@ exports.deleteBranch = async (req, res) => {
         branch.isActive = false;
         branch.updatedBy = req.user._id;
         await branch.save();
+        clearPublicCache('branch deleted');
 
         return successResponse(
             res,
@@ -264,6 +268,7 @@ exports.reorderBranches = async (req, res) => {
         }));
 
         await Branch.reorderBranches(mappedOrders);
+        clearPublicCache('branches reordered');
 
         return successResponse(res, 200, 'Branches reordered successfully', null);
     } catch (error) {

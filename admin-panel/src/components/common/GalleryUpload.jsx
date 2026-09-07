@@ -6,6 +6,20 @@ import { toast } from 'react-toastify';
 import MediaPicker from './MediaPicker';
 import { getCmsAssetUrl, normalizeMediaObject } from '../../utils/cmsAssetUrl';
 
+function getMediaFilename(media) {
+  if (!media) return '';
+
+  if (media.filename || media.originalName) {
+    return media.filename || media.originalName;
+  }
+
+  const rawPath = media.publicId || media.public_id || media.url || media.secureUrl || '';
+  const cleanPath = String(rawPath).split('?')[0].replace(/\\/g, '/');
+  const name = cleanPath.split('/').filter(Boolean).pop();
+
+  return name || '';
+}
+
 /**
  * Gallery Upload Component
  * Handles multiple image uploads with preview and ordering
@@ -65,6 +79,8 @@ const GalleryUpload = ({
         const imageData = normalizeMediaObject({
           url: uploadedMedia.url || uploadedMedia.secureUrl || uploadedMedia.secure_url,
           publicId: uploadedMedia.publicId || uploadedMedia.public_id,
+          filename: uploadedMedia.filename,
+          originalName: uploadedMedia.originalName,
           width: uploadedMedia.width,
           height: uploadedMedia.height,
           altText: uploadedMedia.altText || file.name,
@@ -108,6 +124,8 @@ const GalleryUpload = ({
         normalizeMediaObject({
           url: media.secureUrl || media.secure_url || media.url,
           publicId: media.publicId || media.public_id,
+          filename: media.filename,
+          originalName: media.originalName,
           width: media.width,
           height: media.height,
           altText: media.altText || media.filename || `Gallery image ${normalizedImages.length + index + 1}`,
@@ -190,6 +208,11 @@ const GalleryUpload = ({
                   />
                 )}
                 <div className="mt-2">
+                  {getMediaFilename(image) && (
+                    <div className="mb-1 truncate text-xs text-gray-600" title={getMediaFilename(image)}>
+                      {getMediaFilename(image)}
+                    </div>
+                  )}
                   <Input
                     placeholder="Alt text"
                     value={image.altText || ''}

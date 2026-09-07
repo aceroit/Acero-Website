@@ -6,6 +6,20 @@ import { toast } from 'react-toastify';
 import MediaPicker from './MediaPicker';
 import { getCmsAssetUrl, normalizeMediaObject } from '../../utils/cmsAssetUrl';
 
+function getMediaFilename(media) {
+  if (!media) return '';
+
+  if (media.filename || media.originalName) {
+    return media.filename || media.originalName;
+  }
+
+  const rawPath = media.publicId || media.public_id || media.url || media.secureUrl || '';
+  const cleanPath = String(rawPath).split('?')[0].replace(/\\/g, '/');
+  const name = cleanPath.split('/').filter(Boolean).pop();
+
+  return name || '';
+}
+
 function getUploadErrorMessage(error, maxSize) {
   const status = error?.response?.status;
   const serverMessage = error?.response?.data?.message;
@@ -56,6 +70,10 @@ const ImageUpload = ({
   const previewSrc = useMemo(
     () => localPreviewUrl || getCmsAssetUrl(normalizedValue) || '',
     [localPreviewUrl, normalizedValue]
+  );
+  const displayFilename = useMemo(
+    () => getMediaFilename(normalizedValue),
+    [normalizedValue]
   );
 
   useEffect(() => {
@@ -117,6 +135,8 @@ const ImageUpload = ({
         const imageData = normalizeMediaObject({
           url: uploadedMedia.url || uploadedMedia.secureUrl || uploadedMedia.secure_url,
           publicId: uploadedMedia.publicId || uploadedMedia.public_id,
+          filename: uploadedMedia.filename,
+          originalName: uploadedMedia.originalName,
           width: uploadedMedia.width,
           height: uploadedMedia.height,
         });
@@ -150,6 +170,8 @@ const ImageUpload = ({
       const imageData = normalizeMediaObject({
         url: media.secureUrl || media.secure_url || media.url,
         publicId: media.publicId || media.public_id,
+        filename: media.filename,
+        originalName: media.originalName,
         width: media.width,
         height: media.height,
         _id: media._id,
@@ -209,6 +231,11 @@ const ImageUpload = ({
                 className="absolute -top-2 -right-2 bg-white shadow-md hover:bg-red-50"
                 size="small"
               />
+            )}
+            {displayFilename && (
+              <div className="mt-1 max-w-[200px] truncate text-xs text-gray-600" title={displayFilename}>
+                {displayFilename}
+              </div>
             )}
           </div>
         )}

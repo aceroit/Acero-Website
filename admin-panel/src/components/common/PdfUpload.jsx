@@ -5,6 +5,17 @@ import * as mediaService from '../../services/mediaService';
 import { toast } from 'react-toastify';
 import { getCmsAssetUrl } from '../../utils/cmsAssetUrl';
 
+function getFilenameFromUrl(url) {
+  const cleanPath = String(url || '').split('?')[0].replace(/\\/g, '/');
+  const filename = cleanPath.split('/').filter(Boolean).pop();
+
+  try {
+    return filename ? decodeURIComponent(filename) : '';
+  } catch (error) {
+    return filename || '';
+  }
+}
+
 /**
  * PDF Upload Component â€“ uploads PDF and returns file URL.
  *
@@ -26,6 +37,7 @@ const PdfUpload = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const fileUrl = useMemo(() => getCmsAssetUrl(value), [value]);
+  const filename = useMemo(() => getFilenameFromUrl(fileUrl), [fileUrl]);
 
   const handleUpload = async (file) => {
     const fileExt = (file.name || '').split('.').pop().toLowerCase();
@@ -81,8 +93,9 @@ const PdfUpload = ({
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
+              title={filename || 'View / Download PDF'}
             >
-              <FilePdfOutlined /> View / Download PDF
+              <FilePdfOutlined /> {filename || 'View / Download PDF'}
             </a>
             {!disabled && (
               <Button

@@ -3,19 +3,23 @@
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
 import { GoogleMaps } from "./google-maps"
-import { branchesData } from "@/utils/branches-data"
+import { useBranches } from "@/hooks/use-branches"
 
 export function FullWidthMapSection() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const { countries } = useBranches()
 
-  // Get all active branches with their coordinates
-  const markers = branchesData
-    .filter((branch) => branch.isActive)
+  const branches = countries.flatMap((country) => country.branches)
+
+  // Use the same published branch records as the contact accordions, so the
+  // full-width map follows admin-managed branch locations instead of old static data.
+  const markers = branches
+    .filter((branch) => branch.coordinates?.lat != null && branch.coordinates?.lng != null)
     .map((branch) => ({
-      lat: branch.coordinates.lat,
-      lng: branch.coordinates.lng,
-      label: branch.location,
+      lat: branch.coordinates!.lat,
+      lng: branch.coordinates!.lng,
+      label: branch.name,
     }))
 
   // Calculate center point (average of all coordinates)

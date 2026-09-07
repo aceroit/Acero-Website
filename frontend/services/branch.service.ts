@@ -18,6 +18,7 @@ interface ApiBranch {
   email?: string | null
   phone?: string | null
   logo?: { url?: string | null } | null
+  coordinates?: { lat?: number | null; lng?: number | null } | null
 }
 
 /** UI branch shape (used by BranchSelectorSection and BranchAccordionItem) */
@@ -98,6 +99,11 @@ function extractCoordinatesFromGoogleLink(googleLink?: string | null): { lat: nu
 
 function transformBranch(api: ApiBranch): Branch {
   const location = [api.state, api.city].filter(Boolean).join(', ') || api.city || ''
+  const savedCoordinates =
+    Number.isFinite(api.coordinates?.lat) && Number.isFinite(api.coordinates?.lng)
+      ? { lat: Number(api.coordinates?.lat), lng: Number(api.coordinates?.lng) }
+      : null
+
   return {
     _id: api._id,
     name: api.branchName,
@@ -109,7 +115,7 @@ function transformBranch(api: ApiBranch): Branch {
     address: api.address ?? '',
     logo: api.logo?.url ?? null,
     googleLink: api.googleLink,
-    coordinates: extractCoordinatesFromGoogleLink(api.googleLink),
+    coordinates: savedCoordinates || extractCoordinatesFromGoogleLink(api.googleLink),
   }
 }
 

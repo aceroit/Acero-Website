@@ -1,6 +1,5 @@
 const fs = require("fs")
 const path = require("path")
-const crypto = require("crypto")
 const os = require("os")
 
 // Upload storage contract:
@@ -107,6 +106,29 @@ function getExt(filename = "") {
   return path.extname(filename).toLowerCase()
 }
 
+function slugifyFileBasename(filename = "") {
+  const rawName = path.parse(String(filename || "file")).name
+
+  const slug = rawName
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/['’]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-")
+    .toLowerCase()
+    .slice(0, 120)
+    .replace(/-+$/g, "")
+
+  return slug || "file"
+}
+
+function getSeoFriendlyFilename(originalName = "file") {
+  const ext = getExt(originalName)
+  return `${slugifyFileBasename(originalName)}${ext}`
+}
+
 function getMimeType(ext) {
   const map = {
     ".pdf": "application/pdf",
@@ -155,7 +177,65 @@ function assertInsideUploadRoot(targetPath) {
   }
 }
 
-async function saveUploadedFile(file, folder = "uploads") {
+function findExistingFilename(rootDir, filename) {
+  if (!fs.existsSync(rootDir)) {
+    return null
+  }
+
+  const stack = [rootDir]
+  const targetName = String(filename || "").toLowerCase()
+
+  while (stack.length > 0) {
+    const currentDir = stack.pop()
+    let entries = []
+
+    try {
+      entries = fs.readdirSync(currentDir, { withFileTypes: true })
+    } catch (error) {
+      continue
+    }
+
+    for (const entry of entries) {
+      const entryPath = path.join(currentDir, entry.name)
+
+      if (entry.isDirectory()) {
+        stack.push(entryPath)
+        continue
+      }
+
+      if (entry.name.toLowerCase() === targetName) {
+        return entryPath
+      }
+    }
+  }
+
+  return null
+}
+
+function createStoredFilename(originalName, uploadRoot, options = {}) {
+  const namingStrategy = options.namingStrategy || "seo-friendly"
+
+  if (namingStrategy === "generated") {
+    const crypto = require("crypto")
+    return `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${getExt(originalName)}`
+  }
+
+  const storedFilename = getSeoFriendlyFilename(originalName)
+
+  if (options.rejectDuplicateFilename !== false) {
+    const existingPath = findExistingFilename(uploadRoot, storedFilename)
+
+    if (existingPath) {
+      throw new Error(
+        `A file named "${storedFilename}" already exists. Please rename the file and upload again.`
+      )
+    }
+  }
+
+  return storedFilename
+}
+
+async function saveUploadedFile(file, folder = "uploads", options = {}) {
   const uploadRoot = getUploadRoot()
   const cleanFolder = safeFolder(folder)
   const targetDir = path.join(uploadRoot, cleanFolder)
@@ -163,26 +243,34 @@ async function saveUploadedFile(file, folder = "uploads") {
   assertInsideUploadRoot(targetDir)
   fs.mkdirSync(targetDir, { recursive: true })
 
-  // Save with a generated filename but retain originalName for admin display
-  // and downloadable exports.
   const originalName = file.name || file.originalname || "file"
   const ext = getExt(originalName)
   const mimeType = getMimeType(ext)
-  const storedFilename = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${ext}`
+  const storedFilename = createStoredFilename(originalName, uploadRoot, options)
   const targetPath = path.join(targetDir, storedFilename)
 
   assertInsideUploadRoot(targetPath)
 
-  if (file.tempFilePath) {
-    fs.copyFileSync(file.tempFilePath, targetPath)
-  } else if (file.path) {
-    fs.copyFileSync(file.path, targetPath)
-  } else if (file.data) {
-    fs.writeFileSync(targetPath, file.data)
-  } else if (file.buffer) {
-    fs.writeFileSync(targetPath, file.buffer)
-  } else {
-    throw new Error("Invalid uploaded file object")
+  try {
+    if (file.tempFilePath) {
+      fs.copyFileSync(file.tempFilePath, targetPath, fs.constants.COPYFILE_EXCL)
+    } else if (file.path) {
+      fs.copyFileSync(file.path, targetPath, fs.constants.COPYFILE_EXCL)
+    } else if (file.data) {
+      fs.writeFileSync(targetPath, file.data, { flag: "wx" })
+    } else if (file.buffer) {
+      fs.writeFileSync(targetPath, file.buffer, { flag: "wx" })
+    } else {
+      throw new Error("Invalid uploaded file object")
+    }
+  } catch (error) {
+    if (error.code === "EEXIST") {
+      throw new Error(
+        `A file named "${storedFilename}" already exists. Please rename the file and upload again.`
+      )
+    }
+
+    throw error
   }
 
   fs.chmodSync(targetPath, 0o644)
@@ -195,7 +283,7 @@ async function saveUploadedFile(file, folder = "uploads") {
     url,
     secureUrl: url,
     publicId: relativePath,
-    filename: originalName,
+    filename: storedFilename,
     originalName,
     storedFilename,
     size: file.size || stat.size,
