@@ -22,15 +22,6 @@ export function FullWidthMapSection() {
       label: branch.name,
     }))
 
-  // Calculate center point (average of all coordinates)
-  const center =
-    markers.length > 0
-      ? {
-          lat: markers.reduce((sum, m) => sum + m.lat, 0) / markers.length,
-          lng: markers.reduce((sum, m) => sum + m.lng, 0) / markers.length,
-        }
-      : undefined
-
   return (
     <motion.section
       ref={ref}
@@ -49,7 +40,6 @@ export function FullWidthMapSection() {
         <div className="h-full w-full">
           <GoogleMaps
             markers={markers}
-            center={center}
             zoom={4}
             height="100%"
             className="h-full w-full"
