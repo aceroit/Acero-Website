@@ -1,14 +1,8 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo } from "react"
+import { MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getPublicGoogleMapsApiKey } from "@/services/google-maps.service"
-
-declare global {
-  interface Window {
-    google?: any
-  }
-}
 
 interface Marker {
   lat: number
@@ -24,47 +18,6 @@ interface GoogleMapsProps {
   className?: string
 }
 
-const scriptLoaders = new Map<string, Promise<void>>()
-
-function loadGoogleMapsScript(apiKey: string) {
-  if (typeof window === "undefined") {
-    return Promise.resolve()
-  }
-
-  if (window.google?.maps) {
-    return Promise.resolve()
-  }
-
-  const existingLoader = scriptLoaders.get(apiKey)
-  if (existingLoader) {
-    return existingLoader
-  }
-
-  const loader = new Promise<void>((resolve, reject) => {
-    const existingScript = document.querySelector<HTMLScriptElement>(
-      `script[data-acero-google-maps="true"]`
-    )
-
-    if (existingScript) {
-      existingScript.addEventListener("load", () => resolve(), { once: true })
-      existingScript.addEventListener("error", reject, { once: true })
-      return
-    }
-
-    const script = document.createElement("script")
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}`
-    script.async = true
-    script.defer = true
-    script.dataset.aceroGoogleMaps = "true"
-    script.onload = () => resolve()
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
-
-  scriptLoaders.set(apiKey, loader)
-  return loader
-}
-
 function isValidMarker(marker: Marker) {
   return (
     Number.isFinite(marker.lat) &&
@@ -76,6 +29,58 @@ function isValidMarker(marker: Marker) {
   )
 }
 
+function toMercatorPoint(marker: Marker) {
+  const sinLat = Math.sin((marker.lat * Math.PI) / 180)
+
+  return {
+    x: (marker.lng + 180) / 360,
+    y: 0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI),
+  }
+}
+
+function getOverlayBounds(markers: Marker[]) {
+  const points = markers.map(toMercatorPoint)
+  const xs = points.map((point) => point.x)
+  const ys = points.map((point) => point.y)
+  const minX = Math.min(...xs)
+  const maxX = Math.max(...xs)
+  const minY = Math.min(...ys)
+  const maxY = Math.max(...ys)
+  const width = Math.max(maxX - minX, 0.01)
+  const height = Math.max(maxY - minY, 0.01)
+  const paddingX = width * 0.2
+  const paddingY = height * 0.24
+
+  return {
+    minX: Math.max(0, minX - paddingX),
+    maxX: Math.min(1, maxX + paddingX),
+    minY: Math.max(0, minY - paddingY),
+    maxY: Math.min(1, maxY + paddingY),
+  }
+}
+
+function getOverlayPosition(marker: Marker, bounds: ReturnType<typeof getOverlayBounds>) {
+  const point = toMercatorPoint(marker)
+  const width = Math.max(bounds.maxX - bounds.minX, 0.01)
+  const height = Math.max(bounds.maxY - bounds.minY, 0.01)
+
+  return {
+    left: `${((point.x - bounds.minX) / width) * 100}%`,
+    top: `${((point.y - bounds.minY) / height) * 100}%`,
+  }
+}
+
+function getMapCenter(markers: Marker[], center?: { lat: number; lng: number }) {
+  if (center) {
+    return center
+  }
+
+  return {
+    lat: markers.reduce((sum, marker) => sum + marker.lat, 0) / markers.length,
+    lng: markers.reduce((sum, marker) => sum + marker.lng, 0) / markers.length,
+  }
+}
+
 export function GoogleMaps({
   markers,
   center,
@@ -83,109 +88,19 @@ export function GoogleMaps({
   height = "400px",
   className,
 }: GoogleMapsProps) {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const [apiKey, setApiKey] = useState(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "")
-  const [scriptReady, setScriptReady] = useState(false)
-  const [mapFailed, setMapFailed] = useState(false)
-
   const validMarkers = useMemo(() => markers.filter(isValidMarker), [markers])
   const hasMarkers = validMarkers.length > 0
   const isSingleMarker = validMarkers.length === 1
 
-  const calculatedCenter = useMemo(() => {
-    if (!hasMarkers) {
-      return center || { lat: 0, lng: 0 }
-    }
+  const calculatedCenter = useMemo(
+    () => (hasMarkers ? getMapCenter(validMarkers, center) : center || { lat: 0, lng: 0 }),
+    [center, hasMarkers, validMarkers]
+  )
 
-    return center || {
-      lat: validMarkers.reduce((sum, marker) => sum + marker.lat, 0) / validMarkers.length,
-      lng: validMarkers.reduce((sum, marker) => sum + marker.lng, 0) / validMarkers.length,
-    }
-  }, [center, hasMarkers, validMarkers])
-
-  useEffect(() => {
-    let isMounted = true
-
-    getPublicGoogleMapsApiKey().then((key) => {
-      if (isMounted) {
-        setApiKey(key)
-      }
-    })
-
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  useEffect(() => {
-    setMapFailed(false)
-    setScriptReady(false)
-
-    if (!apiKey || !hasMarkers || isSingleMarker) {
-      return
-    }
-
-    let isMounted = true
-
-    loadGoogleMapsScript(apiKey)
-      .then(() => {
-        if (isMounted) {
-          setScriptReady(true)
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setMapFailed(true)
-        }
-      })
-
-    return () => {
-      isMounted = false
-    }
-  }, [apiKey, hasMarkers, isSingleMarker])
-
-  useEffect(() => {
-    if (!scriptReady || !mapRef.current || !window.google?.maps || !hasMarkers) {
-      return
-    }
-
-    const maps = window.google.maps
-    const map = new maps.Map(mapRef.current, {
-      center: calculatedCenter,
-      zoom,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: true,
-    })
-
-    const bounds = new maps.LatLngBounds()
-    const infoWindow = new maps.InfoWindow()
-
-    validMarkers.forEach((marker) => {
-      const position = { lat: marker.lat, lng: marker.lng }
-      bounds.extend(position)
-
-      const mapMarker = new maps.Marker({
-        position,
-        map,
-        title: marker.label || "Acero location",
-      })
-
-      if (marker.label) {
-        mapMarker.addListener("click", () => {
-          infoWindow.setContent(`<strong>${marker.label}</strong>`)
-          infoWindow.open({ anchor: mapMarker, map })
-        })
-      }
-    })
-
-    if (validMarkers.length === 1) {
-      map.setCenter(validMarkers[0])
-      map.setZoom(zoom)
-    } else {
-      map.fitBounds(bounds, 80)
-    }
-  }, [calculatedCenter, hasMarkers, scriptReady, validMarkers, zoom])
+  const overlayBounds = useMemo(
+    () => (validMarkers.length > 1 ? getOverlayBounds(validMarkers) : null),
+    [validMarkers]
+  )
 
   if (!hasMarkers) {
     return (
@@ -227,44 +142,52 @@ export function GoogleMaps({
     )
   }
 
-  if (apiKey && !mapFailed) {
-    return (
-      <div
-        className={cn(
-          "relative overflow-hidden rounded-xl border-2 border-border/50 shadow-lg transition-all hover:border-steel-red/30 hover:shadow-xl",
-          className
-        )}
-        style={{ height }}
-      >
-        <div ref={mapRef} className="h-full w-full" />
-        {!scriptReady && (
-          <div className="absolute inset-0 flex items-center justify-center bg-card/80 text-sm font-medium text-muted-foreground">
-            Loading map...
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  const fallbackEmbedUrl = `https://www.google.com/maps?q=${calculatedCenter.lat},${calculatedCenter.lng}&z=${zoom}&output=embed`
+  const overviewMapUrl = `https://www.google.com/maps?ll=${calculatedCenter.lat},${calculatedCenter.lng}&z=${zoom}&output=embed`
 
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border-2 border-border/50 shadow-lg transition-all hover:border-steel-red/30 hover:shadow-xl",
+        "relative overflow-hidden rounded-xl border-2 border-border/50 bg-card shadow-lg transition-all hover:border-steel-red/30 hover:shadow-xl",
         className
       )}
+      style={{ height }}
     >
       <iframe
-        src={fallbackEmbedUrl}
+        src={overviewMapUrl}
         width="100%"
-        height={height}
-        style={{ border: 0 }}
-        allowFullScreen
+        height="100%"
+        style={{ border: 0, pointerEvents: "none" }}
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
-        className="w-full"
+        className="h-full w-full"
+        title="Acero locations map"
       />
+
+      {overlayBounds && (
+        <div className="pointer-events-none absolute inset-0">
+          {validMarkers.map((marker, index) => {
+            const position = getOverlayPosition(marker, overlayBounds)
+
+            return (
+              <div
+                key={`${marker.lat}-${marker.lng}-${index}`}
+                className="absolute flex -translate-x-1/2 -translate-y-full flex-col items-center"
+                style={position}
+                title={marker.label || "Acero location"}
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-steel-red text-white shadow-xl ring-4 ring-white/80 md:h-11 md:w-11">
+                  <MapPin className="h-5 w-5 md:h-6 md:w-6" />
+                </span>
+                {marker.label && (
+                  <span className="mt-2 max-w-[170px] rounded bg-white/95 px-2 py-1 text-center text-[10px] font-semibold uppercase leading-tight text-foreground shadow md:text-xs">
+                    {marker.label}
+                  </span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
