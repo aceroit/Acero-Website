@@ -90,6 +90,7 @@ export function GoogleMaps({
 
   const validMarkers = useMemo(() => markers.filter(isValidMarker), [markers])
   const hasMarkers = validMarkers.length > 0
+  const isSingleMarker = validMarkers.length === 1
 
   const calculatedCenter = useMemo(() => {
     if (!hasMarkers) {
@@ -120,7 +121,7 @@ export function GoogleMaps({
     setMapFailed(false)
     setScriptReady(false)
 
-    if (!apiKey || !hasMarkers) {
+    if (!apiKey || !hasMarkers || isSingleMarker) {
       return
     }
 
@@ -141,7 +142,7 @@ export function GoogleMaps({
     return () => {
       isMounted = false
     }
-  }, [apiKey, hasMarkers])
+  }, [apiKey, hasMarkers, isSingleMarker])
 
   useEffect(() => {
     if (!scriptReady || !mapRef.current || !window.google?.maps || !hasMarkers) {
@@ -196,6 +197,32 @@ export function GoogleMaps({
         style={{ height }}
       >
         <p className="text-base font-medium text-muted-foreground">No location data available</p>
+      </div>
+    )
+  }
+
+  if (isSingleMarker) {
+    const marker = validMarkers[0]
+    const singleMarkerEmbedUrl = `https://www.google.com/maps?q=${marker.lat},${marker.lng}&z=${zoom}&output=embed`
+
+    return (
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-xl border-2 border-border/50 shadow-lg transition-all hover:border-steel-red/30 hover:shadow-xl",
+          className
+        )}
+      >
+        <iframe
+          src={singleMarkerEmbedUrl}
+          width="100%"
+          height={height}
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          className="w-full"
+          title={marker.label || "Acero location map"}
+        />
       </div>
     )
   }
