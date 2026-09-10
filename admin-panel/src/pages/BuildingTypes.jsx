@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Card, Tag, Select, Dropdown, Image } from 'antd';
+import { Table, Button, Input, Card, Tag, Select, Dropdown } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -201,13 +201,10 @@ const BuildingTypes = () => {
           <div className="flex items-center gap-3">
             <div className="w-14 h-10 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center text-gray-400 flex-shrink-0 overflow-hidden">
               {imageUrl ? (
-                <Image
+                <img
                   src={imageUrl}
                   alt={record.name || 'Building type image'}
-                  width={56}
-                  height={40}
-                  preview={false}
-                  style={{ objectFit: 'cover' }}
+                  className="w-full h-full object-cover block"
                 />
               ) : (
                 <BuildOutlined />
