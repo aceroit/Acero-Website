@@ -132,6 +132,7 @@ exports.createPage = async (req, res) => {
             parentId,
             metaTitle,
             metaDescription,
+            metaImage,
             metaKeywords,
             showInMenu,
             menuIcon,
@@ -166,6 +167,7 @@ exports.createPage = async (req, res) => {
             order,
             metaTitle,
             metaDescription,
+            metaImage,
             metaKeywords,
             showInMenu: showInMenu !== undefined ? showInMenu : true,
             menuIcon,
@@ -225,6 +227,7 @@ exports.updatePage = async (req, res) => {
             parentId,
             metaTitle,
             metaDescription,
+            metaImage,
             metaKeywords,
             showInMenu,
             menuIcon,
@@ -293,6 +296,7 @@ exports.updatePage = async (req, res) => {
         if (title) page.title = title;
         if (metaTitle !== undefined) page.metaTitle = metaTitle;
         if (metaDescription !== undefined) page.metaDescription = metaDescription;
+        if (metaImage !== undefined) page.metaImage = metaImage;
         if (metaKeywords !== undefined) page.metaKeywords = metaKeywords;
         if (showInMenu !== undefined) page.showInMenu = showInMenu;
         if (menuIcon !== undefined) page.menuIcon = menuIcon;

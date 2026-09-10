@@ -154,7 +154,7 @@ router.get('/pages/slug/:slug', async (req, res) => {
                         isActive: true,
                         status: 'published'
                     })
-                        .select('title slug path metaTitle metaDescription metaKeywords')
+                        .select('title slug path metaTitle metaDescription metaImage metaKeywords')
                         .lean();
 
                     if (!page) return cached.data;
@@ -178,7 +178,7 @@ router.get('/pages/slug/:slug', async (req, res) => {
             isActive: true,
             status: 'published'
         })
-            .select('title slug path metaTitle metaDescription metaKeywords')
+            .select('title slug path metaTitle metaDescription metaImage metaKeywords')
             .lean();
 
         if (!page) {
@@ -219,7 +219,7 @@ router.get('/pages/by-path', async (req, res) => {
             path: fullPath,
             isActive: true,
             status: 'published'
-        }).select('title slug path metaTitle metaDescription metaKeywords');
+        }).select('title slug path metaTitle metaDescription metaImage metaKeywords');
 
         if (!page) {
             return errorResponse(res, 404, 'Page not found');

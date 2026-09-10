@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { IndustryContent } from "./industry-content"
 import { getBuildingTypesByIndustry } from "@/services/project.service"
+import { getCmsAssetUrl, getSiteUrl } from "@/utils/cms-asset-url"
 
 interface IndustryPageProps {
   params: Promise<{ industry: string }>
@@ -24,6 +25,8 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
   const title = `${industryName} Projects | Acero Building Systems`
   const description = `Explore Acero Building Systems projects in the ${industryName} industry across multiple building types and locations.`
   const url = `${SITE_URL}/projects/${industry}`
+  const image = getCmsAssetUrl(buildingTypes[0]?.image)
+  const socialImage = image ? getSiteUrl(image) : undefined
 
   return {
     title,
@@ -35,11 +38,13 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
       url,
       siteName: "Acero Building Systems",
       type: "website",
+      images: socialImage ? [{ url: socialImage, width: 1200, height: 630, alt: title }] : undefined,
     },
     twitter: {
-      card: "summary_large_image",
+      card: socialImage ? "summary_large_image" : "summary",
       title,
       description,
+      images: socialImage ? [socialImage] : undefined,
     },
   }
 }

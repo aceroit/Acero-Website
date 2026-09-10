@@ -51,6 +51,24 @@ const pageSchema = new mongoose.Schema({
         trim: true,
         default: null
     },
+    metaImage: {
+        url: {
+            type: String,
+            default: null
+        },
+        publicId: {
+            type: String,
+            default: null
+        },
+        width: {
+            type: Number,
+            default: null
+        },
+        height: {
+            type: Number,
+            default: null
+        }
+    },
     metaKeywords: {
         type: String,
         trim: true,

@@ -99,6 +99,34 @@ exports.validateChangePassword = [
 
 // ========== Page Validators ==========
 
+function validateOptionalImageObject(fieldName) {
+    return body(fieldName)
+        .optional({ nullable: true, checkFalsy: true })
+        .custom((value) => {
+            if (typeof value !== 'object' || Array.isArray(value)) {
+                throw new Error(`${fieldName} must be an image object`);
+            }
+
+            if (value.url !== undefined && value.url !== null && typeof value.url !== 'string') {
+                throw new Error(`${fieldName}.url must be a string`);
+            }
+
+            if (value.publicId !== undefined && value.publicId !== null && typeof value.publicId !== 'string') {
+                throw new Error(`${fieldName}.publicId must be a string`);
+            }
+
+            if (value.width !== undefined && value.width !== null && !Number.isFinite(Number(value.width))) {
+                throw new Error(`${fieldName}.width must be a number`);
+            }
+
+            if (value.height !== undefined && value.height !== null && !Number.isFinite(Number(value.height))) {
+                throw new Error(`${fieldName}.height must be a number`);
+            }
+
+            return true;
+        });
+}
+
 exports.validateCreatePage = [
     body('title')
         .trim()
@@ -125,6 +153,7 @@ exports.validateCreatePage = [
         .optional()
         .trim()
         .isLength({ max: 400 }).withMessage('Meta description must not exceed 400 characters'),
+    validateOptionalImageObject('metaImage'),
     body('showInMenu')
         .optional()
         .isBoolean().withMessage('showInMenu must be a boolean'),
@@ -148,6 +177,7 @@ exports.validateUpdatePage = [
         .optional()
         .trim()
         .isLength({ max: 400 }).withMessage('Meta description must not exceed 400 characters'),
+    validateOptionalImageObject('metaImage'),
     body('showInMenu')
         .optional()
         .isBoolean().withMessage('showInMenu must be a boolean'),

@@ -226,6 +226,12 @@ export interface Page {
   path: string
   metaTitle?: string
   metaDescription?: string
+  metaImage?: {
+    url?: string
+    publicId?: string
+    width?: number
+    height?: number
+  } | null
   metaKeywords?: string
   createdAt: string
   updatedAt: string

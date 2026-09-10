@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { usePermissions } from '../../contexts/PermissionContext';
 import * as pageService from '../../services/pageService';
 import { toast } from 'react-toastify';
+import ImageUpload from '../common/ImageUpload';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -109,6 +110,7 @@ const PageForm = ({
       parentId: values.parentId || null,
       metaTitle: values.metaTitle?.trim() || null,
       metaDescription: values.metaDescription?.trim() || null,
+      metaImage: values.metaImage?.url || values.metaImage?.publicId ? values.metaImage : null,
       metaKeywords: values.metaKeywords?.trim() || null,
       menuIcon: values.menuIcon?.trim() || null,
       showInMenu: values.showInMenu !== undefined ? values.showInMenu : true,
@@ -235,6 +237,23 @@ const PageForm = ({
             rows={3}
             maxLength={350}
             showCount
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="metaImage"
+          label="Social Share Image"
+          tooltip="Image shown in WhatsApp and social previews. Recommended: 1200×630px."
+        >
+          <ImageUpload
+            value={form.getFieldValue('metaImage')}
+            onChange={(image) => {
+              form.setFieldsValue({ metaImage: image });
+              form.validateFields(['metaImage']);
+            }}
+            folder="pages/meta"
+            dimensions={{ minWidth: 1200, minHeight: 630 }}
+            maxSize={5}
           />
         </Form.Item>
 

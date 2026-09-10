@@ -5,6 +5,7 @@ import { Footer } from '@/components/footer'
 import { SectionRenderer } from '@/components/sections/section-renderer'
 import { getPageByPath, getPageBySlug } from '@/services/page.service'
 import type { PageResponse } from '@/lib/api/types'
+import { getCmsAssetUrl, getSiteUrl } from '@/utils/cms-asset-url'
 
 type DynamicPageProps = {
   params: Promise<{ slug: string[] }>
@@ -34,12 +35,35 @@ export async function generateMetadata({
   const path = buildPath(slug)
   const data = await getPublishedPage(path, slug)
   if (!data?.page) return {}
+  const title = data.page.metaTitle || data.page.title
+  const description = data.page.metaDescription ?? undefined
+  const image = getCmsAssetUrl(data.page.metaImage)
+  const socialImage = image ? getSiteUrl(image) : undefined
+  const url = getSiteUrl(path)
+
   return {
-    title: data.page.metaTitle || data.page.title,
-    description: data.page.metaDescription ?? undefined,
+    title,
+    description,
     keywords: data.page.metaKeywords
       ? data.page.metaKeywords.split(',').map((k) => k.trim())
       : undefined,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Acero Building Systems',
+      type: 'website',
+      images: socialImage ? [{ url: socialImage, width: 1200, height: 630, alt: title }] : undefined,
+    },
+    twitter: {
+      card: socialImage ? 'summary_large_image' : 'summary',
+      title,
+      description,
+      images: socialImage ? [socialImage] : undefined,
+    },
   }
 }
 
