@@ -199,15 +199,15 @@ const BuildingTypes = () => {
 
         return (
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center text-gray-400 flex-shrink-0 overflow-hidden">
+            <div className="w-14 h-10 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center text-gray-400 flex-shrink-0 overflow-hidden">
               {imageUrl ? (
                 <Image
                   src={imageUrl}
                   alt={record.name || 'Building type image'}
-                  width={48}
-                  height={48}
+                  width={56}
+                  height={40}
                   preview={false}
-                  style={{ objectFit: 'contain', padding: 4 }}
+                  style={{ objectFit: 'cover' }}
                 />
               ) : (
                 <BuildOutlined />
