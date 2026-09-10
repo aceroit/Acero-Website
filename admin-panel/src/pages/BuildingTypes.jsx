@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Card, Tag, Select, Dropdown, Space } from 'antd';
+import { Table, Button, Input, Card, Tag, Select, Dropdown, Image } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -19,6 +19,7 @@ import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as buildingTypeService from '../services/buildingTypeService';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import { getCmsAssetUrl } from '../utils/cmsAssetUrl';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -193,23 +194,38 @@ const BuildingTypes = () => {
       dataIndex: 'name',
       sorter: true,
       sortOrder: sortField === 'name' ? sortOrder : null,
-      render: (_, record) => (
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0">
-            <BuildOutlined />
-          </div>
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900 truncate">{record.name}</span>
-              {record.featured && (
-                <Tag icon={<StarOutlined />} color="gold" className="text-xs flex-shrink-0">
-                  Featured
-                </Tag>
+      render: (_, record) => {
+        const imageUrl = getCmsAssetUrl(record.image);
+
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center text-gray-400 flex-shrink-0 overflow-hidden">
+              {imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={record.name || 'Building type image'}
+                  width={48}
+                  height={48}
+                  preview={false}
+                  style={{ objectFit: 'contain', padding: 4 }}
+                />
+              ) : (
+                <BuildOutlined />
               )}
             </div>
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-gray-900 truncate">{record.name}</span>
+                {record.featured && (
+                  <Tag icon={<StarOutlined />} color="gold" className="text-xs flex-shrink-0">
+                    Featured
+                  </Tag>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: 'Status',
