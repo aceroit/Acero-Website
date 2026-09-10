@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Card, Tag, Select, Dropdown, Space } from 'antd';
+import { Table, Button, Input, Card, Tag, Select, Dropdown, Image } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -19,10 +19,25 @@ import useWorkflowStatus from '../hooks/useWorkflowStatus';
 import * as projectService from '../services/projectService';
 import * as referenceService from '../services/referenceService';
 import { toast } from 'react-toastify';
-import dayjs from 'dayjs';
+import { getCmsAssetUrl } from '../utils/cmsAssetUrl';
 
 const { Search } = Input;
 const { Option } = Select;
+
+const toApiSortOrder = (value) => (value === 'desc' || value === 'descend' ? 'desc' : 'asc');
+
+const getReferenceLabel = (reference) => reference?.name || '-';
+
+const getCreatorName = (creator) => {
+  if (!creator) return '-';
+  if (typeof creator === 'string') return creator;
+
+  const fullName = [creator.firstName, creator.lastName].filter(Boolean).join(' ').trim();
+  return fullName || creator.email || 'Unknown';
+};
+
+const filterOption = (input, option) =>
+  String(option?.label ?? option?.children ?? '').toLowerCase().includes(input.toLowerCase());
 
 // Row actions with workflow-based visibility (Edit/Delete only when allowed by status + permission)
 const ProjectRowActions = ({ record, onNavigate, onDeleteClick }) => {
@@ -105,10 +120,9 @@ const Projects = () => {
   const [industryFilter, setIndustryFilter] = useState(null);
   const [countryFilter, setCountryFilter] = useState(null);
   const [regionFilter, setRegionFilter] = useState(null);
-  const [areaFilter, setAreaFilter] = useState(null);
   const [buildingTypeFilter, setBuildingTypeFilter] = useState(null);
-  const [sortField, setSortField] = useState('order');
-  const [sortOrder, setSortOrder] = useState('ascend');
+  const [sortField, setSortField] = useState('updatedAt');
+  const [sortOrder, setSortOrder] = useState('descend');
   const [selectedProject, setSelectedProject] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
@@ -119,28 +133,25 @@ const Projects = () => {
   const [industries, setIndustries] = useState([]);
   const [countries, setCountries] = useState([]);
   const [regions, setRegions] = useState([]);
-  const [areas, setAreas] = useState([]);
   const [buildingTypes, setBuildingTypes] = useState([]);
 
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
 
-  // Load reference options (country, region, area are independent)
+  // Load reference options used by the Projects table filters.
   useEffect(() => {
     const load = async () => {
       try {
-        const [ind, cnt, bt, reg, area] = await Promise.all([
+        const [ind, cnt, bt, reg] = await Promise.all([
           referenceService.getIndustries(),
           referenceService.getCountries(),
           referenceService.getBuildingTypes(),
           referenceService.getRegions(),
-          referenceService.getAreas(),
         ]);
         if (ind?.success && ind?.data?.industries) setIndustries(ind.data.industries);
         if (cnt?.success && cnt?.data?.countries) setCountries(cnt.data.countries);
         if (bt?.success && bt?.data?.buildingTypes) setBuildingTypes(bt.data.buildingTypes);
         if (reg?.success && reg?.data?.regions) setRegions(reg.data.regions);
-        if (area?.success && area?.data?.areas) setAreas(area.data.areas);
       } catch (e) {
         console.error('Failed to load reference options', e);
       }
@@ -152,9 +163,10 @@ const Projects = () => {
   const fetchProjects = async (params = {}) => {
     setLoading(true);
     try {
-      const sortBy = params.sortBy ?? (sortField === 'createdAt' ? 'createdAt' : sortField === 'jobNumber' ? 'jobNumber' : 'order');
-      const sortOrderApi = params.sortOrder ?? (sortOrder === 'descend' ? 'desc' : 'asc');
+      const sortBy = params.sortBy ?? sortField;
+      const sortOrderApi = toApiSortOrder(params.sortOrder ?? sortOrder);
       const response = await projectService.getAllProjects({
+        ...params,
         page: params.page ?? pagination.current,
         limit: params.limit ?? pagination.pageSize,
         search: params.search !== undefined ? params.search : searchText,
@@ -162,11 +174,9 @@ const Projects = () => {
         industry: params.industry !== undefined ? params.industry : industryFilter,
         country: params.country !== undefined ? params.country : countryFilter,
         region: params.region !== undefined ? params.region : regionFilter,
-        area: params.area !== undefined ? params.area : areaFilter,
         buildingType: params.buildingType !== undefined ? params.buildingType : buildingTypeFilter,
-        sortBy: params.sortBy ?? sortBy,
-        sortOrder: params.sortOrder ?? sortOrderApi,
-        ...params,
+        sortBy,
+        sortOrder: sortOrderApi,
       });
 
       if (response.success) {
@@ -190,10 +200,10 @@ const Projects = () => {
     }
   };
 
-  // Refetch when filters or sort change (not when page/pageSize change — those are handled in handleTableChange)
+  // Refetch when filters or sort change (not when page/pageSize change; those are handled in handleTableChange).
   useEffect(() => {
     fetchProjects();
-  }, [statusFilter, industryFilter, countryFilter, regionFilter, areaFilter, buildingTypeFilter, sortField, sortOrder]);
+  }, [statusFilter, industryFilter, countryFilter, regionFilter, buildingTypeFilter, sortField, sortOrder]);
 
   // Handle delete project
   const handleDelete = async () => {
@@ -214,7 +224,26 @@ const Projects = () => {
   const handleSearch = (value) => {
     setSearchText(value);
     setPagination((prev) => ({ ...prev, current: 1 }));
-    fetchProjects({ search: value });
+    fetchProjects({ search: value, page: 1 });
+  };
+
+  const resetFilters = () => {
+    setSearchText('');
+    setStatusFilter(null);
+    setIndustryFilter(null);
+    setCountryFilter(null);
+    setRegionFilter(null);
+    setBuildingTypeFilter(null);
+    setPagination((prev) => ({ ...prev, current: 1 }));
+    fetchProjects({
+      page: 1,
+      search: '',
+      status: null,
+      industry: null,
+      country: null,
+      region: null,
+      buildingType: null,
+    });
   };
 
   const handleTableChange = (paginationConfig, filters, sorter) => {
@@ -247,79 +276,83 @@ const Projects = () => {
       dataIndex: 'jobNumber',
       sorter: true,
       sortOrder: sortField === 'jobNumber' ? sortOrder : null,
-      width: 220,
+      width: 260,
       fixed: 'left',
-      render: (_, record) => (
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center text-white flex-shrink-0">
-            <ProjectOutlined className="text-xs" />
-          </div>
-          <div className="flex flex-col min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-medium text-gray-900 text-sm truncate">{record.jobNumber}</span>
-              {record.featured && (
-                <Tag icon={<StarOutlined />} color="gold" className="text-xs flex-shrink-0">
-                  Featured
-                </Tag>
+      render: (_, record) => {
+        const thumbnailUrl = getCmsAssetUrl(record.thumbnailImage);
+
+        return (
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-14 h-10 bg-gray-100 border border-gray-200 rounded-md flex items-center justify-center text-gray-400 flex-shrink-0 overflow-hidden">
+              {thumbnailUrl ? (
+                <Image
+                  src={thumbnailUrl}
+                  alt={record.jobNumber || 'Project thumbnail'}
+                  width={56}
+                  height={40}
+                  preview={false}
+                  style={{ objectFit: 'cover' }}
+                />
+              ) : (
+                <ProjectOutlined className="text-base" />
               )}
             </div>
-            <span className="text-xs text-gray-500 truncate">
-              {record.buildingType?.name || 'N/A'} • {record.industry?.name || 'N/A'}
-            </span>
+            <div className="flex flex-col min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="font-medium text-gray-900 text-sm truncate">{record.jobNumber}</span>
+                {record.featured && (
+                  <Tag icon={<StarOutlined />} color="gold" className="text-xs flex-shrink-0">
+                    Featured
+                  </Tag>
+                )}
+              </div>
+              <span className="text-xs text-gray-500 truncate">
+                {record.jobNumberSlug || record.typeSlug || '-'}
+              </span>
+            </div>
           </div>
-        </div>
-      ),
-    },
-    {
-      title: 'Location',
-      key: 'location',
-      width: 180,
-      render: (_, record) => {
-        const locationParts = [];
-        if (record.country?.name) locationParts.push(record.country.name);
-        if (record.region?.name) locationParts.push(record.region.name);
-        if (record.area?.name) locationParts.push(record.area.name);
-        return (
-          <span className="text-gray-700 text-sm truncate block" title={locationParts.join(', ')}>
-            {locationParts.length > 0 ? locationParts.join(', ') : '—'}
-          </span>
         );
       },
     },
     {
-      title: 'Slug',
-      dataIndex: 'jobNumberSlug',
-      key: 'jobNumberSlug',
-      width: 150,
-      className: 'hidden md:table-cell',
-      render: (slug) => (
-        <span className="text-gray-700 font-mono text-xs truncate block" title={slug}>
-          {slug || '—'}
+      title: 'Region',
+      key: 'region',
+      width: 140,
+      render: (_, record) => (
+        <span className="text-gray-700 text-sm truncate block" title={getReferenceLabel(record.region)}>
+          {getReferenceLabel(record.region)}
         </span>
       ),
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      width: 130,
-      render: (status) => (
-        <Tag 
-          color={getStatusColor(status)}
-          className="px-2 py-0.5 font-semibold rounded-full text-xs"
-        >
-          {getStatusLabel(status)}
-        </Tag>
+      title: 'Country',
+      key: 'country',
+      width: 140,
+      render: (_, record) => (
+        <span className="text-gray-700 text-sm truncate block" title={getReferenceLabel(record.country)}>
+          {getReferenceLabel(record.country)}
+        </span>
       ),
-      filters: [
-        { text: 'Draft', value: 'draft' },
-        { text: 'In Review', value: 'in_review' },
-        { text: 'Changes Requested', value: 'changes_requested' },
-        { text: 'Pending Approval', value: 'pending_approval' },
-        { text: 'Pending Publish', value: 'pending_publish' },
-        { text: 'Published', value: 'published' },
-        { text: 'Archived', value: 'archived' },
-      ],
+    },
+    {
+      title: 'Industry',
+      key: 'industry',
+      width: 160,
+      render: (_, record) => (
+        <span className="text-gray-700 text-sm truncate block" title={getReferenceLabel(record.industry)}>
+          {getReferenceLabel(record.industry)}
+        </span>
+      ),
+    },
+    {
+      title: 'Building Type',
+      key: 'buildingType',
+      width: 170,
+      render: (_, record) => (
+        <span className="text-gray-700 text-sm truncate block" title={getReferenceLabel(record.buildingType)}>
+          {getReferenceLabel(record.buildingType)}
+        </span>
+      ),
     },
     {
       title: 'Order',
@@ -334,34 +367,27 @@ const Projects = () => {
       sortOrder: sortField === 'order' ? sortOrder : null,
     },
     {
-      title: 'Created By',
-      key: 'createdBy',
-      width: 140,
-      className: 'hidden lg:table-cell',
-      render: (_, record) => {
-        const creator = record.createdBy;
-        if (creator) {
-          const name = creator.firstName && creator.lastName
-            ? `${creator.firstName} ${creator.lastName}`
-            : creator.email || 'Unknown';
-          return <span className="text-gray-700 text-sm truncate block" title={name}>{name}</span>;
-        }
-        return <span className="text-gray-400 text-sm">—</span>;
-      },
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      width: 130,
+      render: (status) => (
+        <Tag
+          color={getStatusColor(status)}
+          className="px-2 py-0.5 font-semibold rounded-full text-xs"
+        >
+          {getStatusLabel(status)}
+        </Tag>
+      ),
     },
     {
-      title: 'Created',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      width: 120,
-      className: 'hidden md:table-cell',
-      render: (date) => (
-        <span className="text-gray-600 text-xs">
-          {date ? dayjs(date).format('MMM DD, YYYY') : '—'}
-        </span>
-      ),
-      sorter: true,
-      sortOrder: sortField === 'createdAt' ? sortOrder : null,
+      title: 'Created By',
+      key: 'createdBy',
+      width: 160,
+      render: (_, record) => {
+        const name = getCreatorName(record.createdBy);
+        return <span className="text-gray-700 text-sm truncate block" title={name}>{name}</span>;
+      },
     },
     {
       title: 'Actions',
@@ -419,14 +445,17 @@ const Projects = () => {
           <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="flex-1 w-full">
               <Search
-                placeholder="Search projects by job number, slug..."
+                placeholder="Search by project, country, region, industry, building type..."
                 allowClear
                 enterButton={<SearchOutlined />}
                 size="large"
+                value={searchText}
                 onSearch={handleSearch}
                 onChange={(e) => {
                   if (!e.target.value) {
                     handleSearch('');
+                  } else {
+                    setSearchText(e.target.value);
                   }
                 }}
                 className="w-full"
@@ -441,6 +470,8 @@ const Projects = () => {
                 value={statusFilter}
                 onChange={(v) => { setStatusFilter(v); setPagination((p) => ({ ...p, current: 1 })); }}
                 suffixIcon={<FilterOutlined />}
+                showSearch
+                filterOption={filterOption}
               >
                 <Option value="draft">Draft</Option>
                 <Option value="in_review">In Review</Option>
@@ -458,6 +489,8 @@ const Projects = () => {
                 value={industryFilter}
                 onChange={(v) => { setIndustryFilter(v); setPagination((p) => ({ ...p, current: 1 })); }}
                 options={industries.map((i) => ({ value: i._id, label: i.name }))}
+                showSearch
+                filterOption={filterOption}
               />
               <Select
                 placeholder="Building Type"
@@ -467,6 +500,8 @@ const Projects = () => {
                 value={buildingTypeFilter}
                 onChange={(v) => { setBuildingTypeFilter(v); setPagination((p) => ({ ...p, current: 1 })); }}
                 options={buildingTypes.map((b) => ({ value: b._id, label: b.name }))}
+                showSearch
+                filterOption={filterOption}
               />
               <Select
                 placeholder="Country"
@@ -476,6 +511,8 @@ const Projects = () => {
                 value={countryFilter}
                 onChange={(v) => { setCountryFilter(v); setPagination((p) => ({ ...p, current: 1 })); }}
                 options={countries.map((c) => ({ value: c._id, label: c.name + (c.code ? ` (${c.code})` : '') }))}
+                showSearch
+                filterOption={filterOption}
               />
               <Select
                 placeholder="Region"
@@ -484,19 +521,13 @@ const Projects = () => {
                 style={{ minWidth: 140 }}
                 value={regionFilter}
                 onChange={(v) => { setRegionFilter(v); setPagination((p) => ({ ...p, current: 1 })); }}
-                disabled={!countryFilter}
                 options={regions.map((r) => ({ value: r._id, label: r.name + (r.code ? ` (${r.code})` : '') }))}
+                showSearch
+                filterOption={filterOption}
               />
-              <Select
-                placeholder="Area"
-                allowClear
-                size="large"
-                style={{ minWidth: 140 }}
-                value={areaFilter}
-                onChange={(v) => { setAreaFilter(v); setPagination((p) => ({ ...p, current: 1 })); }}
-                disabled={!regionFilter}
-                options={areas.map((a) => ({ value: a._id, label: a.name + (a.code ? ` (${a.code})` : '') }))}
-              />
+              <Button size="large" onClick={resetFilters}>
+                Reset
+              </Button>
             </div>
           </div>
         </Card>

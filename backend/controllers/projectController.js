@@ -25,8 +25,72 @@ function populateProjectQuery(query) {
 
 function matchesProjectSearch(project, search) {
     if (!search) return true;
-    const regex = new RegExp(search, 'i');
-    return regex.test(project.jobNumber || '') || regex.test(project.jobNumberSlug || '');
+    const normalizedSearch = String(search).trim().toLowerCase();
+    if (!normalizedSearch) return true;
+
+    const searchableValues = [
+        project.jobNumber,
+        project.jobNumberSlug,
+        project.typeSlug,
+        project.country?.name,
+        project.country?.code,
+        project.region?.name,
+        project.region?.code,
+        project.industry?.name,
+        project.industry?.slug,
+        project.buildingType?.name
+    ];
+
+    return searchableValues.some((value) => String(value || '').toLowerCase().includes(normalizedSearch));
+}
+
+function getProjectActivityTime(project) {
+    const activityDate = project.activeRevision?.updatedAt || project.updatedAt || project.createdAt;
+    const time = activityDate ? new Date(activityDate).getTime() : 0;
+    return Number.isNaN(time) ? 0 : time;
+}
+
+function getProjectSortValue(project, sortBy) {
+    switch (sortBy) {
+        case 'order':
+            return Number(project.order ?? 0);
+        case 'createdAt': {
+            const time = project.createdAt ? new Date(project.createdAt).getTime() : 0;
+            return Number.isNaN(time) ? 0 : time;
+        }
+        case 'jobNumber':
+            return project.jobNumber || '';
+        case 'status':
+            return project.status || '';
+        case 'updatedAt':
+        default:
+            return getProjectActivityTime(project);
+    }
+}
+
+function sortProjects(projects, sortBy, sortOrder) {
+    const direction = sortOrder === 'asc' ? 1 : -1;
+
+    return [...projects].sort((a, b) => {
+        const valueA = getProjectSortValue(a, sortBy);
+        const valueB = getProjectSortValue(b, sortBy);
+        let comparison = 0;
+
+        if (typeof valueA === 'number' && typeof valueB === 'number') {
+            comparison = valueA - valueB;
+        } else {
+            comparison = String(valueA).localeCompare(String(valueB), undefined, {
+                numeric: true,
+                sensitivity: 'base'
+            });
+        }
+
+        if (comparison !== 0) {
+            return comparison * direction;
+        }
+
+        return getProjectActivityTime(b) - getProjectActivityTime(a);
+    });
 }
 
 async function assertHomePageLimit(projectIdToExclude = null) {
@@ -61,8 +125,8 @@ exports.getAllProjects = async (req, res) => {
             area,
             industry,
             search,
-            sortBy = 'order',
-            sortOrder = 'asc'
+            sortBy = 'updatedAt',
+            sortOrder = 'desc'
         } = req.query;
 
         const query = { isActive: true };
@@ -72,7 +136,10 @@ exports.getAllProjects = async (req, res) => {
         if (area) query.area = area;
         if (industry) query.industry = industry;
 
-        const sortOptions = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+        const allowedSortFields = new Set(['updatedAt', 'createdAt', 'order', 'jobNumber', 'status']);
+        const normalizedSortBy = allowedSortFields.has(sortBy) ? sortBy : 'updatedAt';
+        const normalizedSortOrder = sortOrder === 'asc' ? 'asc' : 'desc';
+        const sortOptions = { [normalizedSortBy]: normalizedSortOrder === 'asc' ? 1 : -1 };
         const allProjects = await populateProjectQuery(Project.find(query).sort(sortOptions));
         const mergedProjects = await attachActiveRevisions('project', allProjects, REVISION_USER_POPULATE);
 
@@ -82,19 +149,20 @@ exports.getAllProjects = async (req, res) => {
             }
             return matchesProjectSearch(project, search);
         });
+        const sortedProjects = sortProjects(filteredProjects, normalizedSortBy, normalizedSortOrder);
 
         const currentPage = parseInt(page, 10);
         const perPage = parseInt(limit, 10);
         const skip = (currentPage - 1) * perPage;
-        const paginatedProjects = filteredProjects.slice(skip, skip + perPage);
+        const paginatedProjects = sortedProjects.slice(skip, skip + perPage);
 
         return successResponse(res, 200, 'Projects retrieved successfully', {
             projects: paginatedProjects,
             pagination: {
-                total: filteredProjects.length,
+                total: sortedProjects.length,
                 page: currentPage,
                 limit: perPage,
-                totalPages: Math.ceil(filteredProjects.length / perPage)
+                totalPages: Math.ceil(sortedProjects.length / perPage)
             }
         });
     } catch (error) {
