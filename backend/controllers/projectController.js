@@ -1,4 +1,10 @@
 const Project = require('../models/Project');
+const Area = require('../models/Area');
+const BuildingType = require('../models/BuildingType');
+const Country = require('../models/Country');
+const Industry = require('../models/Industry');
+const Region = require('../models/Region');
+const User = require('../models/User');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent } = require('../utils/workflowStatusValidator');
 const {
@@ -11,6 +17,15 @@ const {
 const REVISION_USER_POPULATE = 'createdBy updatedBy reviewedBy approvedBy publishedBy';
 const HOME_PAGE_PROJECTS_MAX = 6;
 const HOME_PAGE_LIMIT_MESSAGE = "Already 6 projects are shown on home page. Remove 'Show on home page' from one project to add this one.";
+const PROJECT_STATUS_PRIORITY = {
+    in_review: 0,
+    pending_approval: 1,
+    pending_publish: 2,
+    changes_requested: 3,
+    draft: 4,
+    published: 5,
+    archived: 6
+};
 
 function populateProjectQuery(query) {
     return query
@@ -36,6 +51,8 @@ function matchesProjectSearch(project, search) {
         project.country?.code,
         project.region?.name,
         project.region?.code,
+        project.area?.name,
+        project.area?.code,
         project.industry?.name,
         project.industry?.slug,
         project.buildingType?.name
@@ -44,10 +61,64 @@ function matchesProjectSearch(project, search) {
     return searchableValues.some((value) => String(value || '').toLowerCase().includes(normalizedSearch));
 }
 
+function getIdString(value) {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    if (value._id) return String(value._id);
+    return String(value);
+}
+
+async function buildLookup(Model, ids, select) {
+    const uniqueIds = [...new Set(ids.filter(Boolean).map(String))];
+    if (uniqueIds.length === 0) return new Map();
+
+    const docs = await Model.find({ _id: { $in: uniqueIds } }).select(select).lean();
+    return new Map(docs.map((doc) => [String(doc._id), doc]));
+}
+
+async function hydrateProjectReferences(projects) {
+    const lookups = [
+        { field: 'buildingType', Model: BuildingType, select: 'name slug' },
+        { field: 'country', Model: Country, select: 'name code' },
+        { field: 'region', Model: Region, select: 'name code' },
+        { field: 'area', Model: Area, select: 'name code' },
+        { field: 'industry', Model: Industry, select: 'name slug logo' },
+        { field: 'createdBy', Model: User, select: 'firstName lastName email' },
+        { field: 'updatedBy', Model: User, select: 'firstName lastName email' }
+    ];
+
+    const maps = await Promise.all(
+        lookups.map(({ field, Model, select }) => {
+            const ids = projects.map((project) => getIdString(project[field]));
+            return buildLookup(Model, ids, select);
+        })
+    );
+
+    return projects.map((project) => {
+        const hydrated = { ...project };
+
+        lookups.forEach(({ field }, index) => {
+            const id = getIdString(project[field]);
+            hydrated[field] = maps[index].get(id) || project[field] || null;
+        });
+
+        return hydrated;
+    });
+}
+
+function matchesReferenceFilter(project, field, filterValue) {
+    if (!filterValue) return true;
+    return getIdString(project[field]) === String(filterValue);
+}
+
 function getProjectActivityTime(project) {
     const activityDate = project.activeRevision?.updatedAt || project.updatedAt || project.createdAt;
     const time = activityDate ? new Date(activityDate).getTime() : 0;
     return Number.isNaN(time) ? 0 : time;
+}
+
+function getProjectStatusPriority(project) {
+    return PROJECT_STATUS_PRIORITY[project.status] ?? 99;
 }
 
 function getProjectSortValue(project, sortBy) {
@@ -72,6 +143,11 @@ function sortProjects(projects, sortBy, sortOrder) {
     const direction = sortOrder === 'asc' ? 1 : -1;
 
     return [...projects].sort((a, b) => {
+        const statusComparison = getProjectStatusPriority(a) - getProjectStatusPriority(b);
+        if (statusComparison !== 0) {
+            return statusComparison;
+        }
+
         const valueA = getProjectSortValue(a, sortBy);
         const valueB = getProjectSortValue(b, sortBy);
         let comparison = 0;
@@ -130,11 +206,6 @@ exports.getAllProjects = async (req, res) => {
         } = req.query;
 
         const query = { isActive: true };
-        if (buildingType) query.buildingType = buildingType;
-        if (country) query.country = country;
-        if (region) query.region = region;
-        if (area) query.area = area;
-        if (industry) query.industry = industry;
 
         const allowedSortFields = new Set(['updatedAt', 'createdAt', 'order', 'jobNumber', 'status']);
         const normalizedSortBy = allowedSortFields.has(sortBy) ? sortBy : 'updatedAt';
@@ -142,12 +213,21 @@ exports.getAllProjects = async (req, res) => {
         const sortOptions = { [normalizedSortBy]: normalizedSortOrder === 'asc' ? 1 : -1 };
         const allProjects = await populateProjectQuery(Project.find(query).sort(sortOptions));
         const mergedProjects = await attachActiveRevisions('project', allProjects, REVISION_USER_POPULATE);
+        const hydratedProjects = await hydrateProjectReferences(mergedProjects);
 
-        const filteredProjects = mergedProjects.filter((project) => {
+        const filteredProjects = hydratedProjects.filter((project) => {
             if (status && project.status !== status) {
                 return false;
             }
-            return matchesProjectSearch(project, search);
+
+            return (
+                matchesReferenceFilter(project, 'buildingType', buildingType) &&
+                matchesReferenceFilter(project, 'country', country) &&
+                matchesReferenceFilter(project, 'region', region) &&
+                matchesReferenceFilter(project, 'area', area) &&
+                matchesReferenceFilter(project, 'industry', industry) &&
+                matchesProjectSearch(project, search)
+            );
         });
         const sortedProjects = sortProjects(filteredProjects, normalizedSortBy, normalizedSortOrder);
 
