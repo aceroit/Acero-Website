@@ -56,6 +56,10 @@ function getEmailDisplayValue(value, fallback = 'Not provided') {
     return normalized || fallback;
 }
 
+function getEmailSubjectValue(value, fallback = 'Not provided') {
+    return getEmailDisplayValue(value, fallback).replace(/[\r\n]+/g, ' ');
+}
+
 const EMAIL_COUNTRY_DIAL_CODES = {
     'bahrain': '+973',
     'bangladesh': '+880',
@@ -107,6 +111,34 @@ function getPurposeLabel(value) {
         other: 'Other'
     };
     return labels[value] || getEmailDisplayValue(value);
+}
+
+function getContactPurposeSubjectLabel(value) {
+    if (String(value || '').trim().toLowerCase() === 'other') {
+        return 'other enquiry';
+    }
+
+    return getEmailSubjectValue(getPurposeLabel(value), 'enquiry');
+}
+
+function getCountrySubjectLabel(country) {
+    return getEmailSubjectValue(country, 'Not provided');
+}
+
+function getGetQuoteSubject(enquiry) {
+    return `New Get Quote From ${getCountrySubjectLabel(enquiry?.country)}`;
+}
+
+function getContactSubject(enquiry) {
+    const purpose = getContactPurposeSubjectLabel(enquiry?.purpose);
+    const country = getCountrySubjectLabel(enquiry?.country);
+    const fromText = purpose === 'other enquiry' ? 'from' : 'From';
+
+    return `New ${purpose} ${fromText} ${country}`;
+}
+
+function getApplicationSubject(vacancy) {
+    return `New Application For ${getEmailSubjectValue(vacancy?.title, 'Selected Position')}`;
 }
 
 function isGetQuoteSubmission(enquiry) {
@@ -1091,9 +1123,7 @@ class NotificationService {
             }
 
             const isQuote = isGetQuoteSubmission(enquiry);
-            const subject = isQuote
-                ? 'New Get Quote Request from ' + (enquiry.fullName || 'Visitor')
-                : 'New Enquiry from ' + (enquiry.fullName || 'Visitor');
+            const subject = isQuote ? getGetQuoteSubject(enquiry) : getContactSubject(enquiry);
 
             const templateName = isQuote ? 'get-quote-submitted' : 'enquiry-submitted';
             const submittedAt = escapeEmailHtml(formatEmailDate(enquiry.submittedAt));
@@ -1212,7 +1242,7 @@ class NotificationService {
             }
 
             const fullName = ((application.firstName || '') + ' ' + (application.lastName || '')).trim();
-            const subject = 'New Application: ' + (fullName || 'Candidate');
+            const subject = getApplicationSubject(vacancy);
             const templateName = 'application-submitted';
             const engineeringDegreeValue = application.hasEngineeringDegree;
             const engineeringDegreeLabel =
