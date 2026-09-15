@@ -123,7 +123,7 @@ function getContactPurposeSubjectLabel(value) {
     };
     const normalized = String(value || '').trim().toLowerCase();
 
-    return labels[normalized] || getEmailSubjectValue(value, 'Enquiry');
+    return labels[normalized] || getEmailSubjectValue(value, 'Inquiry');
 }
 
 function getCountrySubjectLabel(country) {
@@ -1146,7 +1146,7 @@ class NotificationService {
                     adminListUrl: escapeEmailHtml(getEnquiryAdminListUrl())
                 }
                 : {
-                    submissionLabel: escapeEmailHtml('New Website Enquiry'),
+                    submissionLabel: escapeEmailHtml('New Website Inquiry'),
                     fullName: escapeEmailHtml(enquiry.fullName || ''),
                     email: escapeEmailHtml(enquiry.email || ''),
                     mobileNumberDisplay,
@@ -1190,7 +1190,7 @@ class NotificationService {
                 enquiry.email,
                 isQuote
                     ? 'We received your quote request - Acero Building Systems'
-                    : 'We received your enquiry - Acero Building Systems',
+                    : 'We received your inquiry - Acero Building Systems',
                 isQuote ? 'get-quote-confirmation' : 'enquiry-confirmation',
                 data
             );
