@@ -114,11 +114,16 @@ function getPurposeLabel(value) {
 }
 
 function getContactPurposeSubjectLabel(value) {
-    if (String(value || '').trim().toLowerCase() === 'other') {
-        return 'other enquiry';
-    }
+    const labels = {
+        general: 'General Inquiry',
+        sales: 'Sales Inquiry',
+        support: 'Support Inquiry',
+        partnership: 'Partnership Inquiry',
+        other: 'Other Inquiry'
+    };
+    const normalized = String(value || '').trim().toLowerCase();
 
-    return getEmailSubjectValue(getPurposeLabel(value), 'enquiry');
+    return labels[normalized] || getEmailSubjectValue(value, 'Enquiry');
 }
 
 function getCountrySubjectLabel(country) {
@@ -132,9 +137,8 @@ function getGetQuoteSubject(enquiry) {
 function getContactSubject(enquiry) {
     const purpose = getContactPurposeSubjectLabel(enquiry?.purpose);
     const country = getCountrySubjectLabel(enquiry?.country);
-    const fromText = purpose === 'other enquiry' ? 'from' : 'From';
 
-    return `New ${purpose} ${fromText} ${country}`;
+    return `New ${purpose} From ${country}`;
 }
 
 function getApplicationSubject(vacancy) {
