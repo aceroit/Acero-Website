@@ -41,6 +41,18 @@ const {
 const { compareVersions } = require('../utils/versionDiffer');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 
+const PUBLIC_CACHE_RESOURCES = new Set([
+    'page',
+    'header-configuration',
+    'footer-configuration'
+]);
+
+function clearResourcePublicCache(resource, action) {
+    if (PUBLIC_CACHE_RESOURCES.has(resource)) {
+        clearPublicCache(`${resource} ${action}`);
+    }
+}
+
 // Get model based on resource type
 function getModel(resource) {
     const models = {
@@ -841,9 +853,7 @@ exports.publishContent = async (req, res) => {
             metadata: { action: 'publish_content' }
         });
 
-        if (resource === 'page') {
-            clearPublicCache('page published');
-        }
+        clearResourcePublicCache(resource, 'published');
 
         try {
             await notificationService.notifyWorkflowPublished(
@@ -946,9 +956,7 @@ exports.unpublishContent = async (req, res) => {
             }
         }
 
-        if (resource === 'page') {
-            clearPublicCache('page unpublished');
-        }
+        clearResourcePublicCache(resource, 'unpublished');
 
         return successResponse(
             res,
@@ -1025,9 +1033,7 @@ exports.archiveContent = async (req, res) => {
             metadata: { action: 'archive_content' }
         });
 
-        if (resource === 'page') {
-            clearPublicCache('page archived');
-        }
+        clearResourcePublicCache(resource, 'archived');
 
         return successResponse(
             res,
@@ -1103,9 +1109,7 @@ exports.restoreContent = async (req, res) => {
             metadata: { action: 'restore_content' }
         });
 
-        if (resource === 'page') {
-            clearPublicCache('page restored');
-        }
+        clearResourcePublicCache(resource, 'restored');
 
         return successResponse(
             res,

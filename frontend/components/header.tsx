@@ -20,7 +20,6 @@ const defaultNavLinks = [
       { href: "/products/racking-systems", label: "Racking Systems" },
       { href: "/products/porta-cabins", label: "Porta Cabins" },
       { href: "/products/accessories", label: "Accessories" },
-      { href: "/products/peb-comparison", label: "PEB Comparison" },
     ],
   },
   { href: "/manufacturing", label: "Manufacturing" },

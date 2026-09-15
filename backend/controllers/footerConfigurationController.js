@@ -1,6 +1,7 @@
 const FooterConfiguration = require('../models/FooterConfiguration');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent } = require('../utils/workflowStatusValidator');
+const { clearPublicCache } = require('../services/publicContentCache');
 
 /**
  * Get all footer configurations (with filters and pagination)
@@ -91,6 +92,8 @@ exports.createFooter = async (req, res) => {
         const populated = await FooterConfiguration.findById(footer._id)
             .populate('createdBy', 'firstName lastName email');
 
+        clearPublicCache('footer configuration created');
+
         return successResponse(res, 201, 'Footer configuration created successfully', { footer: populated });
     } catch (error) {
         console.error('Error in createFooter:', error);
@@ -138,6 +141,8 @@ exports.updateFooter = async (req, res) => {
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
+        clearPublicCache('footer configuration updated');
+
         return successResponse(res, 200, 'Footer configuration updated successfully', { footer: updated });
     } catch (error) {
         console.error('Error in updateFooter:', error);
@@ -168,6 +173,8 @@ exports.deleteFooter = async (req, res) => {
         footer.isActive = false;
         footer.updatedBy = req.user._id;
         await footer.save();
+
+        clearPublicCache('footer configuration deleted');
 
         return successResponse(res, 200, 'Footer configuration deleted successfully', { footer: { _id: footer._id, isActive: false } });
     } catch (error) {

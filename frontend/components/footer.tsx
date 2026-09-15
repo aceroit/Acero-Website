@@ -19,7 +19,6 @@ const defaultFooterLinks = {
     { label: "Racking Systems", href: "/products/racking-systems" },
     { label: "Porta Cabins", href: "/products/porta-cabins" },
     { label: "Accessories", href: "/products/accessories" },
-    { label: "PEB Comparison", href: "/products/peb-comparison" },
   ],
   media: [
     { label: "Literature", href: "/media/literature" },

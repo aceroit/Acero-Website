@@ -2,6 +2,7 @@ const HeaderConfiguration = require('../models/HeaderConfiguration');
 const headerPageSyncService = require('../services/headerPageSyncService');
 const { successResponse, errorResponse } = require('../utils/responseFormatter');
 const { canEditContent, canDeleteContent } = require('../utils/workflowStatusValidator');
+const { clearPublicCache } = require('../services/publicContentCache');
 
 /**
  * Get all header configurations (with filters and pagination)
@@ -92,6 +93,8 @@ exports.createHeader = async (req, res) => {
         const populated = await HeaderConfiguration.findById(header._id)
             .populate('createdBy', 'firstName lastName email');
 
+        clearPublicCache('header configuration created');
+
         return successResponse(res, 201, 'Header configuration created successfully', { header: populated });
     } catch (error) {
         console.error('Error in createHeader:', error);
@@ -156,6 +159,8 @@ exports.updateHeader = async (req, res) => {
             .populate('createdBy', 'firstName lastName email')
             .populate('updatedBy', 'firstName lastName email');
 
+        clearPublicCache('header configuration updated');
+
         return successResponse(res, 200, 'Header configuration updated successfully', { header: updated });
     } catch (error) {
         console.error('Error in updateHeader:', error);
@@ -186,6 +191,8 @@ exports.deleteHeader = async (req, res) => {
         header.isActive = false;
         header.updatedBy = req.user._id;
         await header.save();
+
+        clearPublicCache('header configuration deleted');
 
         return successResponse(res, 200, 'Header configuration deleted successfully', { header: { _id: header._id, isActive: false } });
     } catch (error) {
