@@ -265,9 +265,7 @@ function buildEmailFooter(publicSiteUrl, socialLinks) {
                                         <a href="${publicSiteUrl}" style="text-decoration:none;" target="_blank" rel="noopener noreferrer">
                                             <img src="cid:acero-logo" alt="Acero Building Systems" width="118" height="41" style="display:block; width:118px; max-width:118px; height:41px; border:0; outline:none; text-decoration:none;">
                                         </a>
-                                        <div style="margin-top:8px; font-size:12px; line-height:1.6; color:#6b7280;">
-                                            <a href="${publicSiteUrl}" style="color:#6b7280; text-decoration:none;" target="_blank" rel="noopener noreferrer">${publicSiteUrl}</a>
-                                        </div>
+                                       
                                     </td>
                                     <td align="right" style="vertical-align:middle; white-space:nowrap;">
                                         <table cellpadding="0" cellspacing="0" role="presentation" align="right">
