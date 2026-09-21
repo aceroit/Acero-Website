@@ -16,7 +16,16 @@ function CareerPageContent() {
   // Fetch Career page for hero image
   const { sections, isLoading: pageLoading } = usePage("career")
   const heroSection = sections.find((s) => s.sectionTypeSlug === "hero_image")
-  const heroImage = heroSection?.content?.image as string | undefined
+  const heroContent = (heroSection?.content || {}) as Record<string, unknown>
+  const heroImage = typeof heroContent.image === "string" ? heroContent.image : undefined
+  const heroTitle =
+    typeof heroContent.title === "string" && heroContent.title.trim()
+      ? heroContent.title.trim()
+      : "Career"
+  const heroOverlay = (heroContent.overlay as boolean | undefined) ?? true
+  const heroImageFit = (heroContent.imageFit as "cover" | "contain" | undefined) || "cover"
+  const heroImagePosition =
+    (heroContent.imagePosition as "center" | "top" | "bottom" | undefined) || "center"
 
   const searchParams = useSearchParams()
   const formRef = useRef<HTMLDivElement>(null)
@@ -52,7 +61,10 @@ function CareerPageContent() {
       <main className="min-h-screen bg-background">
         <HeroImageSection
           image={heroImage || "/placeholder.jpg"}
-          title="Career"
+          title={heroTitle}
+          overlay={heroOverlay}
+          imageFit={heroImageFit}
+          imagePosition={heroImagePosition}
         />
         <VacanciesSection onApplyNow={handleApplyNow} />
         <section
