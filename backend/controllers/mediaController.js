@@ -7,7 +7,13 @@ const { successResponse, errorResponse, paginatedResponse } = require('../utils/
  */
 exports.uploadMedia = async (req, res) => {
     try {
-        const { folder = 'media', tags, description, altText } = req.body;
+        const {
+            folder = 'media',
+            tags,
+            description,
+            altText,
+            replacePublicId
+        } = req.body;
 
         // Check if files were uploaded
         if (!req.files || (Array.isArray(req.files) && req.files.length === 0) || 
@@ -18,7 +24,10 @@ exports.uploadMedia = async (req, res) => {
         const options = {
             tags: tags ? tags.split(',').map(t => t.trim()) : [],
             description: description || '',
-            altText: altText || ''
+            altText: altText || '',
+            // Replacements get a new private storage filename while keeping
+            // the original filename visible in the admin panel.
+            namingStrategy: replacePublicId ? 'unique' : 'seo-friendly'
         };
 
         let uploadedMedia;

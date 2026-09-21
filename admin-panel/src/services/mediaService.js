@@ -23,6 +23,7 @@ export const uploadMedia = async (files, options = {}) => {
   if (options.tags) formData.append('tags', options.tags);
   if (options.description) formData.append('description', options.description);
   if (options.altText) formData.append('altText', options.altText);
+  if (options.replacePublicId) formData.append('replacePublicId', options.replacePublicId);
 
   const response = await API.post('/media/upload', formData);
   return response.data;

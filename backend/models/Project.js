@@ -56,6 +56,8 @@ const projectSchema = new mongoose.Schema({
             type: String,
             default: null
         },
+        filename: { type: String, default: null },
+        originalName: { type: String, default: null },
         publicId: {
             type: String,
             default: null
@@ -75,6 +77,8 @@ const projectSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        filename: { type: String, default: null },
+        originalName: { type: String, default: null },
         publicId: {
             type: String,
             required: true
@@ -146,6 +150,8 @@ const projectSchema = new mongoose.Schema({
             type: String,
             default: null
         },
+        filename: { type: String, default: null },
+        originalName: { type: String, default: null },
         publicId: {
             type: String,
             default: null

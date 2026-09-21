@@ -56,6 +56,8 @@ const pageSchema = new mongoose.Schema({
             type: String,
             default: null
         },
+        filename: { type: String, default: null },
+        originalName: { type: String, default: null },
         publicId: {
             type: String,
             default: null

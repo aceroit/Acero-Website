@@ -65,6 +65,7 @@ const ImageUpload = ({
   const [previewVisible, setPreviewVisible] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [localPreviewUrl, setLocalPreviewUrl] = useState(null);
+  const [lastExistingPublicId, setLastExistingPublicId] = useState(null);
 
   const normalizedValue = useMemo(() => normalizeMediaObject(value), [value]);
   const previewSrc = useMemo(
@@ -75,6 +76,12 @@ const ImageUpload = ({
     () => getMediaFilename(normalizedValue),
     [normalizedValue]
   );
+
+  useEffect(() => {
+    if (normalizedValue?.publicId) {
+      setLastExistingPublicId(normalizedValue.publicId);
+    }
+  }, [normalizedValue?.publicId]);
 
   useEffect(() => {
     return () => {
@@ -125,6 +132,9 @@ const ImageUpload = ({
       const response = await mediaService.uploadMedia(file, {
         folder,
         altText: file.name,
+        // A replacement may reuse the visible filename, but receives a new
+        // private storage path so other pages using the old image are safe.
+        replacePublicId: normalizedValue?.publicId || lastExistingPublicId || undefined,
       });
 
       if (response.success && response.data.media) {
@@ -142,6 +152,7 @@ const ImageUpload = ({
         });
 
         onChange?.(imageData);
+        setLastExistingPublicId(imageData.publicId || null);
         clearLocalPreview();
         message.success('Image uploaded successfully');
       } else {

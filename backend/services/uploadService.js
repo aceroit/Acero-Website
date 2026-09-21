@@ -75,6 +75,37 @@ function removeLocalFileIfExists(publicId) {
     return false;
 }
 
+async function createMediaDocumentAfterFileSave(saved, file, resourceType, folder, options, userId) {
+    try {
+        return await Media.create({
+            // During replacement the physical filename is intentionally unique,
+            // but the name shown in the admin panel remains the user's filename.
+            filename: options.namingStrategy === 'unique'
+                ? (saved.originalName || file.originalname || file.name)
+                : (options.displayFilename || saved.storedFilename || saved.filename),
+            originalName: saved.originalName || file.originalname || file.name,
+            publicId: saved.publicId,
+            url: saved.url,
+            secureUrl: saved.secureUrl || saved.url,
+            resourceType,
+            format: getFormatFromFilename(saved.filename),
+            size: saved.size,
+            width: options.width || undefined,
+            height: options.height || undefined,
+            duration: options.duration || undefined,
+            folder,
+            uploadedBy: userId,
+            tags: options.tags || [],
+            description: options.description || '',
+            altText: options.altText || ''
+        });
+    } catch (error) {
+        // Do not leave an unreferenced file that blocks a later replacement.
+        removeLocalFileIfExists(saved.publicId);
+        throw error;
+    }
+}
+
 /**
  * Validate file before upload
  * @param {Object} file - File object
@@ -122,25 +153,22 @@ exports.uploadImage = async (file, folder = 'media', options = {}, userId) => {
             throw new Error(validation.errors.join(', '));
         }
 
-        const saved = await saveUploadedFile(file, getStorageFolder(folder));
+        const saved = await saveUploadedFile(
+            file,
+            getStorageFolder(folder),
+            options.namingStrategy === 'unique'
+                ? { namingStrategy: 'unique' }
+                : undefined
+        );
 
-        const media = await Media.create({
-            filename: saved.storedFilename || saved.filename,
-            originalName: saved.originalName || file.originalname || file.name,
-            publicId: saved.publicId,
-            url: saved.url,
-            secureUrl: saved.secureUrl || saved.url,
-            resourceType: 'image',
-            format: getFormatFromFilename(saved.filename),
-            size: saved.size,
-            width: options.width || undefined,
-            height: options.height || undefined,
-            folder: folder,
-            uploadedBy: userId,
-            tags: options.tags || [],
-            description: options.description || '',
-            altText: options.altText || ''
-        });
+        const media = await createMediaDocumentAfterFileSave(
+            saved,
+            file,
+            'image',
+            folder,
+            options,
+            userId
+        );
 
         return media;
     } catch (error) {
@@ -182,23 +210,22 @@ exports.uploadVideo = async (file, folder = 'media', options = {}, userId) => {
             throw new Error(validation.errors.join(', '));
         }
 
-        const saved = await saveUploadedFile(file, getStorageFolder(folder));
+        const saved = await saveUploadedFile(
+            file,
+            getStorageFolder(folder),
+            options.namingStrategy === 'unique'
+                ? { namingStrategy: 'unique' }
+                : undefined
+        );
 
-        const media = await Media.create({
-            filename: saved.storedFilename || saved.filename,
-            originalName: saved.originalName || file.originalname || file.name,
-            publicId: saved.publicId,
-            url: saved.url,
-            secureUrl: saved.secureUrl || saved.url,
-            resourceType: 'video',
-            format: getFormatFromFilename(saved.filename),
-            size: saved.size,
-            duration: options.duration || undefined,
-            folder: folder,
-            uploadedBy: userId,
-            tags: options.tags || [],
-            description: options.description || ''
-        });
+        const media = await createMediaDocumentAfterFileSave(
+            saved,
+            file,
+            'video',
+            folder,
+            options,
+            userId
+        );
 
         return media;
     } catch (error) {
@@ -324,22 +351,22 @@ exports.uploadRawFile = async (file, folder = 'media', options = {}, userId) => 
             throw new Error(validation.errors.join(', '));
         }
 
-        const saved = await saveUploadedFile(file, getStorageFolder(folder));
+        const saved = await saveUploadedFile(
+            file,
+            getStorageFolder(folder),
+            options.namingStrategy === 'unique'
+                ? { namingStrategy: 'unique' }
+                : undefined
+        );
 
-        const media = await Media.create({
-            filename: saved.storedFilename || saved.filename,
-            originalName: saved.originalName || file.originalname || file.name,
-            publicId: saved.publicId,
-            url: saved.url,
-            secureUrl: saved.secureUrl || saved.url,
-            resourceType: 'raw',
-            format: getFormatFromFilename(saved.filename),
-            size: saved.size,
-            folder: folder,
-            uploadedBy: userId,
-            tags: options.tags || [],
-            description: options.description || ''
-        });
+        const media = await createMediaDocumentAfterFileSave(
+            saved,
+            file,
+            'raw',
+            folder,
+            options,
+            userId
+        );
 
         return media;
     } catch (error) {

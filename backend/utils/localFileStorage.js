@@ -220,6 +220,12 @@ function createStoredFilename(originalName, uploadRoot, options = {}) {
     return `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${getExt(originalName)}`
   }
 
+  if (namingStrategy === "unique") {
+    const crypto = require("crypto")
+    const baseName = slugifyFileBasename(originalName)
+    return `${baseName}-${Date.now()}-${crypto.randomBytes(6).toString("hex")}${getExt(originalName)}`
+  }
+
   const storedFilename = getSeoFriendlyFilename(originalName)
 
   if (options.rejectDuplicateFilename !== false) {
