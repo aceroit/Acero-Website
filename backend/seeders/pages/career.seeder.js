@@ -26,7 +26,7 @@ const seedCareer = async () => {
             page = await Page.create({
                 title: 'Career',
                 slug: 'career',
-                path: '/career',
+                path: '/careers',
                 parentId: null,
                 level: 0,
                 order: 6, // Updated to 6 (after Media at 5)
@@ -40,8 +40,9 @@ const seedCareer = async () => {
             });
             console.log('✓ Created Career page');
         } else {
-            // Update order if it exists
+            // Keep the public path aligned with the frontend route.
             page.order = 6;
+            page.path = '/careers';
             await page.save();
             console.log('✓ Career page already exists (order updated to 6)');
         }

@@ -21,7 +21,7 @@ export async function generateMetadata({
   const title = update?.metaTitle || update?.title || DEFAULT_TITLE
   const description = update?.metaDescription || update?.shortDescription || update?.description || DEFAULT_DESCRIPTION
   const image = update?.metaImage?.url || update?.featureImage?.url || update?.banner?.url || undefined
-  const url = `${SITE_URL}/media/company-update/${slug}`
+  const url = `${SITE_URL}/media/company-updates/${slug}`
 
   return {
     title,

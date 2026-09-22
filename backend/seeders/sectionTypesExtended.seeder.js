@@ -410,7 +410,7 @@ const extendedSectionTypes = [
                 name: 'updates',
                 type: 'json',
                 label: 'Company Updates',
-                helpText: 'Array: [{"id": "1", "title": "Update Title", "description": "Description", "image": "url", "date": "2024-01-15", "category": "News", "link": "/media/company-update/1"}]',
+                helpText: 'Array: [{"id": "1", "title": "Update Title", "description": "Description", "image": "url", "date": "2024-01-15", "category": "News", "link": "/media/company-updates/1"}]',
                 required: true,
                 validation: {
                     minItems: 1

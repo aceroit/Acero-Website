@@ -236,7 +236,7 @@ const CompanyUpdatesEditor = ({ value = {}, onChange, form }) => {
                               tooltip="URL or path to the full update detail page"
                             >
                               <Input
-                                placeholder="e.g., /media/company-update/facility-expansion"
+                                placeholder="e.g., /media/company-updates/facility-expansion"
                                 size="large"
                                 maxLength={500}
                               />

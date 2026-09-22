@@ -30,10 +30,10 @@ const defaultNavLinks = [
     dropdown: [
       { href: "/media/literature", label: "Literature" },
       { href: "/media/video", label: "Video" },
-      { href: "/media/company-update", label: "Company Update" },
+      { href: "/media/company-updates", label: "Company Update" },
     ],
   },
-  { href: "/career", label: "Career" },
+  { href: "/careers", label: "Career" },
   { href: "/contact-us", label: "Contact Us" },
 ]
 

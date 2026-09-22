@@ -65,6 +65,25 @@ const uniqueRemotePatterns = remotePatterns.filter((pattern, index, allPatterns)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/career',
+        destination: '/careers',
+        permanent: true,
+      },
+      {
+        source: '/media/company-update',
+        destination: '/media/company-updates',
+        permanent: true,
+      },
+      {
+        source: '/media/company-update/:slug',
+        destination: '/media/company-updates/:slug',
+        permanent: true,
+      },
+    ]
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

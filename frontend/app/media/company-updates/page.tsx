@@ -188,7 +188,7 @@ export default function CompanyUpdatePage() {
   }, [featuredUpdate, transformedUpdates])
 
   const handleReadMore = (update: any) => {
-    router.push(`/media/company-update/${update.slug}`)
+    router.push(`/media/company-updates/${update.slug}`)
   }
 
   const handlePostClick = (post: LinkedInPost) => {
@@ -296,7 +296,7 @@ function VerticalUpdateCard({ update, onReadMore, index }: VerticalUpdateCardPro
       className="group"
     >
       <Link
-        href={`/media/company-update/${update.slug}`}
+        href={`/media/company-updates/${update.slug}`}
         className="block"
       >
         <div className={cn(
@@ -376,7 +376,7 @@ function UpdateCard({ update, onReadMore }: UpdateCardProps) {
       className="h-full"
     >
       <Link
-        href={`/media/company-update/${update.slug}`}
+        href={`/media/company-updates/${update.slug}`}
         onClick={handleClick}
         className="group block h-full"
       >

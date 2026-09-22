@@ -182,7 +182,7 @@ export function ContactForm() {
         <div className="mx-auto mt-6 h-1 w-24 bg-gradient-to-r from-transparent via-steel-red to-transparent" />
         <p className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground md:text-xl">
           If you're looking to join our team, visit the{" "}
-          <a href="/career" className="font-semibold text-steel-red transition-colors hover:underline">
+          <a href="/careers" className="font-semibold text-steel-red transition-colors hover:underline">
             Career page
           </a>{" "}
           for exciting opportunities.

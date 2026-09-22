@@ -29,7 +29,7 @@ const seedMediaCompanyUpdate = async () => {
             page = await Page.create({
                 title: 'Company Update',
                 slug: 'company-update',
-                path: '/media/company-update',
+                path: '/media/company-updates',
                 parentId: mediaPage._id,
                 level: 1,
                 order: 2,
@@ -42,6 +42,9 @@ const seedMediaCompanyUpdate = async () => {
                 createdBy: user._id,
             });
             console.log('✓ Created Company Update page');
+        } else if (page.path !== '/media/company-updates') {
+            page.path = '/media/company-updates';
+            await page.save();
         }
 
         const sectionsData = [

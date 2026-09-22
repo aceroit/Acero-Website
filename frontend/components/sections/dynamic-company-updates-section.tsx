@@ -48,7 +48,7 @@ export function DynamicCompanyUpdatesSection({
       const description = update.shortDescription || update.description || ''
       
       // Create link from slug - ensure it points to the detail page
-      const link = `/media/company-update/${update.slug}`
+      const link = `/media/company-updates/${update.slug}`
       
       // Use eventDate (user-editable display date) when set, else publishedAt/createdAt
       const date = update.eventDate || update.publishedAt || update.createdAt || new Date().toISOString()

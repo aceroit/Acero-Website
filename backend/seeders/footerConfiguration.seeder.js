@@ -60,7 +60,7 @@ const footerConfigData = {
         { label: 'Who We Are', href: '/who-we-are', isFieldActive: true },
         { label: 'Manufacturing', href: '/manufacturing', isFieldActive: true },
         { label: 'Projects', href: '/projects', isFieldActive: true },
-        { label: 'Career', href: '/career', isFieldActive: true },
+        { label: 'Career', href: '/careers', isFieldActive: true },
         { label: 'Contact Us', href: '/contact-us', isFieldActive: true } // Note: frontend has /contact but should be /contact-us
     ],
     productsLinks: [
@@ -74,7 +74,7 @@ const footerConfigData = {
     mediaLinks: [
         { label: 'Literature', href: '/media/literature', isFieldActive: true },
         { label: 'Videos', href: '/media/video', isFieldActive: true },
-        { label: 'Company Update', href: '/media/company-update', isFieldActive: true }
+        { label: 'Company Update', href: '/media/company-updates', isFieldActive: true }
     ],
     copyright: {
         text: 'Acero Steel Manufacturing. All rights reserved.',

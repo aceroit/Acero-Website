@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 import { getCmsPageMetadata } from "@/lib/page-metadata"
 
 export async function generateMetadata(): Promise<Metadata> {
-  return getCmsPageMetadata("career", "/career")
+  return getCmsPageMetadata("company-update", "/media/company-updates")
 }
 
 export default function RouteLayout({ children }: { children: ReactNode }) {

@@ -68,13 +68,13 @@ const headerConfigData = {
             dropdown: [
                 { label: 'Literature', href: '/media/literature', order: 0 },
                 { label: 'Video', href: '/media/video', order: 1 },
-                { label: 'Company Update', href: '/media/company-update', order: 2 }
+                { label: 'Company Update', href: '/media/company-updates', order: 2 }
             ],
             isFieldActive: true
         },
         {
             label: 'Career',
-            href: '/career',
+            href: '/careers',
             order: 5,
             dropdown: [],
             isFieldActive: true

@@ -85,7 +85,7 @@ export function FeaturedUpdateCard({
 
           {/* Read More Button */}
           <Link
-            href={`/media/company-update/${update.slug}`}
+            href={`/media/company-updates/${update.slug}`}
             onClick={handleReadMore}
             className="inline-flex items-center gap-2 bg-steel-red px-8 py-4 text-sm font-semibold uppercase tracking-wider text-steel-white transition-all hover:bg-steel-red/90"
           >

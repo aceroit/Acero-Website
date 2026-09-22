@@ -284,7 +284,7 @@ const seedHomepage = async () => {
                             image: '/images/updates/update-1.jpg',
                             date: '2024-01-15',
                             category: 'Company News',
-                            link: '/media/company-update/facility-expansion',
+                            link: '/media/company-updates/facility-expansion',
                         },
                         {
                             id: '2',
@@ -293,7 +293,7 @@ const seedHomepage = async () => {
                             image: '/images/updates/update-2.jpg',
                             date: '2024-02-20',
                             category: 'Awards',
-                            link: '/media/company-update/safety-award',
+                            link: '/media/company-updates/safety-award',
                         },
                         {
                             id: '3',
@@ -302,7 +302,7 @@ const seedHomepage = async () => {
                             image: '/images/updates/update-3.jpg',
                             date: '2024-03-10',
                             category: 'Products',
-                            link: '/media/company-update/new-product-line',
+                            link: '/media/company-updates/new-product-line',
                         },
                     ],
                 },

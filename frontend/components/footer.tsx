@@ -10,7 +10,7 @@ const defaultFooterLinks = {
     { label: "Who We Are", href: "/who-we-are" },
     { label: "Manufacturing", href: "/manufacturing" },
     { label: "Projects", href: "/projects" },
-    { label: "Career", href: "/career" },
+    { label: "Career", href: "/careers" },
     { label: "Contact Us", href: "/contact-us" },
   ],
   products: [
@@ -23,7 +23,7 @@ const defaultFooterLinks = {
   media: [
     { label: "Literature", href: "/media/literature" },
     { label: "Videos", href: "/media/video" },
-    { label: "Company Update", href: "/media/company-update" },
+    { label: "Company Update", href: "/media/company-updates" },
   ],
 }
 
