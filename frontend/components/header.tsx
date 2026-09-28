@@ -25,7 +25,7 @@ const defaultNavLinks = [
   { href: "/manufacturing", label: "Manufacturing" },
   { href: "/projects", label: "Projects" },
   {
-    href: "/media/literature",
+    href: "/media",
     label: "Media",
     dropdown: [
       { href: "/media/literature", label: "Literature" },

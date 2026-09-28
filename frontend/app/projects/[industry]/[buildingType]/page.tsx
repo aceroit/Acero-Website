@@ -1,10 +1,9 @@
 "use client"
 
-import { Suspense, use } from "react"
+import { Suspense, use, useEffect } from "react"
 import { notFound, useSearchParams, useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { HeroImageSection } from "@/components/sections/hero-image-section"
 import { ProjectDetailsCard } from "@/components/projects/project-details-card"
 import { ProjectsGalleryImagesSection } from "@/components/sections/projects-gallery-images-section"
 import { useProjects } from "@/hooks/use-projects"
@@ -42,12 +41,21 @@ function BuildingTypeContent({
 
   const isLoading = projectsLoading
 
+  // Always start a detail page at the top, including after client-side route changes.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" })
+    const frame = window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" })
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [industrySlug, buildingTypeSlug, projectSlugParam, isLoading])
+
   // Get unique project details (use first project from list as representative)
   const representativeProject = projects[0]
 
   const industryName = representativeProject?.industry?.name
   const buildingTypeName = representativeProject?.buildingType?.name
-  const buildingTypeImage = representativeProject?.buildingType?.image?.url || null
 
   // Only check for not found after loading is complete
   if (!isLoading) {
@@ -74,6 +82,7 @@ function BuildingTypeContent({
 
   // We already defined representativeProject above as projects[0], but if filtered we can update it
   const filteredRepresentativeProject = filteredProjects[0] || projects[0]
+  const countryName = filteredRepresentativeProject?.country?.name || countryParam || "Country"
 
   // Transform project for ProjectDetailsCard component
   const projectForCard = filteredRepresentativeProject
@@ -93,13 +102,6 @@ function BuildingTypeContent({
     <>
       <Header />
       <main className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <HeroImageSection 
-          image={filteredRepresentativeProject?.thumbnailImage?.url || buildingTypeImage || "/placeholder.jpg"} 
-          title={buildingTypeName || "Building Type"} 
-        />
-
-        {/* Project Details Section */}
         {isLoading ? (
           <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -108,18 +110,30 @@ function BuildingTypeContent({
               </div>
             </div>
           </section>
-        ) : projectForCard ? (
+        ) : null}
+
+        {/* Gallery first: the project name and country identify the images below. */}
+        {!isLoading && allProjectImages.length > 0 && (
+          <ProjectsGalleryImagesSection
+            title={`${buildingTypeName} | ${countryName}`}
+            paragraph={`Explore images from this ${buildingTypeName} project in ${countryName}.`}
+            images={allProjectImages}
+            leadingAction={
+              <Button
+                onClick={() => router.back()}
+                className="group flex cursor-pointer items-center gap-2 bg-steel-red uppercase tracking-wider text-steel-white transition-all hover:bg-steel-red/90"
+              >
+                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                Back
+              </Button>
+            }
+          />
+        )}
+
+        {/* Project details follow the gallery. */}
+        {!isLoading && projectForCard ? (
           <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
-              <div className="mb-8 flex justify-start">
-                <Button 
-                  onClick={() => router.back()}
-                  className="group flex items-center gap-2 bg-steel-red text-steel-white hover:bg-steel-red/90 uppercase tracking-wider transition-all cursor-pointer"
-                >
-                  <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                  Back
-                </Button>
-              </div>
               <ProjectDetailsCard
                 project={projectForCard}
                 industry={industryName || ""}
@@ -128,15 +142,6 @@ function BuildingTypeContent({
             </div>
           </section>
         ) : null}
-
-        {/* Projects Gallery Images – dynamic title at top, large 2-col cover cards */}
-        {!isLoading && allProjectImages.length > 0 && (
-          <ProjectsGalleryImagesSection
-            title={`Project Gallery – ${buildingTypeName} | ${industryName}`}
-            paragraph={`Explore images from our ${buildingTypeName} projects in the ${industryName} industry.`}
-            images={allProjectImages}
-          />
-        )}
       </main>
       <Footer />
     </>

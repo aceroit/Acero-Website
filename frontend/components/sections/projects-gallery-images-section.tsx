@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useMemo, useState } from "react"
+import { useRef, useMemo, useState, type ReactNode } from "react"
 import Image from "@/components/ui/cms-image"
 import { cn } from "@/lib/utils"
 import { useAppearance } from "@/hooks/use-appearance"
@@ -22,6 +22,7 @@ interface ProjectsGalleryImagesSectionProps {
   title: string
   paragraph: string
   images: GalleryImage[]
+  leadingAction?: ReactNode
   className?: string
 }
 
@@ -34,6 +35,7 @@ export function ProjectsGalleryImagesSection({
   title,
   paragraph,
   images,
+  leadingAction,
   className,
 }: ProjectsGalleryImagesSectionProps) {
   const ref = useRef(null)
@@ -57,6 +59,12 @@ export function ProjectsGalleryImagesSection({
       )}
     >
       <div className={cn("mx-auto", spacing.containerMaxWidth, "px-6 lg:px-8")}>
+        {leadingAction && (
+          <div className="mb-8 flex justify-start">
+            {leadingAction}
+          </div>
+        )}
+
         {/* Title + paragraph: full width at top, centered */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

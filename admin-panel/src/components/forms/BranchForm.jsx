@@ -1,4 +1,4 @@
-import { Form, Input, Select, Button, Switch } from 'antd';
+import { Form, Input, InputNumber, Select, Button, Switch } from 'antd';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import * as referenceService from '../../services/referenceService';
@@ -299,7 +299,7 @@ const BranchForm = ({
           tooltip="Lower numbers appear first in lists. Used on the website and in the admin list."
           rules={[{ type: 'number', min: 0, message: 'Order must be 0 or greater' }]}
         >
-          <Input type="number" min={0} placeholder="0" size="large" />
+          <InputNumber min={0} placeholder="0" size="large" className="w-full" />
         </Form.Item>
       </div>
 

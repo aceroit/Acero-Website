@@ -63,7 +63,7 @@ const headerConfigData = {
         },
         {
             label: 'Media',
-            href: '/media/literature',
+            href: '/media',
             order: 4,
             dropdown: [
                 { label: 'Literature', href: '/media/literature', order: 0 },

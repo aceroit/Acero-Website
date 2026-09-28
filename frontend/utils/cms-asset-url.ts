@@ -1,6 +1,5 @@
 const DEFAULT_UPLOAD_BASE = 'http://localhost:4000/uploads'
 const DEFAULT_SITE_ORIGIN = 'http://localhost:3000'
-const DEFAULT_API_ORIGIN = 'http://localhost:4000'
 
 // Central URL normalizer for every CMS/admin uploaded asset rendered by the Next frontend.
 // DB values may be full URLs, /uploads paths, legacy migrated paths, or bare publicIds.
@@ -78,14 +77,6 @@ function getSiteOrigin(): string {
   return trimTrailingSlash(process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_ORIGIN)
 }
 
-function getApiOrigin(): string {
-  return trimTrailingSlash(
-    process.env.NEXT_PUBLIC_API_URL ||
-      process.env.NEXT_PUBLIC_API_BASE_URL ||
-      DEFAULT_API_ORIGIN
-  )
-}
-
 function parseUrl(url: string): URL | null {
   try {
     return new URL(url)
@@ -96,16 +87,6 @@ function parseUrl(url: string): URL | null {
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Object.prototype.toString.call(value) === '[object Object]'
-}
-
-function isLoopbackHostname(hostname: string): boolean {
-  const normalized = hostname.toLowerCase()
-  return (
-    normalized === 'localhost' ||
-    normalized === '127.0.0.1' ||
-    normalized === '0.0.0.0' ||
-    normalized === '::1'
-  )
 }
 
 function isSameOrigin(left: URL | null, right: URL | null): boolean {
@@ -257,12 +238,10 @@ function shouldNormalizeFullUploadUrl(value: string): boolean {
     return false
   }
 
-  const apiOriginUrl = parseUrl(getApiOrigin())
-  if (isSameOrigin(parsedValue, apiOriginUrl)) {
-    return true
-  }
-
-  return isLoopbackHostname(parsedValue.hostname)
+  // CMS records can contain absolute URLs from older storage hosts. The
+  // upload path is portable, so always resolve it against the current
+  // environment's upload base (local in development, production in deploys).
+  return true
 }
 
 export function getImageUrl(input?: string | null): string {
