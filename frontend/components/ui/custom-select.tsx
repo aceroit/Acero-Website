@@ -23,6 +23,7 @@ interface CustomSelectProps extends Omit<SelectProps<CustomSelectOption, false, 
   onValueChange?: (value: string) => void
   placeholder?: string
   size?: 'sm' | 'default' | 'md' | 'lg'
+  textSize?: 'sm' | 'base' | 'lg'
   className?: string
 }
 
@@ -32,6 +33,7 @@ export function CustomSelect({
   onValueChange,
   placeholder = 'Select...',
   size = 'default',
+  textSize = 'sm',
   className,
   instanceId,
   inputId,
@@ -51,6 +53,7 @@ export function CustomSelect({
   const selectedOption = options.find(opt => opt.value === value)
 
   const controlHeight = size === 'sm' ? '32px' : size === 'md' ? '48px' : size === 'lg' ? '56px' : '36px'
+  const selectFontSize = textSize === 'lg' ? '1.25rem' : textSize === 'base' ? '1rem' : '0.875rem'
 
   const customStyles: StylesConfig<CustomSelectOption, false> = {
     control: (base, state) => ({
@@ -90,13 +93,13 @@ export function CustomSelect({
     singleValue: (base) => ({
       ...base,
       color: 'var(--color-foreground)',
-      fontSize: '0.875rem',
+      fontSize: selectFontSize,
       lineHeight: 1,
     }),
     placeholder: (base) => ({
       ...base,
       color: 'var(--color-muted-foreground)',
-      fontSize: '0.875rem',
+      fontSize: selectFontSize,
     }),
     indicatorSeparator: () => ({
       display: 'none',
@@ -154,7 +157,7 @@ export function CustomSelect({
         ? 'var(--color-accent-foreground)'
         : 'var(--color-foreground)',
       cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-      fontSize: '0.875rem',
+      fontSize: selectFontSize,
       padding: '6px 32px 6px 8px',
       position: 'relative',
       borderRadius: '0.25rem',

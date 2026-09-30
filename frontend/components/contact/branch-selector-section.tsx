@@ -27,7 +27,6 @@ export function BranchSelectorSection() {
   }, [countries, selectedCountry])
 
   const selectedCountryData = countries.find((c) => c.code === selectedCountry)
-  const firstBranchId = selectedCountryData?.branches[0]?._id ?? ""
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -66,7 +65,8 @@ export function BranchSelectorSection() {
             }))}
             placeholder={isLoading ? "Loading…" : "Select a country"}
             isDisabled={isLoading || countries.length === 0}
-            className="h-12 w-[220px] text-base font-medium"
+            textSize="lg"
+            className="h-12 w-[320px] max-w-full font-medium"
           />
         </div>
 
@@ -80,7 +80,6 @@ export function BranchSelectorSection() {
               key={selectedCountry}
               type="single"
               collapsible
-              defaultValue={firstBranchId}
               className="space-y-6"
             >
               {selectedCountryData.branches.map((branch) => (
