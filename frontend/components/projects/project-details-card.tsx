@@ -11,6 +11,7 @@ interface ProjectDetailsCardProps {
   project: Project
   industry: string
   buildingType: string
+  layout?: "grid" | "vertical"
   className?: string
 }
 
@@ -18,6 +19,7 @@ export function ProjectDetailsCard({
   project,
   industry,
   buildingType,
+  layout = "grid",
   className,
 }: ProjectDetailsCardProps) {
   const ref = useRef(null)
@@ -42,16 +44,26 @@ export function ProjectDetailsCard({
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.6 }}
-      className={cn("w-full", className)}
+      className={cn("h-full w-full", className)}
     >
-      <Card className="border-border bg-card shadow-sm">
-        <CardHeader className="pb-6">
-          <CardTitle className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+      <Card className="h-full border-border bg-card shadow-sm">
+        <CardHeader className={cn("pb-6", layout === "vertical" && "pb-4")}>
+          <CardTitle
+            className={cn(
+              "text-3xl font-bold tracking-tight text-foreground md:text-4xl",
+              layout === "vertical" && "text-2xl md:text-3xl"
+            )}
+          >
             Project Details
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-8 sm:grid-cols-2">
+          <div
+            className={cn(
+              "grid gap-8",
+              layout === "vertical" ? "grid-cols-1 gap-5" : "sm:grid-cols-2"
+            )}
+          >
             {details.map((detail, index) => (
               <motion.div
                 key={detail.label}
@@ -63,7 +75,12 @@ export function ProjectDetailsCard({
                 <dt className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                   {detail.label}
                 </dt>
-                <dd className="text-lg font-semibold leading-relaxed text-foreground">
+                <dd
+                  className={cn(
+                    "text-lg font-semibold leading-relaxed text-foreground",
+                    layout === "vertical" && "text-base"
+                  )}
+                >
                   {detail.value}
                 </dd>
               </motion.div>

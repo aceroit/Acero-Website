@@ -115,9 +115,19 @@ function BuildingTypeContent({
         {/* Gallery first: the project name and country identify the images below. */}
         {!isLoading && allProjectImages.length > 0 && (
           <ProjectsGalleryImagesSection
-            title={`${buildingTypeName} | ${countryName}`}
-            paragraph={`Explore images from this ${buildingTypeName} project in ${countryName}.`}
+            title={`${buildingTypeName} - ${countryName}`}
+            mobileTitleLines={[buildingTypeName || "", countryName]}
             images={allProjectImages}
+            sideContent={
+              projectForCard ? (
+                <ProjectDetailsCard
+                  project={projectForCard}
+                  industry={industryName || ""}
+                  buildingType={buildingTypeName || ""}
+                  layout="vertical"
+                />
+              ) : undefined
+            }
             leadingAction={
               <Button
                 onClick={() => router.back()}
@@ -130,8 +140,8 @@ function BuildingTypeContent({
           />
         )}
 
-        {/* Project details follow the gallery. */}
-        {!isLoading && projectForCard ? (
+        {/* Keep the details card as a fallback when there are no gallery images. */}
+        {!isLoading && projectForCard && allProjectImages.length === 0 ? (
           <section className="border-t border-border bg-background py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <ProjectDetailsCard
